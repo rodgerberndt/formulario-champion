@@ -70,6 +70,17 @@ export function LeadForm() {
     }
   };
 
+  const sendToKommo = async (leadData: FormData) => {
+    try {
+      const response = await supabase.functions.invoke('kommo-webhook', {
+        body: leadData
+      });
+      console.log('Kommo response:', response);
+    } catch (error) {
+      console.error('Error sending to Kommo:', error);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!canProceed()) return;
 
@@ -78,6 +89,9 @@ export function LeadForm() {
       const { error } = await supabase.from("leads").insert([formData]);
 
       if (error) throw error;
+
+      // Send to Kommo in background
+      sendToKommo(formData);
 
       setSubmitted(true);
       toast({
@@ -117,8 +131,8 @@ export function LeadForm() {
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-secondary/20 flex items-center justify-center animate-glow">
             <Check className="w-10 h-10 text-secondary" />
           </div>
-          <h2 className="font-serif text-3xl font-bold mb-4 champion-gradient-text">
-            Obrigado pelo interesse!
+          <h2 className="font-display text-5xl font-bold mb-4 champion-gradient-text tracking-wider">
+            OBRIGADO!
           </h2>
           <p className="text-muted-foreground text-lg">
             Recebemos suas informações e entraremos em contato em breve para
@@ -260,10 +274,10 @@ export function LeadForm() {
       <div className="w-full max-w-xl">
         {/* Logo/Header */}
         <div className="text-center mb-10">
-          <h1 className="font-serif text-4xl md:text-5xl font-bold champion-gradient-text mb-2">
-            Champion
+          <h1 className="font-display text-6xl md:text-7xl font-bold champion-gradient-text mb-2 tracking-wider">
+            CHAMPION
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-base">
             Preencha o formulário para iniciar sua jornada
           </p>
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,10 +16,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Bell, Eye, Check, ArrowLeft, RefreshCw, Users } from "lucide-react";
+import { Bell, Eye, Check, RefreshCw, Users, ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useNavigate } from "react-router-dom";
 
 interface Lead {
   id: string;
@@ -33,17 +34,13 @@ interface Lead {
   created_at: string;
 }
 
-interface AdminDashboardProps {
-  onBack: () => void;
-}
-
-export function AdminDashboard({ onBack }: AdminDashboardProps) {
+export function AdminDashboard() {
+  const navigate = useNavigate();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isRinging, setIsRinging] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -67,7 +64,6 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
   };
 
   const playNotificationSound = () => {
-    // Create audio context for notification
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
@@ -115,7 +111,6 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
   useEffect(() => {
     fetchLeads();
 
-    // Subscribe to realtime updates
     const channel = supabase
       .channel("leads-realtime")
       .on(
@@ -149,15 +144,15 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
-            <Button variant="championOutline" size="lg" onClick={onBack}>
+            <Button variant="championOutline" size="lg" onClick={() => navigate("/")}>
               <ArrowLeft className="w-5 h-5" />
               Voltar
             </Button>
             <div>
-              <h1 className="font-serif text-3xl font-bold champion-gradient-text">
-                Painel de Leads
+              <h1 className="font-display text-4xl font-bold champion-gradient-text tracking-wider">
+                PAINEL DE LEADS
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Gerencie todas as respostas do formulário
               </p>
             </div>
@@ -304,8 +299,8 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
         <Dialog open={!!selectedLead} onOpenChange={() => setSelectedLead(null)}>
           <DialogContent className="bg-card border-border max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="font-serif text-2xl champion-gradient-text">
-                Detalhes do Lead
+              <DialogTitle className="font-display text-3xl champion-gradient-text tracking-wider">
+                DETALHES DO LEAD
               </DialogTitle>
             </DialogHeader>
             {selectedLead && (
