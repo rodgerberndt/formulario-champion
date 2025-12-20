@@ -146,7 +146,7 @@ export function AdminDashboard() {
           <div className="flex items-center gap-4">
             <Button variant="championOutline" size="lg" onClick={() => navigate("/")}>
               <ArrowLeft className="w-5 h-5" />
-              Voltar
+              Ir para Formulário
             </Button>
             <div>
               <h1 className="font-display text-4xl font-bold champion-gradient-text tracking-wider">
