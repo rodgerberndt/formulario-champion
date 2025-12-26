@@ -19,6 +19,7 @@ const MERCADOS = [
   "Afiliado gringa",
   "Dropshipping",
   "Ainda não vendo",
+  "Outro",
 ];
 
 const ESTAGIOS = ["Iniciando", "Validação", "Pré escala", "Escala"];
@@ -196,7 +197,7 @@ export function LeadForm() {
         return (
           <div className="space-y-4 animate-slide-up">
             <label className="block text-lg font-medium text-foreground">
-              Em que mercado você trabalha?
+              Em que mercado você está inserido?
             </label>
             <Select
               value={formData.mercado}
@@ -223,7 +224,7 @@ export function LeadForm() {
         return (
           <div className="space-y-4 animate-slide-up">
             <label className="block text-lg font-medium text-foreground">
-              Em que estágio está o seu negócio hoje?
+              Em que fase está a sua operação hoje?
             </label>
             <Select
               value={formData.estagio_negocio}
@@ -250,11 +251,8 @@ export function LeadForm() {
         return (
           <div className="space-y-4 animate-slide-up">
             <label className="block text-lg font-medium text-foreground">
-              O que você mais está buscando resolver hoje?
+              Qual a maior dor / desejo você busca solucionar com a gente?
             </label>
-            <p className="text-muted-foreground text-sm">
-              Descreva muito bem a sua dor / desejo.
-            </p>
             <Textarea
               className="champion-input w-full text-lg min-h-[150px] resize-none"
               placeholder="Conte-nos sobre seus objetivos e desafios..."
