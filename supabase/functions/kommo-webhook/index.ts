@@ -32,9 +32,46 @@ serve(async (req) => {
     // Create lead in Kommo (amoCRM)
     const kommoUrl = `https://${kommoSubdomain}.kommo.com/api/v4/leads/complex`;
     
+    // Build note text with all available data
+    const noteText = `📊 DADOS DO LEAD CHAMPION
+━━━━━━━━━━━━━━━━━
+🏆 Score: ${leadData.score || 'N/A'} | Tier: ${leadData.tier || 'N/A'}
+━━━━━━━━━━━━━━━━━
+👤 Nome: ${leadData.nome_completo}
+📱 WhatsApp: ${leadData.whatsapp}
+📧 Email: ${leadData.email || 'N/A'}
+📸 Instagram: ${leadData.instagram}
+🏢 Empresa: ${leadData.empresa || 'N/A'}
+━━━━━━━━━━━━━━━━━
+📊 Segmento: ${leadData.segmento || 'N/A'}
+🎯 Mercado: ${leadData.mercado}
+📈 Estágio: ${leadData.estagio_negocio}
+👑 Decisor: ${leadData.decisor ? 'Sim' : 'Não'}
+━━━━━━━━━━━━━━━━━
+💰 Faturamento: ${leadData.faturamento_faixa || 'N/A'}
+📢 Tráfego: ${leadData.trafego_faixa || 'N/A'}
+🚧 Gargalo: ${leadData.gargalo || 'N/A'}
+⏰ Timing: ${leadData.timing || 'N/A'}
+💵 Orçamento: ${leadData.orcamento_faixa || 'N/A'}
+━━━━━━━━━━━━━━━━━
+📝 Dor/Desejo:
+${leadData.dor_desejo}`;
+
+    // Build tags array
+    const tags = [
+      { name: leadData.mercado },
+      { name: leadData.estagio_negocio },
+      { name: "Champion Form" }
+    ];
+    
+    // Add tier tag if available
+    if (leadData.tier) {
+      tags.push({ name: `Tier ${leadData.tier}` });
+    }
+
     const kommoPayload = [
       {
-        name: `Lead: ${leadData.nome_completo}`,
+        name: `[${leadData.tier || 'N/A'}] ${leadData.nome_completo} - ${leadData.empresa || 'Lead'}`,
         custom_fields_values: [
           {
             field_code: "PHONE",
@@ -50,22 +87,21 @@ serve(async (req) => {
                 {
                   field_code: "PHONE",
                   values: [{ value: leadData.whatsapp }]
+                },
+                {
+                  field_code: "EMAIL",
+                  values: [{ value: leadData.email || '' }]
                 }
               ]
             }
           ],
-          tags: [
-            { name: leadData.mercado },
-            { name: leadData.estagio_negocio },
-            { name: "Champion Form" }
-          ]
+          tags: tags
         },
-        // Add note with full details
         _embedded_notes: [
           {
             note_type: "common",
             params: {
-              text: `Instagram: ${leadData.instagram}\n\nMercado: ${leadData.mercado}\n\nEstágio: ${leadData.estagio_negocio}\n\nDor/Desejo:\n${leadData.dor_desejo}`
+              text: noteText
             }
           }
         ]
