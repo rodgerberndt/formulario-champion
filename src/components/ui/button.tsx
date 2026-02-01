@@ -15,7 +15,7 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-muted hover:text-foreground",
         link: "text-accent underline-offset-4 hover:underline",
-        champion: "bg-secondary text-secondary-foreground font-bold hover:scale-105 shadow-[0_4px_30px_-5px_hsla(43,65%,52%,0.4)] hover:shadow-[0_6px_40px_-5px_hsla(43,65%,52%,0.6)]",
+        champion: "bg-secondary text-secondary-foreground font-bold hover:scale-[1.01] shadow-[0_4px_30px_-5px_hsla(43,65%,52%,0.4)] hover:shadow-[0_6px_40px_-5px_hsla(43,65%,52%,0.6)]",
         championOutline: "border-2 border-secondary text-secondary bg-transparent hover:bg-secondary hover:text-secondary-foreground",
         championBlue: "bg-primary text-primary-foreground font-bold hover:scale-105 shadow-[0_4px_30px_-5px_hsla(237,99%,20%,0.6)]",
       },

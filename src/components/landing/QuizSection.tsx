@@ -1,7 +1,6 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -12,17 +11,15 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { ChevronRight, ChevronLeft, Check, Loader2, Clock, Shield, MessageCircle } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, Loader2, Clock, Shield } from "lucide-react";
 import {
   calculateLeadScore,
   FATURAMENTO_OPTIONS,
   TRAFEGO_OPTIONS,
   TIMING_OPTIONS,
-  ORCAMENTO_OPTIONS,
+  DECISOR_OPTIONS,
   SEGMENTO_OPTIONS,
   GARGALO_OPTIONS,
-  MERCADOS,
-  ESTAGIOS,
 } from "@/lib/leadScoring";
 import { QuizResult } from "./QuizResult";
 
@@ -33,17 +30,14 @@ interface QuizFormData {
   whatsapp: string;
   email: string;
   empresa: string;
-  instagram: string;
   segmento: string;
-  mercado: string;
-  estagio_negocio: string;
-  decisor: boolean;
+  decisor: string;
   faturamento_faixa: string;
   trafego_faixa: string;
   gargalo: string;
-  dor_desejo: string;
   timing: string;
-  orcamento_faixa: string;
+  aceita_reuniao: boolean;
+  lgpd: boolean;
 }
 
 const STORAGE_KEY = "champion_quiz_progress";
@@ -62,20 +56,17 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
     whatsapp: "",
     email: "",
     empresa: "",
-    instagram: "",
     segmento: "",
-    mercado: "",
-    estagio_negocio: "",
-    decisor: false,
+    decisor: "",
     faturamento_faixa: "",
     trafego_faixa: "",
     gargalo: "",
-    dor_desejo: "",
     timing: "",
-    orcamento_faixa: "",
+    aceita_reuniao: false,
+    lgpd: false,
   });
 
-  const totalSteps = 8;
+  const totalSteps = 5;
 
   // Load saved progress
   useEffect(() => {
@@ -114,24 +105,35 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const formatWhatsApp = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    if (digits.length <= 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+  };
+
   const canProceed = () => {
     switch (step) {
-      case 1: // Nome e WhatsApp
-        return formData.nome_completo.trim().length >= 3 && formData.whatsapp.trim().length >= 10;
-      case 2: // Email e Empresa
-        return formData.email.includes("@") && formData.empresa.trim().length >= 2;
-      case 3: // Instagram e Segmento
-        return formData.instagram.trim().length >= 2 && formData.segmento !== "";
-      case 4: // Mercado e Estágio (perguntas originais)
-        return formData.mercado !== "" && formData.estagio_negocio !== "";
-      case 5: // Decisor e Faturamento
-        return formData.faturamento_faixa !== "";
-      case 6: // Tráfego e Gargalo
-        return formData.trafego_faixa !== "" && formData.gargalo !== "";
-      case 7: // Dor/Desejo (pergunta original)
-        return formData.dor_desejo.trim().length >= 10;
-      case 8: // Timing e Orçamento
-        return formData.timing !== "" && formData.orcamento_faixa !== "";
+      case 1: // Contato
+        return (
+          formData.nome_completo.trim().length >= 3 &&
+          formData.whatsapp.replace(/\D/g, '').length >= 10 &&
+          formData.email.includes("@") &&
+          formData.lgpd
+        );
+      case 2: // Negócio
+        return (
+          formData.empresa.trim().length >= 2 &&
+          formData.segmento !== "" &&
+          formData.decisor !== ""
+        );
+      case 3: // Números
+        return formData.faturamento_faixa !== "" && formData.trafego_faixa !== "";
+      case 4: // Gargalo
+        return formData.gargalo !== "";
+      case 5: // Timing
+        return formData.timing !== "";
       default:
         return false;
     }
@@ -159,7 +161,6 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
         trafego_faixa: formData.trafego_faixa,
         timing: formData.timing,
         decisor: formData.decisor,
-        orcamento_faixa: formData.orcamento_faixa,
       });
 
       // Prepare data for database
@@ -168,17 +169,16 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
         whatsapp: formData.whatsapp,
         email: formData.email,
         empresa: formData.empresa,
-        instagram: formData.instagram,
+        instagram: "@placeholder", // Required field, using placeholder
         segmento: formData.segmento,
-        mercado: formData.mercado,
-        estagio_negocio: formData.estagio_negocio,
-        decisor: formData.decisor,
+        mercado: formData.segmento, // Using segmento as mercado
+        estagio_negocio: "N/A", // Simplified quiz doesn't have this
+        decisor: formData.decisor === "Sim" || formData.decisor === "Sou sócio",
         faturamento_faixa: formData.faturamento_faixa,
         trafego_faixa: formData.trafego_faixa,
         gargalo: formData.gargalo,
-        dor_desejo: formData.dor_desejo,
+        dor_desejo: formData.gargalo, // Using gargalo as dor_desejo
         timing: formData.timing,
-        orcamento_faixa: formData.orcamento_faixa,
         score: result.score,
         tier: result.tier,
         raw_answers_json: JSON.parse(JSON.stringify(formData)),
@@ -229,87 +229,69 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
 
   // Generate WhatsApp message
   const generateWhatsAppLink = () => {
-    const message = `*Novo Lead Champion*
-━━━━━━━━━━━━━━━━━
-👤 *Nome:* ${formData.nome_completo}
-🏢 *Empresa:* ${formData.empresa}
-📱 *WhatsApp:* ${formData.whatsapp}
-📧 *Email:* ${formData.email}
-📸 *Instagram:* ${formData.instagram}
-━━━━━━━━━━━━━━━━━
-📊 *Segmento:* ${formData.segmento}
-🎯 *Mercado:* ${formData.mercado}
-📈 *Estágio:* ${formData.estagio_negocio}
-👑 *Decisor:* ${formData.decisor ? "Sim" : "Não"}
-━━━━━━━━━━━━━━━━━
-💰 *Faturamento:* ${formData.faturamento_faixa}
-📢 *Investimento em Tráfego:* ${formData.trafego_faixa}
-🚧 *Maior Gargalo:* ${formData.gargalo}
-⏰ *Timing:* ${formData.timing}
-💵 *Orçamento Disponível:* ${formData.orcamento_faixa}
-━━━━━━━━━━━━━━━━━
-📝 *Dor/Desejo:*
-${formData.dor_desejo}
-━━━━━━━━━━━━━━━━━
-🏆 *Score:* ${scoreResult?.score || 0} pontos
-🎖️ *Tier:* ${scoreResult?.tier || "N/A"}`;
+    const message = `Oi, aqui é o ${formData.nome_completo}. Preenchi o Diagnóstico Champion.
+
+Empresa: ${formData.empresa}
+Segmento: ${formData.segmento}
+Faturamento: ${formData.faturamento_faixa}
+Tráfego: ${formData.trafego_faixa}
+Gargalo: ${formData.gargalo}
+Timing: ${formData.timing}
+Tier: ${scoreResult?.tier || "N/A"} | Score: ${scoreResult?.score || 0}`;
 
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
   };
 
   if (submitted && scoreResult) {
     return (
-      <section id="quiz-section" className="py-20">
+      <section id="quiz-section" className="py-12 md:py-16">
         <div className="container mx-auto px-4">
           <QuizResult
             tier={scoreResult.tier}
             score={scoreResult.score}
             whatsappLink={generateWhatsAppLink()}
             nome={formData.nome_completo}
+            formData={formData}
           />
         </div>
       </section>
     );
   }
 
-  const inputClasses = "champion-input w-full text-lg h-14";
+  const inputClasses = "champion-input w-full text-sm md:text-base h-11 md:h-12";
 
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-6 animate-slide-up">
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Qual é o seu nome completo?
+          <div className="space-y-4 animate-slide-up">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                Seu nome completo
               </label>
               <Input
                 className={inputClasses}
-                placeholder="Digite seu nome completo"
+                placeholder="Digite seu nome"
                 value={formData.nome_completo}
                 onChange={(e) => updateField("nome_completo", e.target.value)}
                 autoFocus
               />
             </div>
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Qual é o seu WhatsApp?
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                WhatsApp
               </label>
               <Input
                 className={inputClasses}
                 placeholder="(00) 00000-0000"
                 value={formData.whatsapp}
-                onChange={(e) => updateField("whatsapp", e.target.value)}
+                onChange={(e) => updateField("whatsapp", formatWhatsApp(e.target.value))}
+                maxLength={16}
               />
             </div>
-          </div>
-        );
-      case 2:
-        return (
-          <div className="space-y-6 animate-slide-up">
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Qual é o seu e-mail?
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                E-mail
               </label>
               <Input
                 className={inputClasses}
@@ -317,40 +299,39 @@ ${formData.dor_desejo}
                 type="email"
                 value={formData.email}
                 onChange={(e) => updateField("email", e.target.value)}
-                autoFocus
               />
             </div>
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Nome da sua empresa
-              </label>
-              <Input
-                className={inputClasses}
-                placeholder="Nome da empresa"
-                value={formData.empresa}
-                onChange={(e) => updateField("empresa", e.target.value)}
+            <div className="flex items-start space-x-3 pt-2">
+              <Checkbox
+                id="lgpd"
+                checked={formData.lgpd}
+                onCheckedChange={(checked) => updateField("lgpd", checked === true)}
+                className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:border-secondary mt-0.5"
               />
+              <label htmlFor="lgpd" className="text-xs text-muted-foreground cursor-pointer leading-relaxed">
+                Concordo em receber contato sobre o diagnóstico. Seus dados estão seguros.
+              </label>
             </div>
           </div>
         );
-      case 3:
+      case 2:
         return (
-          <div className="space-y-6 animate-slide-up">
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Qual é o seu Instagram?
+          <div className="space-y-4 animate-slide-up">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                Nome da empresa
               </label>
               <Input
                 className={inputClasses}
-                placeholder="@seuinstagram"
-                value={formData.instagram}
-                onChange={(e) => updateField("instagram", e.target.value)}
+                placeholder="Nome da sua empresa"
+                value={formData.empresa}
+                onChange={(e) => updateField("empresa", e.target.value)}
                 autoFocus
               />
             </div>
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Qual é o segmento do seu negócio?
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                Segmento
               </label>
               <Select
                 value={formData.segmento}
@@ -364,7 +345,31 @@ ${formData.dor_desejo}
                     <SelectItem
                       key={option}
                       value={option}
-                      className="text-foreground hover:bg-muted focus:bg-muted"
+                      className="text-foreground hover:bg-muted focus:bg-muted text-sm"
+                    >
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                Você é o decisor?
+              </label>
+              <Select
+                value={formData.decisor}
+                onValueChange={(value) => updateField("decisor", value)}
+              >
+                <SelectTrigger className={inputClasses}>
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border">
+                  {DECISOR_OPTIONS.map((option) => (
+                    <SelectItem
+                      key={option}
+                      value={option}
+                      className="text-foreground hover:bg-muted focus:bg-muted text-sm"
                     >
                       {option}
                     </SelectItem>
@@ -374,81 +379,12 @@ ${formData.dor_desejo}
             </div>
           </div>
         );
-      case 4:
+      case 3:
         return (
-          <div className="space-y-6 animate-slide-up">
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Em que mercado você está inserido?
-              </label>
-              <Select
-                value={formData.mercado}
-                onValueChange={(value) => updateField("mercado", value)}
-              >
-                <SelectTrigger className={inputClasses}>
-                  <SelectValue placeholder="Selecione seu mercado" />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border">
-                  {MERCADOS.map((mercado) => (
-                    <SelectItem
-                      key={mercado}
-                      value={mercado}
-                      className="text-foreground hover:bg-muted focus:bg-muted"
-                    >
-                      {mercado}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Em que fase está a sua operação hoje?
-              </label>
-              <Select
-                value={formData.estagio_negocio}
-                onValueChange={(value) => updateField("estagio_negocio", value)}
-              >
-                <SelectTrigger className={inputClasses}>
-                  <SelectValue placeholder="Selecione o estágio" />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border">
-                  {ESTAGIOS.map((estagio) => (
-                    <SelectItem
-                      key={estagio}
-                      value={estagio}
-                      className="text-foreground hover:bg-muted focus:bg-muted"
-                    >
-                      {estagio}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        );
-      case 5:
-        return (
-          <div className="space-y-6 animate-slide-up">
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Você é o decisor do investimento?
-              </label>
-              <div className="flex items-center space-x-3 p-4 bg-muted/30 rounded-lg">
-                <Checkbox
-                  id="decisor"
-                  checked={formData.decisor}
-                  onCheckedChange={(checked) => updateField("decisor", checked === true)}
-                  className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:border-secondary"
-                />
-                <label htmlFor="decisor" className="text-foreground cursor-pointer">
-                  Sim, sou o decisor ou tenho autonomia para decidir
-                </label>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Qual é o faturamento mensal da sua empresa?
+          <div className="space-y-4 animate-slide-up">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                Faturamento mensal
               </label>
               <Select
                 value={formData.faturamento_faixa}
@@ -462,7 +398,7 @@ ${formData.dor_desejo}
                     <SelectItem
                       key={option}
                       value={option}
-                      className="text-foreground hover:bg-muted focus:bg-muted"
+                      className="text-foreground hover:bg-muted focus:bg-muted text-sm"
                     >
                       {option}
                     </SelectItem>
@@ -470,14 +406,9 @@ ${formData.dor_desejo}
                 </SelectContent>
               </Select>
             </div>
-          </div>
-        );
-      case 6:
-        return (
-          <div className="space-y-6 animate-slide-up">
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Quanto você investe em tráfego pago por mês?
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                Investimento mensal em tráfego
               </label>
               <Select
                 value={formData.trafego_faixa}
@@ -491,7 +422,7 @@ ${formData.dor_desejo}
                     <SelectItem
                       key={option}
                       value={option}
-                      className="text-foreground hover:bg-muted focus:bg-muted"
+                      className="text-foreground hover:bg-muted focus:bg-muted text-sm"
                     >
                       {option}
                     </SelectItem>
@@ -499,8 +430,13 @@ ${formData.dor_desejo}
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
+          </div>
+        );
+      case 4:
+        return (
+          <div className="space-y-4 animate-slide-up">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
                 Qual é o maior gargalo da sua operação hoje?
               </label>
               <Select
@@ -515,7 +451,7 @@ ${formData.dor_desejo}
                     <SelectItem
                       key={option}
                       value={option}
-                      className="text-foreground hover:bg-muted focus:bg-muted"
+                      className="text-foreground hover:bg-muted focus:bg-muted text-sm"
                     >
                       {option}
                     </SelectItem>
@@ -525,43 +461,26 @@ ${formData.dor_desejo}
             </div>
           </div>
         );
-      case 7:
+      case 5:
         return (
-          <div className="space-y-6 animate-slide-up">
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Qual a maior dor / desejo você busca solucionar com a gente?
-              </label>
-              <Textarea
-                className="champion-input w-full text-lg min-h-[150px] resize-none"
-                placeholder="Conte-nos sobre seus objetivos e desafios..."
-                value={formData.dor_desejo}
-                onChange={(e) => updateField("dor_desejo", e.target.value)}
-                autoFocus
-              />
-            </div>
-          </div>
-        );
-      case 8:
-        return (
-          <div className="space-y-6 animate-slide-up">
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Quando você pretende começar a implementar melhorias?
+          <div className="space-y-4 animate-slide-up">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                Quando pretende iniciar?
               </label>
               <Select
                 value={formData.timing}
                 onValueChange={(value) => updateField("timing", value)}
               >
                 <SelectTrigger className={inputClasses}>
-                  <SelectValue placeholder="Selecione o timing" />
+                  <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent className="bg-card border-border">
                   {TIMING_OPTIONS.map((option) => (
                     <SelectItem
                       key={option}
                       value={option}
-                      className="text-foreground hover:bg-muted focus:bg-muted"
+                      className="text-foreground hover:bg-muted focus:bg-muted text-sm"
                     >
                       {option}
                     </SelectItem>
@@ -569,29 +488,16 @@ ${formData.dor_desejo}
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-4">
-              <label className="block text-lg font-medium text-foreground">
-                Qual orçamento mensal você tem disponível para investir em consultoria/serviço?
+            <div className="flex items-start space-x-3 pt-2 p-3 glass-card">
+              <Checkbox
+                id="aceita_reuniao"
+                checked={formData.aceita_reuniao}
+                onCheckedChange={(checked) => updateField("aceita_reuniao", checked === true)}
+                className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:border-secondary mt-0.5"
+              />
+              <label htmlFor="aceita_reuniao" className="text-sm text-foreground cursor-pointer">
+                Se fizer sentido, topa uma reunião objetiva de 30–40 min?
               </label>
-              <Select
-                value={formData.orcamento_faixa}
-                onValueChange={(value) => updateField("orcamento_faixa", value)}
-              >
-                <SelectTrigger className={inputClasses}>
-                  <SelectValue placeholder="Selecione a faixa" />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border">
-                  {ORCAMENTO_OPTIONS.map((option) => (
-                    <SelectItem
-                      key={option}
-                      value={option}
-                      className="text-foreground hover:bg-muted focus:bg-muted"
-                    >
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
         );
@@ -601,145 +507,101 @@ ${formData.dor_desejo}
   };
 
   return (
-    <section id="quiz-section" className="py-20">
+    <section id="quiz-section" className="py-12 md:py-16">
       <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-12">
-            <span className="text-secondary font-semibold text-sm uppercase tracking-wider mb-4 block">
+          <div className="text-center mb-6">
+            <span className="text-secondary font-semibold text-xs uppercase tracking-wider mb-2 block">
               Diagnóstico Gratuito
             </span>
-            <h2 className="font-display text-3xl md:text-5xl text-foreground mb-4 tracking-wider">
+            <h2 className="font-display text-2xl md:text-4xl text-foreground mb-2 tracking-wider">
               FAÇA SEU DIAGNÓSTICO
             </h2>
-            <p className="font-display text-2xl md:text-4xl champion-gradient-text tracking-wider">
+            <p className="font-display text-lg md:text-2xl champion-gradient-text tracking-wider">
               E DESCUBRA COMO ESCALAR
             </p>
           </div>
 
-          {/* Two Column Layout */}
-          <div className="grid lg:grid-cols-5 gap-8">
-            {/* Left Column - Value Reinforcement */}
-            <div className="lg:col-span-2 space-y-6">
-              <div className="champion-card">
-                <h3 className="font-display text-xl text-foreground mb-4 tracking-wide">
-                  O QUE ACONTECE APÓS RESPONDER:
-                </h3>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-4 h-4 text-secondary" />
-                    </div>
-                    <span className="text-muted-foreground">
-                      Análise personalizada do seu momento
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-4 h-4 text-secondary" />
-                    </div>
-                    <span className="text-muted-foreground">
-                      Contato de um SDR especializado via WhatsApp
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-4 h-4 text-secondary" />
-                    </div>
-                    <span className="text-muted-foreground">
-                      Plano de ação claro para destravar suas vendas
-                    </span>
-                  </li>
-                </ul>
+          {/* Quiz Card */}
+          <div className="champion-card">
+            {/* Progress bar */}
+            <div className="mb-5">
+              <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                <span>Etapa {step} de {totalSteps}</span>
+                <span>{Math.round((step / totalSteps) * 100)}%</span>
               </div>
-
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <Clock className="w-4 h-4 text-secondary" />
-                  <span>2-4 minutos</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <Shield className="w-4 h-4 text-secondary" />
-                  <span>Dados protegidos</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <MessageCircle className="w-4 h-4 text-secondary" />
-                  <span>Sem spam</span>
-                </div>
+              <div className="progress-premium h-1.5">
+                <div
+                  className="progress-premium-fill h-full rounded-full"
+                  style={{ width: `${(step / totalSteps) * 100}%` }}
+                />
               </div>
             </div>
 
-            {/* Right Column - Quiz */}
-            <div className="lg:col-span-3">
-              {/* Progress bar */}
-              <div className="mb-6">
-                <div className="flex justify-between text-sm text-muted-foreground mb-2">
-                  <span>Etapa {step} de {totalSteps}</span>
-                  <span>{Math.round((step / totalSteps) * 100)}%</span>
-                </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-secondary transition-all duration-500 ease-out rounded-full"
-                    style={{ width: `${(step / totalSteps) * 100}%` }}
-                  />
-                </div>
-              </div>
+            {renderStep()}
 
-              {/* Form Card */}
-              <div className="champion-card">
-                {renderStep()}
+            {/* Navigation */}
+            <div className="flex justify-between mt-6 gap-3">
+              <Button
+                variant="championOutline"
+                size="default"
+                onClick={prevStep}
+                disabled={step === 1}
+                className="flex-1 text-sm h-11"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Voltar
+              </Button>
+              <Button
+                variant="champion"
+                size="default"
+                onClick={nextStep}
+                disabled={!canProceed() || isSubmitting}
+                className="flex-1 text-sm h-11"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : step === totalSteps ? (
+                  <>
+                    Enviar
+                    <Check className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    Próximo
+                    <ChevronRight className="w-4 h-4" />
+                  </>
+                )}
+              </Button>
+            </div>
 
-                {/* Navigation */}
-                <div className="flex justify-between mt-8 gap-4">
-                  <Button
-                    variant="championOutline"
-                    size="lg"
-                    onClick={prevStep}
-                    disabled={step === 1}
-                    className="flex-1"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                    Voltar
-                  </Button>
-                  <Button
-                    variant="champion"
-                    size="lg"
-                    onClick={nextStep}
-                    disabled={!canProceed() || isSubmitting}
-                    className="flex-1"
-                  >
-                    {isSubmitting ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : step === totalSteps ? (
-                      <>
-                        Enviar Diagnóstico
-                        <Check className="w-5 h-5" />
-                      </>
-                    ) : (
-                      <>
-                        Próximo
-                        <ChevronRight className="w-5 h-5" />
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
+            {/* Steps indicator */}
+            <div className="flex justify-center gap-1.5 mt-5">
+              {Array.from({ length: totalSteps }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    i + 1 === step
+                      ? "bg-secondary scale-125"
+                      : i + 1 < step
+                      ? "bg-secondary/50"
+                      : "bg-muted"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
 
-              {/* Steps indicator */}
-              <div className="flex justify-center gap-2 mt-6">
-                {Array.from({ length: totalSteps }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                      i + 1 === step
-                        ? "bg-secondary scale-125"
-                        : i + 1 < step
-                        ? "bg-secondary/50"
-                        : "bg-muted"
-                    }`}
-                  />
-                ))}
-              </div>
+          {/* Trust indicators */}
+          <div className="flex justify-center gap-4 mt-4">
+            <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+              <Clock className="w-3.5 h-3.5 text-secondary" />
+              <span>2-4 min</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+              <Shield className="w-3.5 h-3.5 text-secondary" />
+              <span>Dados seguros</span>
             </div>
           </div>
         </div>
