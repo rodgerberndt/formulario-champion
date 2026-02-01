@@ -17,35 +17,77 @@ export type Database = {
       leads: {
         Row: {
           created_at: string
+          decisor: boolean | null
           dor_desejo: string
+          email: string | null
+          empresa: string | null
           estagio_negocio: string
+          faturamento_faixa: string | null
+          gargalo: string | null
           id: string
           instagram: string
           lido: boolean
           mercado: string
           nome_completo: string
+          objetivo: string | null
+          orcamento_faixa: string | null
+          raw_answers_json: Json | null
+          score: number | null
+          segmento: string | null
+          ticket_faixa: string | null
+          tier: string | null
+          timing: string | null
+          trafego_faixa: string | null
           whatsapp: string
         }
         Insert: {
           created_at?: string
+          decisor?: boolean | null
           dor_desejo: string
+          email?: string | null
+          empresa?: string | null
           estagio_negocio: string
+          faturamento_faixa?: string | null
+          gargalo?: string | null
           id?: string
           instagram: string
           lido?: boolean
           mercado: string
           nome_completo: string
+          objetivo?: string | null
+          orcamento_faixa?: string | null
+          raw_answers_json?: Json | null
+          score?: number | null
+          segmento?: string | null
+          ticket_faixa?: string | null
+          tier?: string | null
+          timing?: string | null
+          trafego_faixa?: string | null
           whatsapp: string
         }
         Update: {
           created_at?: string
+          decisor?: boolean | null
           dor_desejo?: string
+          email?: string | null
+          empresa?: string | null
           estagio_negocio?: string
+          faturamento_faixa?: string | null
+          gargalo?: string | null
           id?: string
           instagram?: string
           lido?: boolean
           mercado?: string
           nome_completo?: string
+          objetivo?: string | null
+          orcamento_faixa?: string | null
+          raw_answers_json?: Json | null
+          score?: number | null
+          segmento?: string | null
+          ticket_faixa?: string | null
+          tier?: string | null
+          timing?: string | null
+          trafego_faixa?: string | null
           whatsapp?: string
         }
         Relationships: []
