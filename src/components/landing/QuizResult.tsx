@@ -1,85 +1,35 @@
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Trophy, ArrowRight, Building2, Target, DollarSign, Clock, AlertCircle } from "lucide-react";
+import { MessageCircle, ArrowRight, User, Phone, Instagram, Briefcase, Target, FileText } from "lucide-react";
 
 interface QuizFormData {
-  empresa: string;
-  segmento: string;
-  faturamento_faixa: string;
-  trafego_faixa: string;
-  gargalo: string;
-  timing: string;
+  nome_completo: string;
+  whatsapp: string;
+  instagram: string;
+  mercado: string;
+  estagio_negocio: string;
+  dor_desejo: string;
 }
 
 interface QuizResultProps {
-  tier: string;
-  score: number;
   whatsappLink: string;
   nome: string;
   formData: QuizFormData;
 }
 
-export function QuizResult({ tier, score, whatsappLink, nome, formData }: QuizResultProps) {
+export function QuizResult({ whatsappLink, nome, formData }: QuizResultProps) {
   const firstName = nome.split(" ")[0];
 
-  const getTierMessage = () => {
-    switch (tier) {
-      case "A":
-        return {
-          title: "VOCÊ TEM PERFIL FORTE",
-          subtitle: "Seu score indica que você está pronto para escalar com a estratégia certa.",
-          color: "text-green-400",
-        };
-      case "B":
-        return {
-          title: "VAMOS ALINHAR 2 PONTOS",
-          subtitle: "Seu perfil tem potencial. Vamos entender melhor seu momento.",
-          color: "text-yellow-400",
-        };
-      case "C":
-        return {
-          title: "RECEBEMOS SEU DIAGNÓSTICO",
-          subtitle: "No seu momento, vamos te direcionar para o melhor caminho.",
-          color: "text-muted-foreground",
-        };
-      default:
-        return {
-          title: "OBRIGADO PELO SEU TEMPO",
-          subtitle: "Em breve um consultor entrará em contato.",
-          color: "text-secondary",
-        };
-    }
-  };
-
-  const tierMessage = getTierMessage();
-
   return (
-    <div className="max-w-lg mx-auto text-center animate-slide-up">
-      <div className="champion-card py-8">
-        {/* Success Icon */}
-        <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-secondary/20 flex items-center justify-center animate-glow">
-          <Trophy className="w-8 h-8 text-secondary" />
-        </div>
-
-        {/* Title */}
-        <h2 className="font-display text-2xl md:text-3xl font-bold mb-2 champion-gradient-text tracking-wider">
+    <div className="max-w-md mx-auto text-center animate-slide-up">
+      <div className="champion-card py-6">
+        {/* Simple Thank You */}
+        <h2 className="font-display text-xl md:text-2xl font-bold mb-2 champion-gradient-text tracking-wider">
           OBRIGADO, {firstName.toUpperCase()}!
         </h2>
 
-        {/* Tier Message */}
-        <p className={`font-display text-lg md:text-xl mb-1 ${tierMessage.color}`}>
-          {tierMessage.title}
-        </p>
         <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
-          {tierMessage.subtitle}
+          Em minutos um de nossos consultores irá lhe chamar.
         </p>
-
-        {/* Score Display */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 mb-6">
-          <Trophy className="w-3.5 h-3.5 text-secondary" />
-          <span className="text-xs text-secondary font-medium">
-            Score: {score} pontos · Tier {tier}
-          </span>
-        </div>
 
         {/* Summary */}
         <div className="glass-card p-4 mb-6 text-left">
@@ -88,39 +38,39 @@ export function QuizResult({ tier, score, whatsappLink, nome, formData }: QuizRe
           </h3>
           <div className="space-y-2 text-xs">
             <div className="flex items-center gap-2">
-              <Building2 className="w-3.5 h-3.5 text-secondary shrink-0" />
+              <User className="w-3.5 h-3.5 text-secondary shrink-0" />
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Empresa:</strong> {formData.empresa}
+                <strong className="text-foreground">Nome:</strong> {formData.nome_completo}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Phone className="w-3.5 h-3.5 text-secondary shrink-0" />
+              <span className="text-muted-foreground">
+                <strong className="text-foreground">WhatsApp:</strong> {formData.whatsapp}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Instagram className="w-3.5 h-3.5 text-secondary shrink-0" />
+              <span className="text-muted-foreground">
+                <strong className="text-foreground">Instagram:</strong> {formData.instagram}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Briefcase className="w-3.5 h-3.5 text-secondary shrink-0" />
+              <span className="text-muted-foreground">
+                <strong className="text-foreground">Mercado:</strong> {formData.mercado}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <Target className="w-3.5 h-3.5 text-secondary shrink-0" />
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Segmento:</strong> {formData.segmento}
+                <strong className="text-foreground">Estágio:</strong> {formData.estagio_negocio}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <DollarSign className="w-3.5 h-3.5 text-secondary shrink-0" />
+            <div className="flex items-start gap-2">
+              <FileText className="w-3.5 h-3.5 text-secondary shrink-0 mt-0.5" />
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Faturamento:</strong> {formData.faturamento_faixa}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <DollarSign className="w-3.5 h-3.5 text-secondary shrink-0" />
-              <span className="text-muted-foreground">
-                <strong className="text-foreground">Tráfego:</strong> {formData.trafego_faixa}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-3.5 h-3.5 text-secondary shrink-0" />
-              <span className="text-muted-foreground">
-                <strong className="text-foreground">Gargalo:</strong> {formData.gargalo}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-3.5 h-3.5 text-secondary shrink-0" />
-              <span className="text-muted-foreground">
-                <strong className="text-foreground">Timing:</strong> {formData.timing}
+                <strong className="text-foreground">Dor principal:</strong> {formData.dor_desejo}
               </span>
             </div>
           </div>
@@ -137,10 +87,6 @@ export function QuizResult({ tier, score, whatsappLink, nome, formData }: QuizRe
           FALAR NO WHATSAPP AGORA
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Button>
-
-        <p className="text-muted-foreground text-xs mt-4">
-          Acelere o processo clicando no botão acima.
-        </p>
       </div>
     </div>
   );
