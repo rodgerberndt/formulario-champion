@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Trophy, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface HeaderProps {
@@ -8,11 +7,12 @@ interface HeaderProps {
 
 export function Header({ onScrollToQuiz }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showMobileCta, setShowMobileCta] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+      setShowMobileCta(window.scrollY > 300);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -24,68 +24,45 @@ export function Header({ onScrollToQuiz }: HeaderProps) {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
+            ? "bg-background/90 backdrop-blur-xl border-b border-border/50"
             : "bg-transparent"
         }`}
       >
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-5xl">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
-              <Trophy className="w-6 h-6 text-secondary" />
-            </div>
-            <span className="font-display text-2xl md:text-3xl champion-gradient-text tracking-wider">
-              CHAMPION
-            </span>
+          <div className="flex items-center gap-2">
+            <img 
+              src="/champion-logo.png" 
+              alt="Champion" 
+              className="h-8 md:h-10 w-auto"
+            />
           </div>
 
           {/* Desktop CTA */}
           <Button
             variant="champion"
-            size="lg"
+            size="default"
             onClick={onScrollToQuiz}
-            className="hidden md:flex"
+            className="hidden md:flex text-sm"
           >
-            Fazer Diagnóstico Agora
+            Fazer Diagnóstico
           </Button>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden text-foreground p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Menu"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
         </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-card border-t border-border p-4 animate-slide-up">
-            <Button
-              variant="champion"
-              size="lg"
-              onClick={() => {
-                onScrollToQuiz();
-                setMobileMenuOpen(false);
-              }}
-              className="w-full"
-            >
-              Fazer Diagnóstico Agora
-            </Button>
-          </div>
-        )}
       </header>
 
-      {/* Mobile Bottom Bar CTA */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-background/95 backdrop-blur-md border-t border-border">
+      {/* Mobile Bottom Bar CTA - appears after scroll */}
+      <div 
+        className={`md:hidden mobile-bottom-cta transition-all duration-300 ${
+          showMobileCta ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        }`}
+      >
         <Button
           variant="champion"
           size="lg"
           onClick={onScrollToQuiz}
-          className="w-full"
+          className="w-full text-sm font-semibold"
         >
-          Começar Diagnóstico
+          COMEÇAR DIAGNÓSTICO
         </Button>
       </div>
     </>

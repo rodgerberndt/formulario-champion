@@ -1,4 +1,4 @@
-// Lead Scoring Configuration
+// Lead Scoring Configuration - Updated with new scoring rules
 
 export interface LeadScoreResult {
   score: number;
@@ -10,70 +10,66 @@ interface QuizAnswers {
   faturamento_faixa?: string;
   trafego_faixa?: string;
   timing?: string;
-  decisor?: boolean;
-  orcamento_faixa?: string;
+  decisor?: string;
 }
 
-// Score ranges for each field
+// Updated score ranges - Faturamento: +0 a +35
 const faturamentoScores: Record<string, number> = {
   "Menos de R$ 10 mil/mês": 0,
   "R$ 10 mil a R$ 30 mil/mês": 10,
   "R$ 30 mil a R$ 100 mil/mês": 20,
-  "R$ 100 mil a R$ 500 mil/mês": 25,
-  "Mais de R$ 500 mil/mês": 30,
+  "R$ 100 mil a R$ 500 mil/mês": 30,
+  "Mais de R$ 500 mil/mês": 35,
 };
 
+// Updated score ranges - Tráfego: +0 a +35
 const trafegoScores: Record<string, number> = {
   "Ainda não invisto": 0,
   "Menos de R$ 5 mil/mês": 10,
   "R$ 5 mil a R$ 20 mil/mês": 20,
-  "R$ 20 mil a R$ 50 mil/mês": 25,
-  "Mais de R$ 50 mil/mês": 30,
+  "R$ 20 mil a R$ 50 mil/mês": 30,
+  "Mais de R$ 50 mil/mês": 35,
 };
 
+// Updated score ranges - Timing: +0 a +25
 const timingScores: Record<string, number> = {
-  "Imediato": 20,
-  "Próximos 3 meses": 10,
-  "Próximos 6 meses": 5,
-  "Não sei ainda": 0,
+  "Imediatamente": 25,
+  "Até 3 meses": 15,
+  "Até 6 meses": 5,
+  "Ainda não sei": 0,
 };
 
-const orcamentoScores: Record<string, number> = {
-  "Menos de R$ 3 mil/mês": 0,
-  "R$ 3 mil a R$ 10 mil/mês": 5,
-  "R$ 10 mil a R$ 30 mil/mês": 10,
-  "Mais de R$ 30 mil/mês": 15,
+// Decisor: +15 if "Sim" or "Sou sócio"
+const decisorScores: Record<string, number> = {
+  "Sim": 15,
+  "Sou sócio": 15,
+  "Não": 0,
 };
 
 export function calculateLeadScore(answers: QuizAnswers): LeadScoreResult {
   let score = 0;
 
-  // Faturamento: +0 a +30
+  // Faturamento: +0 a +35
   if (answers.faturamento_faixa) {
     score += faturamentoScores[answers.faturamento_faixa] || 0;
   }
 
-  // Tráfego mensal: +0 a +30
+  // Tráfego mensal: +0 a +35
   if (answers.trafego_faixa) {
     score += trafegoScores[answers.trafego_faixa] || 0;
   }
 
-  // Timing: +0 a +20
+  // Timing: +0 a +25
   if (answers.timing) {
     score += timingScores[answers.timing] || 0;
   }
 
-  // Decisor: +15 se sim
-  if (answers.decisor === true) {
-    score += 15;
+  // Decisor: +15 se sim ou sócio
+  if (answers.decisor) {
+    score += decisorScores[answers.decisor] || 0;
   }
 
-  // Orçamento: +0 a +15
-  if (answers.orcamento_faixa) {
-    score += orcamentoScores[answers.orcamento_faixa] || 0;
-  }
-
-  // Determine tier
+  // Total 0–110, with Tier
   let tier: "A" | "B" | "C";
   let tierLabel: string;
 
@@ -109,17 +105,16 @@ export const TRAFEGO_OPTIONS = [
 ];
 
 export const TIMING_OPTIONS = [
-  "Imediato",
-  "Próximos 3 meses",
-  "Próximos 6 meses",
-  "Não sei ainda",
+  "Imediatamente",
+  "Até 3 meses",
+  "Até 6 meses",
+  "Ainda não sei",
 ];
 
-export const ORCAMENTO_OPTIONS = [
-  "Menos de R$ 3 mil/mês",
-  "R$ 3 mil a R$ 10 mil/mês",
-  "R$ 10 mil a R$ 30 mil/mês",
-  "Mais de R$ 30 mil/mês",
+export const DECISOR_OPTIONS = [
+  "Sim",
+  "Sou sócio",
+  "Não",
 ];
 
 export const SEGMENTO_OPTIONS = [
@@ -132,14 +127,14 @@ export const SEGMENTO_OPTIONS = [
   "Outro",
 ];
 
+// Updated gargalo options matching the problem section
 export const GARGALO_OPTIONS = [
-  "Criativos que não performam",
-  "Funil que não converte",
-  "WhatsApp sem processo",
-  "Reuniões que não fecham",
-  "Falta de leads qualificados",
-  "Escala travada",
-  "Outro",
+  "Criativos não passam da pré-escala",
+  "Funil não converte como deveria",
+  "Pessoas não entregam como deveriam",
+  "Leads desqualificados",
+  "Tráfego caro",
+  "Oferta sem contexto",
 ];
 
 // Keep original market options
