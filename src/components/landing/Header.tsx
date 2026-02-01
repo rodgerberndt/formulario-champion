@@ -34,18 +34,18 @@ export function Header({ onScrollToQuiz }: HeaderProps) {
             <img 
               src="/champion-logo.png" 
               alt="Champion" 
-              className="h-8 md:h-10 w-auto"
+              className="h-7 md:h-9 w-auto"
             />
           </div>
 
           {/* Desktop CTA */}
           <Button
             variant="champion"
-            size="default"
+            size="sm"
             onClick={onScrollToQuiz}
-            className="hidden md:flex text-sm"
+            className="hidden md:flex text-xs"
           >
-            Fazer Diagnóstico
+            FAZER DIAGNÓSTICO (2 MIN)
           </Button>
         </div>
       </header>
@@ -62,7 +62,7 @@ export function Header({ onScrollToQuiz }: HeaderProps) {
           onClick={onScrollToQuiz}
           className="w-full text-sm font-semibold"
         >
-          COMEÇAR DIAGNÓSTICO
+          COMEÇAR DIAGNÓSTICO (2 MIN)
         </Button>
       </div>
     </>
