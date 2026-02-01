@@ -15,7 +15,7 @@ const steps = [
   {
     number: "02",
     icon: Search,
-    title: "Análise e Classificação",
+    title: "Converse com nosso time",
     description: "Nossa equipe analisa suas respostas e identifica oportunidades.",
   },
   {
