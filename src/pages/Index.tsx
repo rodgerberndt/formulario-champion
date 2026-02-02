@@ -20,18 +20,18 @@ const Index = () => {
         <SocialProofCarousel />
         
         {/* CTA Section before footer */}
-        <section className="py-12 md:py-20">
-          <div className="container mx-auto px-4 text-center">
-            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-md mx-auto">
+        <section className="py-10 md:py-16">
+          <div className="container mx-auto px-5 text-center max-w-md">
+            <p className="text-sm md:text-base text-muted-foreground mb-6">
               Responda o formulário rápido para que o próximo feedback seja você!
             </p>
             <Button
               size="lg"
               onClick={() => navigate("/quiz")}
-              className="group h-14 px-10 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-300 active:scale-[0.98]"
+              className="group h-12 md:h-14 px-6 md:px-10 text-sm md:text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]"
             >
               FAZER DIAGNÓSTICO (2 MIN)
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         </section>
