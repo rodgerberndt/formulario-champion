@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Bell, Eye, Check, RefreshCw, Users, ArrowLeft } from "lucide-react";
+import { Bell, Eye, Check, RefreshCw, Users, ArrowLeft, LogOut } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -166,6 +166,19 @@ export function AdminDashboard() {
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
               Atualizar
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                navigate("/admin-login");
+              }}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
             </Button>
 
             <div className="relative">
