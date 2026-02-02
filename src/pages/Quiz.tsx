@@ -260,7 +260,7 @@ Fico no aguardo.`;
 
   if (submitted && scoreResult) {
     return (
-      <div className="min-h-screen relative">
+      <div className="min-h-[100svh] relative w-full max-w-full overflow-x-hidden">
         <QuizBackground />
         
         {/* Top Bar */}
@@ -278,8 +278,8 @@ Fico no aguardo.`;
           </div>
         </header>
 
-        <main className="pt-20 pb-12 px-5">
-          <div className="container mx-auto max-w-md">
+        <main className="pt-16 pb-8 px-4" style={{ paddingBottom: 'calc(32px + env(safe-area-inset-bottom))' }}>
+          <div className="container mx-auto max-w-[92vw] sm:max-w-md">
             <QuizResult
               whatsappLink={generateWhatsAppLink()}
               nome={formData.nome_completo}
@@ -291,15 +291,15 @@ Fico no aguardo.`;
     );
   }
 
-  const inputClasses = "w-full text-base h-12 md:h-14 bg-input border-2 border-border/60 rounded-xl px-4 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200";
-  const selectClasses = "w-full text-base h-12 md:h-14 bg-input border-2 border-border/60 rounded-xl px-4 text-foreground focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200";
+  const inputClasses = "w-full text-sm sm:text-base h-11 sm:h-12 md:h-14 bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200";
+  const selectClasses = "w-full text-sm sm:text-base h-11 sm:h-12 md:h-14 bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 text-foreground focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200";
 
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
-            <label className="block text-base md:text-lg font-semibold text-foreground">
+          <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
               Qual é o seu nome completo?
             </label>
             <Input
@@ -313,8 +313,8 @@ Fico no aguardo.`;
         );
       case 2:
         return (
-          <div className="space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
-            <label className="block text-base md:text-lg font-semibold text-foreground">
+          <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
               Qual é o seu WhatsApp?
             </label>
             <Input
@@ -325,14 +325,14 @@ Fico no aguardo.`;
               maxLength={16}
               autoFocus
             />
-            <div className="flex items-start gap-3 pt-1">
+            <div className="flex items-start gap-2.5 pt-1">
               <Checkbox
                 id="lgpd"
                 checked={formData.lgpd}
                 onCheckedChange={(checked) => updateField("lgpd", checked === true)}
-                className="border-2 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5 mt-0.5 rounded-md"
+                className="border-2 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5 mt-0.5 rounded-md shrink-0"
               />
-              <label htmlFor="lgpd" className="text-sm text-muted-foreground cursor-pointer leading-relaxed">
+              <label htmlFor="lgpd" className="text-xs sm:text-sm text-muted-foreground cursor-pointer leading-relaxed">
                 Concordo em receber contato sobre o diagnóstico. Seus dados estão seguros.
               </label>
             </div>
@@ -340,8 +340,8 @@ Fico no aguardo.`;
         );
       case 3:
         return (
-          <div className="space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
-            <label className="block text-base md:text-lg font-semibold text-foreground">
+          <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
               Qual é o seu Instagram?
             </label>
             <Input
@@ -355,8 +355,8 @@ Fico no aguardo.`;
         );
       case 4:
         return (
-          <div className="space-y-5 animate-fade-in">
-            <label className="block text-base md:text-lg font-semibold text-foreground">
+          <div className="space-y-4 sm:space-y-5 animate-fade-in">
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
               Em que mercado você trabalha?
             </label>
             <Select
@@ -366,12 +366,12 @@ Fico no aguardo.`;
               <SelectTrigger className={selectClasses}>
                 <SelectValue placeholder="Selecione o mercado" />
               </SelectTrigger>
-              <SelectContent className="bg-card border-border rounded-xl">
+              <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
                 {MERCADO_OPTIONS.map((option) => (
                   <SelectItem
                     key={option}
                     value={option}
-                    className="text-foreground hover:bg-muted focus:bg-muted text-base py-3"
+                    className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3"
                   >
                     {option}
                   </SelectItem>
@@ -382,8 +382,8 @@ Fico no aguardo.`;
         );
       case 5:
         return (
-          <div className="space-y-5 animate-fade-in">
-            <label className="block text-base md:text-lg font-semibold text-foreground">
+          <div className="space-y-4 sm:space-y-5 animate-fade-in">
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
               Em que estágio está o seu negócio hoje?
             </label>
             <Select
@@ -393,12 +393,12 @@ Fico no aguardo.`;
               <SelectTrigger className={selectClasses}>
                 <SelectValue placeholder="Selecione o estágio" />
               </SelectTrigger>
-              <SelectContent className="bg-card border-border rounded-xl">
+              <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
                 {ESTAGIO_OPTIONS.map((option) => (
                   <SelectItem
                     key={option}
                     value={option}
-                    className="text-foreground hover:bg-muted focus:bg-muted text-base py-3"
+                    className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3"
                   >
                     {option}
                   </SelectItem>
@@ -409,17 +409,17 @@ Fico no aguardo.`;
         );
       case 6:
         return (
-          <div className="space-y-5 animate-fade-in">
+          <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <div>
-              <label className="block text-base md:text-lg font-semibold text-foreground mb-1.5">
+              <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground mb-1 leading-snug">
                 O que você mais está buscando resolver hoje?
               </label>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Descreva muito bem a sua dor ou desejo.
               </p>
             </div>
             <Textarea
-              className="w-full text-base min-h-[120px] resize-none bg-input border-2 border-border/60 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200"
+              className="w-full text-sm sm:text-base min-h-[100px] sm:min-h-[120px] resize-none bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200"
               placeholder="Conte-nos o que você quer resolver..."
               value={formData.dor_desejo}
               onChange={(e) => updateField("dor_desejo", e.target.value)}
@@ -433,7 +433,7 @@ Fico no aguardo.`;
   };
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-[100svh] relative w-full max-w-full overflow-x-hidden">
       <QuizBackground />
       
       {/* Top Bar */}
@@ -451,38 +451,40 @@ Fico no aguardo.`;
         </div>
       </header>
 
-      {/* Quiz Content */}
-      <main className="pt-20 pb-12 px-5 min-h-screen flex items-center">
-        <div className="container mx-auto max-w-md w-full">
-          {/* Quiz Card - Solid background for legibility */}
+      {/* Quiz Content - Mobile optimized */}
+      <main className="pt-16 pb-6 px-4 min-h-[100svh] flex items-center justify-center w-full max-w-full overflow-x-hidden" style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }}>
+        <div className="w-full max-w-[92vw] sm:max-w-md mx-auto">
+          {/* Quiz Card - Compact and elegant */}
           <div 
-            className="backdrop-blur-xl border border-border/60 rounded-3xl p-5 md:p-8 shadow-2xl"
+            className="backdrop-blur-xl border border-border/60 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl w-full overflow-hidden"
             style={{
               background: 'hsl(235 45% 7% / 0.94)',
               boxShadow: '0 8px 40px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset',
             }}
           >
-            <div className="mb-6">
-              <p className="text-center text-muted-foreground text-sm">
+            {/* Header text - smaller on mobile */}
+            <div className="mb-4 sm:mb-6">
+              <p className="text-center text-muted-foreground text-xs sm:text-sm leading-relaxed opacity-80">
                 Responda o formulário rápido para que o próximo feedback seja você!
               </p>
             </div>
 
-            <div className="min-h-[200px] flex flex-col justify-between">
-              <div>
+            {/* Form content area */}
+            <div className="min-h-[180px] sm:min-h-[200px] flex flex-col">
+              <div className="flex-1">
                 {renderStep()}
               </div>
 
-              {/* Navigation */}
-              <div className="flex justify-between mt-8 gap-3">
+              {/* Navigation Buttons - Stack on mobile */}
+              <div className={`mt-6 sm:mt-8 ${step > 1 ? 'flex flex-col-reverse sm:flex-row gap-3' : ''}`}>
                 {step > 1 && (
                   <Button
                     variant="outline"
                     size="lg"
                     onClick={prevStep}
-                    className="flex-1 h-12 md:h-14 text-base rounded-xl border-2 border-border/60 hover:bg-muted hover:border-border transition-colors duration-200"
+                    className="w-full sm:flex-1 h-11 sm:h-12 md:h-14 text-sm sm:text-base rounded-xl border-2 border-border/60 hover:bg-muted hover:border-border transition-colors duration-200 min-w-0"
                   >
-                    <ChevronLeft className="w-5 h-5 mr-2" />
+                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 shrink-0" />
                     Voltar
                   </Button>
                 )}
@@ -490,19 +492,19 @@ Fico no aguardo.`;
                   size="lg"
                   onClick={nextStep}
                   disabled={!canProceed() || isSubmitting}
-                  className={`h-12 md:h-14 text-base rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none ${step === 1 ? 'w-full' : 'flex-1'}`}
+                  className="w-full sm:flex-1 h-11 sm:h-12 md:h-14 text-sm sm:text-base rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none min-w-0"
                 >
                   {isSubmitting ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
                   ) : step === totalSteps ? (
                     <>
                       Enviar
-                      <Check className="w-5 h-5 ml-2" />
+                      <Check className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2 shrink-0" />
                     </>
                   ) : (
                     <>
                       Continuar
-                      <ChevronRight className="w-5 h-5 ml-2" />
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2 shrink-0" />
                     </>
                   )}
                 </Button>
