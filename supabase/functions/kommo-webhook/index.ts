@@ -2,7 +2,16 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const kommoApiKey = Deno.env.get('KOMMO_API_KEY');
-const kommoSubdomain = Deno.env.get('KOMMO_SUBDOMAIN');
+const kommoSubdomainRaw = Deno.env.get('KOMMO_SUBDOMAIN') || '';
+
+// Extract just the subdomain if full URL was provided
+// e.g., "championcrm.kommo.com" -> "championcrm"
+// e.g., "https://championcrm.kommo.com" -> "championcrm"
+// e.g., "championcrm" -> "championcrm"
+const kommoSubdomain = kommoSubdomainRaw
+  .replace(/^https?:\/\//, '')  // Remove protocol
+  .replace(/\.kommo\.com.*$/, '') // Remove .kommo.com and anything after
+  .trim();
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
