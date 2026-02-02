@@ -26,19 +26,10 @@ export function SocialProofCarousel() {
     };
   }, [isHovered]);
   return (
-    <section className="py-10 md:py-16 pb-16 md:pb-20 overflow-hidden">
-      <div className="container mx-auto px-4 mb-8">
-        <h2 className="font-display text-2xl md:text-3xl text-center champion-gradient-text tracking-wider">
-          RESULTADOS REAIS
-        </h2>
-        <p className="text-muted-foreground text-sm md:text-base text-center mt-3">
-          Veja o resultado de alguns de nossos clientes
-        </p>
-      </div>
-
+    <section className="py-6 md:py-10 overflow-hidden">
       <div
         ref={scrollRef}
-        className="flex gap-4 overflow-x-hidden cursor-grab px-4"
+        className="flex gap-3 md:gap-4 overflow-x-hidden cursor-grab"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         style={{ scrollBehavior: "auto" }}
@@ -47,7 +38,7 @@ export function SocialProofCarousel() {
         {[...testimonialVideos, ...testimonialVideos].map((video, index) => (
           <div
             key={index}
-            className="flex-shrink-0 w-[180px] md:w-[220px] aspect-[9/16] rounded-xl overflow-hidden glass-card"
+            className="flex-shrink-0 w-[140px] md:w-[200px] aspect-[9/16] rounded-lg md:rounded-xl overflow-hidden glass-card"
           >
             <video
               src={video}
