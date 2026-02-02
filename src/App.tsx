@@ -7,9 +7,10 @@ import { Suspense, lazy } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
-// Lazy load Quiz page for performance
+// Lazy load pages for performance
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Admin = lazy(() => import("./pages/Admin"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,14 @@ const App = () => (
             element={
               <Suspense fallback={<PageLoader />}>
                 <Admin />
+              </Suspense>
+            } 
+          />
+          <Route 
+            path="/admin-login" 
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <AdminLogin />
               </Suspense>
             } 
           />

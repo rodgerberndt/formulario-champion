@@ -3,28 +3,39 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const kommoApiKey = Deno.env.get('KOMMO_API_KEY');
 const kommoSubdomainRaw = Deno.env.get('KOMMO_SUBDOMAIN') || '';
+const internalWebhookSecret = Deno.env.get('INTERNAL_WEBHOOK_SECRET');
 
 // Extract just the subdomain if full URL was provided
-// e.g., "championcrm.kommo.com" -> "championcrm"
-// e.g., "https://championcrm.kommo.com" -> "championcrm"
-// e.g., "championcrm" -> "championcrm"
 const kommoSubdomain = kommoSubdomainRaw
-  .replace(/^https?:\/\//, '')  // Remove protocol
-  .replace(/\.kommo\.com.*$/, '') // Remove .kommo.com and anything after
+  .replace(/^https?:\/\//, '')
+  .replace(/\.kommo\.com.*$/, '')
   .trim();
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-secret, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response('ok', { headers: corsHeaders });
   }
 
   try {
+    // Validate internal webhook secret (for calls from DB triggers or internal services)
+    const webhookSecret = req.headers.get('x-webhook-secret');
+    
+    if (!webhookSecret || webhookSecret !== internalWebhookSecret) {
+      console.error('Invalid or missing webhook secret');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Invalid webhook secret' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Webhook authentication successful');
+
     const leadData = await req.json();
     
     console.log('Received lead data:', leadData);
