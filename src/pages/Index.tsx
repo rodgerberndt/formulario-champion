@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Header } from "@/components/landing/Header";
 import { Hero } from "@/components/landing/Hero";
+import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
 import { QuizSection, QuizSectionHandle } from "@/components/landing/QuizSection";
 import { Footer } from "@/components/landing/Footer";
 
@@ -17,6 +18,7 @@ const Index = () => {
       
       <main>
         <Hero onScrollToQuiz={scrollToQuiz} />
+        <SocialProofCarousel />
         <QuizSection ref={quizRef} />
       </main>
 
