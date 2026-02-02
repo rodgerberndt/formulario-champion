@@ -374,7 +374,14 @@ Fico no aguardo.`;
   };
 
   return (
-    <section id="quiz-section" className="py-8 md:py-12">
+    <section id="quiz-section" className="py-6 md:py-10">
+      {/* Headline acima do quiz */}
+      <div className="container mx-auto px-4 mb-6 md:mb-8">
+        <p className="text-center text-base md:text-lg text-muted-foreground max-w-md mx-auto">
+          Responda o formulário rápido para que o próximo feedback seja você!
+        </p>
+      </div>
+      
       <div className="container mx-auto px-4">
         <div className="max-w-md mx-auto">
           {/* Quiz Card - Typeform style */}

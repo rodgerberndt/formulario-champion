@@ -25,23 +25,41 @@ export function SocialProofCarousel() {
       cancelAnimationFrame(animationId);
     };
   }, [isHovered]);
-  return <section className="py-8 md:py-12 overflow-hidden">
-      <div className="container mx-auto px-4 mb-6">
-        <h2 className="font-display text-xl md:text-2xl text-center champion-gradient-text tracking-wider">
+  return (
+    <section className="py-10 md:py-16 pb-16 md:pb-20 overflow-hidden">
+      <div className="container mx-auto px-4 mb-8">
+        <h2 className="font-display text-2xl md:text-3xl text-center champion-gradient-text tracking-wider">
           RESULTADOS REAIS
         </h2>
-        <p className="text-muted-foreground text-sm text-center mt-2">
-          Veja o resultado de alguns de nossos clientes     
+        <p className="text-muted-foreground text-sm md:text-base text-center mt-3">
+          Veja o resultado de alguns de nossos clientes
         </p>
       </div>
 
-      <div ref={scrollRef} className="flex gap-4 overflow-x-hidden cursor-grab" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} style={{
-      scrollBehavior: "auto"
-    }}>
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-hidden cursor-grab px-4"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{ scrollBehavior: "auto" }}
+      >
         {/* Duplicate videos for infinite scroll effect */}
-        {[...testimonialVideos, ...testimonialVideos].map((video, index) => <div key={index} className="flex-shrink-0 w-[200px] md:w-[240px] aspect-[9/16] rounded-xl overflow-hidden glass-card">
-            <video src={video} className="w-full h-full object-cover" muted loop playsInline autoPlay />
-          </div>)}
+        {[...testimonialVideos, ...testimonialVideos].map((video, index) => (
+          <div
+            key={index}
+            className="flex-shrink-0 w-[180px] md:w-[220px] aspect-[9/16] rounded-xl overflow-hidden glass-card"
+          >
+            <video
+              src={video}
+              className="w-full h-full object-cover"
+              muted
+              loop
+              playsInline
+              autoPlay
+            />
+          </div>
+        ))}
       </div>
-    </section>;
+    </section>
+  );
 }
