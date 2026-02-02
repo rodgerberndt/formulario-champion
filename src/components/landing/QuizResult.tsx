@@ -20,57 +20,69 @@ export function QuizResult({ whatsappLink, nome, formData }: QuizResultProps) {
   const firstName = nome.split(" ")[0];
 
   return (
-    <div className="max-w-md mx-auto text-center animate-slide-up">
-      <div className="champion-card py-6">
+    <div className="max-w-md mx-auto text-center animate-fade-in">
+      <div className="bg-card/90 dark:bg-card/70 backdrop-blur-xl border border-border/50 rounded-3xl p-6 md:p-8 shadow-premium-lg">
         {/* Simple Thank You */}
-        <h2 className="font-display text-xl md:text-2xl font-bold mb-2 champion-gradient-text tracking-wider">
-          OBRIGADO, {firstName.toUpperCase()}!
+        <h2 className="text-2xl md:text-3xl font-bold mb-3 text-foreground">
+          OBRIGADO, <span className="champion-gradient-text">{firstName.toUpperCase()}</span>!
         </h2>
 
-        <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
+        <p className="text-muted-foreground text-base mb-8 max-w-sm mx-auto">
           Em minutos um de nossos consultores irá lhe chamar.
         </p>
 
         {/* Summary */}
-        <div className="glass-card p-4 mb-6 text-left">
-          <h3 className="font-display text-sm text-foreground mb-3 tracking-wide">
-            RESUMO DO DIAGNÓSTICO:
+        <div className="bg-muted/30 dark:bg-muted/20 rounded-2xl p-5 mb-8 text-left border border-border/50">
+          <h3 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wide">
+            Resumo do Diagnóstico:
           </h3>
-          <div className="space-y-2 text-xs">
-            <div className="flex items-center gap-2">
-              <User className="w-3.5 h-3.5 text-secondary shrink-0" />
+          <div className="space-y-3 text-sm">
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-secondary/10">
+                <User className="w-4 h-4 text-primary dark:text-secondary" />
+              </div>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Nome:</strong> {formData.nome_completo}
+                <strong className="text-foreground font-medium">Nome:</strong> {formData.nome_completo}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Phone className="w-3.5 h-3.5 text-secondary shrink-0" />
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-secondary/10">
+                <Phone className="w-4 h-4 text-primary dark:text-secondary" />
+              </div>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">WhatsApp:</strong> {formData.whatsapp}
+                <strong className="text-foreground font-medium">WhatsApp:</strong> {formData.whatsapp}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Instagram className="w-3.5 h-3.5 text-secondary shrink-0" />
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-secondary/10">
+                <Instagram className="w-4 h-4 text-primary dark:text-secondary" />
+              </div>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Instagram:</strong> {formData.instagram}
+                <strong className="text-foreground font-medium">Instagram:</strong> {formData.instagram}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Briefcase className="w-3.5 h-3.5 text-secondary shrink-0" />
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-secondary/10">
+                <Briefcase className="w-4 h-4 text-primary dark:text-secondary" />
+              </div>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Mercado:</strong> {formData.mercado}
+                <strong className="text-foreground font-medium">Mercado:</strong> {formData.mercado}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Target className="w-3.5 h-3.5 text-secondary shrink-0" />
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-secondary/10">
+                <Target className="w-4 h-4 text-primary dark:text-secondary" />
+              </div>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Estágio:</strong> {formData.estagio_negocio}
+                <strong className="text-foreground font-medium">Estágio:</strong> {formData.estagio_negocio}
               </span>
             </div>
-            <div className="flex items-start gap-2">
-              <FileText className="w-3.5 h-3.5 text-secondary shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3">
+              <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-secondary/10 mt-0.5">
+                <FileText className="w-4 h-4 text-primary dark:text-secondary" />
+              </div>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Dor principal:</strong> {formData.dor_desejo}
+                <strong className="text-foreground font-medium">Dor principal:</strong> {formData.dor_desejo}
               </span>
             </div>
           </div>
@@ -78,14 +90,13 @@ export function QuizResult({ whatsappLink, nome, formData }: QuizResultProps) {
 
         {/* CTA */}
         <Button
-          variant="champion"
           size="lg"
           onClick={() => window.open(whatsappLink, "_blank")}
-          className="w-full group cta-glow text-sm"
+          className="w-full h-14 group text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-300 active:scale-[0.98]"
         >
-          <MessageCircle className="w-4 h-4" />
+          <MessageCircle className="w-5 h-5" />
           FALAR NO WHATSAPP AGORA
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </Button>
       </div>
     </div>
