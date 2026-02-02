@@ -29,7 +29,7 @@ export function SocialProofCarousel() {
     <section className="py-6 md:py-10 overflow-hidden">
       <div
         ref={scrollRef}
-        className="flex gap-3 md:gap-4 overflow-x-hidden cursor-grab"
+        className="flex gap-3 md:gap-4 overflow-x-hidden cursor-grab px-4 md:px-6"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         style={{ scrollBehavior: "auto" }}
@@ -38,7 +38,7 @@ export function SocialProofCarousel() {
         {[...testimonialVideos, ...testimonialVideos].map((video, index) => (
           <div
             key={index}
-            className="flex-shrink-0 w-[140px] md:w-[200px] aspect-[9/16] rounded-lg md:rounded-xl overflow-hidden glass-card"
+            className="flex-shrink-0 w-[160px] md:w-[200px] aspect-[9/16] rounded-lg md:rounded-xl overflow-hidden glass-card"
           >
             <video
               src={video}
