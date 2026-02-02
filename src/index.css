@@ -2,60 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
 @layer base {
+  /* Dark-only theme - no light mode */
   :root {
-    /* Light Theme - Champion Blue & White */
-    --background: 220 20% 98%;
-    --foreground: 235 50% 10%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 235 50% 10%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 235 50% 10%;
-
-    /* Champion Primary Blue */
-    --primary: 238 98% 37%;
-    --primary-foreground: 0 0% 100%;
-
-    /* Secondary - Golden accent */
-    --secondary: 43 90% 55%;
-    --secondary-foreground: 235 50% 10%;
-
-    --muted: 220 15% 92%;
-    --muted-foreground: 220 10% 45%;
-
-    --accent: 238 98% 37%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 220 15% 88%;
-    --input: 220 15% 92%;
-    --ring: 238 98% 37%;
-
-    --radius: 0.75rem;
-
-    /* Champion Custom Tokens - Light */
-    --champion-blue: 238 98% 37%;
-    --champion-blue-deep: 238 99% 20%;
-    --champion-gold: 43 90% 55%;
-    --champion-gold-light: 43 80% 70%;
-
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 235 50% 10%;
-    --sidebar-primary: 238 98% 37%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 92%;
-    --sidebar-accent-foreground: 235 50% 10%;
-    --sidebar-border: 220 15% 88%;
-    --sidebar-ring: 238 98% 37%;
-  }
-
-  .dark {
     /* Dark Theme - Premium Navy */
     --background: 235 50% 4%;
     --foreground: 0 0% 98%;
@@ -67,40 +16,42 @@
     --popover-foreground: 0 0% 98%;
 
     /* Champion Primary Blue */
-    --primary: 238 90% 50%;
+    --primary: 238 90% 55%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Golden accent */
+    /* Secondary - Golden accent (subtle) */
     --secondary: 43 85% 55%;
     --secondary-foreground: 235 50% 4%;
 
     --muted: 235 30% 18%;
-    --muted-foreground: 235 15% 65%;
+    --muted-foreground: 235 15% 70%;
 
-    --accent: 238 90% 50%;
+    --accent: 238 90% 55%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62% 30%;
+    --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 235 40% 18%;
-    --input: 235 40% 12%;
-    --ring: 238 90% 50%;
+    --border: 235 40% 20%;
+    --input: 235 40% 14%;
+    --ring: 238 90% 55%;
 
-    /* Champion Custom Tokens - Dark */
-    --champion-blue: 238 90% 50%;
+    --radius: 0.75rem;
+
+    /* Champion Custom Tokens */
+    --champion-blue: 238 90% 55%;
     --champion-blue-deep: 238 99% 20%;
     --champion-gold: 43 85% 55%;
     --champion-gold-light: 43 75% 65%;
 
     --sidebar-background: 235 50% 4%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 238 90% 50%;
+    --sidebar-primary: 238 90% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 235 40% 18%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 235 40% 18%;
-    --sidebar-ring: 238 90% 50%;
+    --sidebar-border: 235 40% 20%;
+    --sidebar-ring: 238 90% 55%;
   }
 }
 
@@ -111,119 +62,94 @@
 
   html {
     scroll-behavior: smooth;
+    /* Prevent FOUC - dark by default */
+    color-scheme: dark;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
   }
 
+  /* Responsive typography with clamp */
   h1 {
-    @apply text-3xl md:text-4xl lg:text-5xl;
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    line-height: 1.15;
   }
 
   h2 {
-    @apply text-2xl md:text-3xl;
+    font-size: clamp(1.375rem, 4vw, 1.875rem);
+    line-height: 1.2;
+  }
+
+  /* High contrast for readability */
+  p, span, label {
+    line-height: 1.6;
   }
 }
 
 @layer components {
-  /* Premium Glass Card */
+  /* Premium Glass Card - Dark optimized */
   .glass-card {
-    @apply bg-card/80 dark:bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl;
+    @apply backdrop-blur-xl border border-border/60 rounded-2xl;
+    background: hsl(235 45% 8% / 0.85);
     box-shadow: 
-      0 4px 24px -4px rgba(0, 0, 0, 0.08),
-      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-  }
-
-  .dark .glass-card {
-    box-shadow: 
-      0 8px 32px -8px rgba(0, 0, 0, 0.4),
+      0 8px 32px -8px rgba(0, 0, 0, 0.5),
       0 0 0 1px rgba(255, 255, 255, 0.03) inset;
   }
 
-  /* Champion Card */
+  /* Champion Card - Solid background for legibility */
   .champion-card {
-    @apply bg-card/90 dark:bg-card/70 backdrop-blur-xl border border-border/50 rounded-3xl p-6 md:p-8;
+    @apply backdrop-blur-xl border border-border/60 rounded-3xl p-5 md:p-8;
+    background: hsl(235 45% 7% / 0.92);
     box-shadow: 
-      0 4px 24px -4px rgba(0, 0, 0, 0.08);
+      0 8px 40px -8px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.04) inset;
   }
 
-  .dark .champion-card {
-    box-shadow: 
-      0 8px 40px -8px rgba(0, 0, 0, 0.5);
-  }
-
-  /* Champion Input */
+  /* Champion Input - High contrast */
   .champion-input {
-    @apply bg-background border-2 border-border/50 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground;
-    @apply focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none;
-    @apply transition-all duration-300;
+    @apply bg-input border-2 border-border/60 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground/70;
+    @apply focus:border-primary focus:ring-2 focus:ring-primary/25 focus:outline-none;
+    @apply transition-colors duration-200;
+    min-height: 48px;
   }
 
   /* Gradient Text */
   .champion-gradient-text {
-    @apply bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent;
   }
 
-  .dark .champion-gradient-text {
-    @apply from-primary via-primary/90 to-secondary;
-  }
-
-  /* Hero Glow Effect */
+  /* Hero Glow Effect - Lighter for performance */
   .hero-glow {
     position: absolute;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%);
-    filter: blur(80px);
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, hsl(var(--secondary) / 0.12) 0%, transparent 70%);
+    filter: blur(60px);
     pointer-events: none;
-  }
-
-  .dark .hero-glow {
-    background: radial-gradient(circle, hsl(var(--secondary) / 0.15) 0%, transparent 70%);
-  }
-
-  /* CTA Glow */
-  .cta-glow {
-    position: relative;
-  }
-
-  .cta-glow::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.4) 0%, hsl(var(--primary) / 0.1) 100%);
-    border-radius: inherit;
-    filter: blur(12px);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: -1;
-  }
-
-  .cta-glow:hover::before {
-    opacity: 1;
+    will-change: transform;
   }
 
   /* Mobile Bottom CTA */
   .mobile-bottom-cta {
     @apply fixed bottom-0 left-0 right-0 z-50 p-4;
     background: hsl(var(--background) / 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid hsl(var(--border) / 0.5);
   }
 }
 
-/* Animations */
+/* Optimized Animations - GPU friendly */
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -234,7 +160,7 @@
 @keyframes slide-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -244,56 +170,71 @@
 
 @keyframes float {
   0%, 100% { 
-    transform: translateY(0px); 
+    transform: translateY(0); 
   }
   50% { 
-    transform: translateY(-15px); 
+    transform: translateY(-10px); 
   }
 }
 
 @keyframes pulse-slow {
   0%, 100% { 
-    opacity: 0.6;
-    transform: scale(1);
+    opacity: 0.5;
   }
   50% { 
-    opacity: 0.8;
-    transform: scale(1.05);
+    opacity: 0.7;
   }
 }
 
 .animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
+  animation: fade-in 0.3s ease-out forwards;
 }
 
 .animate-slide-up {
-  animation: slide-up 0.6s ease-out forwards;
+  animation: slide-up 0.25s ease-out forwards;
 }
 
 .animate-float {
-  animation: float 5s ease-in-out infinite;
+  animation: float 6s ease-in-out infinite;
 }
 
 .animate-pulse-slow {
-  animation: pulse-slow 3s ease-in-out infinite;
+  animation: pulse-slow 4s ease-in-out infinite;
 }
 
-/* Smooth scrollbar */
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-float,
+  .animate-pulse-slow {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Smooth scrollbar - Dark theme */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
   background: hsl(var(--muted));
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--muted-foreground) / 0.3);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Prevent horizontal overflow */
+html, body {
+  overflow-x: hidden;
 }

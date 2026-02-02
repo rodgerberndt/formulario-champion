@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 
 const testimonialVideos = [
   "/testimonials/video-1.mp4",
@@ -11,6 +11,25 @@ const testimonialVideos = [
   "/testimonials/video-8.mp4"
 ];
 
+// Memoized video card to prevent re-renders
+const VideoCard = memo(function VideoCard({ video }: { video: string }) {
+  return (
+    <div
+      className="flex-shrink-0 w-[130px] md:w-[160px] aspect-[9/16] rounded-xl overflow-hidden bg-muted/30 border border-border/40 shadow-lg"
+    >
+      <video
+        src={video}
+        className="w-full h-full object-cover"
+        muted
+        loop
+        playsInline
+        autoPlay
+        preload="metadata"
+      />
+    </div>
+  );
+});
+
 export function SocialProofCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
@@ -20,7 +39,7 @@ export function SocialProofCarousel() {
     if (!scrollContainer) return;
     
     let animationId: number;
-    const scrollSpeed = 0.5;
+    const scrollSpeed = 0.4;
 
     const scroll = () => {
       if (!isPaused && scrollContainer) {
@@ -44,10 +63,10 @@ export function SocialProofCarousel() {
   const handleInteractionEnd = () => setIsPaused(false);
 
   return (
-    <section className="py-8 md:py-12 overflow-hidden">
+    <section className="py-6 md:py-10 overflow-hidden">
       <div
         ref={scrollRef}
-        className="flex gap-4 md:gap-5 overflow-x-hidden cursor-grab px-4 md:px-8"
+        className="flex gap-3 md:gap-4 overflow-x-hidden cursor-grab px-5 md:px-8"
         onMouseEnter={handleInteractionStart}
         onMouseLeave={handleInteractionEnd}
         onTouchStart={handleInteractionStart}
@@ -55,19 +74,7 @@ export function SocialProofCarousel() {
         style={{ scrollBehavior: "auto" }}
       >
         {[...testimonialVideos, ...testimonialVideos].map((video, index) => (
-          <div
-            key={index}
-            className="flex-shrink-0 w-[150px] md:w-[180px] aspect-[9/16] rounded-2xl overflow-hidden bg-muted/50 border border-border/50 shadow-lg shadow-black/5 dark:shadow-black/20"
-          >
-            <video
-              src={video}
-              className="w-full h-full object-cover"
-              muted
-              loop
-              playsInline
-              autoPlay
-            />
-          </div>
+          <VideoCard key={index} video={video} />
         ))}
       </div>
     </section>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,8 +19,6 @@ import {
   MERCADO_OPTIONS,
   ESTAGIO_OPTIONS,
 } from "@/lib/leadScoring";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { BackgroundDecor } from "@/components/BackgroundDecor";
 import { QuizResult } from "@/components/landing/QuizResult";
 
 const WHATSAPP_NUMBER = "[INSERIR_NUMERO]";
@@ -36,6 +34,65 @@ interface QuizFormData {
 }
 
 const STORAGE_KEY = "champion_quiz_progress";
+
+// Memoized background component
+const QuizBackground = memo(function QuizBackground() {
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+      {/* Rich gradient background */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(
+            145deg, 
+            hsl(235 50% 4%) 0%, 
+            hsl(238 65% 10%) 35%,
+            hsl(250 55% 12%) 60%,
+            hsl(235 50% 5%) 100%
+          )`,
+        }}
+      />
+
+      {/* Subtle Grid Pattern */}
+      <div 
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `linear-gradient(to right, hsl(0 0% 100%) 1px, transparent 1px),
+                            linear-gradient(to bottom, hsl(0 0% 100%) 1px, transparent 1px)`,
+          backgroundSize: '60px 60px',
+        }}
+      />
+      
+      {/* Noise texture */}
+      <div 
+        className="absolute inset-0 opacity-[0.025]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* Glow blobs - Static for performance */}
+      <div 
+        className="absolute -top-20 left-1/4 w-[350px] h-[350px] rounded-full blur-[70px]"
+        style={{
+          background: 'radial-gradient(circle, hsl(238 90% 55% / 0.1) 0%, transparent 70%)',
+        }}
+      />
+      <div 
+        className="absolute top-1/2 -right-20 w-[300px] h-[300px] rounded-full blur-[60px]"
+        style={{
+          background: 'radial-gradient(circle, hsl(43 85% 55% / 0.07) 0%, transparent 70%)',
+        }}
+      />
+      <div 
+        className="absolute -bottom-16 left-1/3 w-[280px] h-[280px] rounded-full blur-[50px]"
+        style={{
+          background: 'radial-gradient(circle, hsl(260 80% 50% / 0.06) 0%, transparent 70%)',
+        }}
+      />
+    </div>
+  );
+});
 
 export default function Quiz() {
   const navigate = useNavigate();
@@ -76,9 +133,9 @@ export default function Quiz() {
     }
   }, [formData, step, submitted]);
 
-  const updateField = (field: keyof QuizFormData, value: string | boolean) => {
+  const updateField = useCallback((field: keyof QuizFormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  }, []);
 
   const formatWhatsApp = (value: string) => {
     const digits = value.replace(/\D/g, '');
@@ -88,7 +145,7 @@ export default function Quiz() {
     return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
   };
 
-  const canProceed = () => {
+  const canProceed = useCallback(() => {
     switch (step) {
       case 1:
         return formData.nome_completo.trim().length >= 3;
@@ -105,7 +162,7 @@ export default function Quiz() {
       default:
         return false;
     }
-  };
+  }, [step, formData]);
 
   const sendToKommo = async (leadData: QuizFormData, score: number, tier: string) => {
     try {
@@ -204,11 +261,11 @@ Fico no aguardo.`;
   if (submitted && scoreResult) {
     return (
       <div className="min-h-screen relative">
-        <BackgroundDecor />
+        <QuizBackground />
         
         {/* Top Bar */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-          <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-4xl">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/50">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-xl">
             <Button
               variant="ghost"
               size="sm"
@@ -218,12 +275,11 @@ Fico no aguardo.`;
               <ArrowLeft className="w-4 h-4" />
               Voltar
             </Button>
-            <ThemeToggle />
           </div>
         </header>
 
-        <main className="pt-20 pb-12 px-4">
-          <div className="container mx-auto max-w-lg">
+        <main className="pt-20 pb-12 px-5">
+          <div className="container mx-auto max-w-md">
             <QuizResult
               whatsappLink={generateWhatsAppLink()}
               nome={formData.nome_completo}
@@ -235,15 +291,15 @@ Fico no aguardo.`;
     );
   }
 
-  const renderStep = () => {
-    const inputClasses = "w-full text-base h-14 bg-background border-2 border-border/50 rounded-2xl px-5 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300";
-    const selectClasses = "w-full text-base h-14 bg-background border-2 border-border/50 rounded-2xl px-5 text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300";
+  const inputClasses = "w-full text-base h-12 md:h-14 bg-input border-2 border-border/60 rounded-xl px-4 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200";
+  const selectClasses = "w-full text-base h-12 md:h-14 bg-input border-2 border-border/60 rounded-xl px-4 text-foreground focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200";
 
+  const renderStep = () => {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-6 animate-fade-in" onKeyDown={handleKeyDown}>
-            <label className="block text-lg md:text-xl font-semibold text-foreground">
+          <div className="space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
+            <label className="block text-base md:text-lg font-semibold text-foreground">
               Qual é o seu nome completo?
             </label>
             <Input
@@ -257,8 +313,8 @@ Fico no aguardo.`;
         );
       case 2:
         return (
-          <div className="space-y-6 animate-fade-in" onKeyDown={handleKeyDown}>
-            <label className="block text-lg md:text-xl font-semibold text-foreground">
+          <div className="space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
+            <label className="block text-base md:text-lg font-semibold text-foreground">
               Qual é o seu WhatsApp?
             </label>
             <Input
@@ -269,7 +325,7 @@ Fico no aguardo.`;
               maxLength={16}
               autoFocus
             />
-            <div className="flex items-start gap-3 pt-2">
+            <div className="flex items-start gap-3 pt-1">
               <Checkbox
                 id="lgpd"
                 checked={formData.lgpd}
@@ -284,8 +340,8 @@ Fico no aguardo.`;
         );
       case 3:
         return (
-          <div className="space-y-6 animate-fade-in" onKeyDown={handleKeyDown}>
-            <label className="block text-lg md:text-xl font-semibold text-foreground">
+          <div className="space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
+            <label className="block text-base md:text-lg font-semibold text-foreground">
               Qual é o seu Instagram?
             </label>
             <Input
@@ -299,8 +355,8 @@ Fico no aguardo.`;
         );
       case 4:
         return (
-          <div className="space-y-6 animate-fade-in">
-            <label className="block text-lg md:text-xl font-semibold text-foreground">
+          <div className="space-y-5 animate-fade-in">
+            <label className="block text-base md:text-lg font-semibold text-foreground">
               Em que mercado você trabalha?
             </label>
             <Select
@@ -310,7 +366,7 @@ Fico no aguardo.`;
               <SelectTrigger className={selectClasses}>
                 <SelectValue placeholder="Selecione o mercado" />
               </SelectTrigger>
-              <SelectContent className="bg-background border-border rounded-xl">
+              <SelectContent className="bg-card border-border rounded-xl">
                 {MERCADO_OPTIONS.map((option) => (
                   <SelectItem
                     key={option}
@@ -326,8 +382,8 @@ Fico no aguardo.`;
         );
       case 5:
         return (
-          <div className="space-y-6 animate-fade-in">
-            <label className="block text-lg md:text-xl font-semibold text-foreground">
+          <div className="space-y-5 animate-fade-in">
+            <label className="block text-base md:text-lg font-semibold text-foreground">
               Em que estágio está o seu negócio hoje?
             </label>
             <Select
@@ -337,7 +393,7 @@ Fico no aguardo.`;
               <SelectTrigger className={selectClasses}>
                 <SelectValue placeholder="Selecione o estágio" />
               </SelectTrigger>
-              <SelectContent className="bg-background border-border rounded-xl">
+              <SelectContent className="bg-card border-border rounded-xl">
                 {ESTAGIO_OPTIONS.map((option) => (
                   <SelectItem
                     key={option}
@@ -353,9 +409,9 @@ Fico no aguardo.`;
         );
       case 6:
         return (
-          <div className="space-y-6 animate-fade-in">
+          <div className="space-y-5 animate-fade-in">
             <div>
-              <label className="block text-lg md:text-xl font-semibold text-foreground mb-2">
+              <label className="block text-base md:text-lg font-semibold text-foreground mb-1.5">
                 O que você mais está buscando resolver hoje?
               </label>
               <p className="text-sm text-muted-foreground">
@@ -363,7 +419,7 @@ Fico no aguardo.`;
               </p>
             </div>
             <Textarea
-              className="w-full text-base min-h-[140px] resize-none bg-background border-2 border-border/50 rounded-2xl px-5 py-4 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+              className="w-full text-base min-h-[120px] resize-none bg-input border-2 border-border/60 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200"
               placeholder="Conte-nos o que você quer resolver..."
               value={formData.dor_desejo}
               onChange={(e) => updateField("dor_desejo", e.target.value)}
@@ -378,11 +434,11 @@ Fico no aguardo.`;
 
   return (
     <div className="min-h-screen relative">
-      <BackgroundDecor />
+      <QuizBackground />
       
       {/* Top Bar */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-4xl">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/50">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-xl">
           <Button
             variant="ghost"
             size="sm"
@@ -392,34 +448,39 @@ Fico no aguardo.`;
             <ArrowLeft className="w-4 h-4" />
             Voltar
           </Button>
-          <ThemeToggle />
         </div>
       </header>
 
       {/* Quiz Content */}
-      <main className="pt-24 pb-12 px-4 min-h-screen flex items-center">
-        <div className="container mx-auto max-w-lg w-full">
-          {/* Quiz Card */}
-          <div className="bg-card/80 dark:bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl p-6 md:p-10 shadow-2xl shadow-black/5 dark:shadow-black/20">
-            <div className="mb-8">
-              <p className="text-center text-muted-foreground text-sm mb-6">
+      <main className="pt-20 pb-12 px-5 min-h-screen flex items-center">
+        <div className="container mx-auto max-w-md w-full">
+          {/* Quiz Card - Solid background for legibility */}
+          <div 
+            className="backdrop-blur-xl border border-border/60 rounded-3xl p-5 md:p-8 shadow-2xl"
+            style={{
+              background: 'hsl(235 45% 7% / 0.94)',
+              boxShadow: '0 8px 40px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset',
+            }}
+          >
+            <div className="mb-6">
+              <p className="text-center text-muted-foreground text-sm">
                 Responda o formulário rápido para que o próximo feedback seja você!
               </p>
             </div>
 
-            <div className="min-h-[220px] flex flex-col justify-between">
+            <div className="min-h-[200px] flex flex-col justify-between">
               <div>
                 {renderStep()}
               </div>
 
               {/* Navigation */}
-              <div className="flex justify-between mt-10 gap-4">
+              <div className="flex justify-between mt-8 gap-3">
                 {step > 1 && (
                   <Button
                     variant="outline"
                     size="lg"
                     onClick={prevStep}
-                    className="flex-1 h-14 text-base rounded-2xl border-2 border-border/50 hover:bg-muted hover:border-border transition-all duration-300"
+                    className="flex-1 h-12 md:h-14 text-base rounded-xl border-2 border-border/60 hover:bg-muted hover:border-border transition-colors duration-200"
                   >
                     <ChevronLeft className="w-5 h-5 mr-2" />
                     Voltar
@@ -429,7 +490,7 @@ Fico no aguardo.`;
                   size="lg"
                   onClick={nextStep}
                   disabled={!canProceed() || isSubmitting}
-                  className={`h-14 text-base rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none ${step === 1 ? 'w-full' : 'flex-1'}`}
+                  className={`h-12 md:h-14 text-base rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none ${step === 1 ? 'w-full' : 'flex-1'}`}
                 >
                   {isSubmitting ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
