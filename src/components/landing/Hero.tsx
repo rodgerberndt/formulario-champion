@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, Users, Sparkles, TrendingUp, Trophy } from "lucide-react";
 import founderPhoto from "@/assets/founder-photo.png";
 
 interface HeroProps {
@@ -14,6 +14,16 @@ export function Hero({ onScrollToQuiz }: HeroProps) {
         <div className="hero-glow top-1/4 left-1/2 -translate-x-1/2" />
         <div className="absolute top-20 right-10 w-32 h-32 bg-secondary/5 rounded-full blur-2xl" />
         <div className="absolute bottom-40 left-10 w-24 h-24 bg-secondary/5 rounded-full blur-2xl" />
+        
+        {/* Floating Trophies */}
+        <Trophy className="absolute top-[15%] left-[8%] w-8 h-8 text-secondary/20 animate-float" style={{ animationDelay: "0s" }} />
+        <Trophy className="absolute top-[25%] right-[12%] w-6 h-6 text-secondary/15 animate-float" style={{ animationDelay: "1s" }} />
+        <Trophy className="absolute top-[60%] left-[5%] w-10 h-10 text-secondary/10 animate-float" style={{ animationDelay: "2s" }} />
+        <Trophy className="absolute top-[70%] right-[8%] w-7 h-7 text-secondary/20 animate-float" style={{ animationDelay: "0.5s" }} />
+        <Trophy className="absolute top-[40%] left-[15%] w-5 h-5 text-secondary/15 animate-float" style={{ animationDelay: "1.5s" }} />
+        <Trophy className="absolute top-[50%] right-[20%] w-9 h-9 text-secondary/10 animate-float" style={{ animationDelay: "2.5s" }} />
+        <Trophy className="absolute top-[80%] left-[25%] w-6 h-6 text-secondary/15 animate-float" style={{ animationDelay: "3s" }} />
+        <Trophy className="absolute top-[10%] right-[30%] w-8 h-8 text-secondary/10 animate-float" style={{ animationDelay: "0.8s" }} />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
@@ -81,11 +91,12 @@ export function Hero({ onScrollToQuiz }: HeroProps) {
             <div className="flex justify-center md:justify-end order-1 md:order-2 animate-fade-in">
               <div className="relative">
                 {/* Glow behind photo */}
-                <div className="absolute inset-0 bg-secondary/20 blur-3xl rounded-full scale-75" />
+                <div className="absolute -inset-4 bg-secondary/30 blur-3xl rounded-full animate-pulse-slow" />
+                <div className="absolute -inset-2 bg-gradient-to-br from-secondary/40 via-secondary/20 to-transparent blur-2xl rounded-full" />
                 <img
                   src={founderPhoto}
                   alt="Founder"
-                  className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 object-cover object-top rounded-2xl shadow-2xl"
+                  className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain rounded-2xl shadow-2xl"
                 />
               </div>
             </div>
