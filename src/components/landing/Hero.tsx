@@ -48,7 +48,7 @@ export function Hero() {
               {/* Headline */}
               <h1 className="font-bold text-foreground mb-4 animate-slide-up leading-tight">
                 SE VOCÊ NÃO TESTA CRIATIVO TODA SEMANA,{" "}
-                <span className="champion-gradient-text">
+                <span className="text-secondary font-bold">
                   PODE ESTAR DEIXANDO MUITO DINHEIRO NA MESA.
                 </span>
               </h1>
