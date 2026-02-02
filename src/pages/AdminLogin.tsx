@@ -18,6 +18,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
+  const [isSignUp, setIsSignUp] = useState(false);
 
   useEffect(() => {
     const checkExistingSession = async () => {
@@ -46,23 +47,25 @@ export default function AdminLogin() {
       async (event, session) => {
         if (event === "SIGNED_IN" && session) {
           // Check admin role after sign in
-          const { data: roleData } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", session.user.id)
-            .eq("role", "admin")
-            .single();
-          
-          if (roleData) {
-            navigate("/senhasenha");
-          } else {
-            toast({
-              title: "Acesso negado",
-              description: "Você não tem permissão de administrador.",
-              variant: "destructive",
-            });
-            await supabase.auth.signOut();
-          }
+          setTimeout(async () => {
+            const { data: roleData } = await supabase
+              .from("user_roles")
+              .select("role")
+              .eq("user_id", session.user.id)
+              .eq("role", "admin")
+              .single();
+            
+            if (roleData) {
+              navigate("/senhasenha");
+            } else {
+              toast({
+                title: "Acesso negado",
+                description: "Você não tem permissão de administrador. Contate o suporte.",
+                variant: "destructive",
+              });
+              await supabase.auth.signOut();
+            }
+          }, 0);
         }
       }
     );
@@ -70,7 +73,7 @@ export default function AdminLogin() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate input
@@ -87,51 +90,63 @@ export default function AdminLogin() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        let errorMessage = "Erro ao fazer login.";
-        if (error.message.includes("Invalid login credentials")) {
-          errorMessage = "Email ou senha incorretos.";
-        } else if (error.message.includes("Email not confirmed")) {
-          errorMessage = "Confirme seu email antes de fazer login.";
-        }
-        
-        toast({
-          title: "Erro de autenticação",
-          description: errorMessage,
-          variant: "destructive",
+      if (isSignUp) {
+        // Sign up new user
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/admin-login`,
+          },
         });
-        return;
-      }
 
-      if (data.session) {
-        // Check admin role
-        const { data: roleData, error: roleError } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", data.session.user.id)
-          .eq("role", "admin")
-          .single();
-        
-        if (roleError || !roleData) {
+        if (error) {
+          let errorMessage = "Erro ao criar conta.";
+          if (error.message.includes("already registered")) {
+            errorMessage = "Este email já está cadastrado.";
+          }
           toast({
-            title: "Acesso negado",
-            description: "Você não tem permissão de administrador.",
+            title: "Erro",
+            description: errorMessage,
             variant: "destructive",
           });
-          await supabase.auth.signOut();
           return;
         }
 
-        toast({
-          title: "Login realizado!",
-          description: "Bem-vindo ao painel administrativo.",
+        if (data.user) {
+          toast({
+            title: "Conta criada!",
+            description: "Aguarde a atribuição de permissões de admin.",
+          });
+          // Switch to login mode
+          setIsSignUp(false);
+        }
+      } else {
+        // Sign in existing user
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
         });
-        navigate("/senhasenha");
+
+        if (error) {
+          let errorMessage = "Erro ao fazer login.";
+          if (error.message.includes("Invalid login credentials")) {
+            errorMessage = "Email ou senha incorretos.";
+          } else if (error.message.includes("Email not confirmed")) {
+            errorMessage = "Confirme seu email antes de fazer login.";
+          }
+          
+          toast({
+            title: "Erro de autenticação",
+            description: errorMessage,
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (data.session) {
+          // Auth state change handler will check admin role
+        }
       }
     } catch {
       toast({
@@ -204,15 +219,15 @@ export default function AdminLogin() {
               <Shield className="w-8 h-8 text-primary" />
             </div>
             <h1 className="font-display text-2xl font-bold text-foreground tracking-wider">
-              PAINEL ADMIN
+              {isSignUp ? "CRIAR CONTA" : "PAINEL ADMIN"}
             </h1>
             <p className="text-muted-foreground text-sm mt-2">
-              Área restrita para administradores
+              {isSignUp ? "Crie uma conta de administrador" : "Área restrita para administradores"}
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleAuth} className="space-y-5">
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
                 Email
@@ -257,13 +272,26 @@ export default function AdminLogin() {
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Entrando...
+                  {isSignUp ? "Criando..." : "Entrando..."}
                 </>
               ) : (
-                "Entrar"
+                isSignUp ? "Criar Conta" : "Entrar"
               )}
             </Button>
           </form>
+
+          {/* Toggle signup/login */}
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {isSignUp 
+                ? "Já tem conta? Fazer login" 
+                : "Não tem conta? Criar agora"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
