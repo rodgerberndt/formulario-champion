@@ -164,16 +164,8 @@ export default function Quiz() {
     }
   }, [step, formData]);
 
-  const sendToKommo = async (leadData: QuizFormData, score: number, tier: string) => {
-    try {
-      const response = await supabase.functions.invoke('kommo-webhook', {
-        body: { ...leadData, score, tier }
-      });
-      console.log('Kommo response:', response);
-    } catch (error) {
-      console.error('Error sending to Kommo:', error);
-    }
-  };
+  // Kommo integration is now handled by database trigger (notify_kommo_on_lead_insert)
+  // No client-side call needed - the trigger fires automatically on lead insert
 
   const handleSubmit = async () => {
     if (!canProceed()) return;
@@ -201,7 +193,7 @@ export default function Quiz() {
 
       if (error) throw error;
 
-      sendToKommo(formData, result.score, result.tier);
+      // Kommo notification is handled by database trigger automatically
       localStorage.removeItem(STORAGE_KEY);
 
       setScoreResult({ score: result.score, tier: result.tier });
