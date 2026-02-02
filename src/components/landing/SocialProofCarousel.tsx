@@ -2,15 +2,17 @@ import { useEffect, useRef, useState } from "react";
 const testimonialVideos = ["/testimonials/video-1.mp4", "/testimonials/video-2.mp4", "/testimonials/video-3.mp4", "/testimonials/video-4.mp4", "/testimonials/video-5.mp4", "/testimonials/video-6.mp4", "/testimonials/video-7.mp4", "/testimonials/video-8.mp4"];
 export function SocialProofCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
+    
     let animationId: number;
-    let scrollSpeed = 0.5; // Very slow scroll speed
+    const scrollSpeed = 0.5;
 
     const scroll = () => {
-      if (!isHovered && scrollContainer) {
+      if (!isPaused && scrollContainer) {
         scrollContainer.scrollLeft += scrollSpeed;
 
         // Reset scroll when reaching the end (infinite loop)
@@ -20,18 +22,25 @@ export function SocialProofCarousel() {
       }
       animationId = requestAnimationFrame(scroll);
     };
+    
     animationId = requestAnimationFrame(scroll);
+    
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, [isHovered]);
+  }, [isPaused]);
+
+  const handleInteractionStart = () => setIsPaused(true);
+  const handleInteractionEnd = () => setIsPaused(false);
   return (
     <section className="py-6 md:py-10 overflow-hidden">
       <div
         ref={scrollRef}
         className="flex gap-3 md:gap-4 overflow-x-hidden cursor-grab px-4 md:px-6"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={handleInteractionStart}
+        onMouseLeave={handleInteractionEnd}
+        onTouchStart={handleInteractionStart}
+        onTouchEnd={handleInteractionEnd}
         style={{ scrollBehavior: "auto" }}
       >
         {/* Duplicate videos for infinite scroll effect */}
