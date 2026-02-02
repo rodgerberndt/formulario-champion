@@ -11,11 +11,16 @@ const testimonialVideos = [
   "/testimonials/video-8.mp4"
 ];
 
-// Memoized video card to prevent re-renders
+// Memoized video card - hides if video fails to load
 const VideoCard = memo(function VideoCard({ video }: { video: string }) {
+  const [hasError, setHasError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  if (hasError) return null;
+
   return (
     <div
-      className="flex-shrink-0 w-[130px] md:w-[160px] aspect-[9/16] rounded-xl overflow-hidden bg-muted/30 border border-border/40 shadow-lg"
+      className={`flex-shrink-0 w-[130px] md:w-[160px] aspect-[9/16] rounded-xl overflow-hidden bg-muted/30 border border-border/40 shadow-lg transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
     >
       <video
         src={video}
@@ -25,6 +30,8 @@ const VideoCard = memo(function VideoCard({ video }: { video: string }) {
         playsInline
         autoPlay
         preload="metadata"
+        onLoadedData={() => setIsLoaded(true)}
+        onError={() => setHasError(true)}
       />
     </div>
   );
@@ -59,18 +66,17 @@ export function SocialProofCarousel() {
     };
   }, [isPaused]);
 
-  const handleInteractionStart = () => setIsPaused(true);
-  const handleInteractionEnd = () => setIsPaused(false);
+  // Only pause on touch (mobile), NOT on mouse hover
+  const handleTouchStart = () => setIsPaused(true);
+  const handleTouchEnd = () => setIsPaused(false);
 
   return (
     <section className="py-6 md:py-10 overflow-hidden">
       <div
         ref={scrollRef}
         className="flex gap-3 md:gap-4 overflow-x-hidden cursor-grab px-5 md:px-8"
-        onMouseEnter={handleInteractionStart}
-        onMouseLeave={handleInteractionEnd}
-        onTouchStart={handleInteractionStart}
-        onTouchEnd={handleInteractionEnd}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         style={{ scrollBehavior: "auto" }}
       >
         {[...testimonialVideos, ...testimonialVideos].map((video, index) => (
