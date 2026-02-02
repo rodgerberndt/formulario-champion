@@ -1,70 +1,36 @@
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useNavigate } from "react-router-dom";
 
-interface HeaderProps {
-  onScrollToQuiz: () => void;
-}
-
-export function Header({ onScrollToQuiz }: HeaderProps) {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [showMobileCta, setShowMobileCta] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-      setShowMobileCta(window.scrollY > 300);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+export function Header() {
+  const navigate = useNavigate();
 
   return (
-    <>
-      {/* Desktop Header */}
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "bg-background/90 backdrop-blur-xl border-b border-border/50"
-            : "bg-transparent"
-        }`}
-      >
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-5xl">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <img 
-              src="/champion-logo.png" 
-              alt="Champion" 
-              className="h-7 md:h-9 w-auto"
-            />
-          </div>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+      <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-5xl">
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          <img 
+            src="/champion-logo.png" 
+            alt="Champion" 
+            className="h-7 md:h-9 w-auto"
+          />
+        </div>
 
+        {/* Right Side */}
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          
           {/* Desktop CTA */}
           <Button
-            variant="champion"
             size="sm"
-            onClick={onScrollToQuiz}
-            className="hidden md:flex text-xs"
+            onClick={() => navigate("/quiz")}
+            className="hidden md:flex text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
           >
             FAZER DIAGNÓSTICO (2 MIN)
           </Button>
         </div>
-      </header>
-
-      {/* Mobile Bottom Bar CTA - appears after scroll */}
-      <div 
-        className={`md:hidden mobile-bottom-cta transition-all duration-300 ${
-          showMobileCta ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
-        }`}
-      >
-        <Button
-          variant="champion"
-          size="lg"
-          onClick={onScrollToQuiz}
-          className="w-full text-sm font-semibold"
-        >
-          COMEÇAR DIAGNÓSTICO (2 MIN)
-        </Button>
       </div>
-    </>
+    </header>
   );
 }
