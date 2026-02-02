@@ -96,7 +96,7 @@ export function Hero({ onScrollToQuiz }: HeroProps) {
                 <img
                   src={founderPhoto}
                   alt="Founder"
-                  className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain rounded-2xl shadow-2xl"
+                  className="relative w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[28rem] lg:h-[28rem] object-contain"
                 />
               </div>
             </div>
