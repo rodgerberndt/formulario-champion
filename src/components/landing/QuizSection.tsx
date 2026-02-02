@@ -268,12 +268,12 @@ Fico no aguardo.`;
               maxLength={16}
               autoFocus
             />
-            <div className="flex items-start space-x-3 pt-2">
+            <div className="flex items-center gap-2 pt-3">
               <Checkbox
                 id="lgpd"
                 checked={formData.lgpd}
                 onCheckedChange={(checked) => updateField("lgpd", checked === true)}
-                className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:border-secondary mt-0.5"
+                className="border-secondary/50 data-[state=checked]:bg-secondary data-[state=checked]:border-secondary h-5 w-5"
               />
               <label htmlFor="lgpd" className="text-xs text-muted-foreground cursor-pointer leading-relaxed">
                 Concordo em receber contato sobre o diagnóstico. Seus dados estão seguros.
