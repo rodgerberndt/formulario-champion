@@ -225,7 +225,6 @@ Fico no aguardo.`;
       <section id="quiz-section" className="py-8 md:py-12">
         <div className="container mx-auto px-4">
           <QuizResult
-            whatsappLink={generateWhatsAppLink()}
             nome={formData.nome_completo}
             formData={formData}
           />

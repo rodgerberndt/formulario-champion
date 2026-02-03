@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { QuizResult } from "@/components/landing/QuizResult";
 
-const WHATSAPP_NUMBER = "[INSERIR_NUMERO]";
 const RESULT_STORAGE_KEY = "champion_quiz_result";
 
 interface QuizFormData {
@@ -88,22 +87,6 @@ export default function Obrigado() {
     }
   }, [navigate]);
 
-  const generateWhatsAppLink = () => {
-    if (!formData) return "";
-    
-    const message = `Oi, aqui é o ${formData.nome_completo}.
-Acabei de preencher o Diagnóstico Champion.
-
-Instagram: ${formData.instagram}
-Mercado: ${formData.mercado}
-Estágio: ${formData.estagio_negocio}
-Principal dor/desejo: ${formData.dor_desejo}
-
-Fico no aguardo.`;
-
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-  };
-
   if (!formData) {
     return null; // Loading or redirecting
   }
@@ -130,7 +113,6 @@ Fico no aguardo.`;
       <main className="pt-16 pb-8 px-4 min-h-[100svh] flex items-center justify-center" style={{ paddingBottom: 'calc(32px + env(safe-area-inset-bottom))' }}>
         <div className="container mx-auto max-w-[92vw] sm:max-w-md">
           <QuizResult
-            whatsappLink={generateWhatsAppLink()}
             nome={formData.nome_completo}
             formData={formData}
           />
