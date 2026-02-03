@@ -153,6 +153,10 @@ serve(async (req) => {
           case "not_entered":
             query = query.eq("entered_quiz_page", false);
             break;
+          case "interacted":
+            // Sessions that had any interaction (entered quiz page OR started quiz)
+            query = query.eq("entered_quiz_page", true);
+            break;
         }
       }
       if (search) {
@@ -462,6 +466,33 @@ serve(async (req) => {
 
       return new Response(
         JSON.stringify(enrichedSessions),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // DELETE /leads - Delete multiple leads
+    if (path === "/leads" && req.method === "DELETE") {
+      const body = await req.json();
+      const ids = body.ids as string[];
+      
+      if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        return new Response(
+          JSON.stringify({ error: "IDs não fornecidos" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      console.log("Deleting leads:", ids);
+
+      const { error } = await supabase
+        .from("leads")
+        .delete()
+        .in("id", ids);
+
+      if (error) throw error;
+
+      return new Response(
+        JSON.stringify({ success: true, deleted: ids.length }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

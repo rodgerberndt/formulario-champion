@@ -30,7 +30,9 @@ import {
   Bell,
   RefreshCw,
   Check,
+  Trash2,
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -141,11 +143,15 @@ export default function AdminAnalytics() {
   const [sessionEvents, setSessionEvents] = useState<SessionEvent[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
 
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("interacted");
   const [buttonFilter, setButtonFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+
+  // Lead selection for bulk actions
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Leads state (from legacy leads table)
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -248,6 +254,80 @@ export default function AdminAnalytics() {
       setSelectedLead({ ...lead, lido: true });
     } else {
       setSelectedLead(lead);
+    }
+  };
+
+  // Delete multiple leads
+  const deleteLeads = async (ids: string[]) => {
+    try {
+      const token = getToken();
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads`;
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "x-admin-token": token || "",
+          "Content-Type": "application/json",
+          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({ ids }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete leads");
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error deleting leads:", error);
+      return false;
+    }
+  };
+
+  const handleDeleteSelectedLeads = async () => {
+    if (selectedLeadIds.size === 0) return;
+    
+    const confirmed = window.confirm(`Tem certeza que deseja excluir ${selectedLeadIds.size} lead(s)? Esta ação não pode ser desfeita.`);
+    if (!confirmed) return;
+
+    setIsDeleting(true);
+    const ids = Array.from(selectedLeadIds);
+    const success = await deleteLeads(ids);
+    
+    if (success) {
+      // Remove from local state
+      setLeads((prev) => prev.filter((l) => !selectedLeadIds.has(l.id)));
+      setLeadsUnreadCount((prev) => {
+        const deletedUnread = ids.filter(id => !leads.find(l => l.id === id)?.lido).length;
+        return Math.max(0, prev - deletedUnread);
+      });
+      setSelectedLeadIds(new Set());
+      toast({ title: `${ids.length} lead(s) excluído(s) com sucesso!` });
+      // Reload metrics
+      loadMetrics();
+    } else {
+      toast({ title: "Erro ao excluir leads", variant: "destructive" });
+    }
+    setIsDeleting(false);
+  };
+
+  const toggleLeadSelection = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedLeadIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedLeadIds.size === filteredLeads.length) {
+      setSelectedLeadIds(new Set());
+    } else {
+      setSelectedLeadIds(new Set(filteredLeads.map((l) => l.id)));
     }
   };
 
@@ -1065,6 +1145,35 @@ export default function AdminAnalytics() {
                 )}
               </div>
               
+              {/* Selection Actions Bar */}
+              {selectedLeadIds.size > 0 && (
+                <div className="flex items-center gap-4 mb-4 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
+                  <span className="text-sm font-medium">
+                    {selectedLeadIds.size} lead(s) selecionado(s)
+                  </span>
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    onClick={handleDeleteSelectedLeads}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4 mr-2" />
+                    )}
+                    Excluir selecionados
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setSelectedLeadIds(new Set())}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              )}
+              
               {/* Filter Results Info */}
               {filteredLeads.length !== leads.length && (
                 <p className="text-sm text-muted-foreground mb-4">
@@ -1079,6 +1188,13 @@ export default function AdminAnalytics() {
                     <table className="w-full text-sm">
                       <thead className="border-b bg-muted/50">
                         <tr>
+                          <th className="text-left p-4 w-12">
+                            <Checkbox
+                              checked={selectedLeadIds.size === filteredLeads.length && filteredLeads.length > 0}
+                              onCheckedChange={toggleSelectAll}
+                              aria-label="Selecionar todos"
+                            />
+                          </th>
                           <th className="text-left p-4 w-12">#</th>
                           <th className="text-left p-4">Status</th>
                           <th className="text-left p-4">Tier</th>
@@ -1094,13 +1210,13 @@ export default function AdminAnalytics() {
                       <tbody>
                         {leadsLoading ? (
                           <tr>
-                            <td colSpan={10} className="p-8 text-center">
+                            <td colSpan={11} className="p-8 text-center">
                               <Loader2 className="w-6 h-6 animate-spin mx-auto" />
                             </td>
                           </tr>
                         ) : filteredLeads.length === 0 ? (
                           <tr>
-                            <td colSpan={10} className="p-8 text-center text-muted-foreground">
+                            <td colSpan={11} className="p-8 text-center text-muted-foreground">
                               Nenhum lead encontrado
                             </td>
                           </tr>
@@ -1108,9 +1224,26 @@ export default function AdminAnalytics() {
                           filteredLeads.map((lead, index) => (
                             <tr 
                               key={lead.id} 
-                              className={`border-b hover:bg-muted/30 cursor-pointer transition-colors ${!lead.lido ? "bg-primary/5" : ""}`}
+                              className={`border-b hover:bg-muted/30 cursor-pointer transition-colors ${!lead.lido ? "bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "bg-primary/10" : ""}`}
                               onClick={() => openLeadDetail(lead)}
                             >
+                              <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                                <Checkbox
+                                  checked={selectedLeadIds.has(lead.id)}
+                                  onCheckedChange={() => {
+                                    setSelectedLeadIds((prev) => {
+                                      const newSet = new Set(prev);
+                                      if (newSet.has(lead.id)) {
+                                        newSet.delete(lead.id);
+                                      } else {
+                                        newSet.add(lead.id);
+                                      }
+                                      return newSet;
+                                    });
+                                  }}
+                                  aria-label={`Selecionar ${lead.nome_completo}`}
+                                />
+                              </td>
                               <td className="p-4 text-muted-foreground font-mono">{index + 1}</td>
                               <td className="p-4">
                                 {lead.lido ? (
@@ -1365,10 +1498,11 @@ export default function AdminAnalytics() {
                   />
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-44">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="interacted">Interagiu ✓</SelectItem>
                     <SelectItem value="all">Todos</SelectItem>
                     <SelectItem value="completed">Completou</SelectItem>
                     <SelectItem value="started">Drop-off</SelectItem>
