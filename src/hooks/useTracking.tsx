@@ -57,21 +57,29 @@ function getUTMParams(): Record<string, string | null> {
 async function updateSessionDirect(sessionId: string, data: Record<string, unknown>) {
   const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/lead_sessions?id=eq.${sessionId}`;
   try {
+    const payload = {
+      ...data,
+      last_seen_at: new Date().toISOString(),
+    };
+    console.log("Updating session:", sessionId, payload);
+    
     const response = await fetch(url, {
       method: 'PATCH',
       headers: {
         'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         'Content-Type': 'application/json',
-        'Prefer': 'return=minimal',
+        'Prefer': 'return=representation',
       },
-      body: JSON.stringify({
-        ...data,
-        last_seen_at: new Date().toISOString(),
-      }),
+      body: JSON.stringify(payload),
     });
+    
     if (!response.ok) {
-      console.error("Error updating session:", await response.text());
+      const errorText = await response.text();
+      console.error("Error updating session:", response.status, errorText);
+    } else {
+      const result = await response.json();
+      console.log("Session updated successfully:", result);
     }
   } catch (error) {
     console.error("Error updating session:", error);
