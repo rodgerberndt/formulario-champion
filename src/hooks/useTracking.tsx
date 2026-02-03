@@ -177,10 +177,10 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     });
   }, [trackEvent, updateSession]);
 
-  // Track quiz page view
+  // Track quiz page view - marks both entered_quiz_page AND started_quiz
   const trackQuizPageView = useCallback(async () => {
     await trackEvent("quiz_view", { page: "/quiz" });
-    await updateSession({ entered_quiz_page: true });
+    await updateSession({ entered_quiz_page: true, started_quiz: true });
   }, [trackEvent, updateSession]);
 
   // Track step view

@@ -153,6 +153,14 @@ export default function AdminAnalytics() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [leadsUnreadCount, setLeadsUnreadCount] = useState(0);
   const [leadsSearchQuery, setLeadsSearchQuery] = useState("");
+  
+  // Leads filters
+  const [leadsStatusFilter, setLeadsStatusFilter] = useState<string>("all");
+  const [leadsMercadoFilter, setLeadsMercadoFilter] = useState<string>("all");
+  const [leadsEstagioFilter, setLeadsEstagioFilter] = useState<string>("all");
+  const [leadsTierFilter, setLeadsTierFilter] = useState<string>("all");
+  const [leadsDateFrom, setLeadsDateFrom] = useState("");
+  const [leadsDateTo, setLeadsDateTo] = useState("");
 
   // Check for existing token on mount
   useEffect(() => {
@@ -220,15 +228,50 @@ export default function AdminAnalytics() {
     }
   };
 
+  // Get unique values for filter dropdowns
+  const uniqueMercados = [...new Set(leads.map(l => l.mercado))].filter(Boolean).sort();
+  const uniqueEstagios = [...new Set(leads.map(l => l.estagio_negocio))].filter(Boolean).sort();
+  const uniqueTiers = [...new Set(leads.map(l => l.tier))].filter(Boolean).sort();
+
   const filteredLeads = leads.filter((lead) => {
-    if (!leadsSearchQuery) return true;
-    const q = leadsSearchQuery.toLowerCase();
-    return (
-      lead.nome_completo.toLowerCase().includes(q) ||
-      lead.whatsapp.includes(q) ||
-      lead.instagram.toLowerCase().includes(q) ||
-      lead.mercado.toLowerCase().includes(q)
-    );
+    // Search filter
+    if (leadsSearchQuery) {
+      const q = leadsSearchQuery.toLowerCase();
+      const matchesSearch = 
+        lead.nome_completo.toLowerCase().includes(q) ||
+        lead.whatsapp.includes(q) ||
+        lead.instagram.toLowerCase().includes(q) ||
+        lead.mercado.toLowerCase().includes(q);
+      if (!matchesSearch) return false;
+    }
+    
+    // Status filter
+    if (leadsStatusFilter === "lido" && !lead.lido) return false;
+    if (leadsStatusFilter === "nao_lido" && lead.lido) return false;
+    
+    // Mercado filter
+    if (leadsMercadoFilter !== "all" && lead.mercado !== leadsMercadoFilter) return false;
+    
+    // Estágio filter
+    if (leadsEstagioFilter !== "all" && lead.estagio_negocio !== leadsEstagioFilter) return false;
+    
+    // Tier filter
+    if (leadsTierFilter !== "all" && lead.tier !== leadsTierFilter) return false;
+    
+    // Date filters
+    if (leadsDateFrom) {
+      const leadDate = new Date(lead.created_at);
+      const fromDate = new Date(leadsDateFrom);
+      if (leadDate < fromDate) return false;
+    }
+    if (leadsDateTo) {
+      const leadDate = new Date(lead.created_at);
+      const toDate = new Date(leadsDateTo);
+      toDate.setHours(23, 59, 59, 999);
+      if (leadDate > toDate) return false;
+    }
+    
+    return true;
   });
 
   const getToken = () => sessionStorage.getItem(ADMIN_TOKEN_KEY);
@@ -836,7 +879,7 @@ export default function AdminAnalytics() {
                 </Card>
               </div>
 
-              {/* Search and Actions */}
+              {/* Filters */}
               <div className="flex flex-wrap gap-4 mb-4">
                 <div className="flex items-center gap-2">
                   <Search className="w-4 h-4 text-muted-foreground" />
@@ -847,11 +890,99 @@ export default function AdminAnalytics() {
                     className="w-64"
                   />
                 </div>
+                <Select value={leadsStatusFilter} onValueChange={setLeadsStatusFilter}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="nao_lido">Novos</SelectItem>
+                    <SelectItem value="lido">Lidos</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={leadsMercadoFilter} onValueChange={setLeadsMercadoFilter}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Mercado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos mercados</SelectItem>
+                    {uniqueMercados.map((m) => (
+                      <SelectItem key={m} value={m}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={leadsEstagioFilter} onValueChange={setLeadsEstagioFilter}>
+                  <SelectTrigger className="w-52">
+                    <SelectValue placeholder="Estágio" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos estágios</SelectItem>
+                    {uniqueEstagios.map((e) => (
+                      <SelectItem key={e} value={e}>{e}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={leadsTierFilter} onValueChange={setLeadsTierFilter}>
+                  <SelectTrigger className="w-28">
+                    <SelectValue placeholder="Tier" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    {uniqueTiers.map((t) => (
+                      <SelectItem key={t} value={t}>Tier {t}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Date Filters */}
+              <div className="flex flex-wrap gap-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                  <Input
+                    type="date"
+                    value={leadsDateFrom}
+                    onChange={(e) => setLeadsDateFrom(e.target.value)}
+                    className="w-40"
+                    placeholder="De"
+                  />
+                  <span className="text-muted-foreground">até</span>
+                  <Input
+                    type="date"
+                    value={leadsDateTo}
+                    onChange={(e) => setLeadsDateTo(e.target.value)}
+                    className="w-40"
+                    placeholder="Até"
+                  />
+                </div>
                 <Button variant="outline" onClick={loadLeads} disabled={leadsLoading}>
                   <RefreshCw className={`w-4 h-4 mr-2 ${leadsLoading ? "animate-spin" : ""}`} />
                   Atualizar
                 </Button>
+                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsEstagioFilter !== "all" || leadsTierFilter !== "all" || leadsDateFrom || leadsDateTo) && (
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => {
+                      setLeadsStatusFilter("all");
+                      setLeadsMercadoFilter("all");
+                      setLeadsEstagioFilter("all");
+                      setLeadsTierFilter("all");
+                      setLeadsDateFrom("");
+                      setLeadsDateTo("");
+                    }}
+                  >
+                    <XCircle className="w-4 h-4 mr-2" />
+                    Limpar filtros
+                  </Button>
+                )}
               </div>
+              
+              {/* Filter Results Info */}
+              {filteredLeads.length !== leads.length && (
+                <p className="text-sm text-muted-foreground mb-4">
+                  Mostrando {filteredLeads.length} de {leads.length} leads
+                </p>
+              )}
 
               {/* Leads Table */}
               <Card>
@@ -862,10 +993,12 @@ export default function AdminAnalytics() {
                         <tr>
                           <th className="text-left p-4 w-12">#</th>
                           <th className="text-left p-4">Status</th>
+                          <th className="text-left p-4">Tier</th>
                           <th className="text-left p-4">Nome</th>
                           <th className="text-left p-4">WhatsApp</th>
                           <th className="text-left p-4">Instagram</th>
                           <th className="text-left p-4">Mercado</th>
+                          <th className="text-left p-4">Estágio</th>
                           <th className="text-left p-4">Data</th>
                           <th className="text-right p-4">Ações</th>
                         </tr>
@@ -873,13 +1006,13 @@ export default function AdminAnalytics() {
                       <tbody>
                         {leadsLoading ? (
                           <tr>
-                            <td colSpan={8} className="p-8 text-center">
+                            <td colSpan={10} className="p-8 text-center">
                               <Loader2 className="w-6 h-6 animate-spin mx-auto" />
                             </td>
                           </tr>
                         ) : filteredLeads.length === 0 ? (
                           <tr>
-                            <td colSpan={8} className="p-8 text-center text-muted-foreground">
+                            <td colSpan={10} className="p-8 text-center text-muted-foreground">
                               Nenhum lead encontrado
                             </td>
                           </tr>
@@ -897,9 +1030,25 @@ export default function AdminAnalytics() {
                                     Lido
                                   </Badge>
                                 ) : (
-                                  <Badge className="bg-primary text-primary-foreground">
+                                  <Badge className="bg-green-500 text-white animate-pulse">
                                     Novo
                                   </Badge>
+                                )}
+                              </td>
+                              <td className="p-4">
+                                {lead.tier ? (
+                                  <Badge 
+                                    variant="outline"
+                                    className={
+                                      lead.tier === "A" ? "border-green-500 text-green-500 bg-green-500/10" :
+                                      lead.tier === "B" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
+                                      "border-red-500 text-red-500 bg-red-500/10"
+                                    }
+                                  >
+                                    {lead.tier}
+                                  </Badge>
+                                ) : (
+                                  <span className="text-muted-foreground">-</span>
                                 )}
                               </td>
                               <td className="p-4 font-medium">{lead.nome_completo}</td>
@@ -926,6 +1075,7 @@ export default function AdminAnalytics() {
                                 </a>
                               </td>
                               <td className="p-4 text-muted-foreground">{lead.mercado}</td>
+                              <td className="p-4 text-muted-foreground text-xs">{lead.estagio_negocio}</td>
                               <td className="p-4 text-muted-foreground">
                                 {format(new Date(lead.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
                               </td>
@@ -1285,46 +1435,128 @@ export default function AdminAnalytics() {
 
             <TabsContent value="funnel">
               {metrics && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Funil por Etapa</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"].map(
-                        (stepId, index) => {
-                          const stepData = metrics.step_funnel.find((s) => s.step_id === stepId);
-                          const count = stepData?.count || 0;
-                          const dropOff = metrics.drop_offs[stepId] || 0;
-                          const maxCount = metrics.started_quiz || 1;
-                          const percentage = ((count / maxCount) * 100).toFixed(0);
+                <div className="space-y-6">
+                  {/* Funnel Overview Cards */}
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <Card>
+                      <CardContent className="pt-6 text-center">
+                        <p className="text-2xl font-bold">{metrics.total_visitors}</p>
+                        <p className="text-xs text-muted-foreground">Visitantes totais</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="pt-6 text-center">
+                        <p className="text-2xl font-bold text-red-400">{metrics.total_visitors - metrics.entered_quiz}</p>
+                        <p className="text-xs text-muted-foreground">Não entraram no quiz</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="pt-6 text-center">
+                        <p className="text-2xl font-bold text-blue-400">{metrics.entered_quiz}</p>
+                        <p className="text-xs text-muted-foreground">Entraram no quiz</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="pt-6 text-center">
+                        <p className="text-2xl font-bold text-yellow-400">{metrics.started_quiz}</p>
+                        <p className="text-xs text-muted-foreground">Começaram quiz</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="pt-6 text-center">
+                        <p className="text-2xl font-bold text-green-400">{metrics.completed}</p>
+                        <p className="text-xs text-muted-foreground">Completaram</p>
+                      </CardContent>
+                    </Card>
+                  </div>
 
-                          return (
-                            <div key={stepId} className="space-y-2">
-                              <div className="flex justify-between text-sm">
-                                <span>
-                                  {index + 1}. {STEP_LABELS[stepId]}
-                                </span>
-                                <span className="text-muted-foreground">
-                                  {count} visualizações
-                                  {dropOff > 0 && (
-                                    <span className="text-red-400 ml-2">({dropOff} abandonos)</span>
-                                  )}
-                                </span>
+                  {/* Drop-off Summary */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Análise de Drop-off</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+                          <p className="text-red-400 text-sm font-medium mb-1">Não entraram no quiz</p>
+                          <p className="text-2xl font-bold">{metrics.total_visitors - metrics.entered_quiz}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {metrics.total_visitors > 0 ? 
+                              `${(((metrics.total_visitors - metrics.entered_quiz) / metrics.total_visitors) * 100).toFixed(1)}% dos visitantes` 
+                              : "0%"
+                            }
+                          </p>
+                        </div>
+                        <div className="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                          <p className="text-yellow-400 text-sm font-medium mb-1">Abandonaram durante o quiz</p>
+                          <p className="text-2xl font-bold">{metrics.started_quiz - metrics.completed}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {metrics.started_quiz > 0 ? 
+                              `${(((metrics.started_quiz - metrics.completed) / metrics.started_quiz) * 100).toFixed(1)}% de quem começou` 
+                              : "0%"
+                            }
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Step-by-Step Funnel */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Funil por Etapa do Quiz</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"].map(
+                          (stepId, index) => {
+                            const stepData = metrics.step_funnel.find((s) => s.step_id === stepId);
+                            const count = stepData?.count || 0;
+                            const dropOff = metrics.drop_offs[stepId] || 0;
+                            const prevStepData = index > 0 
+                              ? metrics.step_funnel.find((s) => s.step_id === ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"][index - 1])
+                              : null;
+                            const prevCount = prevStepData?.count || metrics.started_quiz || 1;
+                            const dropRate = prevCount > 0 && count < prevCount 
+                              ? (((prevCount - count) / prevCount) * 100).toFixed(0)
+                              : "0";
+                            const maxCount = metrics.started_quiz || 1;
+                            const percentage = ((count / maxCount) * 100).toFixed(0);
+
+                            return (
+                              <div key={stepId} className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span className="font-medium">
+                                    {index + 1}. {STEP_LABELS[stepId]}
+                                  </span>
+                                  <div className="flex items-center gap-4">
+                                    <span className="text-muted-foreground">
+                                      {count} visualizações
+                                    </span>
+                                    {dropOff > 0 && (
+                                      <span className="text-red-400 text-xs bg-red-500/10 px-2 py-1 rounded">
+                                        {dropOff} abandonos ({dropRate}% de queda)
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="h-6 bg-muted rounded-full overflow-hidden relative">
+                                  <div
+                                    className="h-full bg-primary transition-all"
+                                    style={{ width: `${percentage}%` }}
+                                  />
+                                  <span className="absolute inset-0 flex items-center justify-center text-xs font-medium">
+                                    {percentage}%
+                                  </span>
+                                </div>
                               </div>
-                              <div className="h-4 bg-muted rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-primary transition-all"
-                                  style={{ width: `${percentage}%` }}
-                                />
-                              </div>
-                            </div>
-                          );
-                        }
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                            );
+                          }
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               )}
             </TabsContent>
 
