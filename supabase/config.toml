@@ -2,3 +2,9 @@ project_id = "troqylihudenqjsxsnwy"
 
 [functions.kommo-webhook]
 verify_jwt = false
+
+[functions.admin-login]
+verify_jwt = false
+
+[functions.admin-data]
+verify_jwt = false

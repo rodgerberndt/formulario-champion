@@ -1,9 +1,12 @@
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Sparkles, TrendingUp, Trophy } from "lucide-react";
 import founderPhoto from "@/assets/founder-photo.png";
-export function Hero() {
-  const navigate = useNavigate();
+
+interface HeroProps {
+  onStartClick?: () => void;
+}
+
+export function Hero({ onStartClick }: HeroProps) {
   return <section className="min-h-[80vh] md:min-h-screen flex items-center justify-center pt-16 pb-16 md:pb-12 relative overflow-hidden">
       {/* Background Effects - Optimized */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -65,7 +68,11 @@ export function Hero() {
               <div className="flex flex-col items-center md:items-start gap-4 mb-8 animate-slide-up" style={{
               animationDelay: "0.1s"
             }}>
-                <Button size="lg" onClick={() => navigate("/quiz")} className="group h-12 md:h-14 px-6 md:px-8 text-sm md:text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]">
+                <Button 
+                  size="lg" 
+                  onClick={onStartClick} 
+                  className="group h-12 md:h-14 px-6 md:px-8 text-sm md:text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]"
+                >
                   FAZER DIAGNÓSTICO (2 MIN)
                   <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>

@@ -6,9 +6,17 @@ import { Footer } from "@/components/landing/Footer";
 import { BackgroundDecor } from "@/components/BackgroundDecor";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useTracking } from "@/hooks/useTracking";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { trackStartClick } = useTracking();
+
+  const handleStartClick = async (buttonId: string) => {
+    // Track the click before navigating
+    await trackStartClick(buttonId);
+    navigate("/quiz");
+  };
 
   return (
     <div className="min-h-screen relative">
@@ -16,7 +24,7 @@ const Index = () => {
       <Header />
       
       <main>
-        <Hero />
+        <Hero onStartClick={() => handleStartClick("start_btn_1")} />
         <SocialProofCarousel />
         
         {/* CTA Section before footer */}
@@ -27,7 +35,7 @@ const Index = () => {
             </p>
             <Button
               size="lg"
-              onClick={() => navigate("/quiz")}
+              onClick={() => handleStartClick("start_btn_2")}
               className="group h-12 md:h-14 px-6 md:px-10 text-sm md:text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]"
             >
               FAZER DIAGNÓSTICO (2 MIN)
@@ -43,7 +51,7 @@ const Index = () => {
       <div className="md:hidden mobile-bottom-cta">
         <Button
           size="lg"
-          onClick={() => navigate("/quiz")}
+          onClick={() => handleStartClick("start_btn_3")}
           className="w-full h-12 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20"
         >
           COMEÇAR DIAGNÓSTICO (2 MIN)
