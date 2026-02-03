@@ -178,10 +178,18 @@ export default function AdminAnalytics() {
     return localStorage.getItem("admin_active_tab") || "leads";
   });
 
+  // Completed leads modal
+  const [showCompletedModal, setShowCompletedModal] = useState(false);
+
   // Persist active tab to localStorage
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     localStorage.setItem("admin_active_tab", value);
+  };
+
+  // Open completed leads modal - switches to leads tab and shows all
+  const openCompletedLeads = () => {
+    setShowCompletedModal(true);
   };
 
   // Check for existing token on mount
@@ -957,13 +965,16 @@ export default function AdminAnalytics() {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card 
+                className="cursor-pointer hover:bg-muted/50 transition-colors border-green-500/30 hover:border-green-500/50"
+                onClick={openCompletedLeads}
+              >
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-3">
                     <CheckCircle className="w-8 h-8 text-green-500" />
                     <div>
                       <p className="text-2xl font-bold">{metrics.completed}</p>
-                      <p className="text-xs text-muted-foreground">Concluíram</p>
+                      <p className="text-xs text-muted-foreground">Concluíram <span className="text-green-500">→ clique para ver</span></p>
                     </div>
                   </div>
                 </CardContent>
@@ -1899,6 +1910,97 @@ export default function AdminAnalytics() {
               )}
             </TabsContent>
           </Tabs>
+
+          {/* Completed Leads Modal */}
+          <Dialog open={showCompletedModal} onOpenChange={setShowCompletedModal}>
+            <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-xl flex items-center gap-2">
+                  <CheckCircle className="w-6 h-6 text-green-500" />
+                  Leads que Concluíram ({leads.length})
+                </DialogTitle>
+              </DialogHeader>
+              <div className="mt-4">
+                {leads.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">Nenhum lead concluído ainda</p>
+                ) : (
+                  <div className="space-y-3">
+                    {leads
+                      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                      .map((lead, index) => (
+                        <div 
+                          key={lead.id}
+                          className="p-4 border rounded-lg hover:bg-muted/30 cursor-pointer transition-colors"
+                          onClick={() => {
+                            setShowCompletedModal(false);
+                            openLeadDetail(lead);
+                          }}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                              <span className="text-lg font-bold text-muted-foreground w-8">{index + 1}</span>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <p className="font-semibold text-lg">{lead.nome_completo}</p>
+                                  {lead.tier && (
+                                    <Badge 
+                                      variant="outline"
+                                      className={
+                                        lead.tier === "A" ? "border-green-500 text-green-500 bg-green-500/10" :
+                                        lead.tier === "B" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
+                                        "border-red-500 text-red-500 bg-red-500/10"
+                                      }
+                                    >
+                                      Tier {lead.tier}
+                                    </Badge>
+                                  )}
+                                  {!lead.lido && (
+                                    <Badge className="bg-green-500 text-white">Novo</Badge>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                                  <span>{lead.mercado}</span>
+                                  <span>•</span>
+                                  <span>{lead.estagio_negocio}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-muted-foreground">
+                                {format(new Date(lead.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {format(new Date(lead.created_at), "HH:mm", { locale: ptBR })}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex gap-4 mt-2 ml-12">
+                            <a 
+                              href={`https://wa.me/55${lead.whatsapp.replace(/\D/g, '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-green-500 hover:underline"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {lead.whatsapp}
+                            </a>
+                            <a 
+                              href={`https://instagram.com/${lead.instagram.replace('@', '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-primary hover:underline"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {lead.instagram}
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </>
