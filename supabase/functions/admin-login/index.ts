@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
-import { create, verify } from "https://deno.land/x/djwt@v2.9.1/mod.ts";
+import { create } from "https://deno.land/x/djwt@v2.9.1/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -44,6 +43,14 @@ function recordAttempt(ip: string, success: boolean) {
   }
 }
 
+// SHA-256 hash function for password comparison
+async function sha256(message: string): Promise<string> {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -81,8 +88,9 @@ serve(async (req) => {
       );
     }
 
-    // Verify password
-    const isValid = await bcrypt.compare(password, passwordHash);
+    // Hash the provided password and compare with stored hash
+    const inputHash = await sha256(password);
+    const isValid = inputHash === passwordHash;
 
     if (!isValid) {
       recordAttempt(ip, false);
