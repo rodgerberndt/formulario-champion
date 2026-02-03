@@ -12,6 +12,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useTracking } from "@/hooks/useTracking";
 import { ChevronRight, ChevronLeft, Check, Loader2 } from "lucide-react";
 import {
   calculateLeadScore,
@@ -39,6 +40,7 @@ export interface QuizSectionHandle {
 }
 
 export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
+  const { trackStepView, trackStepNext, trackStepBack, trackSubmit, updateSession } = useTracking();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -54,6 +56,8 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
   });
 
   const totalSteps = 6;
+  
+  const STEP_IDS = ['q1_nome', 'q2_whats', 'q3_insta', 'q4_mercado', 'q5_estagio', 'q6_dor'];
 
   // Load saved progress
   useEffect(() => {
@@ -77,6 +81,14 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ formData, step }));
     }
   }, [formData, step, submitted]);
+
+  // Track step view when step changes
+  useEffect(() => {
+    if (!submitted) {
+      const stepId = STEP_IDS[step - 1];
+      trackStepView(stepId);
+    }
+  }, [step, submitted, trackStepView]);
 
   // Expose scrollIntoView method
   useImperativeHandle(ref, () => ({
@@ -158,6 +170,15 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
 
       if (error) throw error;
 
+      // Track the submit event
+      await trackSubmit({
+        name: formData.nome_completo,
+        whatsapp: formData.whatsapp,
+        instagram: formData.instagram,
+        market: formData.mercado,
+        stage: formData.estagio_negocio,
+      });
+
       // Send to Kommo in background
       sendToKommo(formData, result.score, result.tier);
 
@@ -183,16 +204,50 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
     }
   };
 
-  const nextStep = () => {
+  // Get field data based on current step
+  const getFieldDataForStep = (stepNum: number): Record<string, string> => {
+    switch (stepNum) {
+      case 1: return { nome: formData.nome_completo };
+      case 2: return { whatsapp: formData.whatsapp };
+      case 3: return { instagram: formData.instagram };
+      case 4: return { mercado: formData.mercado };
+      case 5: return { estagio: formData.estagio_negocio };
+      case 6: return { dor_desejo: formData.dor_desejo };
+      default: return {};
+    }
+  };
+
+  const nextStep = async () => {
     if (canProceed() && step < totalSteps) {
+      const fromStepId = STEP_IDS[step - 1];
+      const toStepId = STEP_IDS[step];
+      
+      // Track step advancement with field data
+      await trackStepNext(fromStepId, toStepId, getFieldDataForStep(step));
+      
+      // Update session with partial lead data
+      const updateData: Record<string, string> = {};
+      if (step === 1) updateData.lead_name = formData.nome_completo;
+      if (step === 2) updateData.lead_whatsapp = formData.whatsapp;
+      if (step === 3) updateData.lead_instagram = formData.instagram;
+      if (step === 4) updateData.lead_market = formData.mercado;
+      if (step === 5) updateData.lead_stage = formData.estagio_negocio;
+      
+      if (Object.keys(updateData).length > 0) {
+        await updateSession(updateData);
+      }
+      
       setStep(step + 1);
     } else if (step === totalSteps && canProceed()) {
       handleSubmit();
     }
   };
 
-  const prevStep = () => {
+  const prevStep = async () => {
     if (step > 1) {
+      const fromStepId = STEP_IDS[step - 1];
+      const toStepId = STEP_IDS[step - 2];
+      await trackStepBack(fromStepId, toStepId);
       setStep(step - 1);
     }
   };
