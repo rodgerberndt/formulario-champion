@@ -211,28 +211,45 @@ serve(async (req) => {
       );
     }
 
-    // GET /metrics - Get funnel metrics
+    // GET /metrics - Get funnel metrics (calculated from events for accuracy)
     if (path === "/metrics" && req.method === "GET") {
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
 
-      let query = supabase.from("lead_sessions").select("*");
-      
-      if (from) {
-        query = query.gte("created_at", from);
-      }
-      if (to) {
-        query = query.lte("created_at", to);
-      }
-
-      const { data: sessions, error: sessionsError } = await query;
+      // Get all sessions
+      let sessionsQuery = supabase.from("lead_sessions").select("*");
+      if (from) sessionsQuery = sessionsQuery.gte("created_at", from);
+      if (to) sessionsQuery = sessionsQuery.lte("created_at", to);
+      const { data: sessions, error: sessionsError } = await sessionsQuery;
       if (sessionsError) throw sessionsError;
 
-      // Calculate metrics
+      // Get all events to calculate accurate metrics
+      const { data: allEvents, error: eventsError } = await supabase
+        .from("lead_events")
+        .select("event_name, step_id, session_id, page");
+      if (eventsError) throw eventsError;
+
+      // Get total leads (completed quizzes)
+      const { count: leadsCount } = await supabase
+        .from("leads")
+        .select("*", { count: "exact", head: true });
+
+      // Calculate metrics from events (more accurate)
+      const sessionsWithQuizView = new Set(
+        allEvents?.filter(e => e.event_name === "quiz_view").map(e => e.session_id) || []
+      );
+      const sessionsWithStepView = new Set(
+        allEvents?.filter(e => e.event_name === "step_view").map(e => e.session_id) || []
+      );
+      const sessionsWithSubmit = new Set(
+        allEvents?.filter(e => e.event_name === "submit").map(e => e.session_id) || []
+      );
+
       const total = sessions?.length || 0;
-      const enteredQuiz = sessions?.filter(s => s.entered_quiz_page).length || 0;
-      const startedQuiz = sessions?.filter(s => s.started_quiz).length || 0;
-      const completed = sessions?.filter(s => s.completed).length || 0;
+      const enteredQuiz = sessionsWithQuizView.size;
+      const startedQuiz = sessionsWithStepView.size;
+      // Use leads count as ground truth for completed
+      const completed = leadsCount || sessionsWithSubmit.size;
 
       // Button distribution
       const buttonDistribution = {
@@ -241,19 +258,11 @@ serve(async (req) => {
         start_btn_3: sessions?.filter(s => s.start_button_id === "start_btn_3").length || 0,
       };
 
-      // Step funnel - get from events
-      let eventsQuery = supabase
-        .from("lead_events")
-        .select("event_name, step_id, session_id")
-        .eq("event_name", "step_view");
-      
-      const { data: stepEvents, error: eventsError } = await eventsQuery;
-      if (eventsError) throw eventsError;
-
-      // Count unique sessions per step
+      // Step funnel - count unique sessions per step
+      const stepOrder = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"];
       const stepCounts: Record<string, Set<string>> = {};
-      stepEvents?.forEach(event => {
-        if (event.step_id) {
+      allEvents?.forEach(event => {
+        if (event.event_name === "step_view" && event.step_id) {
           if (!stepCounts[event.step_id]) {
             stepCounts[event.step_id] = new Set();
           }
@@ -261,16 +270,32 @@ serve(async (req) => {
         }
       });
 
-      const stepFunnel = Object.entries(stepCounts).map(([stepId, sessions]) => ({
+      const stepFunnel = stepOrder.map(stepId => ({
         step_id: stepId,
-        count: sessions.size,
+        count: stepCounts[stepId]?.size || 0,
       }));
 
-      // Drop-off analysis
+      // Drop-off analysis - find last step for sessions that didn't complete
       const dropOffs: Record<string, number> = {};
-      sessions?.forEach(session => {
-        if (session.started_quiz && !session.completed && session.current_step_id) {
-          dropOffs[session.current_step_id] = (dropOffs[session.current_step_id] || 0) + 1;
+      const sessionLastStep: Record<string, string> = {};
+      
+      // Find the furthest step each session reached
+      allEvents?.forEach(event => {
+        if (event.event_name === "step_view" && event.step_id) {
+          const currentIndex = stepOrder.indexOf(event.step_id);
+          const existingStep = sessionLastStep[event.session_id];
+          const existingIndex = existingStep ? stepOrder.indexOf(existingStep) : -1;
+          
+          if (currentIndex > existingIndex) {
+            sessionLastStep[event.session_id] = event.step_id;
+          }
+        }
+      });
+
+      // Count drop-offs at each step (sessions that didn't submit)
+      Object.entries(sessionLastStep).forEach(([sessionId, lastStep]) => {
+        if (!sessionsWithSubmit.has(sessionId)) {
+          dropOffs[lastStep] = (dropOffs[lastStep] || 0) + 1;
         }
       });
 
@@ -285,6 +310,55 @@ serve(async (req) => {
           step_funnel: stepFunnel,
           drop_offs: dropOffs,
         }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // GET /dropoff/:stepId - Get sessions that dropped off at a specific step
+    const dropoffMatch = path.match(/^\/dropoff\/([a-z0-9_]+)$/);
+    if (dropoffMatch && req.method === "GET") {
+      const stepId = dropoffMatch[1];
+      const stepOrder = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"];
+
+      // Get all events
+      const { data: allEvents, error: eventsError } = await supabase
+        .from("lead_events")
+        .select("event_name, step_id, session_id");
+      if (eventsError) throw eventsError;
+
+      // Find sessions with submit
+      const sessionsWithSubmit = new Set(
+        allEvents?.filter(e => e.event_name === "submit").map(e => e.session_id) || []
+      );
+
+      // Find the furthest step each session reached
+      const sessionLastStep: Record<string, string> = {};
+      allEvents?.forEach(event => {
+        if (event.event_name === "step_view" && event.step_id) {
+          const currentIndex = stepOrder.indexOf(event.step_id);
+          const existingStep = sessionLastStep[event.session_id];
+          const existingIndex = existingStep ? stepOrder.indexOf(existingStep) : -1;
+          
+          if (currentIndex > existingIndex) {
+            sessionLastStep[event.session_id] = event.step_id;
+          }
+        }
+      });
+
+      // Get sessions that dropped off at this step
+      const droppedSessionIds = Object.entries(sessionLastStep)
+        .filter(([sessionId, lastStep]) => lastStep === stepId && !sessionsWithSubmit.has(sessionId))
+        .map(([sessionId]) => sessionId);
+
+      // Get session details with their data
+      const { data: droppedSessions, error: sessionsError } = await supabase
+        .from("lead_sessions")
+        .select("*")
+        .in("id", droppedSessionIds.length > 0 ? droppedSessionIds : ["00000000-0000-0000-0000-000000000000"]);
+      if (sessionsError) throw sessionsError;
+
+      return new Response(
+        JSON.stringify(droppedSessions || []),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

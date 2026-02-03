@@ -162,6 +162,11 @@ export default function AdminAnalytics() {
   const [leadsDateFrom, setLeadsDateFrom] = useState("");
   const [leadsDateTo, setLeadsDateTo] = useState("");
 
+  // Funnel drop-off detail state
+  const [expandedStep, setExpandedStep] = useState<string | null>(null);
+  const [dropoffSessions, setDropoffSessions] = useState<Session[]>([]);
+  const [dropoffLoading, setDropoffLoading] = useState(false);
+
   // Check for existing token on mount
   useEffect(() => {
     const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
@@ -225,6 +230,26 @@ export default function AdminAnalytics() {
     setSelectedLead(lead);
     if (!lead.lido) {
       markLeadAsRead(lead.id);
+    }
+  };
+
+  // Load drop-off sessions for a specific step
+  const loadDropoffSessions = async (stepId: string) => {
+    if (expandedStep === stepId) {
+      setExpandedStep(null);
+      return;
+    }
+    
+    setDropoffLoading(true);
+    setExpandedStep(stepId);
+    try {
+      const data = await fetchAdminData(`/dropoff/${stepId}`);
+      setDropoffSessions(data || []);
+    } catch (error) {
+      console.error("Error loading dropoff sessions:", error);
+      setDropoffSessions([]);
+    } finally {
+      setDropoffLoading(false);
     }
   };
 
@@ -1505,6 +1530,7 @@ export default function AdminAnalytics() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Funil por Etapa do Quiz</CardTitle>
+                      <p className="text-sm text-muted-foreground">Clique em uma etapa para ver os detalhes de quem abandonou ali</p>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
@@ -1513,29 +1539,33 @@ export default function AdminAnalytics() {
                             const stepData = metrics.step_funnel.find((s) => s.step_id === stepId);
                             const count = stepData?.count || 0;
                             const dropOff = metrics.drop_offs[stepId] || 0;
-                            const prevStepData = index > 0 
-                              ? metrics.step_funnel.find((s) => s.step_id === ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"][index - 1])
-                              : null;
-                            const prevCount = prevStepData?.count || metrics.started_quiz || 1;
-                            const dropRate = prevCount > 0 && count < prevCount 
-                              ? (((prevCount - count) / prevCount) * 100).toFixed(0)
-                              : "0";
                             const maxCount = metrics.started_quiz || 1;
-                            const percentage = ((count / maxCount) * 100).toFixed(0);
+                            // Percentage of people who dropped at THIS step (relative to total who started)
+                            const dropPercentage = maxCount > 0 ? ((dropOff / maxCount) * 100).toFixed(1) : "0";
+                            const reachedPercentage = maxCount > 0 ? ((count / maxCount) * 100).toFixed(0) : "0";
+                            const isExpanded = expandedStep === stepId;
 
                             return (
                               <div key={stepId} className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                  <span className="font-medium">
+                                <div 
+                                  className={`flex justify-between text-sm p-3 rounded-lg cursor-pointer transition-colors ${
+                                    dropOff > 0 ? 'hover:bg-muted/50' : ''
+                                  } ${isExpanded ? 'bg-muted/50' : ''}`}
+                                  onClick={() => dropOff > 0 && loadDropoffSessions(stepId)}
+                                >
+                                  <span className="font-medium flex items-center gap-2">
                                     {index + 1}. {STEP_LABELS[stepId]}
+                                    {dropOff > 0 && (
+                                      <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                    )}
                                   </span>
                                   <div className="flex items-center gap-4">
                                     <span className="text-muted-foreground">
-                                      {count} visualizações
+                                      {count} chegaram
                                     </span>
                                     {dropOff > 0 && (
-                                      <span className="text-red-400 text-xs bg-red-500/10 px-2 py-1 rounded">
-                                        {dropOff} abandonos ({dropRate}% de queda)
+                                      <span className="text-red-400 text-xs bg-red-500/10 px-2 py-1 rounded font-medium">
+                                        {dropOff} abandonos ({dropPercentage}%)
                                       </span>
                                     )}
                                   </div>
@@ -1543,12 +1573,72 @@ export default function AdminAnalytics() {
                                 <div className="h-6 bg-muted rounded-full overflow-hidden relative">
                                   <div
                                     className="h-full bg-primary transition-all"
-                                    style={{ width: `${percentage}%` }}
+                                    style={{ width: `${reachedPercentage}%` }}
                                   />
                                   <span className="absolute inset-0 flex items-center justify-center text-xs font-medium">
-                                    {percentage}%
+                                    {reachedPercentage}%
                                   </span>
                                 </div>
+
+                                {/* Expanded drop-off details */}
+                                {isExpanded && (
+                                  <div className="mt-3 ml-4 p-4 bg-red-500/5 rounded-lg border border-red-500/20">
+                                    <h4 className="text-sm font-medium text-red-400 mb-3">
+                                      Pessoas que abandonaram em "{STEP_LABELS[stepId]}"
+                                    </h4>
+                                    {dropoffLoading ? (
+                                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Carregando...
+                                      </div>
+                                    ) : dropoffSessions.length === 0 ? (
+                                      <p className="text-sm text-muted-foreground">Nenhuma sessão encontrada</p>
+                                    ) : (
+                                      <div className="space-y-3">
+                                        {dropoffSessions.map((session) => (
+                                          <div key={session.id} className="p-3 bg-background rounded-lg border flex flex-wrap justify-between items-start gap-2">
+                                            <div className="space-y-1">
+                                              <p className="font-medium">
+                                                {session.lead_name || <span className="text-muted-foreground italic">Sem nome</span>}
+                                              </p>
+                                              <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+                                                {session.lead_whatsapp && (
+                                                  <a 
+                                                    href={`https://wa.me/55${session.lead_whatsapp.replace(/\D/g, '')}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-green-500 hover:underline"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                  >
+                                                    📱 {session.lead_whatsapp}
+                                                  </a>
+                                                )}
+                                                {session.lead_instagram && (
+                                                  <a 
+                                                    href={`https://instagram.com/${session.lead_instagram.replace('@', '')}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-primary hover:underline"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                  >
+                                                    📸 {session.lead_instagram}
+                                                  </a>
+                                                )}
+                                              </div>
+                                              {session.lead_market && (
+                                                <p className="text-xs text-muted-foreground">Mercado: {session.lead_market}</p>
+                                              )}
+                                            </div>
+                                            <div className="text-right text-xs text-muted-foreground">
+                                              <p>{new Date(session.created_at).toLocaleDateString("pt-BR")}</p>
+                                              <p>{session.device_type || "desktop"}</p>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             );
                           }
