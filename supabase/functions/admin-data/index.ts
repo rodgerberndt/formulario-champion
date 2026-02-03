@@ -254,10 +254,14 @@ serve(async (req) => {
       const total = sessions?.length || 0;
       
       // Calculate unique visitors by IP (excluding null/empty)
-      const uniqueIps = new Set(
-        sessions?.filter(s => s.ip_address && s.ip_address !== 'unknown').map(s => s.ip_address) || []
-      );
-      const uniqueVisitors = uniqueIps.size > 0 ? uniqueIps.size : total;
+      const sessionsWithIp = sessions?.filter(s => s.ip_address && s.ip_address !== 'unknown') || [];
+      const uniqueIps = new Set(sessionsWithIp.map(s => s.ip_address));
+      
+      // Only use unique IP count if we have IPs for at least 50% of sessions
+      // Otherwise IP tracking is too incomplete to be reliable
+      const ipCoverage = total > 0 ? (sessionsWithIp.length / total) : 0;
+      const uniqueVisitors = ipCoverage >= 0.5 ? uniqueIps.size : total;
+      const hasReliableIpData = ipCoverage >= 0.5;
       
       const enteredQuiz = sessionsWithQuizView.size;
       const startedQuiz = sessionsWithStepView.size;
@@ -359,6 +363,8 @@ serve(async (req) => {
         JSON.stringify({
           total_visitors: total,
           unique_visitors: uniqueVisitors,
+          has_reliable_ip_data: hasReliableIpData,
+          ip_coverage_percent: Math.round(ipCoverage * 100),
           entered_quiz: enteredQuiz,
           started_quiz: startedQuiz,
           completed,
