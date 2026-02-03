@@ -111,6 +111,14 @@ Deno.serve(async (req) => {
       );
     }
 
+    if (action === 'get_ip_only') {
+      // Just return the IP address for presence tracking
+      return new Response(
+        JSON.stringify({ ip }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Default: just return IP
     return new Response(
       JSON.stringify({ ip }),

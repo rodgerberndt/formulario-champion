@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { useActiveUsers } from "@/hooks/usePresence";
 import { toast } from "@/hooks/use-toast";
 import {
   Users,
@@ -31,6 +32,7 @@ import {
   RefreshCw,
   Check,
   Trash2,
+  Radio,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -134,6 +136,7 @@ interface Lead {
 
 export default function AdminAnalytics() {
   const navigate = useNavigate();
+  const { activeUsers, uniqueCount } = useActiveUsers();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [password, setPassword] = useState("");
@@ -945,6 +948,43 @@ export default function AdminAnalytics() {
               />
             </div>
           </div>
+
+          {/* Active Users Card - Always visible */}
+          <Card className="mb-4 border-green-500/50 bg-green-500/5">
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <Radio className="w-8 h-8 text-green-500" />
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold text-green-500">{uniqueCount}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {uniqueCount === 1 ? "pessoa ativa" : "pessoas ativas"} agora
+                    </p>
+                  </div>
+                </div>
+                {activeUsers.length > 0 && (
+                  <div className="text-right text-xs text-muted-foreground max-w-xs">
+                    <p className="font-medium text-green-500 mb-1">IPs únicos conectados:</p>
+                    <div className="flex flex-wrap gap-1 justify-end">
+                      {[...new Set(activeUsers.map(u => u.ip_address))].slice(0, 5).map((ip, i) => (
+                        <span key={i} className="px-2 py-0.5 bg-green-500/10 rounded text-green-400 font-mono text-[10px]">
+                          {ip}
+                        </span>
+                      ))}
+                      {[...new Set(activeUsers.map(u => u.ip_address))].length > 5 && (
+                        <span className="px-2 py-0.5 bg-muted rounded text-muted-foreground text-[10px]">
+                          +{[...new Set(activeUsers.map(u => u.ip_address))].length - 5} mais
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Metrics Cards */}
           {metrics && (
