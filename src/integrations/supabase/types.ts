@@ -64,6 +64,7 @@ export type Database = {
           entered_quiz_page: boolean
           first_page: string | null
           id: string
+          ip_address: string | null
           last_page: string | null
           last_seen_at: string
           lead_instagram: string | null
@@ -89,6 +90,7 @@ export type Database = {
           entered_quiz_page?: boolean
           first_page?: string | null
           id?: string
+          ip_address?: string | null
           last_page?: string | null
           last_seen_at?: string
           lead_instagram?: string | null
@@ -114,6 +116,7 @@ export type Database = {
           entered_quiz_page?: boolean
           first_page?: string | null
           id?: string
+          ip_address?: string | null
           last_page?: string | null
           last_seen_at?: string
           lead_instagram?: string | null
@@ -145,6 +148,8 @@ export type Database = {
           gargalo: string | null
           id: string
           instagram: string
+          ip_address: string | null
+          is_duplicate_ip: boolean | null
           lido: boolean
           mercado: string
           nome_completo: string
@@ -170,6 +175,8 @@ export type Database = {
           gargalo?: string | null
           id?: string
           instagram: string
+          ip_address?: string | null
+          is_duplicate_ip?: boolean | null
           lido?: boolean
           mercado: string
           nome_completo: string
@@ -195,6 +202,8 @@ export type Database = {
           gargalo?: string | null
           id?: string
           instagram?: string
+          ip_address?: string | null
+          is_duplicate_ip?: boolean | null
           lido?: boolean
           mercado?: string
           nome_completo?: string

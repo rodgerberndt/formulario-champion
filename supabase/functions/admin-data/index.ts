@@ -252,6 +252,13 @@ serve(async (req) => {
       );
 
       const total = sessions?.length || 0;
+      
+      // Calculate unique visitors by IP (excluding null/empty)
+      const uniqueIps = new Set(
+        sessions?.filter(s => s.ip_address && s.ip_address !== 'unknown').map(s => s.ip_address) || []
+      );
+      const uniqueVisitors = uniqueIps.size > 0 ? uniqueIps.size : total;
+      
       const enteredQuiz = sessionsWithQuizView.size;
       const startedQuiz = sessionsWithStepView.size;
       // Use leads count as ground truth for completed
@@ -351,6 +358,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({
           total_visitors: total,
+          unique_visitors: uniqueVisitors,
           entered_quiz: enteredQuiz,
           started_quiz: startedQuiz,
           completed,
