@@ -730,10 +730,28 @@ export default function AdminAnalytics() {
                           {event.button_id && (
                             <p className="text-muted-foreground">Botão: {event.button_id}</p>
                           )}
-                          {event.metadata && Object.keys(event.metadata).length > 0 && (
-                            <pre className="text-xs text-muted-foreground mt-1 bg-muted p-2 rounded">
-                              {JSON.stringify(event.metadata, null, 2)}
-                            </pre>
+                          {/* Show field values from metadata in a readable format */}
+                          {event.metadata && (event.metadata as Record<string, unknown>).field_value && (
+                            <div className="mt-2 p-2 bg-primary/10 rounded-lg border border-primary/20">
+                              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Valor preenchido:</p>
+                              {Object.entries((event.metadata as Record<string, unknown>).field_value as Record<string, string>).map(([key, value]) => (
+                                <p key={key} className="text-sm text-foreground">
+                                  <span className="text-primary font-medium capitalize">{key}:</span>{" "}
+                                  <span className="font-medium">{value}</span>
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                          {/* Show other metadata (like from_step, to_step) in smaller format */}
+                          {event.metadata && Object.keys(event.metadata).filter(k => k !== 'field_value').length > 0 && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {(event.metadata as Record<string, unknown>).from_step && (
+                                <span>De: {STEP_LABELS[String((event.metadata as Record<string, unknown>).from_step)] || String((event.metadata as Record<string, unknown>).from_step)}</span>
+                              )}
+                              {(event.metadata as Record<string, unknown>).to_step && (
+                                <span className="ml-2">→ Para: {STEP_LABELS[String((event.metadata as Record<string, unknown>).to_step)] || String((event.metadata as Record<string, unknown>).to_step)}</span>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
