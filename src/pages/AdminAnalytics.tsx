@@ -859,18 +859,24 @@ export default function AdminAnalytics() {
           )}
 
           <Tabs defaultValue="leads" className="space-y-6">
-            <TabsList>
-              <TabsTrigger value="leads" className="relative">
+            <TabsList className="w-full md:w-auto h-14 p-1.5 bg-muted/50 border border-border rounded-xl gap-1">
+              <TabsTrigger value="leads" className="relative h-11 px-6 text-base font-semibold rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
                 Leads
                 {leadsUnreadCount > 0 && (
-                  <span className="ml-2 px-1.5 py-0.5 text-xs bg-destructive text-destructive-foreground rounded-full">
+                  <span className="ml-2 px-2 py-0.5 text-xs bg-destructive text-destructive-foreground rounded-full font-bold">
                     {leadsUnreadCount}
                   </span>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="sessions">Sessões</TabsTrigger>
-              <TabsTrigger value="funnel">Funil</TabsTrigger>
-              <TabsTrigger value="buttons">Botões</TabsTrigger>
+              <TabsTrigger value="sessions" className="h-11 px-6 text-base font-semibold rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+                Sessões
+              </TabsTrigger>
+              <TabsTrigger value="funnel" className="h-11 px-6 text-base font-semibold rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+                Funil
+              </TabsTrigger>
+              <TabsTrigger value="buttons" className="h-11 px-6 text-base font-semibold rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+                Botões
+              </TabsTrigger>
             </TabsList>
 
             {/* Leads Tab */}
