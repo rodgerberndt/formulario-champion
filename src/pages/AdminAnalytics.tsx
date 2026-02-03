@@ -721,48 +721,81 @@ export default function AdminAnalytics() {
                   <p className="text-center text-muted-foreground py-8">Nenhum evento registrado para esta sessão</p>
                 ) : (
                   <div className="space-y-4">
-                    {sessionEvents.map((event) => (
-                      <div key={event.id} className="flex gap-4 text-sm border-l-2 border-border pl-4 pb-4">
-                        <div className="text-muted-foreground whitespace-nowrap">
-                          {new Date(event.created_at).toLocaleTimeString("pt-BR")}
-                        </div>
-                        <div>
-                          <p className="font-medium">{event.event_name}</p>
-                          {event.page && <p className="text-muted-foreground">Página: {event.page}</p>}
-                          {event.step_id && (
-                            <p className="text-muted-foreground">
-                              Etapa: {STEP_LABELS[event.step_id] || event.step_id}
-                            </p>
-                          )}
-                          {event.button_id && (
-                            <p className="text-muted-foreground">Botão: {event.button_id}</p>
-                          )}
-                          {/* Show field values from metadata in a readable format */}
-                          {event.metadata && (event.metadata as Record<string, unknown>).field_value && (
-                            <div className="mt-2 p-2 bg-primary/10 rounded-lg border border-primary/20">
-                              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Valor preenchido:</p>
-                              {Object.entries((event.metadata as Record<string, unknown>).field_value as Record<string, string>).map(([key, value]) => (
-                                <p key={key} className="text-sm text-foreground">
-                                  <span className="text-primary font-medium capitalize">{key}:</span>{" "}
-                                  <span className="font-medium">{value}</span>
+                    {(() => {
+                      // Accumulate field data across events to show at each step
+                      const accumulatedData: Record<string, string> = {};
+                      
+                      return sessionEvents.map((event) => {
+                        // Accumulate field values from step_next events
+                        if (event.metadata && (event.metadata as Record<string, unknown>).field_value) {
+                          const fieldValue = (event.metadata as Record<string, unknown>).field_value as Record<string, string>;
+                          Object.assign(accumulatedData, fieldValue);
+                        }
+                        
+                        const currentAccumulated = { ...accumulatedData };
+                        const hasAccumulatedData = Object.keys(currentAccumulated).length > 0;
+                        
+                        // Get event-specific field value
+                        const eventFieldValue = event.metadata && (event.metadata as Record<string, unknown>).field_value as Record<string, string> | undefined;
+                        
+                        return (
+                          <div key={event.id} className="flex gap-4 text-sm border-l-2 border-border pl-4 pb-4">
+                            <div className="text-muted-foreground whitespace-nowrap text-xs">
+                              {new Date(event.created_at).toLocaleTimeString("pt-BR")}
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-semibold text-foreground">{event.event_name}</p>
+                              {event.page && <p className="text-muted-foreground text-xs">Página: {event.page}</p>}
+                              {event.step_id && (
+                                <p className="text-muted-foreground text-xs">
+                                  Etapa: {STEP_LABELS[event.step_id] || event.step_id}
                                 </p>
-                              ))}
-                            </div>
-                          )}
-                          {/* Show other metadata (like from_step, to_step) in smaller format */}
-                          {event.metadata && Object.keys(event.metadata).filter(k => k !== 'field_value').length > 0 && (
-                            <div className="text-xs text-muted-foreground mt-1">
-                              {(event.metadata as Record<string, unknown>).from_step && (
-                                <span>De: {STEP_LABELS[String((event.metadata as Record<string, unknown>).from_step)] || String((event.metadata as Record<string, unknown>).from_step)}</span>
                               )}
-                              {(event.metadata as Record<string, unknown>).to_step && (
-                                <span className="ml-2">→ Para: {STEP_LABELS[String((event.metadata as Record<string, unknown>).to_step)] || String((event.metadata as Record<string, unknown>).to_step)}</span>
+                              {event.button_id && (
+                                <p className="text-primary text-xs font-medium">🔘 Botão: {event.button_id}</p>
+                              )}
+                              
+                              {/* Show field value added in THIS event */}
+                              {eventFieldValue && (
+                                <div className="mt-2 p-2 bg-green-500/10 rounded-lg border border-green-500/20">
+                                  <p className="text-xs text-green-400 uppercase tracking-wider mb-1">✓ Dado preenchido:</p>
+                                  {Object.entries(eventFieldValue).map(([key, value]) => (
+                                    <p key={key} className="text-sm text-foreground">
+                                      <span className="text-green-400 font-medium capitalize">{key}:</span>{" "}
+                                      <span className="font-semibold">{value}</span>
+                                    </p>
+                                  ))}
+                                </div>
+                              )}
+                              
+                              {/* Show accumulated data so far (for step_view events to show what we have) */}
+                              {event.event_name === "step_view" && hasAccumulatedData && (
+                                <div className="mt-2 p-2 bg-muted/50 rounded-lg border border-border">
+                                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">📋 Dados coletados até aqui:</p>
+                                  {Object.entries(currentAccumulated).map(([key, value]) => (
+                                    <p key={key} className="text-xs text-muted-foreground">
+                                      <span className="font-medium capitalize">{key}:</span> {value}
+                                    </p>
+                                  ))}
+                                </div>
+                              )}
+                              
+                              {/* Show step transitions */}
+                              {event.metadata && Object.keys(event.metadata).filter(k => k !== 'field_value').length > 0 && (
+                                <div className="text-xs text-muted-foreground mt-1">
+                                  {(event.metadata as Record<string, unknown>).from_step && (
+                                    <span>De: {STEP_LABELS[String((event.metadata as Record<string, unknown>).from_step)] || String((event.metadata as Record<string, unknown>).from_step)}</span>
+                                  )}
+                                  {(event.metadata as Record<string, unknown>).to_step && (
+                                    <span className="ml-2">→ Para: {STEP_LABELS[String((event.metadata as Record<string, unknown>).to_step)] || String((event.metadata as Record<string, unknown>).to_step)}</span>
+                                  )}
+                                </div>
                               )}
                             </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
                 )}
               </CardContent>
