@@ -1,8 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { QuizResult } from "@/components/landing/QuizResult";
+
+// Declare fbq for TypeScript
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
 
 const RESULT_STORAGE_KEY = "champion_quiz_result";
 
@@ -70,6 +77,18 @@ function PageBackground() {
 export default function Obrigado() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<QuizFormData | null>(null);
+  const leadEventFired = useRef(false);
+
+  // Fire Lead conversion event when page loads with valid data
+  useEffect(() => {
+    if (formData && !leadEventFired.current) {
+      if (typeof window.fbq === 'function') {
+        window.fbq('track', 'Lead');
+        console.log('Facebook Pixel: Lead event fired');
+        leadEventFired.current = true;
+      }
+    }
+  }, [formData]);
 
   useEffect(() => {
     const saved = localStorage.getItem(RESULT_STORAGE_KEY);
