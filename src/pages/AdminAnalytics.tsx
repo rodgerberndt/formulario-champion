@@ -803,7 +803,7 @@ export default function AdminAnalytics() {
 
           {/* Metrics Cards */}
           {metrics && (
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-3">
@@ -822,17 +822,6 @@ export default function AdminAnalytics() {
                     <div>
                       <p className="text-2xl font-bold">{metrics.entered_quiz}</p>
                       <p className="text-xs text-muted-foreground">Entraram no quiz</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <MousePointer className="w-8 h-8 text-yellow-500" />
-                    <div>
-                      <p className="text-2xl font-bold">{metrics.started_quiz}</p>
-                      <p className="text-xs text-muted-foreground">Começaram</p>
                     </div>
                   </div>
                 </CardContent>
