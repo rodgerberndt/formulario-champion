@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
+import { TrackingProvider } from "@/hooks/useTracking";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -11,8 +12,12 @@ import NotFound from "./pages/NotFound";
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Obrigado = lazy(() => import("./pages/Obrigado"));
 const Admin = lazy(() => import("./pages/Admin"));
+const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
 
 const queryClient = new QueryClient();
+
+// Get admin route slug from env or use default
+const ADMIN_ANALYTICS_SLUG = import.meta.env.VITE_ADMIN_ROUTE_SLUG || "champion-analytics-admin";
 
 // Minimal loading fallback
 function PageLoader() {
@@ -29,35 +34,45 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route 
-            path="/quiz" 
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <Quiz />
-              </Suspense>
-            } 
-          />
-          <Route 
-            path="/obrigado" 
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <Obrigado />
-              </Suspense>
-            } 
-          />
-          <Route 
-            path="/senhasenha"
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <Admin />
-              </Suspense>
-            } 
-          />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <TrackingProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route 
+              path="/quiz" 
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <Quiz />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path="/obrigado" 
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <Obrigado />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path="/senhasenha"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <Admin />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path={`/${ADMIN_ANALYTICS_SLUG}`}
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminAnalytics />
+                </Suspense>
+              } 
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </TrackingProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

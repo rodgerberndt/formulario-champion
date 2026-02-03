@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useCallback, memo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,7 @@ import {
   MERCADO_OPTIONS,
   ESTAGIO_OPTIONS,
 } from "@/lib/leadScoring";
+import { useTracking } from "@/hooks/useTracking";
 
 interface QuizFormData {
   nome_completo: string;
@@ -32,6 +33,16 @@ interface QuizFormData {
 
 const STORAGE_KEY = "champion_quiz_progress";
 const RESULT_STORAGE_KEY = "champion_quiz_result";
+
+// Step IDs for tracking
+const STEP_IDS = [
+  "q1_nome",
+  "q2_whats",
+  "q3_insta",
+  "q4_mercado",
+  "q5_estagio",
+  "q6_dor",
+];
 
 // Memoized background component
 const QuizBackground = memo(function QuizBackground() {
@@ -94,6 +105,8 @@ const QuizBackground = memo(function QuizBackground() {
 
 export default function Quiz() {
   const navigate = useNavigate();
+  const { trackQuizPageView, trackStepView, trackStepNext, trackStepBack, trackSubmit } = useTracking();
+  
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<QuizFormData>({
@@ -107,6 +120,25 @@ export default function Quiz() {
   });
 
   const totalSteps = 6;
+  const hasTrackedQuizView = useRef(false);
+  const lastTrackedStep = useRef<number | null>(null);
+
+  // Track quiz page view on mount
+  useEffect(() => {
+    if (!hasTrackedQuizView.current) {
+      hasTrackedQuizView.current = true;
+      trackQuizPageView();
+    }
+  }, [trackQuizPageView]);
+
+  // Track step view when step changes
+  useEffect(() => {
+    if (lastTrackedStep.current !== step) {
+      const stepId = STEP_IDS[step - 1];
+      trackStepView(stepId);
+      lastTrackedStep.current = step;
+    }
+  }, [step, trackStepView]);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -158,9 +190,6 @@ export default function Quiz() {
     }
   }, [step, formData]);
 
-  // Kommo integration is now handled by database trigger (notify_kommo_on_lead_insert)
-  // No client-side call needed - the trigger fires automatically on lead insert
-
   const handleSubmit = async () => {
     if (!canProceed()) return;
 
@@ -187,7 +216,15 @@ export default function Quiz() {
 
       if (error) throw error;
 
-      // Kommo notification is handled by database trigger automatically
+      // Track submit with lead data
+      await trackSubmit({
+        name: formData.nome_completo,
+        whatsapp: formData.whatsapp,
+        instagram: formData.instagram,
+        market: formData.mercado,
+        stage: formData.estagio_negocio,
+      });
+
       localStorage.removeItem(STORAGE_KEY);
       
       // Save result data for the thank you page
@@ -219,16 +256,22 @@ export default function Quiz() {
     }
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (canProceed() && step < totalSteps) {
+      const fromStepId = STEP_IDS[step - 1];
+      const toStepId = STEP_IDS[step];
+      await trackStepNext(fromStepId, toStepId);
       setStep(step + 1);
     } else if (step === totalSteps && canProceed()) {
       handleSubmit();
     }
   };
 
-  const prevStep = () => {
+  const prevStep = async () => {
     if (step > 1) {
+      const fromStepId = STEP_IDS[step - 1];
+      const toStepId = STEP_IDS[step - 2];
+      await trackStepBack(fromStepId, toStepId);
       setStep(step - 1);
     }
   };
@@ -282,7 +325,7 @@ export default function Quiz() {
                 className="border-2 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5 mt-0.5 rounded-md shrink-0"
               />
               <label htmlFor="lgpd" className="text-xs sm:text-sm text-muted-foreground cursor-pointer leading-relaxed">
-                Concordo em receber contato sobre o diagnóstico. Seus dados estão seguros.
+                Concordo em receber contato sobre o diagnóstico. Seus dados estão seguros e serão usados para contato e melhoria do atendimento.
               </label>
             </div>
           </div>

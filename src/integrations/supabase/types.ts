@@ -14,6 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
+      lead_events: {
+        Row: {
+          button_id: string | null
+          created_at: string
+          event_name: string
+          id: string
+          metadata: Json | null
+          page: string | null
+          session_id: string
+          step_id: string | null
+        }
+        Insert: {
+          button_id?: string | null
+          created_at?: string
+          event_name: string
+          id?: string
+          metadata?: Json | null
+          page?: string | null
+          session_id: string
+          step_id?: string | null
+        }
+        Update: {
+          button_id?: string | null
+          created_at?: string
+          event_name?: string
+          id?: string
+          metadata?: Json | null
+          page?: string | null
+          session_id?: string
+          step_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "lead_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_sessions: {
+        Row: {
+          completed: boolean
+          created_at: string
+          current_step_id: string | null
+          device_type: string | null
+          entered_quiz_page: boolean
+          first_page: string | null
+          id: string
+          last_page: string | null
+          last_seen_at: string
+          lead_instagram: string | null
+          lead_market: string | null
+          lead_name: string | null
+          lead_stage: string | null
+          lead_whatsapp: string | null
+          referrer: string | null
+          start_button_id: string | null
+          started_quiz: boolean
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          current_step_id?: string | null
+          device_type?: string | null
+          entered_quiz_page?: boolean
+          first_page?: string | null
+          id?: string
+          last_page?: string | null
+          last_seen_at?: string
+          lead_instagram?: string | null
+          lead_market?: string | null
+          lead_name?: string | null
+          lead_stage?: string | null
+          lead_whatsapp?: string | null
+          referrer?: string | null
+          start_button_id?: string | null
+          started_quiz?: boolean
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          current_step_id?: string | null
+          device_type?: string | null
+          entered_quiz_page?: boolean
+          first_page?: string | null
+          id?: string
+          last_page?: string | null
+          last_seen_at?: string
+          lead_instagram?: string | null
+          lead_market?: string | null
+          lead_name?: string | null
+          lead_stage?: string | null
+          lead_whatsapp?: string | null
+          referrer?: string | null
+          start_button_id?: string | null
+          started_quiz?: boolean
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
