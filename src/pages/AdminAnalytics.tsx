@@ -47,6 +47,7 @@ const ADMIN_TOKEN_KEY = "admin_analytics_token";
 
 interface Metrics {
   total_visitors: number;
+  unique_visitors: number;
   entered_quiz: number;
   started_quiz: number;
   completed: number;
@@ -81,6 +82,7 @@ interface Session {
   lead_instagram: string | null;
   lead_market: string | null;
   lead_stage: string | null;
+  ip_address: string | null;
 }
 
 interface SessionEvent {
@@ -124,6 +126,8 @@ interface Lead {
   orcamento_faixa: string | null;
   tier: string | null;
   score: number | null;
+  ip_address: string | null;
+  is_duplicate_ip: boolean;
 }
 
 export default function AdminAnalytics() {
@@ -948,8 +952,11 @@ export default function AdminAnalytics() {
                   <div className="flex items-center gap-3">
                     <Users className="w-8 h-8 text-primary" />
                     <div>
-                      <p className="text-2xl font-bold">{metrics.total_visitors}</p>
-                      <p className="text-xs text-muted-foreground">Visitantes</p>
+                      <p className="text-2xl font-bold">{metrics.unique_visitors || metrics.total_visitors}</p>
+                      <p className="text-xs text-muted-foreground">Visitantes únicos</p>
+                      {metrics.unique_visitors && metrics.total_visitors > metrics.unique_visitors && (
+                        <p className="text-xs text-yellow-500">({metrics.total_visitors} sessões)</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -1257,15 +1264,22 @@ export default function AdminAnalytics() {
                               </td>
                               <td className="p-4 text-muted-foreground font-mono">{index + 1}</td>
                               <td className="p-4">
-                                {lead.lido ? (
-                                  <Badge variant="outline" className="border-muted-foreground text-muted-foreground">
-                                    Lido
-                                  </Badge>
-                                ) : (
-                                  <Badge className="bg-green-500 text-white animate-pulse">
-                                    Novo
-                                  </Badge>
-                                )}
+                                <div className="flex flex-col gap-1">
+                                  {lead.lido ? (
+                                    <Badge variant="outline" className="border-muted-foreground text-muted-foreground w-fit">
+                                      Lido
+                                    </Badge>
+                                  ) : (
+                                    <Badge className="bg-green-500 text-white animate-pulse w-fit">
+                                      Novo
+                                    </Badge>
+                                  )}
+                                  {lead.is_duplicate_ip && (
+                                    <Badge variant="outline" className="border-orange-500 text-orange-500 bg-orange-500/10 w-fit text-xs">
+                                      ⚠️ IP duplicado
+                                    </Badge>
+                                  )}
+                                </div>
                               </td>
                               <td className="p-4">
                                 {lead.tier ? (
@@ -1673,13 +1687,16 @@ export default function AdminAnalytics() {
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     <Card>
                       <CardContent className="pt-6 text-center">
-                        <p className="text-2xl font-bold">{metrics.total_visitors}</p>
-                        <p className="text-xs text-muted-foreground">Visitantes totais</p>
+                        <p className="text-2xl font-bold">{metrics.unique_visitors || metrics.total_visitors}</p>
+                        <p className="text-xs text-muted-foreground">Visitantes únicos</p>
+                        {metrics.unique_visitors && metrics.total_visitors > metrics.unique_visitors && (
+                          <p className="text-xs text-yellow-500">({metrics.total_visitors} sessões)</p>
+                        )}
                       </CardContent>
                     </Card>
                     <Card>
                       <CardContent className="pt-6 text-center">
-                        <p className="text-2xl font-bold text-red-400">{metrics.total_visitors - metrics.entered_quiz}</p>
+                        <p className="text-2xl font-bold text-red-400">{Math.max(0, (metrics.unique_visitors || metrics.total_visitors) - metrics.entered_quiz)}</p>
                         <p className="text-xs text-muted-foreground">Não entraram no quiz</p>
                       </CardContent>
                     </Card>
@@ -1712,10 +1729,10 @@ export default function AdminAnalytics() {
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/20">
                           <p className="text-red-400 text-sm font-medium mb-1">Não entraram no quiz</p>
-                          <p className="text-2xl font-bold">{Math.max(0, metrics.total_visitors - metrics.entered_quiz)}</p>
+                          <p className="text-2xl font-bold">{Math.max(0, (metrics.unique_visitors || metrics.total_visitors) - metrics.entered_quiz)}</p>
                           <p className="text-xs text-muted-foreground">
-                            {metrics.total_visitors > 0 ? 
-                              `${Math.max(0, ((metrics.total_visitors - metrics.entered_quiz) / metrics.total_visitors) * 100).toFixed(1)}% dos visitantes` 
+                            {(metrics.unique_visitors || metrics.total_visitors) > 0 ? 
+                              `${Math.max(0, (((metrics.unique_visitors || metrics.total_visitors) - metrics.entered_quiz) / (metrics.unique_visitors || metrics.total_visitors)) * 100).toFixed(1)}% dos visitantes` 
                               : "0%"
                             }
                           </p>

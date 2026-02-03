@@ -166,9 +166,37 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
         raw_answers_json: JSON.parse(JSON.stringify(formData)),
       };
 
-      const { error } = await supabase.from("leads").insert([dbData]);
+      const { data: insertedLead, error } = await supabase
+        .from("leads")
+        .insert([dbData])
+        .select('id')
+        .single();
 
       if (error) throw error;
+
+      // Check for duplicate IP and mark lead accordingly
+      try {
+        const ipResponse = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-client-ip`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            },
+            body: JSON.stringify({ 
+              action: 'check_lead_duplicate',
+              lead_id: insertedLead?.id 
+            }),
+          }
+        );
+        if (ipResponse.ok) {
+          const ipData = await ipResponse.json();
+          console.log("Lead IP check:", ipData);
+        }
+      } catch (ipError) {
+        console.error("Error checking lead IP:", ipError);
+      }
 
       // Track the submit event
       await trackSubmit({

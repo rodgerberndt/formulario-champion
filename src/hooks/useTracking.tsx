@@ -134,6 +134,27 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
         
         if (!response.ok) {
           console.error("Error creating session:", await response.text());
+        } else {
+          // Capture IP address via edge function
+          try {
+            const ipResponse = await fetch(
+              `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-client-ip`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+                },
+                body: JSON.stringify({ session_id: sessionId, action: 'check_session' }),
+              }
+            );
+            if (ipResponse.ok) {
+              const ipData = await ipResponse.json();
+              console.log("IP captured:", ipData.ip, "New visitor:", ipData.is_new_visitor);
+            }
+          } catch (ipError) {
+            console.error("Error capturing IP:", ipError);
+          }
         }
       } catch (error) {
         console.error("Error creating session:", error);
