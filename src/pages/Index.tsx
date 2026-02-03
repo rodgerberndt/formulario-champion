@@ -13,8 +13,14 @@ const Index = () => {
   const { trackStartClick } = useTracking();
 
   const handleStartClick = async (buttonId: string) => {
-    // Track the click before navigating
-    await trackStartClick(buttonId);
+    // Track the click and wait for it to complete before navigating
+    try {
+      await trackStartClick(buttonId);
+    } catch (error) {
+      console.error("Error tracking start click:", error);
+    }
+    // Small delay to ensure tracking is sent
+    await new Promise(resolve => setTimeout(resolve, 50));
     navigate("/quiz");
   };
 

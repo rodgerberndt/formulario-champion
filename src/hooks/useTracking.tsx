@@ -53,6 +53,31 @@ function getUTMParams(): Record<string, string | null> {
   };
 }
 
+// Helper to update session via direct REST API call to bypass type validation
+async function updateSessionDirect(sessionId: string, data: Record<string, unknown>) {
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/lead_sessions?id=eq.${sessionId}`;
+  try {
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify({
+        ...data,
+        last_seen_at: new Date().toISOString(),
+      }),
+    });
+    if (!response.ok) {
+      console.error("Error updating session:", await response.text());
+    }
+  } catch (error) {
+    console.error("Error updating session:", error);
+  }
+}
+
 export function TrackingProvider({ children }: { children: ReactNode }) {
   const sessionIdRef = useRef<string | null>(null);
   const sessionInitialized = useRef(false);
@@ -70,24 +95,38 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
       sessionId = generateUUID();
       localStorage.setItem(SESSION_KEY, sessionId);
       
-      // Create new session in database
+      // Create new session in database via direct REST API
       const utmParams = getUTMParams();
       const currentPage = window.location.pathname;
       
       try {
-        await supabase.from("lead_sessions").insert([{
-          id: sessionId,
-          first_page: currentPage,
-          last_page: currentPage,
-          referrer: document.referrer || null,
-          utm_source: utmParams.utm_source,
-          utm_medium: utmParams.utm_medium,
-          utm_campaign: utmParams.utm_campaign,
-          utm_content: utmParams.utm_content,
-          utm_term: utmParams.utm_term,
-          device_type: getDeviceType(),
-          user_agent: navigator.userAgent,
-        }]);
+        const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/lead_sessions`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal',
+          },
+          body: JSON.stringify({
+            id: sessionId,
+            first_page: currentPage,
+            last_page: currentPage,
+            referrer: document.referrer || null,
+            utm_source: utmParams.utm_source,
+            utm_medium: utmParams.utm_medium,
+            utm_campaign: utmParams.utm_campaign,
+            utm_content: utmParams.utm_content,
+            utm_term: utmParams.utm_term,
+            device_type: getDeviceType(),
+            user_agent: navigator.userAgent,
+          }),
+        });
+        
+        if (!response.ok) {
+          console.error("Error creating session:", await response.text());
+        }
       } catch (error) {
         console.error("Error creating session:", error);
       }
@@ -126,15 +165,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
   // Update session data
   const updateSession = useCallback(async (data: Record<string, unknown>) => {
     const sessionId = await getOrCreateSessionId();
-    
-    try {
-      await supabase.from("lead_sessions").update({
-        ...data,
-        last_seen_at: new Date().toISOString(),
-      } as Record<string, unknown>).eq("id", sessionId);
-    } catch (error) {
-      console.error("Error updating session:", error);
-    }
+    await updateSessionDirect(sessionId, data);
   }, [getOrCreateSessionId]);
 
   // Track start button click
@@ -203,14 +234,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
       await trackEvent("page_view", { page: location.pathname });
       
       // Update session with last page
-      try {
-        await supabase.from("lead_sessions").update({
-          last_page: location.pathname,
-          last_seen_at: new Date().toISOString(),
-        }).eq("id", sessionId);
-      } catch (error) {
-        console.error("Error updating last page:", error);
-      }
+      await updateSessionDirect(sessionId, { last_page: location.pathname });
     };
 
     if (!sessionInitialized.current) {
@@ -225,11 +249,6 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === "hidden") {
-        const sessionId = sessionIdRef.current;
-        if (!sessionId) return;
-        
-        // Check if in quiz and not completed - using a simple update instead of select
-        // to avoid complex async operations during visibility change
         await trackEvent("visibility_hidden");
       }
     };
