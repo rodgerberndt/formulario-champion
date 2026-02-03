@@ -167,6 +167,17 @@ export default function AdminAnalytics() {
   const [dropoffSessions, setDropoffSessions] = useState<Session[]>([]);
   const [dropoffLoading, setDropoffLoading] = useState(false);
 
+  // Persistent tab state
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    return localStorage.getItem("admin_active_tab") || "leads";
+  });
+
+  // Persist active tab to localStorage
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    localStorage.setItem("admin_active_tab", value);
+  };
+
   // Check for existing token on mount
   useEffect(() => {
     const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
@@ -891,23 +902,35 @@ export default function AdminAnalytics() {
             </div>
           )}
 
-          <Tabs defaultValue="leads" className="space-y-6">
-            <TabsList className="w-full md:w-auto h-14 p-1.5 bg-muted/50 border border-border rounded-xl gap-1">
-              <TabsTrigger value="leads" className="relative h-11 px-6 text-base font-semibold rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
+            <TabsList className="w-full md:w-auto h-16 p-2 bg-card border-2 border-primary/30 rounded-2xl gap-2 shadow-lg shadow-primary/10">
+              <TabsTrigger 
+                value="leads" 
+                className="relative h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+              >
                 Leads
                 {leadsUnreadCount > 0 && (
-                  <span className="ml-2 px-2 py-0.5 text-xs bg-destructive text-destructive-foreground rounded-full font-bold">
+                  <span className="ml-2 px-2.5 py-0.5 text-xs bg-destructive text-destructive-foreground rounded-full font-bold animate-pulse">
                     {leadsUnreadCount}
                   </span>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="sessions" className="h-11 px-6 text-base font-semibold rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+              <TabsTrigger 
+                value="sessions" 
+                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+              >
                 Sessões
               </TabsTrigger>
-              <TabsTrigger value="funnel" className="h-11 px-6 text-base font-semibold rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+              <TabsTrigger 
+                value="funnel" 
+                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+              >
                 Funil
               </TabsTrigger>
-              <TabsTrigger value="buttons" className="h-11 px-6 text-base font-semibold rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+              <TabsTrigger 
+                value="buttons" 
+                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+              >
                 Botões
               </TabsTrigger>
             </TabsList>
