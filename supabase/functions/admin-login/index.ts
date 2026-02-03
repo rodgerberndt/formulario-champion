@@ -88,10 +88,39 @@ serve(async (req) => {
       );
     }
 
-    // Hash the provided password and compare with stored hash
-    const inputHash = await sha256(password);
-    const normalizedStoredHash = passwordHash.trim().toLowerCase();
-    const isValid = inputHash === normalizedStoredHash;
+    const normalize = (s: string) => {
+      // Trim and remove optional wrapping quotes (common when pasting)
+      const trimmed = s.trim();
+      const unquoted = trimmed.replace(/^"(.*)"$/, "$1").trim();
+      return unquoted;
+    };
+
+    const looksLikeSha256Hex = (s: string) => /^[a-f0-9]{64}$/.test(s);
+
+    const storedRaw = normalize(passwordHash);
+    const storedHash = storedRaw.toLowerCase();
+    const storedIsSha256 = looksLikeSha256Hex(storedHash);
+
+    const providedRaw = normalize(password);
+    const providedLower = providedRaw.toLowerCase();
+    const providedIsSha256 = looksLikeSha256Hex(providedLower);
+
+    // Safe diagnostics (no secret values logged)
+    console.log("admin-login: storedIsSha256=", storedIsSha256, "storedLen=", storedRaw.length, "providedLooksSha256=", providedIsSha256);
+
+    let isValid = false;
+    if (storedIsSha256) {
+      // If the user accidentally pasted the hash into the password field, accept it.
+      if (providedIsSha256) {
+        isValid = providedLower === storedHash;
+      } else {
+        const inputHash = await sha256(providedRaw);
+        isValid = inputHash === storedHash;
+      }
+    } else {
+      // Backward compatible: if the secret is plain text, compare directly.
+      isValid = providedRaw === storedRaw;
+    }
 
     if (!isValid) {
       recordAttempt(ip, false);

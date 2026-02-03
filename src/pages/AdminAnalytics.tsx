@@ -349,6 +349,9 @@ export default function AdminAnalytics() {
                   onChange={(e) => setPassword(e.target.value)}
                   autoFocus
                 />
+                <p className="text-xs text-muted-foreground">
+                  Digite a senha em texto (não cole o hash SHA-256 aqui).
+                </p>
                 <Button type="submit" className="w-full" disabled={loginLoading}>
                   {loginLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Entrar"}
                 </Button>
