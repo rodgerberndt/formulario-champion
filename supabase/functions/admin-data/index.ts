@@ -228,7 +228,7 @@ serve(async (req) => {
       // Get all events to calculate accurate metrics
       const { data: allEvents, error: eventsError } = await supabase
         .from("lead_events")
-        .select("event_name, step_id, session_id, page");
+        .select("event_name, step_id, session_id, page, metadata");
       if (eventsError) throw eventsError;
 
       // Get total leads (completed quizzes)
@@ -277,27 +277,55 @@ serve(async (req) => {
         count: stepCounts[stepId]?.size || 0,
       }));
 
-      // Drop-off analysis - find last step for sessions that didn't complete
+      // Drop-off analysis - find where users actually stopped (didn't advance from)
       const dropOffs: Record<string, number> = {};
-      const sessionLastStep: Record<string, string> = {};
       
-      // Find the furthest step each session reached
+      // Track which steps each session viewed and which they advanced from (step_next)
+      const sessionViewedSteps: Record<string, Set<string>> = {};
+      const sessionAdvancedFrom: Record<string, Set<string>> = {};
+      
       allEvents?.forEach(event => {
         if (event.event_name === "step_view" && event.step_id) {
-          const currentIndex = stepOrder.indexOf(event.step_id);
-          const existingStep = sessionLastStep[event.session_id];
-          const existingIndex = existingStep ? stepOrder.indexOf(existingStep) : -1;
-          
-          if (currentIndex > existingIndex) {
-            sessionLastStep[event.session_id] = event.step_id;
+          if (!sessionViewedSteps[event.session_id]) {
+            sessionViewedSteps[event.session_id] = new Set();
+          }
+          sessionViewedSteps[event.session_id].add(event.step_id);
+        }
+        
+        // Track which steps the user advanced FROM (meaning they completed that step)
+        if (event.event_name === "step_next") {
+          const metadata = event.metadata as Record<string, unknown> | null;
+          const fromStep = metadata?.from_step as string | undefined;
+          if (fromStep) {
+            if (!sessionAdvancedFrom[event.session_id]) {
+              sessionAdvancedFrom[event.session_id] = new Set();
+            }
+            sessionAdvancedFrom[event.session_id].add(fromStep);
           }
         }
       });
 
-      // Count drop-offs at each step (sessions that didn't submit)
-      Object.entries(sessionLastStep).forEach(([sessionId, lastStep]) => {
+      // For each session that didn't complete, find the last step they viewed but didn't advance from
+      Object.entries(sessionViewedSteps).forEach(([sessionId, viewedSteps]) => {
         if (!sessionsWithSubmit.has(sessionId)) {
-          dropOffs[lastStep] = (dropOffs[lastStep] || 0) + 1;
+          const advancedFrom = sessionAdvancedFrom[sessionId] || new Set();
+          
+          // Find the furthest step they viewed but didn't advance from
+          let dropOffStep: string | null = null;
+          let dropOffIndex = -1;
+          
+          viewedSteps.forEach(step => {
+            const stepIndex = stepOrder.indexOf(step);
+            // They dropped off at this step if they viewed it but didn't advance from it
+            if (!advancedFrom.has(step) && stepIndex > dropOffIndex) {
+              dropOffStep = step;
+              dropOffIndex = stepIndex;
+            }
+          });
+          
+          if (dropOffStep) {
+            dropOffs[dropOffStep] = (dropOffs[dropOffStep] || 0) + 1;
+          }
         }
       });
 
@@ -333,25 +361,31 @@ serve(async (req) => {
         allEvents?.filter(e => e.event_name === "submit").map(e => e.session_id) || []
       );
 
-      // Find the furthest step each session reached
-      const sessionLastStep: Record<string, string> = {};
+      // Track which steps each session viewed and which they advanced from (step_next)
+      const sessionViewedSteps: Record<string, Set<string>> = {};
+      const sessionAdvancedFrom: Record<string, Set<string>> = {};
+      const sessionFieldData: Record<string, Record<string, string>> = {};
+      
       allEvents?.forEach(event => {
         if (event.event_name === "step_view" && event.step_id) {
-          const currentIndex = stepOrder.indexOf(event.step_id);
-          const existingStep = sessionLastStep[event.session_id];
-          const existingIndex = existingStep ? stepOrder.indexOf(existingStep) : -1;
-          
-          if (currentIndex > existingIndex) {
-            sessionLastStep[event.session_id] = event.step_id;
+          if (!sessionViewedSteps[event.session_id]) {
+            sessionViewedSteps[event.session_id] = new Set();
           }
+          sessionViewedSteps[event.session_id].add(event.step_id);
         }
-      });
-
-      // Collect field values from step_next events for each session
-      const sessionFieldData: Record<string, Record<string, string>> = {};
-      allEvents?.forEach(event => {
+        
+        // Track which steps the user advanced FROM and collect field data
         if (event.event_name === "step_next" && event.metadata) {
           const metadata = event.metadata as Record<string, unknown>;
+          const fromStep = metadata.from_step as string | undefined;
+          if (fromStep) {
+            if (!sessionAdvancedFrom[event.session_id]) {
+              sessionAdvancedFrom[event.session_id] = new Set();
+            }
+            sessionAdvancedFrom[event.session_id].add(fromStep);
+          }
+          
+          // Collect field values
           const fieldValue = metadata.field_value as Record<string, string> | undefined;
           if (fieldValue) {
             if (!sessionFieldData[event.session_id]) {
@@ -362,10 +396,32 @@ serve(async (req) => {
         }
       });
 
-      // Get sessions that dropped off at this step
-      const droppedSessionIds = Object.entries(sessionLastStep)
-        .filter(([sessionId, lastStep]) => lastStep === stepId && !sessionsWithSubmit.has(sessionId))
-        .map(([sessionId]) => sessionId);
+      // Find sessions that dropped off at this specific step
+      // Drop-off = viewed the step but didn't advance from it
+      const droppedSessionIds: string[] = [];
+      Object.entries(sessionViewedSteps).forEach(([sessionId, viewedSteps]) => {
+        if (!sessionsWithSubmit.has(sessionId)) {
+          const advancedFrom = sessionAdvancedFrom[sessionId] || new Set();
+          
+          // They dropped off at this step if they viewed it but didn't advance from it
+          if (viewedSteps.has(stepId) && !advancedFrom.has(stepId)) {
+            // Also check it's their furthest un-advanced step
+            let isFurthestDropoff = true;
+            viewedSteps.forEach(step => {
+              const stepIndex = stepOrder.indexOf(step);
+              const targetIndex = stepOrder.indexOf(stepId);
+              // If there's a later step they viewed but didn't advance from, this isn't their drop-off
+              if (stepIndex > targetIndex && !advancedFrom.has(step)) {
+                isFurthestDropoff = false;
+              }
+            });
+            
+            if (isFurthestDropoff) {
+              droppedSessionIds.push(sessionId);
+            }
+          }
+        }
+      });
 
       // Get session details with their data
       const { data: droppedSessions, error: sessionsError } = await supabase
