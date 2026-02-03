@@ -5,6 +5,8 @@ import { verify } from "https://deno.land/x/djwt@v2.9.1/mod.ts";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-admin-token",
+  // Required for CORS preflight on non-simple methods (e.g. PUT)
+  "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
 };
 
 async function verifyAdminToken(token: string): Promise<boolean> {
