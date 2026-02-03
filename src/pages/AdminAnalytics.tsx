@@ -973,7 +973,7 @@ export default function AdminAnalytics() {
                   <div className="flex items-center gap-3">
                     <CheckCircle className="w-8 h-8 text-green-500" />
                     <div>
-                      <p className="text-2xl font-bold">{metrics.completed}</p>
+                      <p className="text-2xl font-bold">{leads.length}</p>
                       <p className="text-xs text-muted-foreground">Concluíram <span className="text-green-500">→ clique para ver</span></p>
                     </div>
                   </div>
