@@ -19,9 +19,6 @@ import {
   MERCADO_OPTIONS,
   ESTAGIO_OPTIONS,
 } from "@/lib/leadScoring";
-import { QuizResult } from "@/components/landing/QuizResult";
-
-const WHATSAPP_NUMBER = "[INSERIR_NUMERO]";
 
 interface QuizFormData {
   nome_completo: string;
@@ -34,6 +31,7 @@ interface QuizFormData {
 }
 
 const STORAGE_KEY = "champion_quiz_progress";
+const RESULT_STORAGE_KEY = "champion_quiz_result";
 
 // Memoized background component
 const QuizBackground = memo(function QuizBackground() {
@@ -98,8 +96,6 @@ export default function Quiz() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [scoreResult, setScoreResult] = useState<{ score: number; tier: string } | null>(null);
   const [formData, setFormData] = useState<QuizFormData>({
     nome_completo: "",
     whatsapp: "",
@@ -128,10 +124,8 @@ export default function Quiz() {
   }, []);
 
   useEffect(() => {
-    if (!submitted) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ formData, step }));
-    }
-  }, [formData, step, submitted]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ formData, step }));
+  }, [formData, step]);
 
   const updateField = useCallback((field: keyof QuizFormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -195,14 +189,24 @@ export default function Quiz() {
 
       // Kommo notification is handled by database trigger automatically
       localStorage.removeItem(STORAGE_KEY);
-
-      setScoreResult({ score: result.score, tier: result.tier });
-      setSubmitted(true);
       
+      // Save result data for the thank you page
+      localStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify({
+        nome_completo: formData.nome_completo,
+        whatsapp: formData.whatsapp,
+        instagram: formData.instagram,
+        mercado: formData.mercado,
+        estagio_negocio: formData.estagio_negocio,
+        dor_desejo: formData.dor_desejo,
+      }));
+
       toast({
         title: "Diagnóstico enviado!",
         description: "Em breve entraremos em contato.",
       });
+
+      // Redirect to thank you page
+      navigate("/obrigado");
     } catch (error) {
       console.error("Error submitting lead:", error);
       toast({
@@ -235,53 +239,6 @@ export default function Quiz() {
       nextStep();
     }
   };
-
-  const generateWhatsAppLink = () => {
-    const message = `Oi, aqui é o ${formData.nome_completo}.
-Acabei de preencher o Diagnóstico Champion.
-
-Instagram: ${formData.instagram}
-Mercado: ${formData.mercado}
-Estágio: ${formData.estagio_negocio}
-Principal dor/desejo: ${formData.dor_desejo}
-
-Fico no aguardo.`;
-
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-  };
-
-  if (submitted && scoreResult) {
-    return (
-      <div className="min-h-[100svh] relative w-full max-w-full overflow-x-hidden">
-        <QuizBackground />
-        
-        {/* Top Bar */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/50">
-          <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-xl">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/")}
-              className="gap-2 text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Voltar
-            </Button>
-          </div>
-        </header>
-
-        <main className="pt-16 pb-8 px-4" style={{ paddingBottom: 'calc(32px + env(safe-area-inset-bottom))' }}>
-          <div className="container mx-auto max-w-[92vw] sm:max-w-md">
-            <QuizResult
-              whatsappLink={generateWhatsAppLink()}
-              nome={formData.nome_completo}
-              formData={formData}
-            />
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   const inputClasses = "w-full text-sm sm:text-base h-11 sm:h-12 md:h-14 bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200";
   const selectClasses = "w-full text-sm sm:text-base h-11 sm:h-12 md:h-14 bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 text-foreground focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200";
