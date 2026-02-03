@@ -880,20 +880,7 @@ export default function AdminAnalytics() {
             {/* Leads Tab */}
             <TabsContent value="leads">
               {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                        <Users className="w-6 h-6 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold">{leads.length}</p>
-                        <p className="text-xs text-muted-foreground">Total de Leads</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <Card>
                   <CardContent className="pt-6">
                     <div className="flex items-center gap-3">
