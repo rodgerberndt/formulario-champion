@@ -58,7 +58,13 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const url = new URL(req.url);
-    const path = url.pathname.replace("/admin-data", "");
+    const rawPath = url.pathname;
+    // Handle both direct invocation and proxy paths
+    const path = rawPath.includes("/admin-data") 
+      ? rawPath.substring(rawPath.indexOf("/admin-data") + "/admin-data".length)
+      : rawPath;
+    
+    console.log("Request path:", rawPath, "->", path);
 
     // GET /leads - List leads from legacy table
     if (path === "/leads" && req.method === "GET") {
