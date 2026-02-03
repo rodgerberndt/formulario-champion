@@ -216,21 +216,24 @@ export default function AdminAnalytics() {
       if (!response.ok) {
         throw new Error("Failed to update lead");
       }
-
-      setLeads((prev) =>
-        prev.map((l) => (l.id === id ? { ...l, lido: true } : l))
-      );
-      setLeadsUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
       console.error("Error marking lead as read:", error);
     }
   };
 
-  const openLeadDetail = async (lead: Lead) => {
-    // Mark as read immediately and update the lead object
+  const openLeadDetail = (lead: Lead) => {
+    // Mark as read and update immediately in the list
     if (!lead.lido) {
-      await markLeadAsRead(lead.id);
-      // Set selected lead with lido: true since we just marked it
+      // Update the leads list immediately (optimistic update)
+      setLeads((prev) =>
+        prev.map((l) => (l.id === lead.id ? { ...l, lido: true } : l))
+      );
+      setLeadsUnreadCount((prev) => Math.max(0, prev - 1));
+      
+      // Update backend in background
+      markLeadAsRead(lead.id);
+      
+      // Set selected lead with lido: true
       setSelectedLead({ ...lead, lido: true });
     } else {
       setSelectedLead(lead);
