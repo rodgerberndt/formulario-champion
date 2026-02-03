@@ -27,7 +27,19 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  Bell,
+  RefreshCw,
+  Check,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const ADMIN_TOKEN_KEY = "admin_analytics_token";
 
@@ -88,6 +100,30 @@ const STEP_LABELS: Record<string, string> = {
   q6_dor: "Dor/Desejo",
 };
 
+interface Lead {
+  id: string;
+  nome_completo: string;
+  whatsapp: string;
+  instagram: string;
+  mercado: string;
+  estagio_negocio: string;
+  dor_desejo: string;
+  lido: boolean;
+  created_at: string;
+  email: string | null;
+  empresa: string | null;
+  segmento: string | null;
+  faturamento_faixa: string | null;
+  trafego_faixa: string | null;
+  ticket_faixa: string | null;
+  gargalo: string | null;
+  objetivo: string | null;
+  timing: string | null;
+  orcamento_faixa: string | null;
+  tier: string | null;
+  score: number | null;
+}
+
 export default function AdminAnalytics() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -111,6 +147,13 @@ export default function AdminAnalytics() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
+  // Leads state (from legacy leads table)
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [leadsLoading, setLeadsLoading] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [leadsUnreadCount, setLeadsUnreadCount] = useState(0);
+  const [leadsSearchQuery, setLeadsSearchQuery] = useState("");
+
   // Check for existing token on mount
   useEffect(() => {
     const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
@@ -125,8 +168,62 @@ export default function AdminAnalytics() {
     if (isAuthenticated) {
       loadMetrics();
       loadSessions();
+      loadLeads();
     }
   }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, dateFrom, dateTo, sessionsPage]);
+
+  // Load leads from legacy table
+  const loadLeads = async () => {
+    setLeadsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("leads")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setLeads(data || []);
+      setLeadsUnreadCount(data?.filter((l) => !l.lido).length || 0);
+    } catch (error) {
+      console.error("Error loading leads:", error);
+    } finally {
+      setLeadsLoading(false);
+    }
+  };
+
+  const markLeadAsRead = async (id: string) => {
+    const { error } = await supabase
+      .from("leads")
+      .update({ lido: true })
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error marking lead as read:", error);
+    } else {
+      setLeads((prev) =>
+        prev.map((l) => (l.id === id ? { ...l, lido: true } : l))
+      );
+      setLeadsUnreadCount((prev) => Math.max(0, prev - 1));
+    }
+  };
+
+  const openLeadDetail = (lead: Lead) => {
+    setSelectedLead(lead);
+    if (!lead.lido) {
+      markLeadAsRead(lead.id);
+    }
+  };
+
+  const filteredLeads = leads.filter((lead) => {
+    if (!leadsSearchQuery) return true;
+    const q = leadsSearchQuery.toLowerCase();
+    return (
+      lead.nome_completo.toLowerCase().includes(q) ||
+      lead.whatsapp.includes(q) ||
+      lead.instagram.toLowerCase().includes(q) ||
+      lead.mercado.toLowerCase().includes(q)
+    );
+  });
 
   const getToken = () => sessionStorage.getItem(ADMIN_TOKEN_KEY);
 
@@ -673,12 +770,343 @@ export default function AdminAnalytics() {
             </div>
           )}
 
-          <Tabs defaultValue="sessions" className="space-y-6">
+          <Tabs defaultValue="leads" className="space-y-6">
             <TabsList>
+              <TabsTrigger value="leads" className="relative">
+                Leads
+                {leadsUnreadCount > 0 && (
+                  <span className="ml-2 px-1.5 py-0.5 text-xs bg-destructive text-destructive-foreground rounded-full">
+                    {leadsUnreadCount}
+                  </span>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="sessions">Sessões</TabsTrigger>
               <TabsTrigger value="funnel">Funil</TabsTrigger>
               <TabsTrigger value="buttons">Botões</TabsTrigger>
             </TabsList>
+
+            {/* Leads Tab */}
+            <TabsContent value="leads">
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                        <Users className="w-6 h-6 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold">{leads.length}</p>
+                        <p className="text-xs text-muted-foreground">Total de Leads</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center">
+                        <Bell className="w-6 h-6 text-yellow-500" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold">{leadsUnreadCount}</p>
+                        <p className="text-xs text-muted-foreground">Não Lidos</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                        <Check className="w-6 h-6 text-green-500" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold">{leads.length - leadsUnreadCount}</p>
+                        <p className="text-xs text-muted-foreground">Lidos</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Search and Actions */}
+              <div className="flex flex-wrap gap-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <Search className="w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar por nome, whatsapp, instagram..."
+                    value={leadsSearchQuery}
+                    onChange={(e) => setLeadsSearchQuery(e.target.value)}
+                    className="w-64"
+                  />
+                </div>
+                <Button variant="outline" onClick={loadLeads} disabled={leadsLoading}>
+                  <RefreshCw className={`w-4 h-4 mr-2 ${leadsLoading ? "animate-spin" : ""}`} />
+                  Atualizar
+                </Button>
+              </div>
+
+              {/* Leads Table */}
+              <Card>
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="border-b bg-muted/50">
+                        <tr>
+                          <th className="text-left p-4 w-12">#</th>
+                          <th className="text-left p-4">Status</th>
+                          <th className="text-left p-4">Nome</th>
+                          <th className="text-left p-4">WhatsApp</th>
+                          <th className="text-left p-4">Instagram</th>
+                          <th className="text-left p-4">Mercado</th>
+                          <th className="text-left p-4">Data</th>
+                          <th className="text-right p-4">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {leadsLoading ? (
+                          <tr>
+                            <td colSpan={8} className="p-8 text-center">
+                              <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+                            </td>
+                          </tr>
+                        ) : filteredLeads.length === 0 ? (
+                          <tr>
+                            <td colSpan={8} className="p-8 text-center text-muted-foreground">
+                              Nenhum lead encontrado
+                            </td>
+                          </tr>
+                        ) : (
+                          filteredLeads.map((lead, index) => (
+                            <tr 
+                              key={lead.id} 
+                              className={`border-b hover:bg-muted/30 cursor-pointer transition-colors ${!lead.lido ? "bg-primary/5" : ""}`}
+                              onClick={() => openLeadDetail(lead)}
+                            >
+                              <td className="p-4 text-muted-foreground font-mono">{index + 1}</td>
+                              <td className="p-4">
+                                {lead.lido ? (
+                                  <Badge variant="outline" className="border-muted-foreground text-muted-foreground">
+                                    Lido
+                                  </Badge>
+                                ) : (
+                                  <Badge className="bg-primary text-primary-foreground">
+                                    Novo
+                                  </Badge>
+                                )}
+                              </td>
+                              <td className="p-4 font-medium">{lead.nome_completo}</td>
+                              <td className="p-4">
+                                <a 
+                                  href={`https://wa.me/55${lead.whatsapp.replace(/\D/g, '')}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-green-500 hover:underline"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {lead.whatsapp}
+                                </a>
+                              </td>
+                              <td className="p-4">
+                                <a 
+                                  href={`https://instagram.com/${lead.instagram.replace('@', '')}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {lead.instagram}
+                                </a>
+                              </td>
+                              <td className="p-4 text-muted-foreground">{lead.mercado}</td>
+                              <td className="p-4 text-muted-foreground">
+                                {format(new Date(lead.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                              </td>
+                              <td className="p-4 text-right">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openLeadDetail(lead);
+                                  }}
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Lead Detail Dialog */}
+              <Dialog open={!!selectedLead} onOpenChange={() => setSelectedLead(null)}>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl">Detalhes do Lead</DialogTitle>
+                  </DialogHeader>
+                  {selectedLead && (
+                    <div className="space-y-6 mt-4">
+                      {/* Basic Info */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Nome Completo</p>
+                          <p className="text-lg font-semibold">{selectedLead.nome_completo}</p>
+                        </div>
+                        <div className="p-4 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">WhatsApp</p>
+                          <a
+                            href={`https://wa.me/55${selectedLead.whatsapp.replace(/\D/g, "")}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-lg font-semibold text-green-500 hover:underline"
+                          >
+                            {selectedLead.whatsapp}
+                          </a>
+                        </div>
+                        <div className="p-4 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Instagram</p>
+                          <a
+                            href={`https://instagram.com/${selectedLead.instagram.replace("@", "")}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-lg font-semibold text-primary hover:underline"
+                          >
+                            {selectedLead.instagram}
+                          </a>
+                        </div>
+                        <div className="p-4 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Data de Cadastro</p>
+                          <p className="text-lg font-semibold">
+                            {format(new Date(selectedLead.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Business Info */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Mercado</p>
+                          <p className="font-medium">{selectedLead.mercado}</p>
+                        </div>
+                        <div className="p-4 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Estágio do Negócio</p>
+                          <p className="font-medium">{selectedLead.estagio_negocio}</p>
+                        </div>
+                        {selectedLead.empresa && (
+                          <div className="p-4 bg-muted/30 rounded-lg">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Empresa</p>
+                            <p className="font-medium">{selectedLead.empresa}</p>
+                          </div>
+                        )}
+                        {selectedLead.segmento && (
+                          <div className="p-4 bg-muted/30 rounded-lg">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Segmento</p>
+                            <p className="font-medium">{selectedLead.segmento}</p>
+                          </div>
+                        )}
+                        {selectedLead.faturamento_faixa && (
+                          <div className="p-4 bg-muted/30 rounded-lg">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Faturamento</p>
+                            <p className="font-medium">{selectedLead.faturamento_faixa}</p>
+                          </div>
+                        )}
+                        {selectedLead.ticket_faixa && (
+                          <div className="p-4 bg-muted/30 rounded-lg">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Ticket Médio</p>
+                            <p className="font-medium">{selectedLead.ticket_faixa}</p>
+                          </div>
+                        )}
+                        {selectedLead.trafego_faixa && (
+                          <div className="p-4 bg-muted/30 rounded-lg">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Investimento em Tráfego</p>
+                            <p className="font-medium">{selectedLead.trafego_faixa}</p>
+                          </div>
+                        )}
+                        {selectedLead.orcamento_faixa && (
+                          <div className="p-4 bg-muted/30 rounded-lg">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Orçamento</p>
+                            <p className="font-medium">{selectedLead.orcamento_faixa}</p>
+                          </div>
+                        )}
+                        {selectedLead.timing && (
+                          <div className="p-4 bg-muted/30 rounded-lg">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Timing</p>
+                            <p className="font-medium">{selectedLead.timing}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Goals & Challenges */}
+                      {selectedLead.objetivo && (
+                        <div className="p-4 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Objetivo</p>
+                          <p className="font-medium whitespace-pre-wrap">{selectedLead.objetivo}</p>
+                        </div>
+                      )}
+                      {selectedLead.gargalo && (
+                        <div className="p-4 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Gargalo</p>
+                          <p className="font-medium whitespace-pre-wrap">{selectedLead.gargalo}</p>
+                        </div>
+                      )}
+
+                      {/* Dor/Desejo */}
+                      <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Dor / Desejo</p>
+                        <p className="whitespace-pre-wrap">{selectedLead.dor_desejo}</p>
+                      </div>
+
+                      {/* Score & Tier (internal) */}
+                      {(selectedLead.score !== null || selectedLead.tier) && (
+                        <div className="flex gap-4 pt-2 border-t">
+                          {selectedLead.tier && (
+                            <Badge variant={selectedLead.tier === "A" ? "default" : selectedLead.tier === "B" ? "secondary" : "outline"}>
+                              Tier {selectedLead.tier}
+                            </Badge>
+                          )}
+                          {selectedLead.score !== null && (
+                            <span className="text-sm text-muted-foreground">Score: {selectedLead.score}</span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-4 pt-4">
+                        <Button
+                          className="flex-1 bg-green-600 hover:bg-green-700"
+                          onClick={() =>
+                            window.open(
+                              `https://wa.me/55${selectedLead.whatsapp.replace(/\D/g, "")}`,
+                              "_blank"
+                            )
+                          }
+                        >
+                          Abrir WhatsApp
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="flex-1"
+                          onClick={() =>
+                            window.open(
+                              `https://instagram.com/${selectedLead.instagram.replace("@", "")}`,
+                              "_blank"
+                            )
+                          }
+                        >
+                          Ver Instagram
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
+            </TabsContent>
 
             <TabsContent value="sessions">
               {/* Filters */}

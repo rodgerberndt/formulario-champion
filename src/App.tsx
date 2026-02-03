@@ -11,7 +11,6 @@ import NotFound from "./pages/NotFound";
 // Lazy load pages for performance
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Obrigado = lazy(() => import("./pages/Obrigado"));
-const Admin = lazy(() => import("./pages/Admin"));
 const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
 
 const queryClient = new QueryClient();
@@ -53,15 +52,7 @@ const App = () => (
                 </Suspense>
               } 
             />
-            <Route 
-              path="/senhasenha"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <Admin />
-                </Suspense>
-              } 
-            />
-            <Route 
+            <Route
               path={`/${ADMIN_ANALYTICS_SLUG}`}
               element={
                 <Suspense fallback={<PageLoader />}>
