@@ -225,10 +225,10 @@ serve(async (req) => {
       const { data: sessions, error: sessionsError } = await sessionsQuery;
       if (sessionsError) throw sessionsError;
 
-      // Get all events to calculate accurate metrics
+      // Get all events to calculate accurate metrics (including button_id for start_click)
       const { data: allEvents, error: eventsError } = await supabase
         .from("lead_events")
-        .select("event_name, step_id, session_id, page, metadata");
+        .select("event_name, step_id, session_id, page, metadata, button_id");
       if (eventsError) throw eventsError;
 
       // Get total leads (completed quizzes)
@@ -253,11 +253,26 @@ serve(async (req) => {
       // Use leads count as ground truth for completed
       const completed = leadsCount || sessionsWithSubmit.size;
 
-      // Button distribution
+      // Button distribution - calculate from events (more accurate than sessions)
+      const buttonEventCounts: Record<string, Set<string>> = {
+        start_btn_1: new Set(),
+        start_btn_2: new Set(),
+        start_btn_3: new Set(),
+      };
+      
+      allEvents?.forEach(event => {
+        if (event.event_name === "start_click") {
+          const buttonId = (event as unknown as { button_id?: string }).button_id;
+          if (buttonId && buttonEventCounts[buttonId]) {
+            buttonEventCounts[buttonId].add(event.session_id);
+          }
+        }
+      });
+      
       const buttonDistribution = {
-        start_btn_1: sessions?.filter(s => s.start_button_id === "start_btn_1").length || 0,
-        start_btn_2: sessions?.filter(s => s.start_button_id === "start_btn_2").length || 0,
-        start_btn_3: sessions?.filter(s => s.start_button_id === "start_btn_3").length || 0,
+        start_btn_1: buttonEventCounts.start_btn_1.size,
+        start_btn_2: buttonEventCounts.start_btn_2.size,
+        start_btn_3: buttonEventCounts.start_btn_3.size,
       };
 
       // Step funnel - count unique sessions per step
