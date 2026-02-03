@@ -375,53 +375,155 @@ export default function AdminAnalytics() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-sm">
+                  <div>
+                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Criado em</p>
+                    <p className="font-medium">{new Date(selectedSession.created_at).toLocaleString("pt-BR")}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Última atividade</p>
+                    <p className="font-medium">{new Date(selectedSession.last_seen_at).toLocaleString("pt-BR")}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Dispositivo</p>
+                    <p className="font-medium capitalize">{selectedSession.device_type || "-"}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Lead Information Card */}
+            {(selectedSession.lead_name || selectedSession.lead_whatsapp || selectedSession.lead_instagram) && (
+              <Card className="mb-6 border-primary/20">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Users className="w-5 h-5 text-primary" />
+                    Informações do Lead
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {selectedSession.lead_name && (
+                      <div className="p-4 bg-muted/30 rounded-lg">
+                        <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Nome Completo</p>
+                        <p className="text-lg font-semibold">{selectedSession.lead_name}</p>
+                      </div>
+                    )}
+                    {selectedSession.lead_whatsapp && (
+                      <div className="p-4 bg-muted/30 rounded-lg">
+                        <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">WhatsApp</p>
+                        <a 
+                          href={`https://wa.me/55${selectedSession.lead_whatsapp.replace(/\D/g, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-lg font-semibold text-green-500 hover:underline"
+                        >
+                          {selectedSession.lead_whatsapp}
+                        </a>
+                      </div>
+                    )}
+                    {selectedSession.lead_instagram && (
+                      <div className="p-4 bg-muted/30 rounded-lg">
+                        <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Instagram</p>
+                        <a 
+                          href={`https://instagram.com/${selectedSession.lead_instagram.replace('@', '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-lg font-semibold text-primary hover:underline"
+                        >
+                          {selectedSession.lead_instagram}
+                        </a>
+                      </div>
+                    )}
+                    {selectedSession.lead_market && (
+                      <div className="p-4 bg-muted/30 rounded-lg">
+                        <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Mercado</p>
+                        <p className="text-lg font-semibold">{selectedSession.lead_market}</p>
+                      </div>
+                    )}
+                    {selectedSession.lead_stage && (
+                      <div className="p-4 bg-muted/30 rounded-lg">
+                        <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Estágio do Negócio</p>
+                        <p className="text-lg font-semibold">{selectedSession.lead_stage}</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  {(selectedSession.lead_whatsapp || selectedSession.lead_instagram) && (
+                    <div className="flex gap-4 mt-6">
+                      {selectedSession.lead_whatsapp && (
+                        <Button 
+                          className="flex-1 bg-green-600 hover:bg-green-700"
+                          onClick={() => window.open(`https://wa.me/55${selectedSession.lead_whatsapp?.replace(/\D/g, '')}`, '_blank')}
+                        >
+                          Abrir WhatsApp
+                        </Button>
+                      )}
+                      {selectedSession.lead_instagram && (
+                        <Button 
+                          variant="outline"
+                          className="flex-1"
+                          onClick={() => window.open(`https://instagram.com/${selectedSession.lead_instagram?.replace('@', '')}`, '_blank')}
+                        >
+                          Ver Instagram
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Session Tracking Info */}
+            <Card className="mb-6">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Informações de Rastreamento</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                   <div>
-                    <p className="text-muted-foreground">Criado em</p>
-                    <p>{new Date(selectedSession.created_at).toLocaleString("pt-BR")}</p>
+                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Botão Clicado</p>
+                    <p className="font-medium">{selectedSession.start_button_id || "-"}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Última atividade</p>
-                    <p>{new Date(selectedSession.last_seen_at).toLocaleString("pt-BR")}</p>
+                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Etapa Atual</p>
+                    <p className="font-medium">{selectedSession.current_step_id ? STEP_LABELS[selectedSession.current_step_id] || selectedSession.current_step_id : "-"}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Dispositivo</p>
-                    <p className="capitalize">{selectedSession.device_type}</p>
+                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Entrou no Quiz</p>
+                    <p className="font-medium">{selectedSession.entered_quiz_page ? "Sim" : "Não"}</p>
                   </div>
-                  {selectedSession.lead_name && (
-                    <div>
-                      <p className="text-muted-foreground">Nome</p>
-                      <p>{selectedSession.lead_name}</p>
-                    </div>
-                  )}
-                  {selectedSession.lead_whatsapp && (
-                    <div>
-                      <p className="text-muted-foreground">WhatsApp</p>
-                      <p>{selectedSession.lead_whatsapp}</p>
-                    </div>
-                  )}
-                  {selectedSession.lead_instagram && (
-                    <div>
-                      <p className="text-muted-foreground">Instagram</p>
-                      <p>{selectedSession.lead_instagram}</p>
-                    </div>
-                  )}
-                  {selectedSession.start_button_id && (
-                    <div>
-                      <p className="text-muted-foreground">Botão clicado</p>
-                      <p>{selectedSession.start_button_id}</p>
-                    </div>
-                  )}
+                  <div>
+                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Começou Quiz</p>
+                    <p className="font-medium">{selectedSession.started_quiz ? "Sim" : "Não"}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Completou</p>
+                    <p className="font-medium">{selectedSession.completed ? "Sim" : "Não"}</p>
+                  </div>
                   {selectedSession.utm_source && (
                     <div>
-                      <p className="text-muted-foreground">UTM Source</p>
-                      <p>{selectedSession.utm_source}</p>
+                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">UTM Source</p>
+                      <p className="font-medium">{selectedSession.utm_source}</p>
+                    </div>
+                  )}
+                  {selectedSession.utm_medium && (
+                    <div>
+                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">UTM Medium</p>
+                      <p className="font-medium">{selectedSession.utm_medium}</p>
+                    </div>
+                  )}
+                  {selectedSession.utm_campaign && (
+                    <div>
+                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">UTM Campaign</p>
+                      <p className="font-medium">{selectedSession.utm_campaign}</p>
                     </div>
                   )}
                   {selectedSession.referrer && (
-                    <div className="col-span-2">
-                      <p className="text-muted-foreground">Referrer</p>
-                      <p className="truncate">{selectedSession.referrer}</p>
+                    <div className="col-span-2 md:col-span-3">
+                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Referrer</p>
+                      <p className="font-medium truncate">{selectedSession.referrer}</p>
                     </div>
                   )}
                 </div>
@@ -437,6 +539,8 @@ export default function AdminAnalytics() {
                   <div className="flex justify-center py-8">
                     <Loader2 className="w-6 h-6 animate-spin" />
                   </div>
+                ) : sessionEvents.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">Nenhum evento registrado para esta sessão</p>
                 ) : (
                   <div className="space-y-4">
                     {sessionEvents.map((event) => (
@@ -455,7 +559,7 @@ export default function AdminAnalytics() {
                           {event.button_id && (
                             <p className="text-muted-foreground">Botão: {event.button_id}</p>
                           )}
-                          {event.metadata && (
+                          {event.metadata && Object.keys(event.metadata).length > 0 && (
                             <pre className="text-xs text-muted-foreground mt-1 bg-muted p-2 rounded">
                               {JSON.stringify(event.metadata, null, 2)}
                             </pre>
@@ -623,31 +727,39 @@ export default function AdminAnalytics() {
                     <table className="w-full text-sm">
                       <thead className="border-b bg-muted/50">
                         <tr>
+                          <th className="text-left p-4 w-12">#</th>
                           <th className="text-left p-4">Data</th>
                           <th className="text-left p-4">Status</th>
-                          <th className="text-left p-4">Botão</th>
-                          <th className="text-left p-4">Lead</th>
+                          <th className="text-left p-4">Nome</th>
+                          <th className="text-left p-4">Instagram</th>
+                          <th className="text-left p-4">WhatsApp</th>
                           <th className="text-left p-4">Dispositivo</th>
-                          <th className="text-left p-4">UTM</th>
                           <th className="text-right p-4">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
                         {sessionsLoading ? (
                           <tr>
-                            <td colSpan={7} className="p-8 text-center">
+                            <td colSpan={8} className="p-8 text-center">
                               <Loader2 className="w-6 h-6 animate-spin mx-auto" />
                             </td>
                           </tr>
                         ) : sessions.length === 0 ? (
                           <tr>
-                            <td colSpan={7} className="p-8 text-center text-muted-foreground">
+                            <td colSpan={8} className="p-8 text-center text-muted-foreground">
                               Nenhuma sessão encontrada
                             </td>
                           </tr>
                         ) : (
-                          sessions.map((session) => (
-                            <tr key={session.id} className="border-b hover:bg-muted/30">
+                          sessions.map((session, index) => (
+                            <tr 
+                              key={session.id} 
+                              className="border-b hover:bg-muted/30 cursor-pointer"
+                              onClick={() => handleViewSession(session)}
+                            >
+                              <td className="p-4 text-muted-foreground font-mono">
+                                {(sessionsPage - 1) * 20 + index + 1}
+                              </td>
                               <td className="p-4">
                                 {new Date(session.created_at).toLocaleDateString("pt-BR")}
                                 <br />
@@ -656,29 +768,48 @@ export default function AdminAnalytics() {
                                 </span>
                               </td>
                               <td className="p-4">{getStatusBadge(session)}</td>
-                              <td className="p-4">{session.start_button_id || "-"}</td>
+                              <td className="p-4 font-medium">
+                                {session.lead_name || <span className="text-muted-foreground">-</span>}
+                              </td>
                               <td className="p-4">
-                                {session.lead_name || "-"}
-                                {session.lead_whatsapp && (
-                                  <span className="block text-xs text-muted-foreground">
+                                {session.lead_instagram ? (
+                                  <a 
+                                    href={`https://instagram.com/${session.lead_instagram.replace('@', '')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary hover:underline"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {session.lead_instagram}
+                                  </a>
+                                ) : (
+                                  <span className="text-muted-foreground">-</span>
+                                )}
+                              </td>
+                              <td className="p-4">
+                                {session.lead_whatsapp ? (
+                                  <a 
+                                    href={`https://wa.me/55${session.lead_whatsapp.replace(/\D/g, '')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-green-500 hover:underline"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
                                     {session.lead_whatsapp}
-                                  </span>
+                                  </a>
+                                ) : (
+                                  <span className="text-muted-foreground">-</span>
                                 )}
                               </td>
-                              <td className="p-4 capitalize">{session.device_type}</td>
-                              <td className="p-4">
-                                {session.utm_source || "-"}
-                                {session.utm_medium && (
-                                  <span className="text-xs text-muted-foreground">
-                                    /{session.utm_medium}
-                                  </span>
-                                )}
-                              </td>
+                              <td className="p-4 capitalize">{session.device_type || "-"}</td>
                               <td className="p-4 text-right">
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => handleViewSession(session)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleViewSession(session);
+                                  }}
                                 >
                                   Ver
                                 </Button>
