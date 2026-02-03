@@ -260,7 +260,31 @@ export default function Quiz() {
     if (canProceed() && step < totalSteps) {
       const fromStepId = STEP_IDS[step - 1];
       const toStepId = STEP_IDS[step];
-      await trackStepNext(fromStepId, toStepId);
+      
+      // Get the field value for the current step
+      const fieldData: Record<string, string> = {};
+      switch (step) {
+        case 1:
+          fieldData.nome = formData.nome_completo;
+          break;
+        case 2:
+          fieldData.whatsapp = formData.whatsapp;
+          break;
+        case 3:
+          fieldData.instagram = formData.instagram;
+          break;
+        case 4:
+          fieldData.mercado = formData.mercado;
+          break;
+        case 5:
+          fieldData.estagio = formData.estagio_negocio;
+          break;
+        case 6:
+          fieldData.dor_desejo = formData.dor_desejo;
+          break;
+      }
+      
+      await trackStepNext(fromStepId, toStepId, fieldData);
       setStep(step + 1);
     } else if (step === totalSteps && canProceed()) {
       handleSubmit();

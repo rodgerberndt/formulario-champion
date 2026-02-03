@@ -16,7 +16,7 @@ interface TrackingContextType {
   trackStartClick: (buttonId: string) => Promise<void>;
   trackQuizPageView: () => Promise<void>;
   trackStepView: (stepId: string) => Promise<void>;
-  trackStepNext: (fromStep: string, toStep: string) => Promise<void>;
+  trackStepNext: (fromStep: string, toStep: string, fieldData?: Record<string, string>) => Promise<void>;
   trackStepBack: (fromStep: string, toStep: string) => Promise<void>;
   trackSubmit: (leadData: {
     name: string;
@@ -197,11 +197,15 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     await updateSession({ current_step_id: stepId });
   }, [trackEvent, updateSession]);
 
-  // Track step next
-  const trackStepNext = useCallback(async (fromStep: string, toStep: string) => {
+  // Track step next with field data
+  const trackStepNext = useCallback(async (fromStep: string, toStep: string, fieldData?: Record<string, string>) => {
     await trackEvent("step_next", {
       stepId: toStep,
-      metadata: { from_step: fromStep, to_step: toStep },
+      metadata: { 
+        from_step: fromStep, 
+        to_step: toStep,
+        field_value: fieldData 
+      } as Json,
     });
     await updateSession({ current_step_id: toStep });
   }, [trackEvent, updateSession]);
