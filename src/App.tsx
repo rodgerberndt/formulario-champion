@@ -16,8 +16,8 @@ const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
 
 const queryClient = new QueryClient();
 
-// Get admin route slug from env or use default
-const ADMIN_ANALYTICS_SLUG = import.meta.env.VITE_ADMIN_ROUTE_SLUG || "champion-analytics-admin";
+// Admin analytics route slug - change this to your preferred secret URL
+const ADMIN_ANALYTICS_SLUG = "champion-analytics-admin-9f3c";
 
 // Minimal loading fallback
 function PageLoader() {
