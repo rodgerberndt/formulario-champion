@@ -320,10 +320,10 @@ serve(async (req) => {
       const stepId = dropoffMatch[1];
       const stepOrder = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"];
 
-      // Get all events
+      // Get all events including metadata for field values
       const { data: allEvents, error: eventsError } = await supabase
         .from("lead_events")
-        .select("event_name, step_id, session_id");
+        .select("event_name, step_id, session_id, metadata");
       if (eventsError) throw eventsError;
 
       // Find sessions with submit
@@ -345,6 +345,21 @@ serve(async (req) => {
         }
       });
 
+      // Collect field values from step_next events for each session
+      const sessionFieldData: Record<string, Record<string, string>> = {};
+      allEvents?.forEach(event => {
+        if (event.event_name === "step_next" && event.metadata) {
+          const metadata = event.metadata as Record<string, unknown>;
+          const fieldValue = metadata.field_value as Record<string, string> | undefined;
+          if (fieldValue) {
+            if (!sessionFieldData[event.session_id]) {
+              sessionFieldData[event.session_id] = {};
+            }
+            Object.assign(sessionFieldData[event.session_id], fieldValue);
+          }
+        }
+      });
+
       // Get sessions that dropped off at this step
       const droppedSessionIds = Object.entries(sessionLastStep)
         .filter(([sessionId, lastStep]) => lastStep === stepId && !sessionsWithSubmit.has(sessionId))
@@ -357,8 +372,23 @@ serve(async (req) => {
         .in("id", droppedSessionIds.length > 0 ? droppedSessionIds : ["00000000-0000-0000-0000-000000000000"]);
       if (sessionsError) throw sessionsError;
 
+      // Enrich sessions with collected field data
+      const enrichedSessions = (droppedSessions || []).map(session => {
+        const fieldData = sessionFieldData[session.id] || {};
+        return {
+          ...session,
+          // Use collected data if session data is null
+          lead_name: session.lead_name || fieldData.nome || null,
+          lead_whatsapp: session.lead_whatsapp || fieldData.whatsapp || null,
+          lead_instagram: session.lead_instagram || fieldData.instagram || null,
+          lead_market: session.lead_market || fieldData.mercado || null,
+          lead_stage: session.lead_stage || fieldData.estagio || null,
+          collected_data: fieldData, // Include all collected data
+        };
+      });
+
       return new Response(
-        JSON.stringify(droppedSessions || []),
+        JSON.stringify(enrichedSessions),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

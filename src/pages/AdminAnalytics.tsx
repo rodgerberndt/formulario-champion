@@ -1593,46 +1593,58 @@ export default function AdminAnalytics() {
                                       <p className="text-sm text-muted-foreground">Nenhuma sessão encontrada</p>
                                     ) : (
                                       <div className="space-y-3">
-                                        {dropoffSessions.map((session) => (
-                                          <div key={session.id} className="p-3 bg-background rounded-lg border flex flex-wrap justify-between items-start gap-2">
-                                            <div className="space-y-1">
-                                              <p className="font-medium">
-                                                {session.lead_name || <span className="text-muted-foreground italic">Sem nome</span>}
-                                              </p>
-                                              <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                                                {session.lead_whatsapp && (
-                                                  <a 
-                                                    href={`https://wa.me/55${session.lead_whatsapp.replace(/\D/g, '')}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-green-500 hover:underline"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                  >
-                                                    📱 {session.lead_whatsapp}
-                                                  </a>
+                                        {dropoffSessions.map((session) => {
+                                          // Get collected_data from the enriched response
+                                          const collectedData = (session as unknown as { collected_data?: Record<string, string> }).collected_data;
+                                          
+                                          
+                                          return (
+                                            <div key={session.id} className="p-3 bg-background rounded-lg border flex flex-wrap justify-between items-start gap-2">
+                                              <div className="space-y-1 flex-1">
+                                                <p className="font-medium">
+                                                  {session.lead_name || collectedData?.nome || <span className="text-muted-foreground italic">Sem nome</span>}
+                                                </p>
+                                                <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+                                                  {(session.lead_whatsapp || collectedData?.whatsapp) && (
+                                                    <a 
+                                                      href={`https://wa.me/55${(session.lead_whatsapp || collectedData?.whatsapp || '').replace(/\D/g, '')}`}
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                      className="text-green-500 hover:underline"
+                                                      onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                      📱 {session.lead_whatsapp || collectedData?.whatsapp}
+                                                    </a>
+                                                  )}
+                                                  {(session.lead_instagram || collectedData?.instagram) && (
+                                                    <a 
+                                                      href={`https://instagram.com/${(session.lead_instagram || collectedData?.instagram || '').replace('@', '')}`}
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                      className="text-primary hover:underline"
+                                                      onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                      📸 {session.lead_instagram || collectedData?.instagram}
+                                                    </a>
+                                                  )}
+                                                </div>
+                                                {(session.lead_market || collectedData?.mercado) && (
+                                                  <p className="text-xs text-muted-foreground">Mercado: {session.lead_market || collectedData?.mercado}</p>
                                                 )}
-                                                {session.lead_instagram && (
-                                                  <a 
-                                                    href={`https://instagram.com/${session.lead_instagram.replace('@', '')}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-primary hover:underline"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                  >
-                                                    📸 {session.lead_instagram}
-                                                  </a>
+                                                {collectedData?.estagio && (
+                                                  <p className="text-xs text-muted-foreground">Estágio: {collectedData.estagio}</p>
+                                                )}
+                                                {collectedData?.dor_desejo && (
+                                                  <p className="text-xs text-muted-foreground">Dor/Desejo: {collectedData.dor_desejo}</p>
                                                 )}
                                               </div>
-                                              {session.lead_market && (
-                                                <p className="text-xs text-muted-foreground">Mercado: {session.lead_market}</p>
-                                              )}
+                                              <div className="text-right text-xs text-muted-foreground">
+                                                <p>{new Date(session.created_at).toLocaleDateString("pt-BR")}</p>
+                                                <p>{session.device_type || "desktop"}</p>
+                                              </div>
                                             </div>
-                                            <div className="text-right text-xs text-muted-foreground">
-                                              <p>{new Date(session.created_at).toLocaleDateString("pt-BR")}</p>
-                                              <p>{session.device_type || "desktop"}</p>
-                                            </div>
-                                          </div>
-                                        ))}
+                                          );
+                                        })}
                                       </div>
                                     )}
                                   </div>
