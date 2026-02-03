@@ -261,9 +261,9 @@ serve(async (req) => {
       };
       
       allEvents?.forEach(event => {
-        if (event.event_name === "start_click") {
-          const buttonId = (event as unknown as { button_id?: string }).button_id;
-          if (buttonId && buttonEventCounts[buttonId]) {
+        if (event.event_name === "start_click" && event.button_id) {
+          const buttonId = event.button_id;
+          if (buttonEventCounts[buttonId]) {
             buttonEventCounts[buttonId].add(event.session_id);
           }
         }
