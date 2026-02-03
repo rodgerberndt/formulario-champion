@@ -226,10 +226,14 @@ export default function AdminAnalytics() {
     }
   };
 
-  const openLeadDetail = (lead: Lead) => {
-    setSelectedLead(lead);
+  const openLeadDetail = async (lead: Lead) => {
+    // Mark as read immediately and update the lead object
     if (!lead.lido) {
-      markLeadAsRead(lead.id);
+      await markLeadAsRead(lead.id);
+      // Set selected lead with lido: true since we just marked it
+      setSelectedLead({ ...lead, lido: true });
+    } else {
+      setSelectedLead(lead);
     }
   };
 
