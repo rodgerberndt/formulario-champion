@@ -77,15 +77,15 @@ function PageBackground() {
 export default function Obrigado() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<QuizFormData | null>(null);
-  const leadEventFired = useRef(false);
+  const conversionEventFired = useRef(false);
 
-  // Fire Lead conversion event when page loads with valid data
+  // Fire CompleteRegistration conversion event when page loads with valid data
   useEffect(() => {
-    if (formData && !leadEventFired.current) {
+    if (formData && !conversionEventFired.current) {
       if (typeof window.fbq === 'function') {
-        window.fbq('track', 'Lead');
-        console.log('Facebook Pixel: Lead event fired');
-        leadEventFired.current = true;
+        window.fbq('track', 'CompleteRegistration');
+        console.log('Facebook Pixel: CompleteRegistration event fired');
+        conversionEventFired.current = true;
       }
     }
   }, [formData]);
