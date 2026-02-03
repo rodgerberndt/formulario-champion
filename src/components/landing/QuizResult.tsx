@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { MessageCircle, ArrowRight, User, Phone, Instagram, Briefcase, Target, FileText } from "lucide-react";
+import { User, Phone, Instagram, Briefcase, Target, FileText } from "lucide-react";
 
 interface QuizFormData {
   nome_completo: string;
@@ -11,12 +10,11 @@ interface QuizFormData {
 }
 
 interface QuizResultProps {
-  whatsappLink: string;
   nome: string;
   formData: QuizFormData;
 }
 
-export function QuizResult({ whatsappLink, nome, formData }: QuizResultProps) {
+export function QuizResult({ nome, formData }: QuizResultProps) {
   const firstName = nome.split(" ")[0];
 
   return (
@@ -87,17 +85,6 @@ export function QuizResult({ whatsappLink, nome, formData }: QuizResultProps) {
             </div>
           </div>
         </div>
-
-        {/* CTA */}
-        <Button
-          size="lg"
-          onClick={() => window.open(whatsappLink, "_blank")}
-          className="w-full h-14 group text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-300 active:scale-[0.98]"
-        >
-          <MessageCircle className="w-5 h-5" />
-          FALAR NO WHATSAPP AGORA
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </Button>
       </div>
     </div>
   );
