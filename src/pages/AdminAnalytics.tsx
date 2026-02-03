@@ -171,13 +171,6 @@ export default function AdminAnalytics() {
     const token = getToken();
     const queryString = params ? "?" + new URLSearchParams(params).toString() : "";
     
-    const response = await supabase.functions.invoke("admin-data", {
-      body: null,
-      headers: {
-        "x-admin-token": token || "",
-      },
-    });
-
     // Use fetch directly for proper path handling
     const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data${path}${queryString}`;
     const fetchResponse = await fetch(url, {
