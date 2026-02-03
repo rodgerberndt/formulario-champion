@@ -172,18 +172,13 @@ export default function AdminAnalytics() {
     }
   }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, dateFrom, dateTo, sessionsPage]);
 
-  // Load leads from legacy table
+  // Load leads from legacy table via edge function
   const loadLeads = async () => {
     setLeadsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("leads")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
+      const data = await fetchAdminData("/leads");
       setLeads(data || []);
-      setLeadsUnreadCount(data?.filter((l) => !l.lido).length || 0);
+      setLeadsUnreadCount(data?.filter((l: Lead) => !l.lido).length || 0);
     } catch (error) {
       console.error("Error loading leads:", error);
     } finally {
@@ -192,18 +187,29 @@ export default function AdminAnalytics() {
   };
 
   const markLeadAsRead = async (id: string) => {
-    const { error } = await supabase
-      .from("leads")
-      .update({ lido: true })
-      .eq("id", id);
+    try {
+      const token = getToken();
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${id}`;
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "x-admin-token": token || "",
+          "Content-Type": "application/json",
+          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({ lido: true }),
+      });
 
-    if (error) {
-      console.error("Error marking lead as read:", error);
-    } else {
+      if (!response.ok) {
+        throw new Error("Failed to update lead");
+      }
+
       setLeads((prev) =>
         prev.map((l) => (l.id === id ? { ...l, lido: true } : l))
       );
       setLeadsUnreadCount((prev) => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error("Error marking lead as read:", error);
     }
   };
 

@@ -60,6 +60,50 @@ serve(async (req) => {
     const url = new URL(req.url);
     const path = url.pathname.replace("/admin-data", "");
 
+    // GET /leads - List leads from legacy table
+    if (path === "/leads" && req.method === "GET") {
+      const search = url.searchParams.get("q");
+      
+      let query = supabase
+        .from("leads")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (search) {
+        query = query.or(`nome_completo.ilike.%${search}%,whatsapp.ilike.%${search}%,instagram.ilike.%${search}%,mercado.ilike.%${search}%`);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      return new Response(
+        JSON.stringify(data),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // PUT /leads/:id - Update lead (e.g., mark as read)
+    const leadUpdateMatch = path.match(/^\/leads\/([a-f0-9-]+)$/);
+    if (leadUpdateMatch && req.method === "PUT") {
+      const leadId = leadUpdateMatch[1];
+      const body = await req.json();
+      
+      const { data, error } = await supabase
+        .from("leads")
+        .update(body)
+        .eq("id", leadId)
+        .select()
+        .maybeSingle();
+
+      if (error) throw error;
+
+      return new Response(
+        JSON.stringify(data),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // GET /sessions - List sessions with filters
     if (path === "/sessions" && req.method === "GET") {
       const from = url.searchParams.get("from");
