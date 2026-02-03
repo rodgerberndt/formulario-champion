@@ -11,7 +11,6 @@ import NotFound from "./pages/NotFound";
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Obrigado = lazy(() => import("./pages/Obrigado"));
 const Admin = lazy(() => import("./pages/Admin"));
-const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 
 const queryClient = new QueryClient();
 
@@ -53,14 +52,6 @@ const App = () => (
             element={
               <Suspense fallback={<PageLoader />}>
                 <Admin />
-              </Suspense>
-            } 
-          />
-          <Route 
-            path="/admin-login" 
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <AdminLogin />
               </Suspense>
             } 
           />
