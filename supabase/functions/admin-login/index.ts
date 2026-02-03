@@ -90,6 +90,12 @@ serve(async (req) => {
 
     // Hash the provided password and compare with stored hash
     const inputHash = await sha256(password);
+    
+    // Debug logging
+    console.log("Input hash:", inputHash);
+    console.log("Stored hash:", passwordHash);
+    console.log("Hash length input:", inputHash.length, "stored:", passwordHash?.length);
+    
     const isValid = inputHash === passwordHash;
 
     if (!isValid) {
