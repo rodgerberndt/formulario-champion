@@ -5,8 +5,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { TrackingProvider } from "@/hooks/useTracking";
+import { usePresence } from "@/hooks/usePresence";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+
+// Component to enable presence tracking
+function PresenceTracker() {
+  usePresence();
+  return null;
+}
 
 // Lazy load pages for performance
 const Quiz = lazy(() => import("./pages/Quiz"));
@@ -34,6 +41,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <TrackingProvider>
+          <PresenceTracker />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route 
