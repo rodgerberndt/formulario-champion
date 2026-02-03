@@ -1522,20 +1522,20 @@ export default function AdminAnalytics() {
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/20">
                           <p className="text-red-400 text-sm font-medium mb-1">Não entraram no quiz</p>
-                          <p className="text-2xl font-bold">{metrics.total_visitors - metrics.entered_quiz}</p>
+                          <p className="text-2xl font-bold">{Math.max(0, metrics.total_visitors - metrics.entered_quiz)}</p>
                           <p className="text-xs text-muted-foreground">
                             {metrics.total_visitors > 0 ? 
-                              `${(((metrics.total_visitors - metrics.entered_quiz) / metrics.total_visitors) * 100).toFixed(1)}% dos visitantes` 
+                              `${Math.max(0, ((metrics.total_visitors - metrics.entered_quiz) / metrics.total_visitors) * 100).toFixed(1)}% dos visitantes` 
                               : "0%"
                             }
                           </p>
                         </div>
                         <div className="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
                           <p className="text-yellow-400 text-sm font-medium mb-1">Abandonaram durante o quiz</p>
-                          <p className="text-2xl font-bold">{metrics.started_quiz - metrics.completed}</p>
+                          <p className="text-2xl font-bold">{Math.max(0, metrics.started_quiz - metrics.completed)}</p>
                           <p className="text-xs text-muted-foreground">
                             {metrics.started_quiz > 0 ? 
-                              `${(((metrics.started_quiz - metrics.completed) / metrics.started_quiz) * 100).toFixed(1)}% de quem começou` 
+                              `${Math.max(0, ((metrics.started_quiz - metrics.completed) / metrics.started_quiz) * 100).toFixed(1)}% de quem começou` 
                               : "0%"
                             }
                           </p>
