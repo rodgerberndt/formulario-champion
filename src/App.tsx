@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 
 // Lazy load pages for performance
 const Quiz = lazy(() => import("./pages/Quiz"));
+const Obrigado = lazy(() => import("./pages/Obrigado"));
 const Admin = lazy(() => import("./pages/Admin"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 
@@ -40,7 +41,15 @@ const App = () => (
             } 
           />
           <Route 
-            path="/senhasenha" 
+            path="/obrigado" 
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Obrigado />
+              </Suspense>
+            } 
+          />
+          <Route 
+            path="/senhasenha"
             element={
               <Suspense fallback={<PageLoader />}>
                 <Admin />
