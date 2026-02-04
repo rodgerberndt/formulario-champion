@@ -1641,26 +1641,30 @@ export default function AdminAnalytics() {
                       <div className="flex gap-4 pt-4">
                         <Button
                           className="flex-1 bg-green-600 hover:bg-green-700"
-                          onClick={() =>
-                            window.open(
-                              `https://wa.me/55${selectedLead.whatsapp.replace(/\D/g, "")}`,
-                              "_blank"
-                            )
-                          }
+                          onClick={() => {
+                            const phoneNumber = selectedLead.whatsapp.replace(/\D/g, '');
+                            const fullNumber = phoneNumber.startsWith('55') ? phoneNumber : `55${phoneNumber}`;
+                            navigator.clipboard.writeText(fullNumber);
+                            toast({
+                              title: "Número copiado!",
+                              description: fullNumber,
+                            });
+                          }}
                         >
-                          Abrir WhatsApp
+                          Copiar WhatsApp
                         </Button>
                         <Button
                           variant="outline"
                           className="flex-1"
-                          onClick={() =>
-                            window.open(
-                              `https://instagram.com/${selectedLead.instagram.replace("@", "")}`,
-                              "_blank"
-                            )
-                          }
+                          asChild
                         >
-                          Ver Instagram
+                          <a 
+                            href={`https://www.instagram.com/${selectedLead.instagram.replace('@', '').trim()}/`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Ver Instagram
+                          </a>
                         </Button>
                       </div>
                     </div>
