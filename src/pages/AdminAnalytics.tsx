@@ -12,8 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { useActiveUsers, PresenceState } from "@/hooks/usePresence";
+import { useActiveUsers } from "@/hooks/usePresence";
 import CampaignAnalytics from "@/components/admin/CampaignAnalytics";
+import DateRangePicker from "@/components/admin/DateRangePicker";
 import { toast } from "@/hooks/use-toast";
 import {
   Users,
@@ -25,7 +26,6 @@ import {
   LogOut,
   Download,
   Search,
-  Calendar,
   ChevronLeft,
   ChevronRight,
   Loader2,
@@ -44,7 +44,7 @@ import {
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   Dialog,
@@ -164,8 +164,10 @@ export default function AdminAnalytics() {
   const [statusFilter, setStatusFilter] = useState<string>("interacted");
   const [buttonFilter, setButtonFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
+    from: subDays(new Date(), 29),
+    to: new Date(),
+  });
 
   // Lead selection for bulk actions
   const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
@@ -183,8 +185,10 @@ export default function AdminAnalytics() {
   const [leadsMercadoFilter, setLeadsMercadoFilter] = useState<string>("all");
   const [leadsEstagioFilter, setLeadsEstagioFilter] = useState<string>("all");
   const [leadsTierFilter, setLeadsTierFilter] = useState<string>("all");
-  const [leadsDateFrom, setLeadsDateFrom] = useState("");
-  const [leadsDateTo, setLeadsDateTo] = useState("");
+  const [leadsDateRange, setLeadsDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
+    from: undefined,
+    to: undefined,
+  });
 
   // Funnel drop-off detail state
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
@@ -226,7 +230,7 @@ export default function AdminAnalytics() {
       loadSessions();
       loadLeads();
     }
-  }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, dateFrom, dateTo, sessionsPage]);
+  }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, dateRange, sessionsPage]);
 
   // Load leads from legacy table via edge function
   const loadLeads = async () => {
@@ -408,14 +412,13 @@ export default function AdminAnalytics() {
     if (leadsTierFilter !== "all" && lead.tier !== leadsTierFilter) return false;
     
     // Date filters
-    if (leadsDateFrom) {
+    if (leadsDateRange.from) {
       const leadDate = new Date(lead.created_at);
-      const fromDate = new Date(leadsDateFrom);
-      if (leadDate < fromDate) return false;
+      if (leadDate < leadsDateRange.from) return false;
     }
-    if (leadsDateTo) {
+    if (leadsDateRange.to) {
       const leadDate = new Date(lead.created_at);
-      const toDate = new Date(leadsDateTo);
+      const toDate = new Date(leadsDateRange.to);
       toDate.setHours(23, 59, 59, 999);
       if (leadDate > toDate) return false;
     }
@@ -511,8 +514,8 @@ export default function AdminAnalytics() {
   const loadMetrics = async () => {
     try {
       const params: Record<string, string> = {};
-      if (dateFrom) params.from = dateFrom;
-      if (dateTo) params.to = dateTo;
+      if (dateRange.from) params.from = format(dateRange.from, "yyyy-MM-dd");
+      if (dateRange.to) params.to = format(dateRange.to, "yyyy-MM-dd");
 
       const data = await fetchAdminData("/metrics", params);
       setMetrics(data);
@@ -531,8 +534,8 @@ export default function AdminAnalytics() {
       if (statusFilter !== "all") params.status = statusFilter;
       if (buttonFilter !== "all") params.button_id = buttonFilter;
       if (searchQuery) params.q = searchQuery;
-      if (dateFrom) params.from = dateFrom;
-      if (dateTo) params.to = dateTo;
+      if (dateRange.from) params.from = format(dateRange.from, "yyyy-MM-dd");
+      if (dateRange.to) params.to = format(dateRange.to, "yyyy-MM-dd");
 
       const data = await fetchAdminData("/sessions", params);
       setSessions(data.data);
@@ -958,24 +961,10 @@ export default function AdminAnalytics() {
 
           {/* Date Filters */}
           <div className="flex flex-wrap gap-4 mb-6">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-muted-foreground" />
-              <Input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="w-40"
-                placeholder="De"
-              />
-              <span className="text-muted-foreground">até</span>
-              <Input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="w-40"
-                placeholder="Até"
-              />
-            </div>
+            <DateRangePicker
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
+            />
           </div>
 
           {/* Active Users Card - Expandable */}
@@ -1294,29 +1283,15 @@ export default function AdminAnalytics() {
               
               {/* Date Filters */}
               <div className="flex flex-wrap gap-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type="date"
-                    value={leadsDateFrom}
-                    onChange={(e) => setLeadsDateFrom(e.target.value)}
-                    className="w-40"
-                    placeholder="De"
-                  />
-                  <span className="text-muted-foreground">até</span>
-                  <Input
-                    type="date"
-                    value={leadsDateTo}
-                    onChange={(e) => setLeadsDateTo(e.target.value)}
-                    className="w-40"
-                    placeholder="Até"
-                  />
-                </div>
+                <DateRangePicker
+                  dateRange={leadsDateRange}
+                  onDateRangeChange={setLeadsDateRange}
+                />
                 <Button variant="outline" onClick={loadLeads} disabled={leadsLoading}>
                   <RefreshCw className={`w-4 h-4 mr-2 ${leadsLoading ? "animate-spin" : ""}`} />
                   Atualizar
                 </Button>
-                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsEstagioFilter !== "all" || leadsTierFilter !== "all" || leadsDateFrom || leadsDateTo) && (
+                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsEstagioFilter !== "all" || leadsTierFilter !== "all" || leadsDateRange.from || leadsDateRange.to) && (
                   <Button 
                     variant="ghost" 
                     onClick={() => {
@@ -1324,8 +1299,7 @@ export default function AdminAnalytics() {
                       setLeadsMercadoFilter("all");
                       setLeadsEstagioFilter("all");
                       setLeadsTierFilter("all");
-                      setLeadsDateFrom("");
-                      setLeadsDateTo("");
+                      setLeadsDateRange({ from: undefined, to: undefined });
                     }}
                   >
                     <XCircle className="w-4 h-4 mr-2" />
