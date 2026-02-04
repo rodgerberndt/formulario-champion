@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.get-client-ip]
 verify_jwt = false
+
+[functions.notify-lead]
+verify_jwt = false
