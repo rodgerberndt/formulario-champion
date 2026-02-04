@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -39,7 +38,6 @@ import {
   Percent,
   Search,
   Download,
-  Calendar,
   Loader2,
   Eye,
   BarChart3,
@@ -48,6 +46,8 @@ import {
 } from "lucide-react";
 import { format, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import DateRangePicker from "./DateRangePicker";
+import { Input } from "@/components/ui/input";
 
 interface CampaignMetrics {
   total_sessions: number;
@@ -134,26 +134,25 @@ export default function CampaignAnalytics({ fetchAdminData, onViewSession }: Cam
   const [sessionsLoading, setSessionsLoading] = useState(false);
   
   // Filters
-  const [periodFilter, setPeriodFilter] = useState<string>("30d");
+  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
+    from: subDays(new Date(), 29),
+    to: new Date(),
+  });
   const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [campaignFilter, setCampaignFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
 
   const loadCampaignData = useCallback(async () => {
     setLoading(true);
     try {
       const params: Record<string, string> = {};
       
-      // Calculate date range based on period filter
-      if (periodFilter !== "custom") {
-        const days = parseInt(periodFilter);
-        params.from = format(subDays(new Date(), days), "yyyy-MM-dd");
-        params.to = format(new Date(), "yyyy-MM-dd");
-      } else if (dateFrom && dateTo) {
-        params.from = dateFrom;
-        params.to = dateTo;
+      // Use date range from state
+      if (dateRange.from) {
+        params.from = format(dateRange.from, "yyyy-MM-dd");
+      }
+      if (dateRange.to) {
+        params.to = format(dateRange.to, "yyyy-MM-dd");
       }
       
       if (sourceFilter !== "all") params.source = sourceFilter;
@@ -166,20 +165,19 @@ export default function CampaignAnalytics({ fetchAdminData, onViewSession }: Cam
     } finally {
       setLoading(false);
     }
-  }, [fetchAdminData, periodFilter, sourceFilter, campaignFilter, dateFrom, dateTo]);
+  }, [fetchAdminData, dateRange, sourceFilter, campaignFilter]);
 
   const loadSessions = useCallback(async () => {
     setSessionsLoading(true);
     try {
       const params: Record<string, string> = { limit: "100" };
       
-      if (periodFilter !== "custom") {
-        const days = parseInt(periodFilter);
-        params.from = format(subDays(new Date(), days), "yyyy-MM-dd");
-        params.to = format(new Date(), "yyyy-MM-dd");
-      } else if (dateFrom && dateTo) {
-        params.from = dateFrom;
-        params.to = dateTo;
+      // Use date range from state
+      if (dateRange.from) {
+        params.from = format(dateRange.from, "yyyy-MM-dd");
+      }
+      if (dateRange.to) {
+        params.to = format(dateRange.to, "yyyy-MM-dd");
       }
       
       if (sourceFilter !== "all") params.source = sourceFilter;
@@ -193,7 +191,7 @@ export default function CampaignAnalytics({ fetchAdminData, onViewSession }: Cam
     } finally {
       setSessionsLoading(false);
     }
-  }, [fetchAdminData, periodFilter, sourceFilter, campaignFilter, searchQuery, dateFrom, dateTo]);
+  }, [fetchAdminData, dateRange, sourceFilter, campaignFilter, searchQuery]);
 
   useEffect(() => {
     loadCampaignData();
@@ -253,46 +251,11 @@ export default function CampaignAnalytics({ fetchAdminData, onViewSession }: Cam
   return (
     <div className="space-y-6">
       {/* Filters Row */}
-      <div className="flex flex-wrap gap-4 items-end">
-        <div className="space-y-1">
-          <label className="text-xs text-muted-foreground">Período</label>
-          <Select value={periodFilter} onValueChange={setPeriodFilter}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Período" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7">Últimos 7 dias</SelectItem>
-              <SelectItem value="14">Últimos 14 dias</SelectItem>
-              <SelectItem value="30">Últimos 30 dias</SelectItem>
-              <SelectItem value="60">Últimos 60 dias</SelectItem>
-              <SelectItem value="90">Últimos 90 dias</SelectItem>
-              <SelectItem value="custom">Personalizado</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {periodFilter === "custom" && (
-          <>
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">De</label>
-              <Input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="w-[150px]"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">Até</label>
-              <Input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="w-[150px]"
-              />
-            </div>
-          </>
-        )}
+      <div className="flex flex-wrap gap-4 items-center">
+        <DateRangePicker
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+        />
 
         <div className="space-y-1">
           <label className="text-xs text-muted-foreground">Origem</label>
