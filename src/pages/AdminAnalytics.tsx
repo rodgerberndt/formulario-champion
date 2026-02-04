@@ -773,18 +773,32 @@ export default function AdminAnalytics() {
                       {selectedSession.lead_whatsapp && (
                         <Button 
                           className="flex-1 bg-green-600 hover:bg-green-700"
-                          onClick={() => window.open(`https://wa.me/55${selectedSession.lead_whatsapp?.replace(/\D/g, '')}`, '_blank')}
+                          onClick={() => {
+                            const phoneNumber = selectedSession.lead_whatsapp?.replace(/\D/g, '') || '';
+                            const fullNumber = phoneNumber.startsWith('55') ? phoneNumber : `55${phoneNumber}`;
+                            navigator.clipboard.writeText(fullNumber);
+                            toast({
+                              title: "Número copiado!",
+                              description: fullNumber,
+                            });
+                          }}
                         >
-                          Abrir WhatsApp
+                          Copiar WhatsApp
                         </Button>
                       )}
                       {selectedSession.lead_instagram && (
                         <Button 
                           variant="outline"
                           className="flex-1"
-                          onClick={() => window.open(`https://instagram.com/${selectedSession.lead_instagram?.replace('@', '')}`, '_blank')}
+                          asChild
                         >
-                          Ver Instagram
+                          <a 
+                            href={`https://www.instagram.com/${selectedSession.lead_instagram?.replace('@', '').trim()}/`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Ver Instagram
+                          </a>
                         </Button>
                       )}
                     </div>
