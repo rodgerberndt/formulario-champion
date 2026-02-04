@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, memo, useCallback } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 
 const testimonialVideos = [
   "/testimonials/video-1.mp4",
