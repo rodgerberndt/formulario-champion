@@ -11,18 +11,37 @@ const testimonialVideos = [
   "/testimonials/video-8.mp4"
 ];
 
-// Memoized video card - hides if video fails to load
-const VideoCard = memo(function VideoCard({ video }: { video: string }) {
+// Lazy video card - only loads video when visible
+const VideoCard = memo(function VideoCard({ video, index }: { video: string; index: number }) {
   const [hasError, setHasError] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Force play on mobile when video loads
+  // Intersection Observer for lazy loading
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "100px", threshold: 0.1 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Play video when loaded and visible
   useEffect(() => {
     if (isLoaded && videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Autoplay might be blocked, that's okay
-      });
+      videoRef.current.play().catch(() => {});
     }
   }, [isLoaded]);
 
@@ -30,86 +49,80 @@ const VideoCard = memo(function VideoCard({ video }: { video: string }) {
 
   return (
     <div
-      className={`flex-shrink-0 w-[130px] md:w-[160px] aspect-[9/16] rounded-xl overflow-hidden bg-muted/30 border border-border/40 shadow-lg transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+      ref={containerRef}
+      className="flex-shrink-0 w-[130px] md:w-[160px] aspect-[9/16] rounded-xl overflow-hidden bg-muted/20 border border-border/30"
+      style={{ 
+        contain: "layout style paint",
+        contentVisibility: "auto"
+      }}
     >
-      <video
-        ref={videoRef}
-        src={video}
-        className="w-full h-full object-cover"
-        muted
-        loop
-        playsInline
-        autoPlay
-        preload="metadata"
-        onLoadedData={() => setIsLoaded(true)}
-        onError={() => setHasError(true)}
-      />
+      {isVisible && (
+        <video
+          ref={videoRef}
+          src={video}
+          className={`w-full h-full object-cover transition-opacity duration-200 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="none"
+          onLoadedData={() => setIsLoaded(true)}
+          onError={() => setHasError(true)}
+        />
+      )}
     </div>
   );
 });
 
-export function SocialProofCarousel() {
+export const SocialProofCarousel = memo(function SocialProofCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
   const scrollPositionRef = useRef(0);
+  const rafRef = useRef<number>(0);
+  const lastTimeRef = useRef(0);
   
-  const scroll = useCallback(() => {
+  // Use CSS animation instead of JS for smoother scroll
+  useEffect(() => {
     const scrollContainer = scrollRef.current;
-    if (!scrollContainer || isPaused) return;
+    if (!scrollContainer) return;
     
-    scrollPositionRef.current += 0.4;
-    
-    // Reset when reaching half (the duplicated content)
-    const maxScroll = scrollContainer.scrollWidth / 2;
-    if (scrollPositionRef.current >= maxScroll) {
-      scrollPositionRef.current = 0;
-    }
-    
-    scrollContainer.scrollLeft = scrollPositionRef.current;
-  }, [isPaused]);
-
-  useEffect(() => {
-    let animationId: number;
-    
-    const animate = () => {
-      scroll();
-      animationId = requestAnimationFrame(animate);
+    const scroll = (timestamp: number) => {
+      // Throttle to ~30fps for performance
+      if (timestamp - lastTimeRef.current < 33) {
+        rafRef.current = requestAnimationFrame(scroll);
+        return;
+      }
+      lastTimeRef.current = timestamp;
+      
+      scrollPositionRef.current += 0.5;
+      
+      const maxScroll = scrollContainer.scrollWidth / 2;
+      if (scrollPositionRef.current >= maxScroll) {
+        scrollPositionRef.current = 0;
+      }
+      
+      scrollContainer.scrollLeft = scrollPositionRef.current;
+      rafRef.current = requestAnimationFrame(scroll);
     };
     
-    animationId = requestAnimationFrame(animate);
+    rafRef.current = requestAnimationFrame(scroll);
     
-    return () => {
-      cancelAnimationFrame(animationId);
-    };
-  }, [scroll]);
-
-  // Sync scroll position when resuming
-  useEffect(() => {
-    if (!isPaused && scrollRef.current) {
-      scrollPositionRef.current = scrollRef.current.scrollLeft;
-    }
-  }, [isPaused]);
-
-  // Only pause on touch (mobile)
-  const handleTouchStart = () => setIsPaused(true);
-  const handleTouchEnd = () => {
-    // Small delay to allow touch scroll to settle
-    setTimeout(() => setIsPaused(false), 100);
-  };
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
 
   return (
     <section className="py-6 md:py-10 overflow-hidden">
       <div
         ref={scrollRef}
-        className="flex gap-3 md:gap-4 overflow-x-hidden cursor-grab px-5 md:px-8"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        style={{ scrollBehavior: "auto" }}
+        className="flex gap-3 md:gap-4 overflow-x-hidden px-5 md:px-8"
+        style={{ 
+          scrollBehavior: "auto",
+          willChange: "scroll-position"
+        }}
       >
         {[...testimonialVideos, ...testimonialVideos].map((video, index) => (
-          <VideoCard key={`${video}-${index}`} video={video} />
+          <VideoCard key={`${video}-${index}`} video={video} index={index} />
         ))}
       </div>
     </section>
   );
-}
+});
