@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.notify-lead]
 verify_jwt = false
+
+[functions.meta-ads-resolve]
+verify_jwt = false

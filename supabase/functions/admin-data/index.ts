@@ -510,6 +510,199 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // GET /campaigns - Get campaign analytics
+    if (path === "/campaigns" && req.method === "GET") {
+      const from = url.searchParams.get("from");
+      const to = url.searchParams.get("to");
+      const source = url.searchParams.get("source");
+      const campaign = url.searchParams.get("campaign");
+
+      // Get sessions with campaign data
+      let sessionsQuery = supabase.from("lead_sessions").select("*");
+      if (from) sessionsQuery = sessionsQuery.gte("created_at", from);
+      if (to) sessionsQuery = sessionsQuery.lte("created_at", to + "T23:59:59");
+      if (source && source !== "all") sessionsQuery = sessionsQuery.eq("utm_source", source);
+      if (campaign && campaign !== "all") {
+        sessionsQuery = sessionsQuery.or(`utm_campaign.eq.${campaign},campaign_id.eq.${campaign}`);
+      }
+
+      const { data: sessions, error: sessionsError } = await sessionsQuery;
+      if (sessionsError) throw sessionsError;
+
+      // Get meta ads cache for name resolution
+      const { data: metaCache } = await supabase.from("meta_ads_cache").select("*");
+      const cacheByAdId = new Map(metaCache?.map(c => [c.ad_id, c]) || []);
+      const cacheByCampaignId = new Map(metaCache?.map(c => [c.campaign_id, c]) || []);
+
+      // Calculate metrics
+      const totalSessions = sessions?.length || 0;
+      const startedQuiz = sessions?.filter(s => s.started_quiz).length || 0;
+      const completed = sessions?.filter(s => s.completed).length || 0;
+      const completionRate = startedQuiz > 0 ? (completed / startedQuiz) * 100 : 0;
+
+      // Group by campaign
+      const campaignMap = new Map<string, { 
+        campaign_id: string | null;
+        utm_campaign: string | null;
+        campaign_name: string | null;
+        total: number; 
+        started: number; 
+        completed: number;
+      }>();
+
+      sessions?.forEach(s => {
+        const key = s.campaign_id || s.utm_campaign || "direct";
+        const existing = campaignMap.get(key) || {
+          campaign_id: s.campaign_id,
+          utm_campaign: s.utm_campaign,
+          campaign_name: cacheByCampaignId.get(s.campaign_id)?.campaign_name || null,
+          total: 0,
+          started: 0,
+          completed: 0,
+        };
+        existing.total++;
+        if (s.started_quiz) existing.started++;
+        if (s.completed) existing.completed++;
+        campaignMap.set(key, existing);
+      });
+
+      const campaigns = Array.from(campaignMap.values())
+        .map(c => ({ ...c, completion_rate: c.started > 0 ? (c.completed / c.started) * 100 : 0 }))
+        .sort((a, b) => b.completed - a.completed);
+
+      // Group by ad
+      const adMap = new Map<string, {
+        ad_id: string | null;
+        utm_content: string | null;
+        ad_name: string | null;
+        campaign_name: string | null;
+        total: number;
+        started: number;
+        completed: number;
+      }>();
+
+      sessions?.forEach(s => {
+        const key = s.ad_id || s.utm_content || "no_ad";
+        const cached = cacheByAdId.get(s.ad_id);
+        const existing = adMap.get(key) || {
+          ad_id: s.ad_id,
+          utm_content: s.utm_content,
+          ad_name: cached?.ad_name || null,
+          campaign_name: cached?.campaign_name || cacheByCampaignId.get(s.campaign_id)?.campaign_name || s.utm_campaign || null,
+          total: 0,
+          started: 0,
+          completed: 0,
+        };
+        existing.total++;
+        if (s.started_quiz) existing.started++;
+        if (s.completed) existing.completed++;
+        adMap.set(key, existing);
+      });
+
+      const ads = Array.from(adMap.values())
+        .map(a => ({ ...a, completion_rate: a.started > 0 ? (a.completed / a.started) * 100 : 0 }))
+        .sort((a, b) => b.completed - a.completed);
+
+      // Group by source
+      const sourceMap = new Map<string, { utm_source: string; total: number; completed: number }>();
+      sessions?.forEach(s => {
+        const key = s.utm_source || "direct";
+        const existing = sourceMap.get(key) || { utm_source: key, total: 0, completed: 0 };
+        existing.total++;
+        if (s.completed) existing.completed++;
+        sourceMap.set(key, existing);
+      });
+
+      const sources = Array.from(sourceMap.values()).sort((a, b) => b.total - a.total);
+
+      // Drop-off by step per campaign
+      const stepDropoffs: Array<{ step_id: string; campaign_id: string | null; utm_campaign: string | null; count: number }> = [];
+      const stepOrder = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"];
+      
+      // Group non-completed sessions by their current_step_id and campaign
+      const dropoffMap = new Map<string, number>();
+      sessions?.filter(s => !s.completed && s.current_step_id).forEach(s => {
+        const key = `${s.current_step_id}|${s.campaign_id || s.utm_campaign || "direct"}`;
+        dropoffMap.set(key, (dropoffMap.get(key) || 0) + 1);
+      });
+
+      dropoffMap.forEach((count, key) => {
+        const [stepId, campaignKey] = key.split("|");
+        stepDropoffs.push({
+          step_id: stepId,
+          campaign_id: campaignKey === "direct" ? null : campaignKey,
+          utm_campaign: campaignKey === "direct" ? null : campaignKey,
+          count,
+        });
+      });
+
+      stepDropoffs.sort((a, b) => {
+        const aIdx = stepOrder.indexOf(a.step_id);
+        const bIdx = stepOrder.indexOf(b.step_id);
+        if (aIdx !== bIdx) return aIdx - bIdx;
+        return b.count - a.count;
+      });
+
+      return new Response(
+        JSON.stringify({
+          total_sessions: totalSessions,
+          started_quiz: startedQuiz,
+          completed,
+          completion_rate: completionRate,
+          campaigns,
+          ads,
+          sources,
+          stepDropoffs,
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // GET /campaigns/sessions - Get sessions with campaign data
+    if (path === "/campaigns/sessions" && req.method === "GET") {
+      const from = url.searchParams.get("from");
+      const to = url.searchParams.get("to");
+      const source = url.searchParams.get("source");
+      const campaign = url.searchParams.get("campaign");
+      const search = url.searchParams.get("q");
+      const limit = parseInt(url.searchParams.get("limit") || "100");
+
+      let query = supabase
+        .from("lead_sessions")
+        .select("id, created_at, campaign_id, utm_campaign, ad_id, utm_content, utm_source, utm_medium, start_button_id, current_step_id, completed, lead_name")
+        .order("created_at", { ascending: false })
+        .limit(limit);
+
+      if (from) query = query.gte("created_at", from);
+      if (to) query = query.lte("created_at", to + "T23:59:59");
+      if (source && source !== "all") query = query.eq("utm_source", source);
+      if (campaign && campaign !== "all") {
+        query = query.or(`utm_campaign.eq.${campaign},campaign_id.eq.${campaign}`);
+      }
+      if (search) {
+        query = query.or(`lead_name.ilike.%${search}%,utm_campaign.ilike.%${search}%,utm_content.ilike.%${search}%`);
+      }
+
+      const { data: sessions, error } = await query;
+      if (error) throw error;
+
+      // Enrich with cache names
+      const { data: metaCache } = await supabase.from("meta_ads_cache").select("*");
+      const cacheByAdId = new Map(metaCache?.map(c => [c.ad_id, c]) || []);
+      const cacheByCampaignId = new Map(metaCache?.map(c => [c.campaign_id, c]) || []);
+
+      const enrichedSessions = sessions?.map(s => ({
+        ...s,
+        campaign_name: cacheByCampaignId.get(s.campaign_id)?.campaign_name || null,
+        ad_name: cacheByAdId.get(s.ad_id)?.ad_name || null,
+      }));
+
+      return new Response(
+        JSON.stringify({ data: enrichedSessions }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: "Rota não encontrada" }),
       { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
