@@ -73,6 +73,10 @@ export type Database = {
           lead_stage: string | null
           lead_whatsapp: string | null
           referrer: string | null
+          rodger_whatsapp_last_error: string | null
+          rodger_whatsapp_message_id: string | null
+          rodger_whatsapp_notified: boolean | null
+          rodger_whatsapp_notified_at: string | null
           start_button_id: string | null
           started_quiz: boolean
           user_agent: string | null
@@ -99,6 +103,10 @@ export type Database = {
           lead_stage?: string | null
           lead_whatsapp?: string | null
           referrer?: string | null
+          rodger_whatsapp_last_error?: string | null
+          rodger_whatsapp_message_id?: string | null
+          rodger_whatsapp_notified?: boolean | null
+          rodger_whatsapp_notified_at?: string | null
           start_button_id?: string | null
           started_quiz?: boolean
           user_agent?: string | null
@@ -125,6 +133,10 @@ export type Database = {
           lead_stage?: string | null
           lead_whatsapp?: string | null
           referrer?: string | null
+          rodger_whatsapp_last_error?: string | null
+          rodger_whatsapp_message_id?: string | null
+          rodger_whatsapp_notified?: boolean | null
+          rodger_whatsapp_notified_at?: string | null
           start_button_id?: string | null
           started_quiz?: boolean
           user_agent?: string | null
