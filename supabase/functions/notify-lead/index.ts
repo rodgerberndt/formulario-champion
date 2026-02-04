@@ -73,38 +73,50 @@ async function syncToKommo(lead: Record<string, unknown>): Promise<{ success: bo
   const lastStep = lead.current_step_id || 'Concluiu';
   const quizOpened = lead.entered_quiz_page || false;
 
+  const formSentAt = Math.floor(Date.now() / 1000);
+  
   const payload = [
     {
       source_uid: "quiz_champion",
       source_name: "Quiz Champion",
+      pipeline_id: null,
+      created_at: formSentAt,
       metadata: {
         form_id: "champion_quiz",
         form_name: "Quiz Champion",
         form_page: PUBLIC_BASE_URL,
-        ip: lead.ip_address || null
+        form_sent_at: formSentAt,
+        ip: lead.ip_address || null,
+        referer: lead.referrer || PUBLIC_BASE_URL
       },
-      contacts: [
-        {
-          name: String(leadName),
-          custom_fields_values: [
-            { field_code: "PHONE", values: [{ value: String(whatsapp) }] },
-            { field_code: "EMAIL", values: [{ value: "" }] }
-          ]
-        }
-      ],
-      leads: [
-        {
-          name: `Lead Quiz - ${leadName || whatsapp}`,
-          custom_fields_values: [
-            { field_name: "Instagram", values: [{ value: String(instagram) }] },
-            { field_name: "Mercado", values: [{ value: String(market) }] },
-            { field_name: "Estágio", values: [{ value: String(stage) }] },
-            { field_name: "Botão de entrada", values: [{ value: String(entryButton) }] },
-            { field_name: "Abandono/Última etapa", values: [{ value: String(lastStep) }] },
-            { field_name: "Abriu quiz?", values: [{ value: String(!!quizOpened) }] }
-          ]
-        }
-      ]
+      _embedded: {
+        contacts: [
+          {
+            name: String(leadName),
+            custom_fields_values: [
+              { field_code: "PHONE", values: [{ value: String(whatsapp) }] }
+            ]
+          }
+        ],
+        leads: [
+          {
+            name: `Lead Quiz - ${leadName || whatsapp}`,
+            _embedded: {
+              tags: [
+                { name: "Quiz Champion" }
+              ]
+            },
+            custom_fields_values: [
+              { field_name: "Instagram", values: [{ value: String(instagram) }] },
+              { field_name: "Mercado", values: [{ value: String(market) }] },
+              { field_name: "Estágio", values: [{ value: String(stage) }] },
+              { field_name: "Botão de entrada", values: [{ value: String(entryButton) }] },
+              { field_name: "Abandono/Última etapa", values: [{ value: String(lastStep) }] },
+              { field_name: "Abriu quiz?", values: [{ value: String(!!quizOpened) }] }
+            ]
+          }
+        ]
+      }
     }
   ];
 
