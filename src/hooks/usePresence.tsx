@@ -4,11 +4,20 @@ import { supabase } from "@/integrations/supabase/client";
 const PRESENCE_CHANNEL = "active_users";
 const SESSION_KEY = "champion_session_id";
 
-interface PresenceState {
+export interface PresenceState {
   session_id: string;
   ip_address: string;
   page: string;
   entered_at: string;
+  device_type: string;
+  user_agent: string;
+}
+
+function getDeviceType(): string {
+  const ua = navigator.userAgent;
+  if (/tablet|ipad|playbook|silk/i.test(ua)) return "Tablet";
+  if (/mobile|iphone|ipod|android|blackberry|opera mini|iemobile/i.test(ua)) return "Mobile";
+  return "Desktop";
 }
 
 async function getClientIp(): Promise<string> {
@@ -70,6 +79,8 @@ export function usePresence() {
               ip_address: ipRef.current,
               page: currentPage,
               entered_at: new Date().toISOString(),
+              device_type: getDeviceType(),
+              user_agent: navigator.userAgent,
             };
             
             await channel.track(presenceState);
@@ -90,6 +101,8 @@ export function usePresence() {
           ip_address: ipRef.current,
           page: window.location.pathname,
           entered_at: new Date().toISOString(),
+          device_type: getDeviceType(),
+          user_agent: navigator.userAgent,
         });
       }
     };
@@ -150,9 +163,27 @@ export function useActiveUsers() {
     };
   }, []);
 
+  // Calculate time on site for each user
+  const getUsersWithDuration = () => {
+    return activeUsers.map(user => {
+      const enteredAt = new Date(user.entered_at);
+      const now = new Date();
+      const diffMs = now.getTime() - enteredAt.getTime();
+      const diffMinutes = Math.floor(diffMs / 60000);
+      const diffSeconds = Math.floor((diffMs % 60000) / 1000);
+      
+      return {
+        ...user,
+        duration: diffMinutes > 0 ? `${diffMinutes}m ${diffSeconds}s` : `${diffSeconds}s`,
+        durationMs: diffMs,
+      };
+    });
+  };
+
   return {
     activeUsers,
     uniqueCount: uniqueIps.size || activeUsers.length,
     users: activeUsers,
+    getUsersWithDuration,
   };
 }
