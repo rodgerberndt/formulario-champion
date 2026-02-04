@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { useActiveUsers } from "@/hooks/usePresence";
+import { useActiveUsers, PresenceState } from "@/hooks/usePresence";
 import { toast } from "@/hooks/use-toast";
 import {
   Users,
@@ -33,6 +33,13 @@ import {
   Check,
   Trash2,
   Radio,
+  ChevronDown,
+  ChevronUp,
+  Monitor,
+  Smartphone,
+  Tablet,
+  Clock,
+  Globe,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -136,7 +143,8 @@ interface Lead {
 
 export default function AdminAnalytics() {
   const navigate = useNavigate();
-  const { activeUsers, uniqueCount } = useActiveUsers();
+  const { activeUsers, uniqueCount, getUsersWithDuration } = useActiveUsers();
+  const [showActiveUsersPanel, setShowActiveUsersPanel] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [password, setPassword] = useState("");
@@ -949,10 +957,13 @@ export default function AdminAnalytics() {
             </div>
           </div>
 
-          {/* Active Users Card - Always visible */}
+          {/* Active Users Card - Expandable */}
           <Card className="mb-4 border-green-500/50 bg-green-500/5">
             <CardContent className="py-4">
-              <div className="flex items-center justify-between">
+              <div 
+                className="flex items-center justify-between cursor-pointer"
+                onClick={() => setShowActiveUsersPanel(!showActiveUsersPanel)}
+              >
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <Radio className="w-8 h-8 text-green-500" />
@@ -965,24 +976,110 @@ export default function AdminAnalytics() {
                     </p>
                   </div>
                 </div>
-                {activeUsers.length > 0 && (
-                  <div className="text-right text-xs text-muted-foreground max-w-xs">
-                    <p className="font-medium text-green-500 mb-1">IPs únicos conectados:</p>
-                    <div className="flex flex-wrap gap-1 justify-end">
-                      {[...new Set(activeUsers.map(u => u.ip_address))].slice(0, 5).map((ip, i) => (
-                        <span key={i} className="px-2 py-0.5 bg-green-500/10 rounded text-green-400 font-mono text-[10px]">
-                          {ip}
-                        </span>
-                      ))}
-                      {[...new Set(activeUsers.map(u => u.ip_address))].length > 5 && (
-                        <span className="px-2 py-0.5 bg-muted rounded text-muted-foreground text-[10px]">
-                          +{[...new Set(activeUsers.map(u => u.ip_address))].length - 5} mais
-                        </span>
-                      )}
+                <div className="flex items-center gap-3">
+                  {activeUsers.length > 0 && !showActiveUsersPanel && (
+                    <div className="text-right text-xs text-muted-foreground max-w-xs hidden md:block">
+                      <p className="font-medium text-green-500 mb-1">IPs únicos conectados:</p>
+                      <div className="flex flex-wrap gap-1 justify-end">
+                        {[...new Set(activeUsers.map(u => u.ip_address))].slice(0, 3).map((ip, i) => (
+                          <span key={i} className="px-2 py-0.5 bg-green-500/10 rounded text-green-400 font-mono text-[10px]">
+                            {ip}
+                          </span>
+                        ))}
+                        {[...new Set(activeUsers.map(u => u.ip_address))].length > 3 && (
+                          <span className="px-2 py-0.5 bg-muted rounded text-muted-foreground text-[10px]">
+                            +{[...new Set(activeUsers.map(u => u.ip_address))].length - 3}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <Button variant="ghost" size="sm" className="text-green-500 hover:text-green-400">
+                    {showActiveUsersPanel ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Expanded Panel */}
+              {showActiveUsersPanel && activeUsers.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-green-500/20">
+                  <div className="grid gap-3">
+                    {getUsersWithDuration().map((user, index) => {
+                      const DeviceIcon = user.device_type === 'Mobile' ? Smartphone : 
+                                        user.device_type === 'Tablet' ? Tablet : Monitor;
+                      
+                      return (
+                        <div 
+                          key={`${user.ip_address}-${index}`}
+                          className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-green-500/10"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-full bg-green-500/10">
+                              <DeviceIcon className="w-4 h-4 text-green-500" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-sm text-green-400">{user.ip_address}</span>
+                                <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-green-500/30 text-green-400">
+                                  {user.device_type}
+                                </Badge>
+                              </div>
+                              <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                                <span className="flex items-center gap-1">
+                                  <Globe className="w-3 h-3" />
+                                  {user.page === '/' ? 'Landing Page' : user.page}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="flex items-center gap-1 text-sm text-green-400">
+                              <Clock className="w-3 h-3" />
+                              <span>{user.duration}</span>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">no site</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Summary Stats */}
+                  <div className="mt-4 pt-3 border-t border-green-500/10 grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <p className="text-lg font-bold text-green-500">
+                        {getUsersWithDuration().filter(u => u.device_type === 'Desktop').length}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
+                        <Monitor className="w-3 h-3" /> Desktop
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold text-green-500">
+                        {getUsersWithDuration().filter(u => u.device_type === 'Mobile').length}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
+                        <Smartphone className="w-3 h-3" /> Mobile
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold text-green-500">
+                        {getUsersWithDuration().filter(u => u.device_type === 'Tablet').length}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
+                        <Tablet className="w-3 h-3" /> Tablet
+                      </p>
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+
+              {/* Empty state when panel is open but no users */}
+              {showActiveUsersPanel && activeUsers.length === 0 && (
+                <div className="mt-4 pt-4 border-t border-green-500/20 text-center py-6">
+                  <p className="text-muted-foreground text-sm">Nenhum visitante ativo no momento</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
