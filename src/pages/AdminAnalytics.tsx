@@ -463,28 +463,48 @@ export default function AdminAnalytics() {
 
   const fetchAdminData = async (path: string, params?: Record<string, string>) => {
     const token = getToken();
+    
+    // If no token, force logout
+    if (!token) {
+      handleLogout();
+      throw new Error("Token não encontrado");
+    }
+    
     const queryString = params ? "?" + new URLSearchParams(params).toString() : "";
     
     // Use fetch directly for proper path handling
     const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data${path}${queryString}`;
-    const fetchResponse = await fetch(url, {
-      headers: {
-        "x-admin-token": token || "",
-        "Content-Type": "application/json",
-        "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-      },
-    });
+    
+    try {
+      const fetchResponse = await fetch(url, {
+        headers: {
+          "x-admin-token": token,
+          "Content-Type": "application/json",
+          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
 
-    if (!fetchResponse.ok) {
-      const error = await fetchResponse.json();
-      if (fetchResponse.status === 401) {
-        handleLogout();
-        throw new Error("Sessão expirada");
+      if (!fetchResponse.ok) {
+        const error = await fetchResponse.json().catch(() => ({ error: "Erro desconhecido" }));
+        if (fetchResponse.status === 401) {
+          // Token expired or invalid - force logout
+          console.log("Token expirado, fazendo logout...");
+          handleLogout();
+          toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
+          throw new Error("Sessão expirada");
+        }
+        throw new Error(error.error || "Erro ao carregar dados");
       }
-      throw new Error(error.error || "Erro ao carregar dados");
-    }
 
-    return fetchResponse.json();
+      return fetchResponse.json();
+    } catch (error) {
+      // Network error or other issue
+      if (error instanceof Error && error.message === "Sessão expirada") {
+        throw error;
+      }
+      console.error("Fetch error:", error);
+      throw error;
+    }
   };
 
   const loadMetrics = async () => {
