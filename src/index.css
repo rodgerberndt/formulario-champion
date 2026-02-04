@@ -104,29 +104,39 @@
 }
 
 @layer components {
-  /* Premium Glass Card - Dark optimized */
+  /* Premium Glass Card - Dark optimized, no blur on mobile */
   .glass-card {
-    @apply backdrop-blur-xl border border-border/60 rounded-2xl;
-    background: hsl(235 45% 8% / 0.85);
-    box-shadow: 
-      0 8px 32px -8px rgba(0, 0, 0, 0.5),
-      0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    @apply border border-border/60 rounded-2xl;
+    background: hsl(235 45% 8% / 0.95);
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.5);
+  }
+  
+  @media (min-width: 768px) {
+    .glass-card {
+      @apply backdrop-blur-xl;
+      background: hsl(235 45% 8% / 0.85);
+    }
   }
 
-  /* Champion Card - Solid background for legibility */
+  /* Champion Card - Solid background, no blur on mobile */
   .champion-card {
-    @apply backdrop-blur-xl border border-border/60 rounded-3xl p-5 md:p-8;
-    background: hsl(235 45% 7% / 0.92);
-    box-shadow: 
-      0 8px 40px -8px rgba(0, 0, 0, 0.6),
-      0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+    @apply border border-border/60 rounded-3xl p-5 md:p-8;
+    background: hsl(235 45% 7% / 0.98);
+    box-shadow: 0 8px 40px -8px rgba(0, 0, 0, 0.6);
+  }
+  
+  @media (min-width: 768px) {
+    .champion-card {
+      @apply backdrop-blur-xl;
+      background: hsl(235 45% 7% / 0.92);
+    }
   }
 
   /* Champion Input - High contrast */
   .champion-input {
     @apply bg-input border-2 border-border/60 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground/70;
     @apply focus:border-primary focus:ring-2 focus:ring-primary/25 focus:outline-none;
-    @apply transition-colors duration-200;
+    @apply transition-colors duration-150;
     min-height: 48px;
   }
 
@@ -135,24 +145,37 @@
     @apply bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent;
   }
 
-  /* Hero Glow Effect - Lighter for performance */
+  /* Hero Glow Effect - Optimized */
   .hero-glow {
     position: absolute;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, hsl(var(--secondary) / 0.12) 0%, transparent 70%);
-    filter: blur(60px);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, hsl(var(--secondary) / 0.1) 0%, transparent 70%);
+    filter: blur(40px);
     pointer-events: none;
-    will-change: transform;
+  }
+  
+  @media (min-width: 768px) {
+    .hero-glow {
+      width: 400px;
+      height: 400px;
+      filter: blur(60px);
+    }
   }
 
-  /* Mobile Bottom CTA */
+  /* Mobile Bottom CTA - No blur on mobile */
   .mobile-bottom-cta {
     @apply fixed bottom-0 left-0 right-0 z-50 p-4;
-    background: hsl(var(--background) / 0.95);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: hsl(var(--background) / 0.98);
     border-top: 1px solid hsl(var(--border) / 0.5);
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-bottom-cta {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: hsl(var(--background) / 0.95);
+    }
   }
 }
 
