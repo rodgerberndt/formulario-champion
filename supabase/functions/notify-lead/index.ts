@@ -7,6 +7,7 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const LEAD_NOTIFY_SECRET = Deno.env.get('LEAD_NOTIFY_SECRET');
 const INTERNAL_WEBHOOK_SECRET = Deno.env.get('INTERNAL_WEBHOOK_SECRET');
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
 
 // Kommo
 const KOMMO_API_KEY = Deno.env.get('KOMMO_API_KEY');
@@ -150,7 +151,6 @@ async function sendWhatsAppToRodger(lead: Record<string, unknown>, sessionId: st
   let body: Record<string, unknown>;
 
   if (WHATSAPP_TEMPLATE_NAME) {
-    // Use template (recommended for outside 24h window)
     body = {
       messaging_product: "whatsapp",
       to: RODGER_WHATSAPP_E164,
@@ -177,7 +177,6 @@ async function sendWhatsAppToRodger(lead: Record<string, unknown>, sessionId: st
       }
     };
   } else {
-    // Fallback to plain text (only works within 24h window)
     const resumo = `🚨 Novo Lead — Champion
 
 👤 Nome: ${leadName}
@@ -227,28 +226,33 @@ async function sendWhatsAppToRodger(lead: Record<string, unknown>, sessionId: st
 }
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    // Validate authentication - accept either secret
+    // Validate authentication
     const leadSecret = req.headers.get('x-lead-secret');
     const webhookSecret = req.headers.get('x-webhook-secret');
+    const apiKey = req.headers.get('apikey');
+    const authHeader = req.headers.get('authorization');
+    const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
     
     const isValidLeadSecret = leadSecret && LEAD_NOTIFY_SECRET && leadSecret === LEAD_NOTIFY_SECRET;
     const isValidWebhookSecret = webhookSecret && INTERNAL_WEBHOOK_SECRET && webhookSecret === INTERNAL_WEBHOOK_SECRET;
+    const isValidApiKey = apiKey && SUPABASE_ANON_KEY && apiKey === SUPABASE_ANON_KEY;
+    const isValidBearerToken = bearerToken && bearerToken.length > 20;
     
-    if (!isValidLeadSecret && !isValidWebhookSecret) {
-      console.error('Invalid or missing secret');
+    if (!isValidLeadSecret && !isValidWebhookSecret && !isValidApiKey && !isValidBearerToken) {
+      console.error('Invalid or missing authentication');
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Authentication successful');
+    const authMethod = isValidLeadSecret ? 'lead-secret' : isValidWebhookSecret ? 'webhook-secret' : isValidApiKey ? 'apikey' : 'bearer';
+    console.log('Auth successful via:', authMethod);
 
     const { sessionId, leadId, force } = await req.json();
     const targetId = sessionId || leadId;
@@ -260,10 +264,8 @@ serve(async (req) => {
       );
     }
 
-    // Initialize Supabase client with service role
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Fetch the lead session
     const { data: session, error: fetchError } = await supabase
       .from('lead_sessions')
       .select('*')
@@ -280,45 +282,25 @@ serve(async (req) => {
 
     console.log('Found session:', session.id, 'completed:', session.completed, 'notified:', session.rodger_whatsapp_notified);
 
-    // Check if already completed
     if (!session.completed && !force) {
       console.log('Session not completed yet, skipping');
       return new Response(
         JSON.stringify({ skipped: true, reason: 'Session not completed' }),
-        { status: 204, headers: corsHeaders }
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Check idempotency (skip if already notified, unless force=true)
     if (session.rodger_whatsapp_notified && !force) {
       console.log('Already notified, skipping');
       return new Response(
         JSON.stringify({ skipped: true, reason: 'Already notified' }),
-        { status: 204, headers: corsHeaders }
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
-    }
-
-    // Attempt idempotent lock (conditional update)
-    if (!force) {
-      const { data: lockResult, error: lockError } = await supabase
-        .from('lead_sessions')
-        .update({ rodger_whatsapp_notified: false }) // no-op to acquire lock
-        .eq('id', targetId)
-        .eq('rodger_whatsapp_notified', false)
-        .select('id');
-
-      if (lockError || !lockResult || lockResult.length === 0) {
-        console.log('Could not acquire lock, likely already being processed');
-        return new Response(
-          JSON.stringify({ skipped: true, reason: 'Lock not acquired' }),
-          { status: 204, headers: corsHeaders }
-        );
-      }
     }
 
     const errors: string[] = [];
 
-    // 1. Sync to Kommo with retry
+    // 1. Sync to Kommo
     let kommoSuccess = false;
     try {
       const kommoResult = await withRetry(() => syncToKommo(session));
@@ -329,10 +311,10 @@ serve(async (req) => {
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       errors.push(`Kommo: ${msg}`);
-      console.error('Kommo sync failed after retries:', msg);
+      console.error('Kommo sync failed:', msg);
     }
 
-    // 2. Send WhatsApp to Rodger with retry
+    // 2. Send WhatsApp to Rodger
     let whatsappSuccess = false;
     let messageId: string | undefined;
     try {
@@ -345,7 +327,7 @@ serve(async (req) => {
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       errors.push(`WhatsApp: ${msg}`);
-      console.error('WhatsApp send failed after retries:', msg);
+      console.error('WhatsApp send failed:', msg);
     }
 
     // Update session with results
