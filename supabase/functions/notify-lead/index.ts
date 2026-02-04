@@ -1,6 +1,4 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 // Environment variables
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -79,7 +77,6 @@ async function syncToKommo(lead: Record<string, unknown>): Promise<{ success: bo
     {
       source_uid: "quiz_champion",
       source_name: "Quiz Champion",
-      pipeline_id: null,
       created_at: formSentAt,
       metadata: {
         form_id: "champion_quiz",
@@ -105,20 +102,27 @@ async function syncToKommo(lead: Record<string, unknown>): Promise<{ success: bo
               tags: [
                 { name: "Quiz Champion" }
               ]
-            },
-            custom_fields_values: [
-              { field_name: "Instagram", values: [{ value: String(instagram) }] },
-              { field_name: "Mercado", values: [{ value: String(market) }] },
-              { field_name: "Estágio", values: [{ value: String(stage) }] },
-              { field_name: "Botão de entrada", values: [{ value: String(entryButton) }] },
-              { field_name: "Abandono/Última etapa", values: [{ value: String(lastStep) }] },
-              { field_name: "Abriu quiz?", values: [{ value: String(!!quizOpened) }] }
-            ]
+            }
           }
         ]
-      }
+      },
+      request_id: `quiz_${Date.now()}`
     }
   ];
+  
+  // Build a note with all the extra info
+  const noteText = `📋 Dados do Quiz Champion
+
+👤 Nome: ${leadName}
+📲 WhatsApp: ${whatsapp}
+📸 Instagram: ${instagram}
+📌 Mercado: ${market}
+🏁 Estágio: ${stage}
+🧲 Botão de entrada: ${entryButton}
+📖 Abriu quiz: ${quizOpened ? 'Sim' : 'Não'}
+🛑 Onde parou: ${lastStep}`;
+  
+  console.log('Note for lead:', noteText);
 
   console.log('Sending to Kommo unsorted/forms:', JSON.stringify(payload, null, 2));
 
@@ -237,7 +241,7 @@ async function sendWhatsAppToRodger(lead: Record<string, unknown>, sessionId: st
   }
 }
 
-serve(async (req) => {
+Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
