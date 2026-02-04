@@ -226,7 +226,7 @@ export default function AdminAnalytics() {
   const [sessionEvents, setSessionEvents] = useState<SessionEvent[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
 
-  const [statusFilter, setStatusFilter] = useState<string>("interacted");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [buttonFilter, setButtonFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
@@ -1731,8 +1731,8 @@ export default function AdminAnalytics() {
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="interacted">Interagiu ✓</SelectItem>
                     <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="interacted">Interagiu ✓</SelectItem>
                     <SelectItem value="completed">Completou</SelectItem>
                     <SelectItem value="started">Drop-off</SelectItem>
                     <SelectItem value="entered">Entrou no quiz</SelectItem>
