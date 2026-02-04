@@ -22,8 +22,8 @@ const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
 
 const queryClient = new QueryClient();
 
-// Admin analytics route slug - change this to your preferred secret URL
-const ADMIN_ANALYTICS_SLUG = "champion-analytics-admin-9f3c";
+// Admin analytics route slug
+const ADMIN_ANALYTICS_SLUG = "admin";
 
 // Minimal loading fallback
 function PageLoader() {
