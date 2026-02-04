@@ -145,6 +145,71 @@ interface Lead {
 export default function AdminAnalytics() {
   const navigate = useNavigate();
   const { activeUsers, uniqueCount, getUsersWithDuration } = useActiveUsers();
+
+  const buildWhatsappNumber = (raw?: string | null) => {
+    const digits = (raw || "").replace(/\D/g, "");
+    if (!digits) return null;
+    return digits.startsWith("55") ? digits : `55${digits}`;
+  };
+
+  const buildInstagramUrl = (raw?: string | null) => {
+    const input = (raw || "").trim();
+    if (!input) return null;
+
+    // If user pasted a URL/domain, extract the username from the path.
+    if (input.includes("instagram.com")) {
+      try {
+        const u = new URL(input.startsWith("http") ? input : `https://${input}`);
+        const handleFromUrl = u.pathname.split("/").filter(Boolean)[0];
+        if (handleFromUrl) return `https://instagram.com/${handleFromUrl}/`;
+      } catch {
+        // ignore
+      }
+    }
+
+    const handle = input.replace(/^@/, "").split(/[/?#]/)[0].trim();
+    if (!handle) return null;
+    return `https://instagram.com/${handle}/`;
+  };
+
+  const openExternalUrl = (url: string) => {
+    // In some sandboxed iframes, target=_blank can be ignored; use window.open + fallback.
+    const opened = window.open(url, "_blank", "noopener,noreferrer");
+    if (opened) return;
+
+    try {
+      window.top?.location.assign(url);
+    } catch {
+      window.location.assign(url);
+    }
+  };
+
+  const copyWhatsappToClipboard = async (raw?: string | null) => {
+    const fullNumber = buildWhatsappNumber(raw);
+    if (!fullNumber) {
+      toast({ title: "WhatsApp não informado", variant: "destructive" });
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(fullNumber);
+      toast({ title: "Número copiado!", description: fullNumber });
+    } catch (e) {
+      console.error("Clipboard error:", e);
+      toast({ title: "Não foi possível copiar", variant: "destructive" });
+    }
+  };
+
+  const openInstagramProfile = (raw?: string | null) => {
+    const url = buildInstagramUrl(raw);
+    if (!url) {
+      toast({ title: "Instagram não informado", variant: "destructive" });
+      return;
+    }
+
+    openExternalUrl(url);
+  };
+
   const [showActiveUsersPanel, setShowActiveUsersPanel] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -730,27 +795,27 @@ export default function AdminAnalytics() {
                     {selectedSession.lead_whatsapp && (
                       <div className="p-4 bg-muted/30 rounded-lg">
                         <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">WhatsApp</p>
-                        <a 
-                          href={`https://wa.me/55${selectedSession.lead_whatsapp.replace(/\D/g, '')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-lg font-semibold text-green-500 hover:underline"
+                        <button
+                          type="button"
+                          className="text-lg font-semibold text-green-500 hover:underline text-left"
+                          title="Copiar WhatsApp"
+                          onClick={() => void copyWhatsappToClipboard(selectedSession.lead_whatsapp)}
                         >
                           {selectedSession.lead_whatsapp}
-                        </a>
+                        </button>
                       </div>
                     )}
                     {selectedSession.lead_instagram && (
                       <div className="p-4 bg-muted/30 rounded-lg">
                         <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Instagram</p>
-                        <a 
-                          href={`https://instagram.com/${selectedSession.lead_instagram.replace('@', '')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-lg font-semibold text-primary hover:underline"
+                        <button
+                          type="button"
+                          className="text-lg font-semibold text-primary hover:underline text-left"
+                          title="Abrir Instagram"
+                          onClick={() => openInstagramProfile(selectedSession.lead_instagram)}
                         >
                           {selectedSession.lead_instagram}
-                        </a>
+                        </button>
                       </div>
                     )}
                     {selectedSession.lead_market && (
@@ -773,15 +838,7 @@ export default function AdminAnalytics() {
                       {selectedSession.lead_whatsapp && (
                         <Button 
                           className="flex-1 bg-green-600 hover:bg-green-700"
-                          onClick={() => {
-                            const phoneNumber = selectedSession.lead_whatsapp?.replace(/\D/g, '') || '';
-                            const fullNumber = phoneNumber.startsWith('55') ? phoneNumber : `55${phoneNumber}`;
-                            navigator.clipboard.writeText(fullNumber);
-                            toast({
-                              title: "Número copiado!",
-                              description: fullNumber,
-                            });
-                          }}
+                            onClick={() => void copyWhatsappToClipboard(selectedSession.lead_whatsapp)}
                         >
                           Copiar WhatsApp
                         </Button>
@@ -790,15 +847,9 @@ export default function AdminAnalytics() {
                         <Button 
                           variant="outline"
                           className="flex-1"
-                          asChild
+                            onClick={() => openInstagramProfile(selectedSession.lead_instagram)}
                         >
-                          <a 
-                            href={`https://www.instagram.com/${selectedSession.lead_instagram?.replace('@', '').trim()}/`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
                             Ver Instagram
-                          </a>
                         </Button>
                       )}
                     </div>
@@ -1458,26 +1509,30 @@ export default function AdminAnalytics() {
                               </td>
                               <td className="p-4 font-medium">{lead.nome_completo}</td>
                               <td className="p-4">
-                                <a 
-                                  href={`https://wa.me/55${lead.whatsapp.replace(/\D/g, '')}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <button
+                                  type="button"
                                   className="text-green-500 hover:underline"
-                                  onClick={(e) => e.stopPropagation()}
+                                  title="Copiar WhatsApp"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    void copyWhatsappToClipboard(lead.whatsapp);
+                                  }}
                                 >
                                   {lead.whatsapp}
-                                </a>
+                                </button>
                               </td>
                               <td className="p-4">
-                                <a 
-                                  href={`https://instagram.com/${lead.instagram.replace('@', '')}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <button
+                                  type="button"
                                   className="text-primary hover:underline"
-                                  onClick={(e) => e.stopPropagation()}
+                                  title="Abrir Instagram"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openInstagramProfile(lead.instagram);
+                                  }}
                                 >
                                   {lead.instagram}
-                                </a>
+                                </button>
                               </td>
                               <td className="p-4 text-muted-foreground">{lead.mercado}</td>
                               <td className="p-4 text-muted-foreground text-xs">{lead.estagio_negocio}</td>
@@ -1521,25 +1576,25 @@ export default function AdminAnalytics() {
                         </div>
                         <div className="p-4 bg-muted/30 rounded-lg">
                           <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">WhatsApp</p>
-                          <a
-                            href={`https://wa.me/55${selectedLead.whatsapp.replace(/\D/g, "")}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-lg font-semibold text-green-500 hover:underline"
+                          <button
+                            type="button"
+                            className="text-lg font-semibold text-green-500 hover:underline text-left"
+                            title="Copiar WhatsApp"
+                            onClick={() => void copyWhatsappToClipboard(selectedLead.whatsapp)}
                           >
                             {selectedLead.whatsapp}
-                          </a>
+                          </button>
                         </div>
                         <div className="p-4 bg-muted/30 rounded-lg">
                           <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Instagram</p>
-                          <a
-                            href={`https://instagram.com/${selectedLead.instagram.replace("@", "")}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-lg font-semibold text-primary hover:underline"
+                          <button
+                            type="button"
+                            className="text-lg font-semibold text-primary hover:underline text-left"
+                            title="Abrir Instagram"
+                            onClick={() => openInstagramProfile(selectedLead.instagram)}
                           >
                             {selectedLead.instagram}
-                          </a>
+                          </button>
                         </div>
                         <div className="p-4 bg-muted/30 rounded-lg">
                           <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Data de Cadastro</p>
@@ -1641,30 +1696,16 @@ export default function AdminAnalytics() {
                       <div className="flex gap-4 pt-4">
                         <Button
                           className="flex-1 bg-green-600 hover:bg-green-700"
-                          onClick={() => {
-                            const phoneNumber = selectedLead.whatsapp.replace(/\D/g, '');
-                            const fullNumber = phoneNumber.startsWith('55') ? phoneNumber : `55${phoneNumber}`;
-                            navigator.clipboard.writeText(fullNumber);
-                            toast({
-                              title: "Número copiado!",
-                              description: fullNumber,
-                            });
-                          }}
+                          onClick={() => void copyWhatsappToClipboard(selectedLead.whatsapp)}
                         >
                           Copiar WhatsApp
                         </Button>
                         <Button
                           variant="outline"
                           className="flex-1"
-                          asChild
+                          onClick={() => openInstagramProfile(selectedLead.instagram)}
                         >
-                          <a 
-                            href={`https://www.instagram.com/${selectedLead.instagram.replace('@', '').trim()}/`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            Ver Instagram
-                          </a>
+                          Ver Instagram
                         </Button>
                       </div>
                     </div>
@@ -1767,30 +1808,34 @@ export default function AdminAnalytics() {
                               </td>
                               <td className="p-4">
                                 {session.lead_instagram ? (
-                                  <a 
-                                    href={`https://instagram.com/${session.lead_instagram.replace('@', '')}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                  <button
+                                    type="button"
                                     className="text-primary hover:underline"
-                                    onClick={(e) => e.stopPropagation()}
+                                    title="Abrir Instagram"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openInstagramProfile(session.lead_instagram);
+                                    }}
                                   >
                                     {session.lead_instagram}
-                                  </a>
+                                  </button>
                                 ) : (
                                   <span className="text-muted-foreground">-</span>
                                 )}
                               </td>
                               <td className="p-4">
                                 {session.lead_whatsapp ? (
-                                  <a 
-                                    href={`https://wa.me/55${session.lead_whatsapp.replace(/\D/g, '')}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                  <button
+                                    type="button"
                                     className="text-green-500 hover:underline"
-                                    onClick={(e) => e.stopPropagation()}
+                                    title="Copiar WhatsApp"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      void copyWhatsappToClipboard(session.lead_whatsapp);
+                                    }}
                                   >
                                     {session.lead_whatsapp}
-                                  </a>
+                                  </button>
                                 ) : (
                                   <span className="text-muted-foreground">-</span>
                                 )}
@@ -1998,26 +2043,34 @@ export default function AdminAnalytics() {
                                                 </p>
                                                 <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
                                                   {(session.lead_whatsapp || collectedData?.whatsapp) && (
-                                                    <a 
-                                                      href={`https://wa.me/55${(session.lead_whatsapp || collectedData?.whatsapp || '').replace(/\D/g, '')}`}
-                                                      target="_blank"
-                                                      rel="noopener noreferrer"
+                                                    <button
+                                                      type="button"
                                                       className="text-green-500 hover:underline"
-                                                      onClick={(e) => e.stopPropagation()}
+                                                      title="Copiar WhatsApp"
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        void copyWhatsappToClipboard(
+                                                          session.lead_whatsapp || collectedData?.whatsapp,
+                                                        );
+                                                      }}
                                                     >
                                                       📱 {session.lead_whatsapp || collectedData?.whatsapp}
-                                                    </a>
+                                                    </button>
                                                   )}
                                                   {(session.lead_instagram || collectedData?.instagram) && (
-                                                    <a 
-                                                      href={`https://instagram.com/${(session.lead_instagram || collectedData?.instagram || '').replace('@', '')}`}
-                                                      target="_blank"
-                                                      rel="noopener noreferrer"
+                                                    <button
+                                                      type="button"
                                                       className="text-primary hover:underline"
-                                                      onClick={(e) => e.stopPropagation()}
+                                                      title="Abrir Instagram"
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        openInstagramProfile(
+                                                          session.lead_instagram || collectedData?.instagram,
+                                                        );
+                                                      }}
                                                     >
                                                       📸 {session.lead_instagram || collectedData?.instagram}
-                                                    </a>
+                                                    </button>
                                                   )}
                                                 </div>
                                                 {(session.lead_market || collectedData?.mercado) && (
@@ -2168,24 +2221,28 @@ export default function AdminAnalytics() {
                             </div>
                           </div>
                           <div className="flex gap-4 mt-2 ml-12">
-                            <a 
-                              href={`https://wa.me/55${lead.whatsapp.replace(/\D/g, '')}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <button
+                              type="button"
                               className="text-sm text-green-500 hover:underline"
-                              onClick={(e) => e.stopPropagation()}
+                              title="Copiar WhatsApp"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                void copyWhatsappToClipboard(lead.whatsapp);
+                              }}
                             >
                               {lead.whatsapp}
-                            </a>
-                            <a 
-                              href={`https://instagram.com/${lead.instagram.replace('@', '')}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            </button>
+                            <button
+                              type="button"
                               className="text-sm text-primary hover:underline"
-                              onClick={(e) => e.stopPropagation()}
+                              title="Abrir Instagram"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openInstagramProfile(lead.instagram);
+                              }}
                             >
                               {lead.instagram}
-                            </a>
+                            </button>
                           </div>
                         </div>
                       ))}
