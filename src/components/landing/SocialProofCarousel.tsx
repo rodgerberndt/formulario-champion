@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, memo } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const testimonialVideos = [
   "/testimonials/video-1.mp4",
@@ -12,7 +12,7 @@ const testimonialVideos = [
 ];
 
 // Lazy video card - only loads video when visible
-const VideoCard = memo(function VideoCard({ video, index }: { video: string; index: number }) {
+function VideoCard({ video, index }: { video: string; index: number }) {
   const [hasError, setHasError] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -72,9 +72,9 @@ const VideoCard = memo(function VideoCard({ video, index }: { video: string; ind
       )}
     </div>
   );
-});
+}
 
-export const SocialProofCarousel = memo(function SocialProofCarousel() {
+export function SocialProofCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollPositionRef = useRef(0);
   const rafRef = useRef<number>(0);
@@ -125,4 +125,4 @@ export const SocialProofCarousel = memo(function SocialProofCarousel() {
       </div>
     </section>
   );
-});
+}
