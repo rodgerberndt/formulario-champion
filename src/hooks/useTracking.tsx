@@ -62,33 +62,34 @@ function getUTMParams(): Record<string, string | null> {
   };
 }
 
-// Helper to update session via direct REST API call to bypass type validation
+// Helper to update session via Supabase client
 async function updateSessionDirect(sessionId: string, data: Record<string, unknown>) {
-  const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/lead_sessions?id=eq.${sessionId}`;
   try {
-    const payload = {
+    const payload: Record<string, unknown> = {
       ...data,
       last_seen_at: new Date().toISOString(),
     };
-    console.log("Updating session:", sessionId, payload);
     
-    const response = await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation',
-      },
-      body: JSON.stringify(payload),
+    // Remove undefined values to prevent issues
+    Object.keys(payload).forEach(key => {
+      if (payload[key] === undefined) {
+        delete payload[key];
+      }
     });
     
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Error updating session:", response.status, errorText);
+    console.log("Updating session:", sessionId, payload);
+    
+    const { data: result, error } = await supabase
+      .from("lead_sessions")
+      .update(payload)
+      .eq("id", sessionId)
+      .select()
+      .maybeSingle();
+    
+    if (error) {
+      console.error("Error updating session:", error.message, error.code);
     } else {
-      const result = await response.json();
-      console.log("Session updated successfully:", result);
+      console.log("Session updated successfully:", result?.id);
     }
   } catch (error) {
     console.error("Error updating session:", error);
