@@ -1,4 +1,3 @@
-import { memo } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Sparkles, TrendingUp } from "lucide-react";
 import founderPhoto from "@/assets/founder-photo.png";
@@ -7,7 +6,7 @@ interface HeroProps {
   onStartClick?: () => void;
 }
 
-export const Hero = memo(function Hero({ onStartClick }: HeroProps) {
+export function Hero({ onStartClick }: HeroProps) {
   return (
     <section className="min-h-[80vh] md:min-h-screen flex items-center justify-center pt-16 pb-16 md:pb-12 relative overflow-hidden">
       {/* Simplified Background - Remove heavy effects on mobile */}
@@ -103,4 +102,4 @@ export const Hero = memo(function Hero({ onStartClick }: HeroProps) {
       </div>
     </section>
   );
-});
+}

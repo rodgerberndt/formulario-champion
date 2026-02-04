@@ -1,7 +1,5 @@
-import { memo } from "react";
-
 // Optimized background - minimal blur, no noise on mobile
-export const BackgroundDecor = memo(function BackgroundDecor() {
+export function BackgroundDecor() {
   return (
     <div 
       className="fixed inset-0 pointer-events-none -z-10"
@@ -48,4 +46,4 @@ export const BackgroundDecor = memo(function BackgroundDecor() {
       <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
     </div>
   );
-});
+}
