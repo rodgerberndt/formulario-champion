@@ -248,6 +248,8 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     market: string;
     stage: string;
   }) => {
+    const sessionId = await getOrCreateSessionId();
+    
     await trackEvent("submit");
     await updateSession({
       completed: true,
@@ -257,7 +259,31 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
       lead_market: leadData.market,
       lead_stage: leadData.stage,
     });
-  }, [trackEvent, updateSession]);
+    
+    // Trigger server-side notification (Kommo + WhatsApp)
+    // This runs in background and doesn't block the user
+    try {
+      const notifyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notify-lead`;
+      fetch(notifyUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({ sessionId }),
+      }).then(async (res) => {
+        if (res.ok) {
+          console.log('Notification triggered successfully');
+        } else {
+          console.error('Notification failed:', await res.text());
+        }
+      }).catch((err) => {
+        console.error('Error triggering notification:', err);
+      });
+    } catch (error) {
+      console.error('Error calling notify-lead:', error);
+    }
+  }, [trackEvent, updateSession, getOrCreateSessionId]);
 
   // Track page views on route change
   useEffect(() => {
