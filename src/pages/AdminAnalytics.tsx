@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveUsers, PresenceState } from "@/hooks/usePresence";
+import CampaignAnalytics from "@/components/admin/CampaignAnalytics";
 import { toast } from "@/hooks/use-toast";
 import {
   Users,
@@ -1195,6 +1196,12 @@ export default function AdminAnalytics() {
               >
                 Botões
               </TabsTrigger>
+              <TabsTrigger 
+                value="campaigns" 
+                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+              >
+                Campanhas
+              </TabsTrigger>
             </TabsList>
 
             {/* Leads Tab */}
@@ -2091,6 +2098,17 @@ export default function AdminAnalytics() {
                   </Card>
                 </div>
               )}
+            </TabsContent>
+
+            {/* Campaigns Tab */}
+            <TabsContent value="campaigns">
+              <CampaignAnalytics 
+                fetchAdminData={fetchAdminData}
+                onViewSession={(sessionId) => {
+                  // Load session and show detail view
+                  handleViewSession({ id: sessionId } as Session);
+                }}
+              />
             </TabsContent>
           </Tabs>
 

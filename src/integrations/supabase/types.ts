@@ -57,12 +57,18 @@ export type Database = {
       }
       lead_sessions: {
         Row: {
+          ad_id: string | null
+          adset_id: string | null
+          campaign_id: string | null
           completed: boolean
           created_at: string
+          creative_id: string | null
           current_step_id: string | null
           device_type: string | null
           entered_quiz_page: boolean
+          fbclid: string | null
           first_page: string | null
+          gclid: string | null
           id: string
           ip_address: string | null
           last_page: string | null
@@ -79,6 +85,7 @@ export type Database = {
           rodger_whatsapp_notified_at: string | null
           start_button_id: string | null
           started_quiz: boolean
+          ttclid: string | null
           user_agent: string | null
           utm_campaign: string | null
           utm_content: string | null
@@ -87,12 +94,18 @@ export type Database = {
           utm_term: string | null
         }
         Insert: {
+          ad_id?: string | null
+          adset_id?: string | null
+          campaign_id?: string | null
           completed?: boolean
           created_at?: string
+          creative_id?: string | null
           current_step_id?: string | null
           device_type?: string | null
           entered_quiz_page?: boolean
+          fbclid?: string | null
           first_page?: string | null
+          gclid?: string | null
           id?: string
           ip_address?: string | null
           last_page?: string | null
@@ -109,6 +122,7 @@ export type Database = {
           rodger_whatsapp_notified_at?: string | null
           start_button_id?: string | null
           started_quiz?: boolean
+          ttclid?: string | null
           user_agent?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
@@ -117,12 +131,18 @@ export type Database = {
           utm_term?: string | null
         }
         Update: {
+          ad_id?: string | null
+          adset_id?: string | null
+          campaign_id?: string | null
           completed?: boolean
           created_at?: string
+          creative_id?: string | null
           current_step_id?: string | null
           device_type?: string | null
           entered_quiz_page?: boolean
+          fbclid?: string | null
           first_page?: string | null
+          gclid?: string | null
           id?: string
           ip_address?: string | null
           last_page?: string | null
@@ -139,6 +159,7 @@ export type Database = {
           rodger_whatsapp_notified_at?: string | null
           start_button_id?: string | null
           started_quiz?: boolean
+          ttclid?: string | null
           user_agent?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
@@ -229,6 +250,54 @@ export type Database = {
           timing?: string | null
           trafego_faixa?: string | null
           whatsapp?: string
+        }
+        Relationships: []
+      }
+      meta_ads_cache: {
+        Row: {
+          ad_id: string | null
+          ad_name: string | null
+          adset_id: string | null
+          adset_name: string | null
+          campaign_id: string | null
+          campaign_name: string | null
+          created_at: string
+          creative_id: string | null
+          creative_name: string | null
+          creative_thumbnail_url: string | null
+          id: string
+          last_synced_at: string
+          updated_at: string
+        }
+        Insert: {
+          ad_id?: string | null
+          ad_name?: string | null
+          adset_id?: string | null
+          adset_name?: string | null
+          campaign_id?: string | null
+          campaign_name?: string | null
+          created_at?: string
+          creative_id?: string | null
+          creative_name?: string | null
+          creative_thumbnail_url?: string | null
+          id?: string
+          last_synced_at?: string
+          updated_at?: string
+        }
+        Update: {
+          ad_id?: string | null
+          ad_name?: string | null
+          adset_id?: string | null
+          adset_name?: string | null
+          campaign_id?: string | null
+          campaign_name?: string | null
+          created_at?: string
+          creative_id?: string | null
+          creative_name?: string | null
+          creative_thumbnail_url?: string | null
+          id?: string
+          last_synced_at?: string
+          updated_at?: string
         }
         Relationships: []
       }

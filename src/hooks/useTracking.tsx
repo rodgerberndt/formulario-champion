@@ -50,6 +50,15 @@ function getUTMParams(): Record<string, string | null> {
     utm_campaign: params.get("utm_campaign"),
     utm_content: params.get("utm_content"),
     utm_term: params.get("utm_term"),
+    // Click IDs
+    fbclid: params.get("fbclid"),
+    gclid: params.get("gclid"),
+    ttclid: params.get("ttclid"),
+    // Meta Ads IDs
+    campaign_id: params.get("campaign_id"),
+    adset_id: params.get("adset_id"),
+    ad_id: params.get("ad_id"),
+    creative_id: params.get("creative_id"),
   };
 }
 
@@ -122,11 +131,22 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
             first_page: currentPage,
             last_page: currentPage,
             referrer: document.referrer || null,
+            // UTM params
             utm_source: utmParams.utm_source,
             utm_medium: utmParams.utm_medium,
             utm_campaign: utmParams.utm_campaign,
             utm_content: utmParams.utm_content,
             utm_term: utmParams.utm_term,
+            // Click IDs
+            fbclid: utmParams.fbclid,
+            gclid: utmParams.gclid,
+            ttclid: utmParams.ttclid,
+            // Meta Ads IDs
+            campaign_id: utmParams.campaign_id,
+            adset_id: utmParams.adset_id,
+            ad_id: utmParams.ad_id,
+            creative_id: utmParams.creative_id,
+            // Device info
             device_type: getDeviceType(),
             user_agent: navigator.userAgent,
           }),
