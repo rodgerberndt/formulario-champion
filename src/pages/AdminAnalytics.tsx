@@ -1717,45 +1717,37 @@ export default function AdminAnalytics() {
                   </DialogHeader>
                   {selectedLead && (
                     <div className="space-y-6 mt-4">
-                      {/* Campaign & Ad Attribution - Highlighted at top */}
-                      {(selectedLead.utm_campaign || selectedLead.utm_content || selectedLead.campaign_id || selectedLead.ad_id) && (
-                        <div className="p-4 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg border border-purple-500/30">
-                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <TrendingUp className="w-4 h-4 text-purple-400" />
-                            Origem do Anúncio
-                          </p>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div className="p-3 bg-background/50 rounded-lg">
-                              <p className="text-muted-foreground text-[10px] uppercase mb-1">Campanha</p>
-                              <p className="font-semibold text-purple-400 text-lg">
-                                {selectedLead.utm_campaign || selectedLead.campaign_id || "Não identificada"}
-                              </p>
-                            </div>
-                            <div className="p-3 bg-background/50 rounded-lg">
-                              <p className="text-muted-foreground text-[10px] uppercase mb-1">Anúncio</p>
-                              <p className="font-semibold text-blue-400 text-lg">
-                                {selectedLead.utm_content || selectedLead.ad_id || "Não identificado"}
-                              </p>
-                            </div>
+                      {/* Campaign & Ad Attribution - Always visible at top */}
+                      <div className="p-4 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg border border-purple-500/30">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                          <TrendingUp className="w-4 h-4 text-purple-400" />
+                          Origem do Anúncio
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="p-3 bg-background/50 rounded-lg">
+                            <p className="text-muted-foreground text-[10px] uppercase mb-1">Campanha</p>
+                            <p className="font-semibold text-purple-400 text-lg">
+                              {selectedLead.utm_campaign || selectedLead.campaign_id || "Tráfego Direto"}
+                            </p>
                           </div>
-                          {(selectedLead.utm_source || selectedLead.placement) && (
-                            <div className="grid grid-cols-2 gap-2 mt-3">
-                              {selectedLead.utm_source && (
-                                <div className="p-2 bg-background/30 rounded text-center">
-                                  <p className="text-muted-foreground text-[10px] uppercase">Fonte</p>
-                                  <p className="font-medium text-sm">{selectedLead.utm_source}</p>
-                                </div>
-                              )}
-                              {selectedLead.placement && (
-                                <div className="p-2 bg-background/30 rounded text-center">
-                                  <p className="text-muted-foreground text-[10px] uppercase">Placement</p>
-                                  <p className="font-medium text-sm">{selectedLead.placement}</p>
-                                </div>
-                              )}
-                            </div>
-                          )}
+                          <div className="p-3 bg-background/50 rounded-lg">
+                            <p className="text-muted-foreground text-[10px] uppercase mb-1">Anúncio</p>
+                            <p className="font-semibold text-blue-400 text-lg">
+                              {selectedLead.utm_content || selectedLead.ad_id || "Não identificado"}
+                            </p>
+                          </div>
                         </div>
-                      )}
+                        <div className="grid grid-cols-2 gap-2 mt-3">
+                          <div className="p-2 bg-background/30 rounded text-center">
+                            <p className="text-muted-foreground text-[10px] uppercase">Fonte</p>
+                            <p className="font-medium text-sm">{selectedLead.utm_source || "direct"}</p>
+                          </div>
+                          <div className="p-2 bg-background/30 rounded text-center">
+                            <p className="text-muted-foreground text-[10px] uppercase">Placement</p>
+                            <p className="font-medium text-sm">{selectedLead.placement || "-"}</p>
+                          </div>
+                        </div>
+                      </div>
 
                       {/* Basic Info */}
                       <div className="grid grid-cols-2 gap-4">
