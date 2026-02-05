@@ -70,11 +70,21 @@ Deno.serve(async (req: Request) => {
     // GET /leads - List leads from legacy table
     if (path === "/leads" && req.method === "GET") {
       const search = url.searchParams.get("q");
+      const from = url.searchParams.get("from");
+      const to = url.searchParams.get("to");
       
       let query = supabase
         .from("leads")
         .select("*")
         .order("created_at", { ascending: false });
+
+      // Apply date filters
+      if (from) {
+        query = query.gte("created_at", from);
+      }
+      if (to) {
+        query = query.lte("created_at", to + "T23:59:59.999");
+      }
 
       if (search) {
         query = query.or(`nome_completo.ilike.%${search}%,whatsapp.ilike.%${search}%,instagram.ilike.%${search}%,mercado.ilike.%${search}%`);
@@ -220,34 +230,50 @@ Deno.serve(async (req: Request) => {
     if (path === "/metrics" && req.method === "GET") {
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
+      const toEnd = to ? to + "T23:59:59.999" : null;
 
-      // Get all sessions
+      // Get sessions filtered by date range
       let sessionsQuery = supabase.from("lead_sessions").select("*");
       if (from) sessionsQuery = sessionsQuery.gte("created_at", from);
-      if (to) sessionsQuery = sessionsQuery.lte("created_at", to);
+      if (toEnd) sessionsQuery = sessionsQuery.lte("created_at", toEnd);
       const { data: sessions, error: sessionsError } = await sessionsQuery;
       if (sessionsError) throw sessionsError;
 
-      // Get all events to calculate accurate metrics (including button_id for start_click)
-      const { data: allEvents, error: eventsError } = await supabase
+      // Get session IDs for filtering events
+      const sessionIds = sessions?.map(s => s.id) || [];
+
+      // Get events only for sessions within the date range
+      let eventsQuery = supabase
         .from("lead_events")
-        .select("event_name, step_id, session_id, page, metadata, button_id");
+        .select("event_name, step_id, session_id, page, metadata, button_id, created_at");
+      
+      // Filter events by date range directly AND by session_id for accuracy
+      if (from) eventsQuery = eventsQuery.gte("created_at", from);
+      if (toEnd) eventsQuery = eventsQuery.lte("created_at", toEnd);
+      
+      const { data: allEvents, error: eventsError } = await eventsQuery;
       if (eventsError) throw eventsError;
 
-      // Get total leads (completed quizzes)
-      const { count: leadsCount } = await supabase
+      // Further filter events to only include those from sessions in our range
+      const filteredEvents = allEvents?.filter(e => sessionIds.includes(e.session_id)) || [];
+
+      // Get total leads created in the date range
+      let leadsQuery = supabase
         .from("leads")
         .select("*", { count: "exact", head: true });
+      if (from) leadsQuery = leadsQuery.gte("created_at", from);
+      if (toEnd) leadsQuery = leadsQuery.lte("created_at", toEnd);
+      const { count: leadsCount } = await leadsQuery;
 
       // Calculate metrics from events (more accurate)
       const sessionsWithQuizView = new Set(
-        allEvents?.filter(e => e.event_name === "quiz_view").map(e => e.session_id) || []
+        filteredEvents.filter(e => e.event_name === "quiz_view").map(e => e.session_id)
       );
       const sessionsWithStepView = new Set(
-        allEvents?.filter(e => e.event_name === "step_view").map(e => e.session_id) || []
+        filteredEvents.filter(e => e.event_name === "step_view").map(e => e.session_id)
       );
       const sessionsWithSubmit = new Set(
-        allEvents?.filter(e => e.event_name === "submit").map(e => e.session_id) || []
+        filteredEvents.filter(e => e.event_name === "submit").map(e => e.session_id)
       );
 
       const total = sessions?.length || 0;
@@ -267,14 +293,14 @@ Deno.serve(async (req: Request) => {
       // Use leads count as ground truth for completed
       const completed = leadsCount || sessionsWithSubmit.size;
 
-      // Button distribution - calculate from events (more accurate than sessions)
+      // Button distribution - calculate from events (more accurate)
       const buttonEventCounts: Record<string, Set<string>> = {
         start_btn_1: new Set(),
         start_btn_2: new Set(),
         start_btn_3: new Set(),
       };
       
-      allEvents?.forEach(event => {
+      filteredEvents.forEach(event => {
         if (event.event_name === "start_click" && event.button_id) {
           const buttonId = event.button_id;
           if (buttonEventCounts[buttonId]) {
@@ -292,7 +318,7 @@ Deno.serve(async (req: Request) => {
       // Step funnel - count unique sessions per step
       const stepOrder = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"];
       const stepCounts: Record<string, Set<string>> = {};
-      allEvents?.forEach(event => {
+      filteredEvents.forEach(event => {
         if (event.event_name === "step_view" && event.step_id) {
           if (!stepCounts[event.step_id]) {
             stepCounts[event.step_id] = new Set();
@@ -313,7 +339,7 @@ Deno.serve(async (req: Request) => {
       const sessionViewedSteps: Record<string, Set<string>> = {};
       const sessionAdvancedFrom: Record<string, Set<string>> = {};
       
-      allEvents?.forEach(event => {
+      filteredEvents.forEach(event => {
         if (event.event_name === "step_view" && event.step_id) {
           if (!sessionViewedSteps[event.session_id]) {
             sessionViewedSteps[event.session_id] = new Set();
