@@ -288,6 +288,47 @@ export default function AdminAnalytics() {
   // Completed leads modal
   const [showCompletedModal, setShowCompletedModal] = useState(false);
 
+  // Campaign analytics state
+  interface CampaignMetrics {
+    total_sessions: number;
+    started_quiz: number;
+    completed: number;
+    completion_rate: number;
+    campaigns: Array<{
+      campaign_id: string | null;
+      utm_campaign: string | null;
+      campaign_name: string | null;
+      display_name: string;
+      total: number;
+      started: number;
+      completed: number;
+      completion_rate: number;
+    }>;
+    ads: Array<{
+      ad_id: string | null;
+      utm_content: string | null;
+      ad_name: string | null;
+      display_name: string;
+      campaign_name: string | null;
+      campaign_display_name: string;
+      total: number;
+      started: number;
+      completed: number;
+      completion_rate: number;
+    }>;
+    sources: Array<{
+      utm_source: string;
+      total: number;
+      completed: number;
+    }>;
+  }
+  const [campaignMetrics, setCampaignMetrics] = useState<CampaignMetrics | null>(null);
+  const [campaignMetricsLoading, setCampaignMetricsLoading] = useState(false);
+  const [campaignDateRange, setCampaignDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
+    from: subDays(new Date(), 29),
+    to: new Date(),
+  });
+
   // Persist active tab to localStorage
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -314,8 +355,16 @@ export default function AdminAnalytics() {
       loadMetrics();
       loadSessions();
       loadLeads();
+      loadCampaignMetrics();
     }
   }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, dateRange, sessionsPage]);
+
+  // Reload campaign metrics when date range changes
+  useEffect(() => {
+    if (isAuthenticated && activeTab === "campaigns") {
+      loadCampaignMetrics();
+    }
+  }, [campaignDateRange]);
 
   // Load leads from legacy table via edge function
   const loadLeads = async () => {
@@ -606,6 +655,22 @@ export default function AdminAnalytics() {
       setMetrics(data);
     } catch (error) {
       console.error("Error loading metrics:", error);
+    }
+  };
+
+  const loadCampaignMetrics = async () => {
+    setCampaignMetricsLoading(true);
+    try {
+      const params: Record<string, string> = {};
+      if (campaignDateRange.from) params.from = format(campaignDateRange.from, "yyyy-MM-dd");
+      if (campaignDateRange.to) params.to = format(campaignDateRange.to, "yyyy-MM-dd");
+
+      const data = await fetchAdminData("/campaigns", params);
+      setCampaignMetrics(data);
+    } catch (error) {
+      console.error("Error loading campaign metrics:", error);
+    } finally {
+      setCampaignMetricsLoading(false);
     }
   };
 
@@ -1327,6 +1392,12 @@ export default function AdminAnalytics() {
                 className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
               >
                 Funil
+              </TabsTrigger>
+              <TabsTrigger 
+                value="campaigns" 
+                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+              >
+                Campanhas
               </TabsTrigger>
               <TabsTrigger 
                 value="buttons" 
@@ -2271,6 +2342,207 @@ export default function AdminAnalytics() {
                   </Card>
                 </div>
               )}
+            </TabsContent>
+
+            {/* Campaigns Tab */}
+            <TabsContent value="campaigns">
+              <div className="space-y-6">
+                {/* Date Range Filter */}
+                <div className="flex flex-wrap gap-4 items-center">
+                  <DateRangePicker
+                    dateRange={campaignDateRange}
+                    onDateRangeChange={setCampaignDateRange}
+                  />
+                  <Button variant="outline" onClick={loadCampaignMetrics} disabled={campaignMetricsLoading}>
+                    <RefreshCw className={`w-4 h-4 mr-2 ${campaignMetricsLoading ? "animate-spin" : ""}`} />
+                    Atualizar
+                  </Button>
+                </div>
+
+                {campaignMetricsLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  </div>
+                ) : campaignMetrics ? (
+                  <>
+                    {/* Summary Cards */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <Card>
+                        <CardContent className="pt-6">
+                          <p className="text-2xl font-bold">{campaignMetrics.total_sessions}</p>
+                          <p className="text-xs text-muted-foreground">Total de Sessões</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="pt-6">
+                          <p className="text-2xl font-bold">{campaignMetrics.started_quiz}</p>
+                          <p className="text-xs text-muted-foreground">Iniciaram Quiz</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="pt-6">
+                          <p className="text-2xl font-bold text-green-500">{campaignMetrics.completed}</p>
+                          <p className="text-xs text-muted-foreground">Completaram</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="pt-6">
+                          <p className="text-2xl font-bold">{campaignMetrics.completion_rate.toFixed(1)}%</p>
+                          <p className="text-xs text-muted-foreground">Taxa de Conversão</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Performance by Ad (Top 10) */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <TrendingUp className="w-5 h-5" />
+                          Performance por Anúncio (Top 10)
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="border-b bg-muted/50">
+                              <tr>
+                                <th className="text-left p-4">Anúncio</th>
+                                <th className="text-left p-4">Campanha</th>
+                                <th className="text-center p-4">Sessões</th>
+                                <th className="text-center p-4">Iniciaram</th>
+                                <th className="text-center p-4">Completaram</th>
+                                <th className="text-center p-4">Taxa</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {campaignMetrics.ads.slice(0, 10).map((ad, index) => (
+                                <tr key={index} className="border-b hover:bg-muted/30">
+                                  <td className="p-4">
+                                    <span className="font-medium">{ad.display_name}</span>
+                                  </td>
+                                  <td className="p-4 text-muted-foreground">
+                                    {ad.campaign_display_name}
+                                  </td>
+                                  <td className="p-4 text-center">{ad.total}</td>
+                                  <td className="p-4 text-center">{ad.started}</td>
+                                  <td className="p-4 text-center text-green-500 font-medium">{ad.completed}</td>
+                                  <td className="p-4 text-center">
+                                    <Badge 
+                                      variant="outline"
+                                      className={
+                                        ad.completion_rate >= 50 ? "border-green-500 text-green-500 bg-green-500/10" :
+                                        ad.completion_rate >= 20 ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
+                                        "border-muted-foreground text-muted-foreground"
+                                      }
+                                    >
+                                      {ad.completion_rate.toFixed(1)}%
+                                    </Badge>
+                                  </td>
+                                </tr>
+                              ))}
+                              {campaignMetrics.ads.length === 0 && (
+                                <tr>
+                                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                                    Nenhum dado de anúncio encontrado
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Performance by Campaign */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Performance por Campanha</CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="border-b bg-muted/50">
+                              <tr>
+                                <th className="text-left p-4">Campanha</th>
+                                <th className="text-center p-4">Sessões</th>
+                                <th className="text-center p-4">Iniciaram</th>
+                                <th className="text-center p-4">Completaram</th>
+                                <th className="text-center p-4">Taxa</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {campaignMetrics.campaigns.map((campaign, index) => (
+                                <tr key={index} className="border-b hover:bg-muted/30">
+                                  <td className="p-4">
+                                    <span className="font-medium">{campaign.display_name}</span>
+                                  </td>
+                                  <td className="p-4 text-center">{campaign.total}</td>
+                                  <td className="p-4 text-center">{campaign.started}</td>
+                                  <td className="p-4 text-center text-green-500 font-medium">{campaign.completed}</td>
+                                  <td className="p-4 text-center">
+                                    <Badge 
+                                      variant="outline"
+                                      className={
+                                        campaign.completion_rate >= 50 ? "border-green-500 text-green-500 bg-green-500/10" :
+                                        campaign.completion_rate >= 20 ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
+                                        "border-muted-foreground text-muted-foreground"
+                                      }
+                                    >
+                                      {campaign.completion_rate.toFixed(1)}%
+                                    </Badge>
+                                  </td>
+                                </tr>
+                              ))}
+                              {campaignMetrics.campaigns.length === 0 && (
+                                <tr>
+                                  <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                                    Nenhum dado de campanha encontrado
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Performance by Source */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Performance por Fonte</CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="border-b bg-muted/50">
+                              <tr>
+                                <th className="text-left p-4">Fonte</th>
+                                <th className="text-center p-4">Sessões</th>
+                                <th className="text-center p-4">Completaram</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {campaignMetrics.sources.map((source, index) => (
+                                <tr key={index} className="border-b hover:bg-muted/30">
+                                  <td className="p-4">
+                                    <span className="font-medium">{source.utm_source}</span>
+                                  </td>
+                                  <td className="p-4 text-center">{source.total}</td>
+                                  <td className="p-4 text-center text-green-500 font-medium">{source.completed}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </>
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground">
+                    Nenhum dado encontrado para o período selecionado
+                  </div>
+                )}
+              </div>
             </TabsContent>
 
             <TabsContent value="buttons">

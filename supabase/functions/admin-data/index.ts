@@ -545,6 +545,7 @@ Deno.serve(async (req: Request) => {
         campaign_id: string | null;
         utm_campaign: string | null;
         campaign_name: string | null;
+        display_name: string; // The name to show in the UI
         total: number; 
         started: number; 
         completed: number;
@@ -552,10 +553,15 @@ Deno.serve(async (req: Request) => {
 
       sessions?.forEach(s => {
         const key = s.campaign_id || s.utm_campaign || "direct";
+        
+        // Get the best display name: utm_campaign > campaign_name from cache > campaign_id
+        const displayName = s.utm_campaign || cacheByCampaignId.get(s.campaign_id)?.campaign_name || s.campaign_id || "Tráfego Direto";
+        
         const existing = campaignMap.get(key) || {
           campaign_id: s.campaign_id,
           utm_campaign: s.utm_campaign,
           campaign_name: cacheByCampaignId.get(s.campaign_id)?.campaign_name || null,
+          display_name: displayName,
           total: 0,
           started: 0,
           completed: 0,
@@ -575,20 +581,32 @@ Deno.serve(async (req: Request) => {
         ad_id: string | null;
         utm_content: string | null;
         ad_name: string | null;
+        display_name: string; // The name to show in the UI
         campaign_name: string | null;
+        campaign_display_name: string; // The campaign name to show in the UI
         total: number;
         started: number;
         completed: number;
       }>();
 
       sessions?.forEach(s => {
+        // Prioritize utm_content for display since it contains the actual names from Meta Ads URL params
         const key = s.ad_id || s.utm_content || "no_ad";
         const cached = cacheByAdId.get(s.ad_id);
+        
+        // Get the best display name: utm_content > ad_name from cache > ad_id
+        const displayName = s.utm_content || cached?.ad_name || s.ad_id || "Não identificado";
+        
+        // Get the best campaign display name: utm_campaign > campaign_name from cache > campaign_id
+        const campaignDisplayName = s.utm_campaign || cached?.campaign_name || cacheByCampaignId.get(s.campaign_id)?.campaign_name || s.campaign_id || "-";
+        
         const existing = adMap.get(key) || {
           ad_id: s.ad_id,
           utm_content: s.utm_content,
           ad_name: cached?.ad_name || null,
-          campaign_name: cached?.campaign_name || cacheByCampaignId.get(s.campaign_id)?.campaign_name || s.utm_campaign || null,
+          display_name: displayName,
+          campaign_name: cached?.campaign_name || cacheByCampaignId.get(s.campaign_id)?.campaign_name || null,
+          campaign_display_name: campaignDisplayName,
           total: 0,
           started: 0,
           completed: 0,
