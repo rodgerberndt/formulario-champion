@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useActiveUsers } from "@/hooks/usePresence";
 import CampaignAnalytics from "@/components/admin/CampaignAnalytics";
 import DateRangePicker from "@/components/admin/DateRangePicker";
+ import UtmMetrics from "@/components/admin/UtmMetrics";
 import { toast } from "@/hooks/use-toast";
 import {
   Users,
@@ -140,6 +141,13 @@ interface Lead {
   score: number | null;
   ip_address: string | null;
   is_duplicate_ip: boolean;
+   utm_source: string | null;
+   utm_medium: string | null;
+   utm_campaign: string | null;
+   utm_content: string | null;
+   utm_term: string | null;
+   fbclid: string | null;
+   gclid: string | null;
 }
 
 export default function AdminAnalytics() {
@@ -1256,6 +1264,12 @@ export default function AdminAnalytics() {
               >
                 Campanhas
               </TabsTrigger>
+               <TabsTrigger 
+                 value="utm" 
+                 className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+               >
+                 UTM
+               </TabsTrigger>
             </TabsList>
 
             {/* Leads Tab */}
@@ -2155,6 +2169,11 @@ export default function AdminAnalytics() {
                 }}
               />
             </TabsContent>
+ 
+             {/* UTM Metrics Tab */}
+             <TabsContent value="utm">
+               <UtmMetrics fetchAdminData={fetchAdminData} />
+             </TabsContent>
           </Tabs>
 
           {/* Completed Leads Modal */}

@@ -7,10 +7,14 @@ import { BackgroundDecor } from "@/components/BackgroundDecor";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { useTracking } from "@/hooks/useTracking";
+ import { useUtmCapture } from "@/hooks/useUtmCapture";
 
 const Index = () => {
   const navigate = useNavigate();
   const { trackStartClick } = useTracking();
+   
+   // Capture UTM parameters on landing page load
+   useUtmCapture();
 
   const handleStartClick = async (buttonId: string) => {
     // Track the click and wait for it to complete before navigating
