@@ -20,6 +20,7 @@ import {
   ESTAGIO_OPTIONS,
 } from "@/lib/leadScoring";
 import { useTracking } from "@/hooks/useTracking";
+ import { useUtmCapture, getUtmForDb } from "@/hooks/useUtmCapture";
 
 interface QuizFormData {
   nome_completo: string;
@@ -106,6 +107,7 @@ const QuizBackground = memo(function QuizBackground() {
 export default function Quiz() {
   const navigate = useNavigate();
   const { trackQuizPageView, trackStepView, trackStepNext, trackStepBack, trackSubmit } = useTracking();
+   const { getUtmPayload } = useUtmCapture();
   
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -210,6 +212,7 @@ export default function Quiz() {
         score: result.score,
         tier: result.tier,
         raw_answers_json: JSON.parse(JSON.stringify(formData)),
+         ...getUtmPayload(),
       };
 
       const { error } = await supabase.from("leads").insert([dbData]);

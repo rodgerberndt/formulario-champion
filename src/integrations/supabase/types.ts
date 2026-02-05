@@ -178,7 +178,9 @@ export type Database = {
           empresa: string | null
           estagio_negocio: string
           faturamento_faixa: string | null
+          fbclid: string | null
           gargalo: string | null
+          gclid: string | null
           id: string
           instagram: string
           ip_address: string | null
@@ -195,6 +197,11 @@ export type Database = {
           tier: string | null
           timing: string | null
           trafego_faixa: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
           whatsapp: string
         }
         Insert: {
@@ -205,7 +212,9 @@ export type Database = {
           empresa?: string | null
           estagio_negocio: string
           faturamento_faixa?: string | null
+          fbclid?: string | null
           gargalo?: string | null
+          gclid?: string | null
           id?: string
           instagram: string
           ip_address?: string | null
@@ -222,6 +231,11 @@ export type Database = {
           tier?: string | null
           timing?: string | null
           trafego_faixa?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           whatsapp: string
         }
         Update: {
@@ -232,7 +246,9 @@ export type Database = {
           empresa?: string | null
           estagio_negocio?: string
           faturamento_faixa?: string | null
+          fbclid?: string | null
           gargalo?: string | null
+          gclid?: string | null
           id?: string
           instagram?: string
           ip_address?: string | null
@@ -249,6 +265,11 @@ export type Database = {
           tier?: string | null
           timing?: string | null
           trafego_faixa?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           whatsapp?: string
         }
         Relationships: []
