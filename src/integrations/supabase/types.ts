@@ -171,6 +171,9 @@ export type Database = {
       }
       leads: {
         Row: {
+          ad_id: string | null
+          adset_id: string | null
+          campaign_id: string | null
           created_at: string
           decisor: boolean | null
           dor_desejo: string
@@ -190,9 +193,11 @@ export type Database = {
           nome_completo: string
           objetivo: string | null
           orcamento_faixa: string | null
+          placement: string | null
           raw_answers_json: Json | null
           score: number | null
           segmento: string | null
+          site_source_name: string | null
           ticket_faixa: string | null
           tier: string | null
           timing: string | null
@@ -205,6 +210,9 @@ export type Database = {
           whatsapp: string
         }
         Insert: {
+          ad_id?: string | null
+          adset_id?: string | null
+          campaign_id?: string | null
           created_at?: string
           decisor?: boolean | null
           dor_desejo: string
@@ -224,9 +232,11 @@ export type Database = {
           nome_completo: string
           objetivo?: string | null
           orcamento_faixa?: string | null
+          placement?: string | null
           raw_answers_json?: Json | null
           score?: number | null
           segmento?: string | null
+          site_source_name?: string | null
           ticket_faixa?: string | null
           tier?: string | null
           timing?: string | null
@@ -239,6 +249,9 @@ export type Database = {
           whatsapp: string
         }
         Update: {
+          ad_id?: string | null
+          adset_id?: string | null
+          campaign_id?: string | null
           created_at?: string
           decisor?: boolean | null
           dor_desejo?: string
@@ -258,9 +271,11 @@ export type Database = {
           nome_completo?: string
           objetivo?: string | null
           orcamento_faixa?: string | null
+          placement?: string | null
           raw_answers_json?: Json | null
           score?: number | null
           segmento?: string | null
+          site_source_name?: string | null
           ticket_faixa?: string | null
           tier?: string | null
           timing?: string | null
