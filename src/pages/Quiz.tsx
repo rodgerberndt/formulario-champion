@@ -18,6 +18,7 @@ import {
   calculateLeadScore,
   MERCADO_OPTIONS,
   ESTAGIO_OPTIONS,
+  INVESTIMENTO_OPTIONS,
 } from "@/lib/leadScoring";
 import { useTracking } from "@/hooks/useTracking";
  import { useUtmCapture, getUtmForDb } from "@/hooks/useUtmCapture";
@@ -28,6 +29,7 @@ interface QuizFormData {
   instagram: string;
   mercado: string;
   estagio_negocio: string;
+  investimento_faixa: string;
   dor_desejo: string;
   lgpd: boolean;
 }
@@ -42,7 +44,8 @@ const STEP_IDS = [
   "q3_insta",
   "q4_mercado",
   "q5_estagio",
-  "q6_dor",
+  "q6_investimento",
+  "q7_dor",
 ];
 
 // Memoized background component
@@ -117,11 +120,12 @@ export default function Quiz() {
     instagram: "",
     mercado: "",
     estagio_negocio: "",
+    investimento_faixa: "",
     dor_desejo: "",
     lgpd: false,
   });
 
-  const totalSteps = 6;
+  const totalSteps = 7;
   const hasTrackedQuizView = useRef(false);
   const lastTrackedStep = useRef<number | null>(null);
 
@@ -186,6 +190,8 @@ export default function Quiz() {
       case 5:
         return formData.estagio_negocio !== "";
       case 6:
+        return formData.investimento_faixa !== "";
+      case 7:
         return formData.dor_desejo.trim().length >= 10;
       default:
         return false;
@@ -200,6 +206,8 @@ export default function Quiz() {
       const result = calculateLeadScore({
         mercado: formData.mercado,
         estagio_negocio: formData.estagio_negocio,
+        investimento_faixa: formData.investimento_faixa,
+        dor_desejo: formData.dor_desejo,
       });
 
       const dbData = {
@@ -208,6 +216,7 @@ export default function Quiz() {
         instagram: formData.instagram,
         mercado: formData.mercado,
         estagio_negocio: formData.estagio_negocio,
+        investimento_faixa: formData.investimento_faixa,
         dor_desejo: formData.dor_desejo,
         score: result.score,
         tier: result.tier,
@@ -237,6 +246,7 @@ export default function Quiz() {
         instagram: formData.instagram,
         mercado: formData.mercado,
         estagio_negocio: formData.estagio_negocio,
+        investimento_faixa: formData.investimento_faixa,
         dor_desejo: formData.dor_desejo,
       }));
 
@@ -283,6 +293,9 @@ export default function Quiz() {
           fieldData.estagio = formData.estagio_negocio;
           break;
         case 6:
+          fieldData.investimento = formData.investimento_faixa;
+          break;
+        case 7:
           fieldData.dor_desejo = formData.dor_desejo;
           break;
       }
@@ -427,6 +440,33 @@ export default function Quiz() {
           </div>
         );
       case 6:
+        return (
+          <div className="space-y-4 sm:space-y-5 animate-fade-in">
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
+              Quanto você investe em anúncios por mês?
+            </label>
+            <Select
+              value={formData.investimento_faixa}
+              onValueChange={(value) => updateField("investimento_faixa", value)}
+            >
+              <SelectTrigger className={selectClasses}>
+                <SelectValue placeholder="Selecione a faixa" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
+                {INVESTIMENTO_OPTIONS.map((option) => (
+                  <SelectItem
+                    key={option}
+                    value={option}
+                    className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3"
+                  >
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      case 7:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <div>
