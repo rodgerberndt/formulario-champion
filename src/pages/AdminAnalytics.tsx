@@ -122,7 +122,8 @@ const STEP_LABELS: Record<string, string> = {
   q3_insta: "Instagram",
   q4_mercado: "Mercado",
   q5_estagio: "Estágio",
-  q6_dor: "Dor/Desejo",
+  q6_investimento: "Investimento",
+  q7_dor: "Dor/Desejo",
 };
 
 interface Lead {
@@ -132,6 +133,7 @@ interface Lead {
   instagram: string;
   mercado: string;
   estagio_negocio: string;
+  investimento_faixa: string | null;
   dor_desejo: string;
   lido: boolean;
   created_at: string;
@@ -1598,6 +1600,7 @@ export default function AdminAnalytics() {
                           <th className="text-left p-4">Instagram</th>
                           <th className="text-left p-4">Mercado</th>
                           <th className="text-left p-4">Estágio</th>
+                          <th className="text-left p-4">Investimento</th>
                           <th className="text-left p-4">Data</th>
                           <th className="text-right p-4">Ações</th>
                         </tr>
@@ -1605,13 +1608,13 @@ export default function AdminAnalytics() {
                       <tbody>
                         {leadsLoading ? (
                           <tr>
-                            <td colSpan={11} className="p-8 text-center">
+                            <td colSpan={12} className="p-8 text-center">
                               <Loader2 className="w-6 h-6 animate-spin mx-auto" />
                             </td>
                           </tr>
                         ) : filteredLeads.length === 0 ? (
                           <tr>
-                            <td colSpan={11} className="p-8 text-center text-muted-foreground">
+                            <td colSpan={12} className="p-8 text-center text-muted-foreground">
                               Nenhum lead encontrado
                             </td>
                           </tr>
@@ -1703,6 +1706,7 @@ export default function AdminAnalytics() {
                               </td>
                               <td className="p-4 text-muted-foreground">{lead.mercado}</td>
                               <td className="p-4 text-muted-foreground text-xs">{lead.estagio_negocio}</td>
+                              <td className="p-4 text-muted-foreground text-xs">{lead.investimento_faixa || "-"}</td>
                               <td className="p-4 text-muted-foreground">
                                 {format(new Date(lead.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
                               </td>
@@ -1837,9 +1841,15 @@ export default function AdminAnalytics() {
                             <p className="font-medium">{selectedLead.ticket_faixa}</p>
                           </div>
                         )}
+                        {selectedLead.investimento_faixa && (
+                          <div className="p-4 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-lg border border-green-500/30">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">💰 Investimento em Anúncios</p>
+                            <p className="font-semibold text-green-400 text-lg">{selectedLead.investimento_faixa}</p>
+                          </div>
+                        )}
                         {selectedLead.trafego_faixa && (
                           <div className="p-4 bg-muted/30 rounded-lg">
-                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Investimento em Tráfego</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Investimento em Tráfego (antigo)</p>
                             <p className="font-medium">{selectedLead.trafego_faixa}</p>
                           </div>
                         )}
@@ -2258,7 +2268,7 @@ export default function AdminAnalytics() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        {["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"].map(
+                        {["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_investimento", "q7_dor"].map(
                           (stepId, index) => {
                             const stepData = metrics.step_funnel.find((s) => s.step_id === stepId);
                             const count = stepData?.count || 0;
