@@ -13,9 +13,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveUsers } from "@/hooks/usePresence";
-import CampaignAnalytics from "@/components/admin/CampaignAnalytics";
 import DateRangePicker from "@/components/admin/DateRangePicker";
- import UtmMetrics from "@/components/admin/UtmMetrics";
 import { toast } from "@/hooks/use-toast";
 import {
   Users,
@@ -84,6 +82,15 @@ interface Session {
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
+  utm_content: string | null;
+  utm_term: string | null;
+  fbclid: string | null;
+  gclid: string | null;
+  ttclid: string | null;
+  campaign_id: string | null;
+  adset_id: string | null;
+  ad_id: string | null;
+  creative_id: string | null;
   device_type: string;
   started_quiz: boolean;
   start_button_id: string | null;
@@ -141,13 +148,18 @@ interface Lead {
   score: number | null;
   ip_address: string | null;
   is_duplicate_ip: boolean;
-   utm_source: string | null;
-   utm_medium: string | null;
-   utm_campaign: string | null;
-   utm_content: string | null;
-   utm_term: string | null;
-   fbclid: string | null;
-   gclid: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_content: string | null;
+  utm_term: string | null;
+  fbclid: string | null;
+  gclid: string | null;
+  campaign_id: string | null;
+  adset_id: string | null;
+  ad_id: string | null;
+  placement: string | null;
+  site_source_name: string | null;
 }
 
 export default function AdminAnalytics() {
@@ -866,64 +878,118 @@ export default function AdminAnalytics() {
               </Card>
             )}
 
+            {/* UTM & Meta Ads Tracking - Show at top */}
+            {(selectedSession.utm_source || selectedSession.campaign_id || selectedSession.fbclid || selectedSession.gclid) && (
+              <Card className="mb-6 border-blue-500/30 bg-blue-500/5">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-blue-500" />
+                    Rastreio de Origem (UTM / Meta Ads)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                    {selectedSession.utm_source && (
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Source</p>
+                        <p className="font-medium text-blue-400">{selectedSession.utm_source}</p>
+                      </div>
+                    )}
+                    {selectedSession.utm_medium && (
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Medium</p>
+                        <p className="font-medium">{selectedSession.utm_medium}</p>
+                      </div>
+                    )}
+                    {selectedSession.utm_campaign && (
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Campaign</p>
+                        <p className="font-medium">{selectedSession.utm_campaign}</p>
+                      </div>
+                    )}
+                    {selectedSession.utm_content && (
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Content</p>
+                        <p className="font-medium">{selectedSession.utm_content}</p>
+                      </div>
+                    )}
+                    {selectedSession.utm_term && (
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Term</p>
+                        <p className="font-medium">{selectedSession.utm_term}</p>
+                      </div>
+                    )}
+                    {selectedSession.campaign_id && (
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Campaign ID</p>
+                        <p className="font-mono text-xs">{selectedSession.campaign_id}</p>
+                      </div>
+                    )}
+                    {selectedSession.adset_id && (
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Adset ID</p>
+                        <p className="font-mono text-xs">{selectedSession.adset_id}</p>
+                      </div>
+                    )}
+                    {selectedSession.ad_id && (
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Ad ID</p>
+                        <p className="font-mono text-xs">{selectedSession.ad_id}</p>
+                      </div>
+                    )}
+                    {selectedSession.fbclid && (
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Facebook Click</p>
+                        <p className="font-mono text-xs truncate max-w-32" title={selectedSession.fbclid}>✓ {selectedSession.fbclid.slice(0, 12)}...</p>
+                      </div>
+                    )}
+                    {selectedSession.gclid && (
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Google Click</p>
+                        <p className="font-mono text-xs truncate max-w-32" title={selectedSession.gclid}>✓ {selectedSession.gclid.slice(0, 12)}...</p>
+                      </div>
+                    )}
+                    {selectedSession.referrer && (
+                      <div className="p-2 bg-muted/30 rounded col-span-2">
+                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Referrer</p>
+                        <p className="font-medium text-xs truncate">{selectedSession.referrer}</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Session Tracking Info */}
             <Card className="mb-6">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Informações de Rastreamento</CardTitle>
+                <CardTitle className="text-lg">Informações da Sessão</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Botão Clicado</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                  <div className="p-2 bg-muted/30 rounded">
+                    <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Botão Clicado</p>
                     <p className="font-medium">{selectedSession.start_button_id || "-"}</p>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Etapa Atual</p>
+                  <div className="p-2 bg-muted/30 rounded">
+                    <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Etapa Atual</p>
                     <p className="font-medium">{selectedSession.current_step_id ? STEP_LABELS[selectedSession.current_step_id] || selectedSession.current_step_id : "-"}</p>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Entrou no Quiz</p>
+                  <div className="p-2 bg-muted/30 rounded">
+                    <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Entrou no Quiz</p>
                     <p className="font-medium">{selectedSession.entered_quiz_page ? "Sim" : "Não"}</p>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Começou Quiz</p>
-                    <p className="font-medium">{selectedSession.started_quiz ? "Sim" : "Não"}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Completou</p>
+                  <div className="p-2 bg-muted/30 rounded">
+                    <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Completou</p>
                     <p className="font-medium">{selectedSession.completed ? "Sim" : "Não"}</p>
                   </div>
-                  {selectedSession.utm_source && (
-                    <div>
-                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">UTM Source</p>
-                      <p className="font-medium">{selectedSession.utm_source}</p>
-                    </div>
-                  )}
-                  {selectedSession.utm_medium && (
-                    <div>
-                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">UTM Medium</p>
-                      <p className="font-medium">{selectedSession.utm_medium}</p>
-                    </div>
-                  )}
-                  {selectedSession.utm_campaign && (
-                    <div>
-                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">UTM Campaign</p>
-                      <p className="font-medium">{selectedSession.utm_campaign}</p>
-                    </div>
-                  )}
-                  {selectedSession.referrer && (
-                    <div className="col-span-2 md:col-span-3">
-                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Referrer</p>
-                      <p className="font-medium truncate">{selectedSession.referrer}</p>
-                    </div>
-                  )}
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Timeline de Eventos</CardTitle>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Timeline de Eventos ({sessionEvents.length})</CardTitle>
               </CardHeader>
               <CardContent>
                 {eventsLoading ? (
@@ -931,84 +997,94 @@ export default function AdminAnalytics() {
                     <Loader2 className="w-6 h-6 animate-spin" />
                   </div>
                 ) : sessionEvents.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">Nenhum evento registrado para esta sessão</p>
+                  <p className="text-center text-muted-foreground py-8">Nenhum evento registrado</p>
                 ) : (
-                  <div className="space-y-4">
-                    {(() => {
-                      // Accumulate field data across events to show at each step
-                      const accumulatedData: Record<string, string> = {};
-                      
-                      return sessionEvents.map((event) => {
-                        // Accumulate field values from step_next events
-                        if (event.metadata && (event.metadata as Record<string, unknown>).field_value) {
-                          const fieldValue = (event.metadata as Record<string, unknown>).field_value as Record<string, string>;
-                          Object.assign(accumulatedData, fieldValue);
-                        }
+                  <div className="max-h-[400px] overflow-y-auto pr-2">
+                    <div className="space-y-1">
+                      {(() => {
+                        // Accumulate field data across events
+                        const accumulatedData: Record<string, string> = {};
                         
-                        const currentAccumulated = { ...accumulatedData };
-                        const hasAccumulatedData = Object.keys(currentAccumulated).length > 0;
+                        // Group events by type for compact display
+                        const eventIcons: Record<string, string> = {
+                          page_view: "👁️",
+                          start_click: "▶️",
+                          quiz_view: "📝",
+                          step_view: "📍",
+                          step_next: "➡️",
+                          step_back: "⬅️",
+                          submit: "✅",
+                          visibility_hidden: "💤",
+                        };
                         
-                        // Get event-specific field value
-                        const eventFieldValue = event.metadata && (event.metadata as Record<string, unknown>).field_value as Record<string, string> | undefined;
-                        
-                        return (
-                          <div key={event.id} className="flex gap-4 text-sm border-l-2 border-border pl-4 pb-4">
-                            <div className="text-muted-foreground whitespace-nowrap text-xs">
-                              {new Date(event.created_at).toLocaleTimeString("pt-BR")}
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-semibold text-foreground">{event.event_name}</p>
-                              {event.page && <p className="text-muted-foreground text-xs">Página: {event.page}</p>}
-                              {event.step_id && (
-                                <p className="text-muted-foreground text-xs">
-                                  Etapa: {STEP_LABELS[event.step_id] || event.step_id}
-                                </p>
-                              )}
-                              {event.button_id && (
-                                <p className="text-primary text-xs font-medium">🔘 Botão: {event.button_id}</p>
-                              )}
-                              
-                              {/* Show field value added in THIS event */}
-                              {eventFieldValue && (
-                                <div className="mt-2 p-2 bg-green-500/10 rounded-lg border border-green-500/20">
-                                  <p className="text-xs text-green-400 uppercase tracking-wider mb-1">✓ Dado preenchido:</p>
-                                  {Object.entries(eventFieldValue).map(([key, value]) => (
-                                    <p key={key} className="text-sm text-foreground">
-                                      <span className="text-green-400 font-medium capitalize">{key}:</span>{" "}
-                                      <span className="font-semibold">{value}</span>
-                                    </p>
-                                  ))}
-                                </div>
-                              )}
-                              
-                              {/* Show accumulated data so far (for step_view events to show what we have) */}
-                              {event.event_name === "step_view" && hasAccumulatedData && (
-                                <div className="mt-2 p-2 bg-muted/50 rounded-lg border border-border">
-                                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">📋 Dados coletados até aqui:</p>
-                                  {Object.entries(currentAccumulated).map(([key, value]) => (
-                                    <p key={key} className="text-xs text-muted-foreground">
-                                      <span className="font-medium capitalize">{key}:</span> {value}
-                                    </p>
-                                  ))}
-                                </div>
-                              )}
-                              
-                              {/* Show step transitions */}
-                              {event.metadata && Object.keys(event.metadata).filter(k => k !== 'field_value').length > 0 && (
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  {(event.metadata as Record<string, unknown>).from_step && (
-                                    <span>De: {STEP_LABELS[String((event.metadata as Record<string, unknown>).from_step)] || String((event.metadata as Record<string, unknown>).from_step)}</span>
+                        return sessionEvents.map((event, idx) => {
+                          // Accumulate field values from step_next events
+                          if (event.metadata && (event.metadata as Record<string, unknown>).field_value) {
+                            const fieldValue = (event.metadata as Record<string, unknown>).field_value as Record<string, string>;
+                            Object.assign(accumulatedData, fieldValue);
+                          }
+                          
+                          const eventFieldValue = event.metadata && (event.metadata as Record<string, unknown>).field_value as Record<string, string> | undefined;
+                          const icon = eventIcons[event.event_name] || "•";
+                          
+                          // Compact display for less important events
+                          const isMinorEvent = ["visibility_hidden", "page_view"].includes(event.event_name) && !event.button_id;
+                          
+                          if (isMinorEvent) {
+                            return (
+                              <div key={event.id} className="flex items-center gap-2 text-xs text-muted-foreground py-1 pl-2 border-l border-muted">
+                                <span>{icon}</span>
+                                <span className="font-mono text-[10px]">{new Date(event.created_at).toLocaleTimeString("pt-BR")}</span>
+                                <span>{event.event_name}</span>
+                                {event.page && <span className="truncate max-w-24">{event.page}</span>}
+                              </div>
+                            );
+                          }
+                          
+                          return (
+                            <div key={event.id} className={`flex items-start gap-2 py-2 pl-2 border-l-2 ${event.event_name === "submit" ? "border-green-500 bg-green-500/5" : event.event_name === "start_click" ? "border-primary" : "border-muted"}`}>
+                              <span className="text-base mt-0.5">{icon}</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="font-medium text-sm">{event.event_name}</span>
+                                  <span className="text-[10px] text-muted-foreground font-mono">{new Date(event.created_at).toLocaleTimeString("pt-BR")}</span>
+                                  {event.step_id && (
+                                    <Badge variant="outline" className="text-[10px] px-1 py-0">
+                                      {STEP_LABELS[event.step_id] || event.step_id}
+                                    </Badge>
                                   )}
-                                  {(event.metadata as Record<string, unknown>).to_step && (
-                                    <span className="ml-2">→ Para: {STEP_LABELS[String((event.metadata as Record<string, unknown>).to_step)] || String((event.metadata as Record<string, unknown>).to_step)}</span>
+                                  {event.button_id && (
+                                    <Badge className="text-[10px] px-1 py-0 bg-primary/20 text-primary">{event.button_id}</Badge>
                                   )}
                                 </div>
-                              )}
+                                
+                                {/* Show field value in compact way */}
+                                {eventFieldValue && (
+                                  <div className="mt-1 text-xs">
+                                    {Object.entries(eventFieldValue).map(([key, value]) => (
+                                      <span key={key} className="inline-flex items-center gap-1 mr-2">
+                                        <span className="text-green-500">✓</span>
+                                        <span className="text-muted-foreground">{key}:</span>
+                                        <span className="font-medium">{value}</span>
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                                
+                                {/* Show step transitions inline */}
+                                {event.metadata && (event.metadata as Record<string, unknown>).from_step && (
+                                  <p className="text-[10px] text-muted-foreground">
+                                    {STEP_LABELS[String((event.metadata as Record<string, unknown>).from_step)] || String((event.metadata as Record<string, unknown>).from_step)}
+                                    {" → "}
+                                    {STEP_LABELS[String((event.metadata as Record<string, unknown>).to_step)] || String((event.metadata as Record<string, unknown>).to_step)}
+                                  </p>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      });
-                    })()}
+                          );
+                        });
+                      })()}
+                    </div>
                   </div>
                 )}
               </CardContent>
@@ -1258,18 +1334,6 @@ export default function AdminAnalytics() {
               >
                 Botões
               </TabsTrigger>
-              <TabsTrigger 
-                value="campaigns" 
-                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-              >
-                Campanhas
-              </TabsTrigger>
-               <TabsTrigger 
-                 value="utm" 
-                 className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-               >
-                 UTM
-               </TabsTrigger>
             </TabsList>
 
             {/* Leads Tab */}
@@ -1692,6 +1756,84 @@ export default function AdminAnalytics() {
                         <p className="whitespace-pre-wrap">{selectedLead.dor_desejo}</p>
                       </div>
 
+                      {/* UTM & Attribution Data */}
+                      {(selectedLead.utm_source || selectedLead.campaign_id || selectedLead.fbclid || selectedLead.gclid) && (
+                        <div className="p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <Globe className="w-4 h-4 text-blue-500" />
+                            Rastreio de Origem
+                          </p>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                            {selectedLead.utm_source && (
+                              <div className="p-2 bg-muted/30 rounded">
+                                <p className="text-muted-foreground text-[10px] uppercase">Source</p>
+                                <p className="font-medium text-blue-400">{selectedLead.utm_source}</p>
+                              </div>
+                            )}
+                            {selectedLead.utm_medium && (
+                              <div className="p-2 bg-muted/30 rounded">
+                                <p className="text-muted-foreground text-[10px] uppercase">Medium</p>
+                                <p className="font-medium">{selectedLead.utm_medium}</p>
+                              </div>
+                            )}
+                            {selectedLead.utm_campaign && (
+                              <div className="p-2 bg-muted/30 rounded">
+                                <p className="text-muted-foreground text-[10px] uppercase">Campaign</p>
+                                <p className="font-medium">{selectedLead.utm_campaign}</p>
+                              </div>
+                            )}
+                            {selectedLead.utm_content && (
+                              <div className="p-2 bg-muted/30 rounded">
+                                <p className="text-muted-foreground text-[10px] uppercase">Content</p>
+                                <p className="font-medium">{selectedLead.utm_content}</p>
+                              </div>
+                            )}
+                            {selectedLead.utm_term && (
+                              <div className="p-2 bg-muted/30 rounded">
+                                <p className="text-muted-foreground text-[10px] uppercase">Term</p>
+                                <p className="font-medium">{selectedLead.utm_term}</p>
+                              </div>
+                            )}
+                            {selectedLead.campaign_id && (
+                              <div className="p-2 bg-muted/30 rounded">
+                                <p className="text-muted-foreground text-[10px] uppercase">Campaign ID</p>
+                                <p className="font-mono text-xs">{selectedLead.campaign_id}</p>
+                              </div>
+                            )}
+                            {selectedLead.adset_id && (
+                              <div className="p-2 bg-muted/30 rounded">
+                                <p className="text-muted-foreground text-[10px] uppercase">Adset ID</p>
+                                <p className="font-mono text-xs">{selectedLead.adset_id}</p>
+                              </div>
+                            )}
+                            {selectedLead.ad_id && (
+                              <div className="p-2 bg-muted/30 rounded">
+                                <p className="text-muted-foreground text-[10px] uppercase">Ad ID</p>
+                                <p className="font-mono text-xs">{selectedLead.ad_id}</p>
+                              </div>
+                            )}
+                            {selectedLead.placement && (
+                              <div className="p-2 bg-muted/30 rounded">
+                                <p className="text-muted-foreground text-[10px] uppercase">Placement</p>
+                                <p className="font-medium">{selectedLead.placement}</p>
+                              </div>
+                            )}
+                            {selectedLead.fbclid && (
+                              <div className="p-2 bg-muted/30 rounded">
+                                <p className="text-muted-foreground text-[10px] uppercase">Facebook Click</p>
+                                <p className="font-mono text-xs truncate">✓</p>
+                              </div>
+                            )}
+                            {selectedLead.gclid && (
+                              <div className="p-2 bg-muted/30 rounded">
+                                <p className="text-muted-foreground text-[10px] uppercase">Google Click</p>
+                                <p className="font-mono text-xs truncate">✓</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Score & Tier (internal) */}
                       {(selectedLead.score !== null || selectedLead.tier) && (
                         <div className="flex gap-4 pt-2 border-t">
@@ -1780,8 +1922,7 @@ export default function AdminAnalytics() {
                           <th className="text-left p-4">Data</th>
                           <th className="text-left p-4">Status</th>
                           <th className="text-left p-4">Nome</th>
-                          <th className="text-left p-4">Instagram</th>
-                          <th className="text-left p-4">WhatsApp</th>
+                          <th className="text-left p-4">Origem</th>
                           <th className="text-left p-4">Dispositivo</th>
                           <th className="text-right p-4">Ações</th>
                         </tr>
@@ -1789,86 +1930,99 @@ export default function AdminAnalytics() {
                       <tbody>
                         {sessionsLoading ? (
                           <tr>
-                            <td colSpan={8} className="p-8 text-center">
+                            <td colSpan={7} className="p-8 text-center">
                               <Loader2 className="w-6 h-6 animate-spin mx-auto" />
                             </td>
                           </tr>
                         ) : sessions.length === 0 ? (
                           <tr>
-                            <td colSpan={8} className="p-8 text-center text-muted-foreground">
+                            <td colSpan={7} className="p-8 text-center text-muted-foreground">
                               Nenhuma sessão encontrada
                             </td>
                           </tr>
                         ) : (
-                          sessions.map((session, index) => (
-                            <tr 
-                              key={session.id} 
-                              className="border-b hover:bg-muted/30 cursor-pointer"
-                              onClick={() => handleViewSession(session)}
-                            >
-                              <td className="p-4 text-muted-foreground font-mono">
-                                {(sessionsPage - 1) * 20 + index + 1}
-                              </td>
-                              <td className="p-4">
-                                {new Date(session.created_at).toLocaleDateString("pt-BR")}
-                                <br />
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(session.created_at).toLocaleTimeString("pt-BR")}
-                                </span>
-                              </td>
-                              <td className="p-4">{getStatusBadge(session)}</td>
-                              <td className="p-4 font-medium">
-                                {session.lead_name || <span className="text-muted-foreground">-</span>}
-                              </td>
-                              <td className="p-4">
-                                {session.lead_instagram ? (
-                                  <button
-                                    type="button"
-                                    className="text-primary hover:underline"
-                                    title="Abrir Instagram"
+                          sessions.map((session, index) => {
+                            // Determine the origin label
+                            const getOriginLabel = () => {
+                              if (session.campaign_id || session.ad_id) {
+                                return (
+                                  <span className="flex items-center gap-1 text-xs">
+                                    <span className="w-2 h-2 rounded-full bg-blue-500" />
+                                    Meta Ads
+                                  </span>
+                                );
+                              }
+                              if (session.gclid) {
+                                return (
+                                  <span className="flex items-center gap-1 text-xs">
+                                    <span className="w-2 h-2 rounded-full bg-red-500" />
+                                    Google Ads
+                                  </span>
+                                );
+                              }
+                              if (session.utm_source && session.utm_source !== "direct") {
+                                return (
+                                  <span className="flex flex-col text-xs">
+                                    <span className="font-medium">{session.utm_source}</span>
+                                    {session.utm_campaign && (
+                                      <span className="text-muted-foreground text-[10px] truncate max-w-24">{session.utm_campaign}</span>
+                                    )}
+                                  </span>
+                                );
+                              }
+                              if (session.referrer) {
+                                try {
+                                  const url = new URL(session.referrer);
+                                  return <span className="text-xs text-muted-foreground">{url.hostname}</span>;
+                                } catch {
+                                  return <span className="text-xs text-muted-foreground">Referral</span>;
+                                }
+                              }
+                              return <span className="text-xs text-muted-foreground">Direto</span>;
+                            };
+                            
+                            return (
+                              <tr 
+                                key={session.id} 
+                                className="border-b hover:bg-muted/30 cursor-pointer"
+                                onClick={() => handleViewSession(session)}
+                              >
+                                <td className="p-4 text-muted-foreground font-mono">
+                                  {(sessionsPage - 1) * 20 + index + 1}
+                                </td>
+                                <td className="p-4">
+                                  {new Date(session.created_at).toLocaleDateString("pt-BR")}
+                                  <br />
+                                  <span className="text-xs text-muted-foreground">
+                                    {new Date(session.created_at).toLocaleTimeString("pt-BR")}
+                                  </span>
+                                </td>
+                                <td className="p-4">{getStatusBadge(session)}</td>
+                                <td className="p-4">
+                                  <div className="flex flex-col">
+                                    <span className="font-medium">{session.lead_name || <span className="text-muted-foreground">-</span>}</span>
+                                    {session.lead_instagram && (
+                                      <span className="text-xs text-muted-foreground">{session.lead_instagram}</span>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="p-4">{getOriginLabel()}</td>
+                                <td className="p-4 capitalize">{session.device_type || "-"}</td>
+                                <td className="p-4 text-right">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      openInstagramProfile(session.lead_instagram);
+                                      handleViewSession(session);
                                     }}
                                   >
-                                    {session.lead_instagram}
-                                  </button>
-                                ) : (
-                                  <span className="text-muted-foreground">-</span>
-                                )}
-                              </td>
-                              <td className="p-4">
-                                {session.lead_whatsapp ? (
-                                  <button
-                                    type="button"
-                                    className="text-green-500 hover:underline"
-                                    title="Copiar WhatsApp"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      void copyWhatsappToClipboard(session.lead_whatsapp);
-                                    }}
-                                  >
-                                    {session.lead_whatsapp}
-                                  </button>
-                                ) : (
-                                  <span className="text-muted-foreground">-</span>
-                                )}
-                              </td>
-                              <td className="p-4 capitalize">{session.device_type || "-"}</td>
-                              <td className="p-4 text-right">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleViewSession(session);
-                                  }}
-                                >
-                                  Ver
-                                </Button>
-                              </td>
-                            </tr>
-                          ))
+                                    Ver
+                                  </Button>
+                                </td>
+                              </tr>
+                            );
+                          })
                         )}
                       </tbody>
                     </table>
@@ -2159,21 +2313,6 @@ export default function AdminAnalytics() {
               )}
             </TabsContent>
 
-            {/* Campaigns Tab */}
-            <TabsContent value="campaigns">
-              <CampaignAnalytics 
-                fetchAdminData={fetchAdminData}
-                onViewSession={(sessionId) => {
-                  // Load session and show detail view
-                  handleViewSession({ id: sessionId } as Session);
-                }}
-              />
-            </TabsContent>
- 
-             {/* UTM Metrics Tab */}
-             <TabsContent value="utm">
-               <UtmMetrics fetchAdminData={fetchAdminData} />
-             </TabsContent>
           </Tabs>
 
           {/* Completed Leads Modal */}
