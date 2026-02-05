@@ -186,6 +186,7 @@ export type Database = {
           gclid: string | null
           id: string
           instagram: string
+          investimento_faixa: string | null
           ip_address: string | null
           is_duplicate_ip: boolean | null
           lido: boolean
@@ -225,6 +226,7 @@ export type Database = {
           gclid?: string | null
           id?: string
           instagram: string
+          investimento_faixa?: string | null
           ip_address?: string | null
           is_duplicate_ip?: boolean | null
           lido?: boolean
@@ -264,6 +266,7 @@ export type Database = {
           gclid?: string | null
           id?: string
           instagram?: string
+          investimento_faixa?: string | null
           ip_address?: string | null
           is_duplicate_ip?: boolean | null
           lido?: boolean
