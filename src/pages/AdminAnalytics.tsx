@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveUsers } from "@/hooks/usePresence";
-import DateRangePicker from "@/components/admin/DateRangePicker";
+import UniversalDateRangePicker from "@/components/UniversalDateRangePicker";
+import { useDateRange } from "@/context/DateRangeContext";
 import { toast } from "@/hooks/use-toast";
 import {
   Users,
@@ -43,7 +44,7 @@ import {
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { format, subDays } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   Dialog,
@@ -165,6 +166,7 @@ interface Lead {
 export default function AdminAnalytics() {
   const navigate = useNavigate();
   const { activeUsers, uniqueCount, getUsersWithDuration } = useActiveUsers();
+  const { start: globalStart, end: globalEnd, startDateOnly, endDateOnly } = useDateRange();
 
   const buildWhatsappNumber = (raw?: string | null) => {
     const digits = (raw || "").replace(/\D/g, "");
@@ -249,10 +251,6 @@ export default function AdminAnalytics() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [buttonFilter, setButtonFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
-    from: subDays(new Date(), 29),
-    to: new Date(),
-  });
 
   // Lead selection for bulk actions
   const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
@@ -270,10 +268,6 @@ export default function AdminAnalytics() {
   const [leadsMercadoFilter, setLeadsMercadoFilter] = useState<string>("all");
   const [leadsEstagioFilter, setLeadsEstagioFilter] = useState<string>("all");
   const [leadsTierFilter, setLeadsTierFilter] = useState<string>("all");
-  const [leadsDateRange, setLeadsDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
-    from: undefined,
-    to: undefined,
-  });
 
   // Funnel drop-off detail state
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
@@ -324,10 +318,6 @@ export default function AdminAnalytics() {
   }
   const [campaignMetrics, setCampaignMetrics] = useState<CampaignMetrics | null>(null);
   const [campaignMetricsLoading, setCampaignMetricsLoading] = useState(false);
-  const [campaignDateRange, setCampaignDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
-    from: subDays(new Date(), 29),
-    to: new Date(),
-  });
 
   // Persist active tab to localStorage
   const handleTabChange = (value: string) => {
@@ -349,7 +339,7 @@ export default function AdminAnalytics() {
     setIsLoading(false);
   }, []);
 
-  // Load data when authenticated
+  // Load data when authenticated or global date range changes
   useEffect(() => {
     if (isAuthenticated) {
       loadMetrics();
@@ -357,14 +347,7 @@ export default function AdminAnalytics() {
       loadLeads();
       loadCampaignMetrics();
     }
-  }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, dateRange, sessionsPage]);
-
-  // Reload campaign metrics when date range changes
-  useEffect(() => {
-    if (isAuthenticated && activeTab === "campaigns") {
-      loadCampaignMetrics();
-    }
-  }, [campaignDateRange]);
+  }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, startDateOnly, endDateOnly, sessionsPage]);
 
   // Load leads from legacy table via edge function
   const loadLeads = async () => {
@@ -545,17 +528,10 @@ export default function AdminAnalytics() {
     // Tier filter
     if (leadsTierFilter !== "all" && lead.tier !== leadsTierFilter) return false;
     
-    // Date filters
-    if (leadsDateRange.from) {
-      const leadDate = new Date(lead.created_at);
-      if (leadDate < leadsDateRange.from) return false;
-    }
-    if (leadsDateRange.to) {
-      const leadDate = new Date(lead.created_at);
-      const toDate = new Date(leadsDateRange.to);
-      toDate.setHours(23, 59, 59, 999);
-      if (leadDate > toDate) return false;
-    }
+    // Date filters using global range
+    const leadDate = new Date(lead.created_at);
+    if (leadDate < globalStart) return false;
+    if (leadDate > globalEnd) return false;
     
     return true;
   });
@@ -647,9 +623,10 @@ export default function AdminAnalytics() {
 
   const loadMetrics = async () => {
     try {
-      const params: Record<string, string> = {};
-      if (dateRange.from) params.from = format(dateRange.from, "yyyy-MM-dd");
-      if (dateRange.to) params.to = format(dateRange.to, "yyyy-MM-dd");
+      const params: Record<string, string> = {
+        from: startDateOnly,
+        to: endDateOnly,
+      };
 
       const data = await fetchAdminData("/metrics", params);
       setMetrics(data);
@@ -661,9 +638,10 @@ export default function AdminAnalytics() {
   const loadCampaignMetrics = async () => {
     setCampaignMetricsLoading(true);
     try {
-      const params: Record<string, string> = {};
-      if (campaignDateRange.from) params.from = format(campaignDateRange.from, "yyyy-MM-dd");
-      if (campaignDateRange.to) params.to = format(campaignDateRange.to, "yyyy-MM-dd");
+      const params: Record<string, string> = {
+        from: startDateOnly,
+        to: endDateOnly,
+      };
 
       const data = await fetchAdminData("/campaigns", params);
       setCampaignMetrics(data);
@@ -680,12 +658,12 @@ export default function AdminAnalytics() {
       const params: Record<string, string> = {
         page: sessionsPage.toString(),
         limit: "20",
+        from: startDateOnly,
+        to: endDateOnly,
       };
       if (statusFilter !== "all") params.status = statusFilter;
       if (buttonFilter !== "all") params.button_id = buttonFilter;
       if (searchQuery) params.q = searchQuery;
-      if (dateRange.from) params.from = format(dateRange.from, "yyyy-MM-dd");
-      if (dateRange.to) params.to = format(dateRange.to, "yyyy-MM-dd");
 
       const data = await fetchAdminData("/sessions", params);
       setSessions(data.data);
@@ -1173,12 +1151,9 @@ export default function AdminAnalytics() {
             </Button>
           </div>
 
-          {/* Date Filters */}
+          {/* Global Date Filter */}
           <div className="flex flex-wrap gap-4 mb-6">
-            <DateRangePicker
-              dateRange={dateRange}
-              onDateRangeChange={setDateRange}
-            />
+            <UniversalDateRangePicker />
           </div>
 
           {/* Active Users Card - Expandable */}
@@ -1495,17 +1470,13 @@ export default function AdminAnalytics() {
                 </Select>
               </div>
               
-              {/* Date Filters */}
+              {/* Actions - note: date filter is now in the global header */}
               <div className="flex flex-wrap gap-4 mb-4">
-                <DateRangePicker
-                  dateRange={leadsDateRange}
-                  onDateRangeChange={setLeadsDateRange}
-                />
                 <Button variant="outline" onClick={loadLeads} disabled={leadsLoading}>
                   <RefreshCw className={`w-4 h-4 mr-2 ${leadsLoading ? "animate-spin" : ""}`} />
                   Atualizar
                 </Button>
-                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsEstagioFilter !== "all" || leadsTierFilter !== "all" || leadsDateRange.from || leadsDateRange.to) && (
+                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsEstagioFilter !== "all" || leadsTierFilter !== "all") && (
                   <Button 
                     variant="ghost" 
                     onClick={() => {
@@ -1513,7 +1484,6 @@ export default function AdminAnalytics() {
                       setLeadsMercadoFilter("all");
                       setLeadsEstagioFilter("all");
                       setLeadsTierFilter("all");
-                      setLeadsDateRange({ from: undefined, to: undefined });
                     }}
                   >
                     <XCircle className="w-4 h-4 mr-2" />
@@ -2379,12 +2349,8 @@ export default function AdminAnalytics() {
             {/* Campaigns Tab */}
             <TabsContent value="campaigns">
               <div className="space-y-6">
-                {/* Date Range Filter */}
+                {/* Actions */}
                 <div className="flex flex-wrap gap-4 items-center">
-                  <DateRangePicker
-                    dateRange={campaignDateRange}
-                    onDateRangeChange={setCampaignDateRange}
-                  />
                   <Button variant="outline" onClick={loadCampaignMetrics} disabled={campaignMetricsLoading}>
                     <RefreshCw className={`w-4 h-4 mr-2 ${campaignMetricsLoading ? "animate-spin" : ""}`} />
                     Atualizar
