@@ -353,7 +353,11 @@ export default function AdminAnalytics() {
   const loadLeads = async () => {
     setLeadsLoading(true);
     try {
-      const data = await fetchAdminData("/leads");
+      const params: Record<string, string> = {
+        from: startDateOnly,
+        to: endDateOnly,
+      };
+      const data = await fetchAdminData("/leads", params);
       setLeads(data || []);
       setLeadsUnreadCount(data?.filter((l: Lead) => !l.lido).length || 0);
     } catch (error) {
@@ -528,10 +532,7 @@ export default function AdminAnalytics() {
     // Tier filter
     if (leadsTierFilter !== "all" && lead.tier !== leadsTierFilter) return false;
     
-    // Date filters using global range
-    const leadDate = new Date(lead.created_at);
-    if (leadDate < globalStart) return false;
-    if (leadDate > globalEnd) return false;
+    // Date filtering is now done server-side in loadLeads
     
     return true;
   });
@@ -921,87 +922,134 @@ export default function AdminAnalytics() {
               </Card>
             )}
 
-            {/* UTM & Meta Ads Tracking - Show at top */}
-            {(selectedSession.utm_source || selectedSession.campaign_id || selectedSession.fbclid || selectedSession.gclid) && (
-              <Card className="mb-6 border-blue-500/30 bg-blue-500/5">
-                <CardHeader className="pb-2">
+            {/* UTM & Attribution Tracking Card - Always show with better visual */}
+            <Card className="mb-6 border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Globe className="w-5 h-5 text-blue-500" />
-                    Rastreio de Origem (UTM / Meta Ads)
+                    <Globe className="w-5 h-5 text-primary" />
+                    Origem do Anúncio
                   </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                    {selectedSession.utm_source && (
-                      <div className="p-2 bg-muted/30 rounded">
-                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Source</p>
-                        <p className="font-medium text-blue-400">{selectedSession.utm_source}</p>
-                      </div>
-                    )}
-                    {selectedSession.utm_medium && (
-                      <div className="p-2 bg-muted/30 rounded">
-                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Medium</p>
-                        <p className="font-medium">{selectedSession.utm_medium}</p>
-                      </div>
-                    )}
-                    {selectedSession.utm_campaign && (
-                      <div className="p-2 bg-muted/30 rounded">
-                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Campaign</p>
-                        <p className="font-medium">{selectedSession.utm_campaign}</p>
-                      </div>
-                    )}
-                    {selectedSession.utm_content && (
-                      <div className="p-2 bg-muted/30 rounded">
-                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Content</p>
-                        <p className="font-medium">{selectedSession.utm_content}</p>
-                      </div>
-                    )}
-                    {selectedSession.utm_term && (
-                      <div className="p-2 bg-muted/30 rounded">
-                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Term</p>
-                        <p className="font-medium">{selectedSession.utm_term}</p>
-                      </div>
-                    )}
-                    {selectedSession.campaign_id && (
-                      <div className="p-2 bg-muted/30 rounded">
-                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Campaign ID</p>
-                        <p className="font-mono text-xs">{selectedSession.campaign_id}</p>
-                      </div>
-                    )}
-                    {selectedSession.adset_id && (
-                      <div className="p-2 bg-muted/30 rounded">
-                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Adset ID</p>
-                        <p className="font-mono text-xs">{selectedSession.adset_id}</p>
-                      </div>
-                    )}
-                    {selectedSession.ad_id && (
-                      <div className="p-2 bg-muted/30 rounded">
-                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Ad ID</p>
-                        <p className="font-mono text-xs">{selectedSession.ad_id}</p>
-                      </div>
-                    )}
-                    {selectedSession.fbclid && (
-                      <div className="p-2 bg-muted/30 rounded">
-                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Facebook Click</p>
-                        <p className="font-mono text-xs truncate max-w-32" title={selectedSession.fbclid}>✓ {selectedSession.fbclid.slice(0, 12)}...</p>
-                      </div>
-                    )}
-                    {selectedSession.gclid && (
-                      <div className="p-2 bg-muted/30 rounded">
-                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Google Click</p>
-                        <p className="font-mono text-xs truncate max-w-32" title={selectedSession.gclid}>✓ {selectedSession.gclid.slice(0, 12)}...</p>
-                      </div>
-                    )}
-                    {selectedSession.referrer && (
-                      <div className="p-2 bg-muted/30 rounded col-span-2">
-                        <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Referrer</p>
-                        <p className="font-medium text-xs truncate">{selectedSession.referrer}</p>
-                      </div>
-                    )}
+                  {/* Status Badge */}
+                  {selectedSession.utm_source || selectedSession.campaign_id ? (
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30">
+                      <Check className="w-3 h-3 mr-1" />
+                      UTM OK
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-muted-foreground border-muted">
+                      Sem UTM
+                    </Badge>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Main Attribution: Campaign & Ad */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-background/60 rounded-lg border border-primary/20">
+                    <p className="text-muted-foreground text-[10px] uppercase tracking-wider mb-1">Campanha</p>
+                    <p className="text-lg font-bold text-primary">
+                      {selectedSession.utm_campaign || selectedSession.campaign_id || "Tráfego Direto"}
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                  <div className="p-4 bg-background/60 rounded-lg border border-primary/20">
+                    <p className="text-muted-foreground text-[10px] uppercase tracking-wider mb-1">Anúncio</p>
+                    <p className="text-lg font-bold text-primary">
+                      {selectedSession.utm_content || selectedSession.ad_id || "Não identificado"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Secondary Info: Chips */}
+                <div className="flex flex-wrap gap-2">
+                  {selectedSession.utm_source && (
+                    <Badge variant="outline" className="text-xs">
+                      <span className="text-muted-foreground mr-1">Fonte:</span>
+                      {selectedSession.utm_source}
+                    </Badge>
+                  )}
+                  {selectedSession.utm_medium && (
+                    <Badge variant="outline" className="text-xs">
+                      <span className="text-muted-foreground mr-1">Medium:</span>
+                      {selectedSession.utm_medium}
+                    </Badge>
+                  )}
+                  {selectedSession.utm_term && (
+                    <Badge variant="outline" className="text-xs">
+                      <span className="text-muted-foreground mr-1">Term:</span>
+                      {selectedSession.utm_term}
+                    </Badge>
+                  )}
+                  {selectedSession.fbclid && (
+                    <Badge variant="outline" className="text-xs bg-blue-500/10 border-blue-500/30">
+                      <span className="text-blue-400">Meta Click ✓</span>
+                    </Badge>
+                  )}
+                  {selectedSession.gclid && (
+                    <Badge variant="outline" className="text-xs bg-yellow-500/10 border-yellow-500/30">
+                      <span className="text-yellow-400">Google Click ✓</span>
+                    </Badge>
+                  )}
+                  {selectedSession.ttclid && (
+                    <Badge variant="outline" className="text-xs bg-pink-500/10 border-pink-500/30">
+                      <span className="text-pink-400">TikTok Click ✓</span>
+                    </Badge>
+                  )}
+                </div>
+
+                {/* IDs Row - More compact */}
+                {(selectedSession.campaign_id || selectedSession.adset_id || selectedSession.ad_id) && (
+                  <div className="pt-3 border-t border-muted">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">IDs Meta Ads</p>
+                    <div className="flex flex-wrap gap-2 text-xs font-mono text-muted-foreground">
+                      {selectedSession.campaign_id && (
+                        <span className="px-2 py-1 bg-muted/50 rounded">c:{selectedSession.campaign_id}</span>
+                      )}
+                      {selectedSession.adset_id && (
+                        <span className="px-2 py-1 bg-muted/50 rounded">as:{selectedSession.adset_id}</span>
+                      )}
+                      {selectedSession.ad_id && (
+                        <span className="px-2 py-1 bg-muted/50 rounded">ad:{selectedSession.ad_id}</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Referrer */}
+                {selectedSession.referrer && (
+                  <div className="pt-3 border-t border-muted">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Referrer</p>
+                    <p className="text-sm truncate">{selectedSession.referrer}</p>
+                  </div>
+                )}
+
+                {/* Copy Tracking Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-2"
+                  onClick={async () => {
+                    const trackingData = [
+                      selectedSession.utm_source && `utm_source=${selectedSession.utm_source}`,
+                      selectedSession.utm_medium && `utm_medium=${selectedSession.utm_medium}`,
+                      selectedSession.utm_campaign && `utm_campaign=${selectedSession.utm_campaign}`,
+                      selectedSession.utm_content && `utm_content=${selectedSession.utm_content}`,
+                      selectedSession.utm_term && `utm_term=${selectedSession.utm_term}`,
+                      `session_id=${selectedSession.id}`,
+                    ].filter(Boolean).join(" | ");
+                    
+                    try {
+                      await navigator.clipboard.writeText(trackingData);
+                      toast({ title: "Tracking copiado!", description: "Dados de atribuição copiados para a área de transferência." });
+                    } catch {
+                      toast({ title: "Erro ao copiar", variant: "destructive" });
+                    }
+                  }}
+                >
+                  📋 Copiar Tracking
+                </Button>
+              </CardContent>
+            </Card>
 
             {/* Session Tracking Info */}
             <Card className="mb-6">
