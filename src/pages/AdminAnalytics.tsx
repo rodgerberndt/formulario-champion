@@ -270,6 +270,15 @@ export default function AdminAnalytics() {
   const [leadsMercadoFilter, setLeadsMercadoFilter] = useState<string>("all");
   const [leadsEstagioFilter, setLeadsEstagioFilter] = useState<string>("all");
   const [leadsTierFilter, setLeadsTierFilter] = useState<string>("all");
+  const [leadsSdrFilter, setLeadsSdrFilter] = useState<string>("all");
+
+  // SDR assignment helper based on tier
+  const getLeadSdr = (tier: string | null): string => {
+    if (!tier) return "-";
+    if (tier === "Enterprise" || tier === "Large") return "Rodger";
+    if (tier === "Medium" || tier === "Small") return "Dara";
+    return "-";
+  };
 
   // Funnel drop-off detail state
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
@@ -533,6 +542,13 @@ export default function AdminAnalytics() {
     
     // Tier filter
     if (leadsTierFilter !== "all" && lead.tier !== leadsTierFilter) return false;
+    
+    // SDR filter
+    if (leadsSdrFilter !== "all") {
+      const sdr = getLeadSdr(lead.tier);
+      if (leadsSdrFilter === "rodger" && sdr !== "Rodger") return false;
+      if (leadsSdrFilter === "dara" && sdr !== "Dara") return false;
+    }
     
     // Date filtering is now done server-side in loadLeads
     
@@ -1518,6 +1534,16 @@ export default function AdminAnalytics() {
                     ))}
                   </SelectContent>
                 </Select>
+                <Select value={leadsSdrFilter} onValueChange={setLeadsSdrFilter}>
+                  <SelectTrigger className="w-36">
+                    <SelectValue placeholder="SDR" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos SDRs</SelectItem>
+                    <SelectItem value="rodger">Rodger</SelectItem>
+                    <SelectItem value="dara">Dara</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               {/* Actions - note: date filter is now in the global header */}
@@ -1526,7 +1552,7 @@ export default function AdminAnalytics() {
                   <RefreshCw className={`w-4 h-4 mr-2 ${leadsLoading ? "animate-spin" : ""}`} />
                   Atualizar
                 </Button>
-                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsEstagioFilter !== "all" || leadsTierFilter !== "all") && (
+                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsEstagioFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all") && (
                   <Button 
                     variant="ghost" 
                     onClick={() => {
@@ -1534,6 +1560,7 @@ export default function AdminAnalytics() {
                       setLeadsMercadoFilter("all");
                       setLeadsEstagioFilter("all");
                       setLeadsTierFilter("all");
+                      setLeadsSdrFilter("all");
                     }}
                   >
                     <XCircle className="w-4 h-4 mr-2" />
@@ -1601,6 +1628,7 @@ export default function AdminAnalytics() {
                           <th className="text-left p-4">Mercado</th>
                           <th className="text-left p-4">Estágio</th>
                           <th className="text-left p-4">Investimento</th>
+                          <th className="text-left p-4">SDR</th>
                           <th className="text-left p-4">Data</th>
                           <th className="text-right p-4">Ações</th>
                         </tr>
@@ -1608,13 +1636,13 @@ export default function AdminAnalytics() {
                       <tbody>
                         {leadsLoading ? (
                           <tr>
-                            <td colSpan={12} className="p-8 text-center">
+                              <td colSpan={13} className="p-8 text-center">
                               <Loader2 className="w-6 h-6 animate-spin mx-auto" />
                             </td>
                           </tr>
                         ) : filteredLeads.length === 0 ? (
                           <tr>
-                            <td colSpan={12} className="p-8 text-center text-muted-foreground">
+                            <td colSpan={13} className="p-8 text-center text-muted-foreground">
                               Nenhum lead encontrado
                             </td>
                           </tr>
@@ -1707,6 +1735,18 @@ export default function AdminAnalytics() {
                               <td className="p-4 text-muted-foreground">{lead.mercado}</td>
                               <td className="p-4 text-muted-foreground text-xs">{lead.estagio_negocio}</td>
                               <td className="p-4 text-muted-foreground text-xs">{lead.investimento_faixa || "-"}</td>
+                              <td className="p-4">
+                                {(() => {
+                                  const sdr = getLeadSdr(lead.tier);
+                                  if (sdr === "Rodger") return (
+                                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Rodger</Badge>
+                                  );
+                                  if (sdr === "Dara") return (
+                                    <Badge className="bg-pink-500/20 text-pink-400 border-pink-500/30">Dara</Badge>
+                                  );
+                                  return <span className="text-muted-foreground">-</span>;
+                                })()}
+                              </td>
                               <td className="p-4 text-muted-foreground">
                                 {format(new Date(lead.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
                               </td>
