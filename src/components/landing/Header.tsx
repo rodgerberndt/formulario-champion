@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { PwaInstallButton } from "@/components/PwaInstallButton";
 
 export function Header() {
   const navigate = useNavigate();
@@ -18,14 +19,17 @@ export function Header() {
           />
         </div>
 
-        {/* Desktop CTA */}
-        <Button
-          size="sm"
-          onClick={() => navigate("/quiz")}
-          className="hidden md:flex text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/25 transition-all duration-200"
-        >
-          FAZER DIAGNÓSTICO
-        </Button>
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          <PwaInstallButton />
+          <Button
+            size="sm"
+            onClick={() => navigate("/quiz")}
+            className="hidden md:flex text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/25 transition-all duration-200"
+          >
+            FAZER DIAGNÓSTICO
+          </Button>
+        </div>
       </div>
     </header>
   );

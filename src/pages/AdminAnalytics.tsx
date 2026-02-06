@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,6 +44,8 @@ import {
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { PwaInstallButton } from "@/components/PwaInstallButton";
+import { useLeadNotifications } from "@/hooks/useLeadNotifications";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -170,6 +172,16 @@ export default function AdminAnalytics() {
   const { activeUsers, uniqueCount, getUsersWithDuration } = useActiveUsers();
   const { start: globalStart, end: globalEnd, startDateOnly, endDateOnly } = useDateRange();
 
+  // Realtime lead notifications callback (ref to avoid stale closure)
+  const handleNewLeadRef = useRef<() => void>();
+  handleNewLeadRef.current = () => {
+    loadLeads();
+    loadMetrics();
+  };
+  const handleNewLead = useCallback(() => {
+    handleNewLeadRef.current?.();
+  }, []);
+
   const buildWhatsappNumber = (raw?: string | null) => {
     const digits = (raw || "").replace(/\D/g, "");
     if (!digits) return null;
@@ -239,6 +251,12 @@ export default function AdminAnalytics() {
   const [isLoading, setIsLoading] = useState(true);
   const [password, setPassword] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+
+  // Lead notifications (realtime)
+  const { notificationsEnabled, toggleNotifications } = useLeadNotifications(
+    isAuthenticated,
+    handleNewLead
+  );
 
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -1212,9 +1230,21 @@ export default function AdminAnalytics() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-2xl font-bold">Analytics do Funil</h1>
-            <Button variant="ghost" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" /> Sair
-            </Button>
+            <div className="flex items-center gap-2">
+              <PwaInstallButton />
+              <Button
+                variant={notificationsEnabled ? "default" : "outline"}
+                size="sm"
+                onClick={toggleNotifications}
+                className={notificationsEnabled ? "bg-primary/20 text-primary hover:bg-primary/30 border border-primary/30" : ""}
+              >
+                <Bell className={`w-4 h-4 mr-1.5 ${notificationsEnabled ? "animate-pulse" : ""}`} />
+                {notificationsEnabled ? "Notificações ON" : "Ativar notificações"}
+              </Button>
+              <Button variant="ghost" onClick={handleLogout}>
+                <LogOut className="w-4 h-4 mr-2" /> Sair
+              </Button>
+            </div>
           </div>
 
           {/* Global Date Filter */}
