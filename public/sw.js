@@ -49,6 +49,22 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // NEVER cache JS/CSS bundles — Vite handles these with content hashing.
+  // Caching them can cause React module duplication and blank-screen crashes.
+  const ext = url.pathname.split(".").pop()?.toLowerCase();
+  if (
+    ext === "js" ||
+    ext === "mjs" ||
+    ext === "css" ||
+    ext === "ts" ||
+    ext === "tsx" ||
+    url.pathname.includes("/node_modules/") ||
+    url.pathname.includes("/src/") ||
+    url.pathname.includes("/assets/index-")
+  ) {
+    return; // Let the browser handle these normally
+  }
+
   // HTML pages - Network First
   if (
     event.request.mode === "navigate" ||
@@ -63,7 +79,7 @@ self.addEventListener("fetch", (event) => {
         })
         .catch(() => {
           return caches.match(event.request).then((cached) => {
-            return cached || caches.match("/offline.html") || new Response(
+            return cached || new Response(
               `<!DOCTYPE html>
               <html lang="pt-BR">
               <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -83,7 +99,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets - Stale While Revalidate
+  // Static assets (images, icons, fonts only) - Stale While Revalidate
   event.respondWith(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.match(event.request).then((cached) => {
