@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { PwaInstallButton } from "@/components/PwaInstallButton";
 
 export function Header() {
   const navigate = useNavigate();
@@ -21,7 +20,6 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          <PwaInstallButton />
           <Button
             size="sm"
             onClick={() => navigate("/quiz")}
