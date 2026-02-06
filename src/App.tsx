@@ -6,13 +6,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { TrackingProvider } from "@/hooks/useTracking";
 import { usePresence } from "@/hooks/usePresence";
+import { useServiceWorker } from "@/hooks/useServiceWorker";
 import { DateRangeProvider } from "@/context/DateRangeContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
-// Component to enable presence tracking
-function PresenceTracker() {
+// Component to enable presence tracking + service worker
+function AppInitializer() {
   usePresence();
+  useServiceWorker();
   return null;
 }
 
@@ -43,7 +45,7 @@ const App = () => (
       <BrowserRouter>
         <TrackingProvider>
           <DateRangeProvider>
-            <PresenceTracker />
+            <AppInitializer />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route 
