@@ -317,7 +317,8 @@ Deno.serve(async (req: Request) => {
       };
 
       // Step funnel - count unique sessions per step
-      const stepOrder = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"];
+      const stepOrder = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_investimento", "q7_dor"];
+      console.log("[FUNNEL] Total filtered events:", filteredEvents.length, "Sessions:", sessionIds.length);
       const stepCounts: Record<string, Set<string>> = {};
       filteredEvents.forEach(event => {
         if (event.event_name === "step_view" && event.step_id) {
@@ -332,6 +333,8 @@ Deno.serve(async (req: Request) => {
         step_id: stepId,
         count: stepCounts[stepId]?.size || 0,
       }));
+      console.log("[FUNNEL] Step views:", stepFunnel);
+      console.log("[FUNNEL] All step_ids found in events:", Object.keys(stepCounts));
 
       // Drop-off analysis - find where users actually stopped (didn't advance from)
       const dropOffs: Record<string, number> = {};
@@ -384,6 +387,8 @@ Deno.serve(async (req: Request) => {
           }
         }
       });
+      console.log("[FUNNEL] Drop-offs:", dropOffs);
+      console.log("[FUNNEL] Sessions that submitted:", sessionsWithSubmit.size);
 
       return new Response(
         JSON.stringify({
@@ -407,7 +412,7 @@ Deno.serve(async (req: Request) => {
     const dropoffMatch = path.match(/^\/dropoff\/([a-z0-9_]+)$/);
     if (dropoffMatch && req.method === "GET") {
       const stepId = dropoffMatch[1];
-      const stepOrder = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_dor"];
+      const stepOrder = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_investimento", "q7_dor"];
 
       // Get all events including metadata for field values
       const { data: allEvents, error: eventsError } = await supabase
