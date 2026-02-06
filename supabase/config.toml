@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.meta-ads-resolve]
 verify_jwt = false
+
+[functions.web-push]
+verify_jwt = false

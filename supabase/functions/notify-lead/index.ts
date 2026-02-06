@@ -371,13 +371,47 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    console.log('Notification complete - Kommo:', kommoSuccess, 'WhatsApp:', whatsappSuccess);
+    // 3. Send Web Push notification (non-blocking)
+    let webPushSuccess = false;
+    try {
+      const leadName = session.lead_name || 'Novo lead';
+      const leadStage = session.lead_stage || '-';
+      const leadWhatsapp = session.lead_whatsapp || '-';
+
+      const pushPayload = {
+        title: 'Novo lead no Champion',
+        body: `${leadName} | ${leadStage} | ${leadWhatsapp}`,
+        url: `/${ADMIN_ROUTE_SLUG}?highlight=${targetId}`,
+      };
+
+      const pushResponse = await fetch(
+        `${SUPABASE_URL}/functions/v1/web-push/send`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          },
+          body: JSON.stringify(pushPayload),
+        }
+      );
+
+      const pushResult = await pushResponse.json();
+      webPushSuccess = pushResult.success && (pushResult.sent > 0);
+      console.log('Web Push result:', JSON.stringify(pushResult));
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error('Web Push failed (non-critical):', msg);
+    }
+
+    console.log('Notification complete - Kommo:', kommoSuccess, 'WhatsApp:', whatsappSuccess, 'WebPush:', webPushSuccess);
 
     return new Response(
       JSON.stringify({
         success: true,
         kommo: kommoSuccess,
         whatsapp: whatsappSuccess,
+        webPush: webPushSuccess,
         messageId,
         errors: errors.length > 0 ? errors : undefined
       }),
