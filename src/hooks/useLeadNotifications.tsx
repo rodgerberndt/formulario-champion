@@ -20,7 +20,8 @@ interface NewLead {
  */
 export function useLeadNotifications(
   isAuthenticated: boolean,
-  onNewLead?: () => void
+  onNewLead?: () => void,
+  onAuthError?: () => void
 ) {
   const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
     return localStorage.getItem(NOTIFY_PREF_KEY) === "true";
@@ -126,7 +127,18 @@ export function useLeadNotifications(
         },
       });
 
-      if (!response.ok) return;
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.log("[LeadNotifications] Token expired, stopping polling");
+          // Stop polling and notify parent about auth error
+          if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+          }
+          onAuthError?.();
+        }
+        return;
+      }
 
       const leads: NewLead[] = await response.json();
       const currentIds = new Set(leads.map((l) => l.id));
@@ -156,7 +168,7 @@ export function useLeadNotifications(
     } catch (err) {
       console.error("[LeadNotifications] Poll error:", err);
     }
-  }, [getToken, notifyNewLeads]);
+  }, [getToken, notifyNewLeads, onAuthError]);
 
   // Start/stop polling based on authentication
   useEffect(() => {
