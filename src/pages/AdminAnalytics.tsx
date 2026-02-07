@@ -541,7 +541,8 @@ export default function AdminAnalytics() {
   // Get unique values for filter dropdowns
   const uniqueMercados = [...new Set(leads.map(l => l.mercado))].filter(Boolean).sort();
   const uniqueEstagios = [...new Set(leads.map(l => l.estagio_negocio))].filter(Boolean).sort();
-  const uniqueTiers = [...new Set(leads.map(l => l.tier))].filter(Boolean).sort();
+  const TIER_ORDER = ["Enterprise", "Large", "Medium", "Small"];
+  const uniqueTiers = TIER_ORDER.filter(t => leads.some(l => l.tier === t));
 
   const filteredLeads = leads.filter((lead) => {
     // Search filter
