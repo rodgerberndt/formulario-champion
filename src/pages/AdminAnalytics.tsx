@@ -182,6 +182,12 @@ export default function AdminAnalytics() {
     handleNewLeadRef.current?.();
   }, []);
 
+  // Auth error callback from polling (ref to avoid stale closure)
+  const handleAuthErrorRef = useRef<() => void>();
+  const handleAuthError = useCallback(() => {
+    handleAuthErrorRef.current?.();
+  }, []);
+
   const buildWhatsappNumber = (raw?: string | null) => {
     const digits = (raw || "").replace(/\D/g, "");
     if (!digits) return null;
@@ -255,7 +261,8 @@ export default function AdminAnalytics() {
   // Lead notifications (realtime)
   const { notificationsEnabled, toggleNotifications } = useLeadNotifications(
     isAuthenticated,
-    handleNewLead
+    handleNewLead,
+    handleAuthError
   );
 
   const [metrics, setMetrics] = useState<Metrics | null>(null);
@@ -594,6 +601,7 @@ export default function AdminAnalytics() {
 
       const token = response.data.token;
       sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
+      logoutFiredRef.current = false; // Reset guard for new session
       setIsAuthenticated(true);
       setPassword("");
       toast({ title: "Login realizado com sucesso!" });
@@ -605,20 +613,27 @@ export default function AdminAnalytics() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     sessionStorage.removeItem(ADMIN_TOKEN_KEY);
     setIsAuthenticated(false);
     setMetrics(null);
     setSessions([]);
+  }, []);
+
+  // Wire up the auth error ref after handleLogout is defined
+  handleAuthErrorRef.current = () => {
+    handleLogout();
+    toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
   };
+
+  const logoutFiredRef = useRef(false);
 
   const fetchAdminData = async (path: string, params?: Record<string, string>) => {
     const token = getToken();
     
-    // If no token, force logout
-    if (!token) {
-      handleLogout();
-      throw new Error("Token não encontrado");
+    // If no token or already logging out, bail
+    if (!token || logoutFiredRef.current) {
+      throw new Error("Sessão expirada");
     }
     
     const queryString = params ? "?" + new URLSearchParams(params).toString() : "";
@@ -637,8 +652,9 @@ export default function AdminAnalytics() {
 
       if (!fetchResponse.ok) {
         const error = await fetchResponse.json().catch(() => ({ error: "Erro desconhecido" }));
-        if (fetchResponse.status === 401) {
-          // Token expired or invalid - force logout
+        if (fetchResponse.status === 401 && !logoutFiredRef.current) {
+          // Token expired or invalid - force logout (only once)
+          logoutFiredRef.current = true;
           console.log("Token expirado, fazendo logout...");
           handleLogout();
           toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
