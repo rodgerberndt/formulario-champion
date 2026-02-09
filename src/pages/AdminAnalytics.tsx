@@ -65,6 +65,7 @@ interface Metrics {
   entered_quiz: number;
   started_quiz: number;
   completed: number;
+  conversion_rate: string | number;
   completion_rate: string | number;
   button_distribution: {
     start_btn_1: number;
@@ -1447,15 +1448,12 @@ export default function AdminAnalytics() {
                   <div className="flex items-center gap-3">
                     <Users className="w-8 h-8 text-primary" />
                     <div>
-                      <p className="text-2xl font-bold">{metrics.total_visitors}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {metrics.has_reliable_ip_data ? "Visitantes únicos" : "Visitantes (sessões)"}
+                      <p className="text-2xl font-bold">
+                        {metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors}
                       </p>
+                      <p className="text-xs text-muted-foreground">Visitantes únicos</p>
                       {metrics.has_reliable_ip_data && metrics.total_visitors > metrics.unique_visitors && (
-                        <p className="text-xs text-yellow-500">({metrics.unique_visitors} únicos por IP)</p>
-                      )}
-                      {!metrics.has_reliable_ip_data && metrics.ip_coverage_percent > 0 && (
-                        <p className="text-xs text-muted-foreground">IP: {metrics.ip_coverage_percent}% coletado</p>
+                        <p className="text-xs text-muted-foreground/60">({metrics.total_visitors} sessões)</p>
                       )}
                     </div>
                   </div>
@@ -1491,8 +1489,8 @@ export default function AdminAnalytics() {
                   <div className="flex items-center gap-3">
                     <TrendingUp className="w-8 h-8 text-primary" />
                     <div>
-                      <p className="text-2xl font-bold">{metrics.completion_rate}%</p>
-                      <p className="text-xs text-muted-foreground">Taxa de conclusão</p>
+                      <p className="text-2xl font-bold">{metrics.conversion_rate}%</p>
+                      <p className="text-xs text-muted-foreground">Taxa de conversão</p>
                     </div>
                   </div>
                 </CardContent>
@@ -2259,15 +2257,15 @@ export default function AdminAnalytics() {
               {metrics && (
                 <div className="space-y-6">
                   {/* Funnel Overview Cards */}
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                   <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     <Card>
                       <CardContent className="pt-6 text-center">
-                        <p className="text-2xl font-bold">{metrics.total_visitors}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {metrics.has_reliable_ip_data ? "Visitantes únicos" : "Visitantes"}
+                        <p className="text-2xl font-bold">
+                          {metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors}
                         </p>
+                        <p className="text-xs text-muted-foreground">Visitantes únicos</p>
                         {metrics.has_reliable_ip_data && metrics.total_visitors > metrics.unique_visitors && (
-                          <p className="text-xs text-yellow-500">({metrics.unique_visitors} únicos)</p>
+                          <p className="text-xs text-muted-foreground/60">({metrics.total_visitors} sessões)</p>
                         )}
                       </CardContent>
                     </Card>

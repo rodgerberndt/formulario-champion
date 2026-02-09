@@ -284,15 +284,18 @@ Deno.serve(async (req: Request) => {
       const uniqueIps = new Set(sessionsWithIp.map(s => s.ip_address));
       
       // Only use unique IP count if we have IPs for at least 50% of sessions
-      // Otherwise IP tracking is too incomplete to be reliable
       const ipCoverage = total > 0 ? (sessionsWithIp.length / total) : 0;
       const uniqueVisitors = ipCoverage >= 0.5 ? uniqueIps.size : total;
       const hasReliableIpData = ipCoverage >= 0.5;
       
-      const enteredQuiz = sessionsWithQuizView.size;
-      const startedQuiz = sessionsWithStepView.size;
       // Use leads count as ground truth for completed
       const completed = leadsCount || sessionsWithSubmit.size;
+      
+      // Ensure funnel is monotonically decreasing: entered >= started >= completed
+      const rawEnteredQuiz = sessionsWithQuizView.size;
+      const rawStartedQuiz = sessionsWithStepView.size;
+      const enteredQuiz = Math.max(rawEnteredQuiz, completed);
+      const startedQuiz = Math.max(rawStartedQuiz, completed);
 
       // Button distribution - calculate from events (more accurate)
       const buttonEventCounts: Record<string, Set<string>> = {
@@ -399,7 +402,8 @@ Deno.serve(async (req: Request) => {
           entered_quiz: enteredQuiz,
           started_quiz: startedQuiz,
           completed,
-          completion_rate: startedQuiz > 0 ? (completed / startedQuiz * 100).toFixed(1) : 0,
+          conversion_rate: uniqueVisitors > 0 ? (completed / uniqueVisitors * 100).toFixed(1) : 0,
+          completion_rate: enteredQuiz > 0 ? (completed / enteredQuiz * 100).toFixed(1) : 0,
           button_distribution: buttonDistribution,
           step_funnel: stepFunnel,
           drop_offs: dropOffs,
