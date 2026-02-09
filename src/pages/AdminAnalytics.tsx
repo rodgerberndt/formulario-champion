@@ -166,6 +166,7 @@ interface Lead {
   ad_id: string | null;
   placement: string | null;
   site_source_name: string | null;
+  sdr_override: string | null;
 }
 
 export default function AdminAnalytics() {
@@ -326,12 +327,40 @@ export default function AdminAnalytics() {
     return { score, tier };
   };
 
-  // SDR assignment helper based on recalculated tier
+  // SDR assignment helper - uses override if set, otherwise based on tier
   const getLeadSdr = (lead: Lead): string => {
+    if (lead.sdr_override) return lead.sdr_override;
     const { tier } = recalcLeadScore(lead);
     if (tier === "Enterprise" || tier === "Large") return "Rodger";
     if (tier === "Medium" || tier === "Small") return "Dara";
     return "-";
+  };
+
+  // Toggle SDR between Rodger and Dara
+  const toggleSdr = async (lead: Lead) => {
+    const currentSdr = getLeadSdr(lead);
+    const newSdr = currentSdr === "Rodger" ? "Dara" : "Rodger";
+    
+    // Optimistic update
+    setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, sdr_override: newSdr } : l));
+    
+    try {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${lead.id}`;
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "x-admin-token": token || "",
+          "Content-Type": "application/json",
+          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({ sdr_override: newSdr }),
+      });
+      if (!res.ok) throw new Error("Failed");
+    } catch {
+      setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, sdr_override: lead.sdr_override } : l));
+      toast({ title: "Erro ao trocar SDR", variant: "destructive" });
+    }
   };
 
   const getLeadTier = (lead: Lead): string => {
@@ -1833,10 +1862,16 @@ export default function AdminAnalytics() {
                                 {(() => {
                                   const sdr = getLeadSdr(lead);
                                   if (sdr === "Rodger") return (
-                                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Rodger</Badge>
+                                    <Badge 
+                                      className="bg-blue-500/20 text-blue-400 border-blue-500/30 cursor-pointer hover:bg-blue-500/30 transition-colors"
+                                      onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
+                                    >Rodger</Badge>
                                   );
                                   if (sdr === "Dara") return (
-                                    <Badge className="bg-pink-500/20 text-pink-400 border-pink-500/30">Dara</Badge>
+                                    <Badge 
+                                      className="bg-pink-500/20 text-pink-400 border-pink-500/30 cursor-pointer hover:bg-pink-500/30 transition-colors"
+                                      onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
+                                    >Dara</Badge>
                                   );
                                   return <span className="text-muted-foreground">-</span>;
                                 })()}

@@ -197,6 +197,7 @@ export type Database = {
           placement: string | null
           raw_answers_json: Json | null
           score: number | null
+          sdr_override: string | null
           segmento: string | null
           site_source_name: string | null
           ticket_faixa: string | null
@@ -237,6 +238,7 @@ export type Database = {
           placement?: string | null
           raw_answers_json?: Json | null
           score?: number | null
+          sdr_override?: string | null
           segmento?: string | null
           site_source_name?: string | null
           ticket_faixa?: string | null
@@ -277,6 +279,7 @@ export type Database = {
           placement?: string | null
           raw_answers_json?: Json | null
           score?: number | null
+          sdr_override?: string | null
           segmento?: string | null
           site_source_name?: string | null
           ticket_faixa?: string | null
