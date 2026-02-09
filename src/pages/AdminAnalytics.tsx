@@ -215,15 +215,18 @@ export default function AdminAnalytics() {
   };
 
   const openExternalUrl = (url: string) => {
-    // In some sandboxed iframes, target=_blank can be ignored; use window.open + fallback.
+    // In sandboxed iframes, window.open may fail; use an anchor element as fallback.
     const opened = window.open(url, "_blank", "noopener,noreferrer");
     if (opened) return;
 
-    try {
-      window.top?.location.assign(url);
-    } catch {
-      window.location.assign(url);
-    }
+    // Fallback: create a temporary anchor to open in new tab without navigating current page
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const copyWhatsappToClipboard = async (raw?: string | null) => {
@@ -297,12 +300,36 @@ export default function AdminAnalytics() {
   const [leadsTierFilter, setLeadsTierFilter] = useState<string>("all");
   const [leadsSdrFilter, setLeadsSdrFilter] = useState<string>("all");
 
-  // SDR assignment helper based on tier
-  const getLeadSdr = (tier: string | null): string => {
-    if (!tier) return "-";
+  // Recalculate score/tier from lead answers (ignores stale DB values)
+  const recalcLeadScore = (lead: Lead) => {
+    const mercadoPts: Record<string, number> = {
+      "Infoproduto": 1, "E-commerce": 1, "SaaS / Software": 1,
+      "Serviços / Consultoria": 1, "Agência": 1, "Dropshipping": 1,
+      "Afiliado": 1, "Nutra / Encapsulado": 2, "Outro": 1,
+    };
+    const estagioPts: Record<string, number> = {
+      "Iniciando do zero": 1, "Validação (primeiras vendas)": 2,
+      "Pré-escala (vendas constantes)": 3, "Escala (buscando otimização)": 4,
+    };
+    const investPts: Record<string, number> = {
+      "R$ 0 – 2k": 1, "R$ 2k – 8k": 2, "R$ 8k – 20k": 3,
+      "R$ 20k – 50k": 4, "R$ 50k – 100k": 5, "R$ 100k+": 6,
+    };
+    const score = (mercadoPts[lead.mercado] || 1) + (estagioPts[lead.estagio_negocio] || 1) + (investPts[lead.investimento_faixa || ""] || 1);
+    const tier = score > 12 ? "Enterprise" : score >= 9 ? "Large" : score >= 5 ? "Medium" : "Small";
+    return { score, tier };
+  };
+
+  // SDR assignment helper based on recalculated tier
+  const getLeadSdr = (lead: Lead): string => {
+    const { tier } = recalcLeadScore(lead);
     if (tier === "Enterprise" || tier === "Large") return "Rodger";
     if (tier === "Medium" || tier === "Small") return "Dara";
     return "-";
+  };
+
+  const getLeadTier = (lead: Lead): string => {
+    return recalcLeadScore(lead).tier;
   };
 
   // Funnel drop-off detail state
@@ -403,7 +430,7 @@ export default function AdminAnalytics() {
     }
   };
 
-  const markLeadAsRead = async (id: string) => {
+  const updateLeadLido = async (id: string, lido: boolean) => {
     try {
       const token = getToken();
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${id}`;
@@ -414,15 +441,27 @@ export default function AdminAnalytics() {
           "Content-Type": "application/json",
           "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ lido: true }),
+        body: JSON.stringify({ lido }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to update lead");
       }
     } catch (error) {
-      console.error("Error marking lead as read:", error);
+      console.error("Error updating lead lido:", error);
     }
+  };
+
+  const toggleLeadLido = (lead: Lead, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newLido = !lead.lido;
+    // Optimistic update
+    setLeads((prev) =>
+      prev.map((l) => (l.id === lead.id ? { ...l, lido: newLido } : l))
+    );
+    setLeadsUnreadCount((prev) => newLido ? Math.max(0, prev - 1) : prev + 1);
+    // Update backend
+    updateLeadLido(lead.id, newLido);
   };
 
   const openLeadDetail = (lead: Lead) => {
@@ -435,7 +474,7 @@ export default function AdminAnalytics() {
       setLeadsUnreadCount((prev) => Math.max(0, prev - 1));
       
       // Update backend in background
-      markLeadAsRead(lead.id);
+      updateLeadLido(lead.id, true);
       
       // Set selected lead with lido: true
       setSelectedLead({ ...lead, lido: true });
@@ -542,7 +581,7 @@ export default function AdminAnalytics() {
   const uniqueMercados = [...new Set(leads.map(l => l.mercado))].filter(Boolean).sort();
   const uniqueEstagios = [...new Set(leads.map(l => l.estagio_negocio))].filter(Boolean).sort();
   const TIER_ORDER = ["Enterprise", "Large", "Medium", "Small"];
-  const uniqueTiers = TIER_ORDER.filter(t => leads.some(l => l.tier === t));
+  const uniqueTiers = TIER_ORDER.filter(t => leads.some(l => getLeadTier(l) === t));
 
   const filteredLeads = leads.filter((lead) => {
     // Search filter
@@ -567,11 +606,11 @@ export default function AdminAnalytics() {
     if (leadsEstagioFilter !== "all" && lead.estagio_negocio !== leadsEstagioFilter) return false;
     
     // Tier filter
-    if (leadsTierFilter !== "all" && lead.tier !== leadsTierFilter) return false;
+    if (leadsTierFilter !== "all" && getLeadTier(lead) !== leadsTierFilter) return false;
     
     // SDR filter
     if (leadsSdrFilter !== "all") {
-      const sdr = getLeadSdr(lead.tier);
+      const sdr = getLeadSdr(lead);
       if (leadsSdrFilter === "rodger" && sdr !== "Rodger") return false;
       if (leadsSdrFilter === "dara" && sdr !== "Dara") return false;
     }
@@ -1720,15 +1759,18 @@ export default function AdminAnalytics() {
                               <td className="p-4 text-muted-foreground font-mono">{index + 1}</td>
                               <td className="p-4">
                                 <div className="flex flex-col gap-1">
-                                  {lead.lido ? (
-                                    <Badge variant="outline" className="border-muted-foreground text-muted-foreground w-fit">
-                                      Lido
-                                    </Badge>
-                                  ) : (
-                                    <Badge className="bg-green-500 text-white animate-pulse w-fit">
-                                      Novo
-                                    </Badge>
-                                  )}
+                                  <Badge 
+                                    variant="outline"
+                                    className={`cursor-pointer transition-colors ${
+                                      lead.lido 
+                                        ? "border-muted-foreground text-muted-foreground hover:bg-green-500/10 hover:text-green-400 hover:border-green-500" 
+                                        : "bg-green-500 text-white animate-pulse hover:bg-green-600"
+                                    } w-fit`}
+                                    onClick={(e) => toggleLeadLido(lead, e)}
+                                    title={lead.lido ? "Clique para marcar como Novo" : "Clique para marcar como Lido"}
+                                  >
+                                    {lead.lido ? "Lido" : "Novo"}
+                                  </Badge>
                                   {lead.is_duplicate_ip && (
                                     <Badge variant="outline" className="border-orange-500 text-orange-500 bg-orange-500/10 w-fit text-xs">
                                       ⚠️ IP duplicado
@@ -1737,20 +1779,22 @@ export default function AdminAnalytics() {
                                 </div>
                               </td>
                               <td className="p-4">
-                                {lead.tier ? (
-                                  <Badge 
-                                    variant="outline"
-                                    className={
-                                      lead.tier === "A" ? "border-green-500 text-green-500 bg-green-500/10" :
-                                      lead.tier === "B" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
-                                      "border-red-500 text-red-500 bg-red-500/10"
-                                    }
-                                  >
-                                    {lead.tier}
-                                  </Badge>
-                                ) : (
-                                  <span className="text-muted-foreground">-</span>
-                                )}
+                                {(() => {
+                                  const tier = getLeadTier(lead);
+                                  return (
+                                    <Badge 
+                                      variant="outline"
+                                      className={
+                                        tier === "Enterprise" ? "border-purple-500 text-purple-500 bg-purple-500/10" :
+                                        tier === "Large" ? "border-green-500 text-green-500 bg-green-500/10" :
+                                        tier === "Medium" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
+                                        "border-red-500 text-red-500 bg-red-500/10"
+                                      }
+                                    >
+                                      {tier}
+                                    </Badge>
+                                  );
+                                })()}
                               </td>
                               <td className="p-4 font-medium">{lead.nome_completo}</td>
                               <td className="p-4">
@@ -1784,7 +1828,7 @@ export default function AdminAnalytics() {
                               <td className="p-4 text-muted-foreground text-xs">{lead.investimento_faixa || "-"}</td>
                               <td className="p-4">
                                 {(() => {
-                                  const sdr = getLeadSdr(lead.tier);
+                                  const sdr = getLeadSdr(lead);
                                   if (sdr === "Rodger") return (
                                     <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Rodger</Badge>
                                   );
@@ -1976,17 +2020,26 @@ export default function AdminAnalytics() {
 
 
                       {/* Score & Tier (internal) */}
-                      {(selectedLead.score !== null || selectedLead.tier) && (
-                        <div className="flex gap-4 pt-2 border-t">
-                          {selectedLead.tier && (
-                            <Badge variant={selectedLead.tier === "A" ? "default" : selectedLead.tier === "B" ? "secondary" : "outline"}>
-                              Tier {selectedLead.tier}
-                            </Badge>
-                          )}
-                          {selectedLead.score !== null && (
-                            <span className="text-sm text-muted-foreground">Score: {selectedLead.score}</span>
-                          )}
-                        </div>
+                      {selectedLead && (
+                        (() => {
+                          const { score: calcScore, tier: calcTier } = recalcLeadScore(selectedLead);
+                          return (
+                            <div className="flex gap-4 pt-2 border-t">
+                              <Badge 
+                                variant="outline"
+                                className={
+                                  calcTier === "Enterprise" ? "border-purple-500 text-purple-500 bg-purple-500/10" :
+                                  calcTier === "Large" ? "border-green-500 text-green-500 bg-green-500/10" :
+                                  calcTier === "Medium" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
+                                  "border-red-500 text-red-500 bg-red-500/10"
+                                }
+                              >
+                                {calcTier}
+                              </Badge>
+                              <span className="text-sm text-muted-foreground">Score: {calcScore}</span>
+                            </div>
+                          );
+                        })()
                       )}
 
                       {/* Action Buttons */}
@@ -2684,18 +2737,22 @@ export default function AdminAnalytics() {
                               <div>
                                 <div className="flex items-center gap-2">
                                   <p className="font-semibold text-lg">{lead.nome_completo}</p>
-                                  {lead.tier && (
-                                    <Badge 
-                                      variant="outline"
-                                      className={
-                                        lead.tier === "A" ? "border-green-500 text-green-500 bg-green-500/10" :
-                                        lead.tier === "B" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
-                                        "border-red-500 text-red-500 bg-red-500/10"
-                                      }
-                                    >
-                                      Tier {lead.tier}
-                                    </Badge>
-                                  )}
+                                  {(() => {
+                                    const tier = getLeadTier(lead);
+                                    return (
+                                      <Badge 
+                                        variant="outline"
+                                        className={
+                                          tier === "Enterprise" ? "border-purple-500 text-purple-500 bg-purple-500/10" :
+                                          tier === "Large" ? "border-green-500 text-green-500 bg-green-500/10" :
+                                          tier === "Medium" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
+                                          "border-red-500 text-red-500 bg-red-500/10"
+                                        }
+                                      >
+                                        {tier}
+                                      </Badge>
+                                    );
+                                  })()}
                                   {!lead.lido && (
                                     <Badge className="bg-green-500 text-white">Novo</Badge>
                                   )}
