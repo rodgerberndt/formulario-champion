@@ -245,14 +245,19 @@ export default function AdminAnalytics() {
     }
   };
 
-  const openInstagramProfile = (raw?: string | null) => {
+  const openInstagramProfile = async (raw?: string | null) => {
     const url = buildInstagramUrl(raw);
     if (!url) {
       toast({ title: "Instagram não informado", variant: "destructive" });
       return;
     }
 
-    openExternalUrl(url);
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: "Link do Instagram copiado! 📋", description: url });
+    } catch {
+      toast({ title: "Não foi possível copiar", variant: "destructive" });
+    }
   };
 
   const [showActiveUsersPanel, setShowActiveUsersPanel] = useState(false);
