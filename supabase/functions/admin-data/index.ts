@@ -227,171 +227,143 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // GET /metrics - Get funnel metrics (calculated from events for accuracy)
+    // GET /metrics - Get funnel metrics
     if (path === "/metrics" && req.method === "GET") {
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
       const toEnd = to ? to + "T23:59:59.999" : null;
 
-      // Get sessions filtered by date range
-      let sessionsQuery = supabase.from("lead_sessions").select("*");
-      if (from) sessionsQuery = sessionsQuery.gte("created_at", from);
-      if (toEnd) sessionsQuery = sessionsQuery.lte("created_at", toEnd);
-      const { data: sessions, error: sessionsError } = await sessionsQuery;
-      if (sessionsError) throw sessionsError;
+      // Helper to fetch ALL rows (bypass 1000-row limit) with pagination
+      async function fetchAll<T>(table: string, select: string, filters: (q: any) => any): Promise<T[]> {
+        const PAGE_SIZE = 1000;
+        let all: T[] = [];
+        let offset = 0;
+        let hasMore = true;
+        while (hasMore) {
+          let q = supabase.from(table).select(select).range(offset, offset + PAGE_SIZE - 1);
+          q = filters(q);
+          const { data, error } = await q;
+          if (error) throw error;
+          if (data) all = all.concat(data as T[]);
+          hasMore = (data?.length || 0) === PAGE_SIZE;
+          offset += PAGE_SIZE;
+        }
+        return all;
+      }
 
-      // Get session IDs for filtering events
-      const sessionIds = sessions?.map(s => s.id) || [];
+      // Fetch ALL sessions (paginated)
+      const sessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at", (q: any) => {
+        if (from) q = q.gte("created_at", from);
+        if (toEnd) q = q.lte("created_at", toEnd);
+        return q;
+      });
 
-      // Get events only for sessions within the date range
-      let eventsQuery = supabase
-        .from("lead_events")
-        .select("event_name, step_id, session_id, page, metadata, button_id, created_at");
-      
-      // Filter events by date range directly AND by session_id for accuracy
-      if (from) eventsQuery = eventsQuery.gte("created_at", from);
-      if (toEnd) eventsQuery = eventsQuery.lte("created_at", toEnd);
-      
-      const { data: allEvents, error: eventsError } = await eventsQuery;
-      if (eventsError) throw eventsError;
+      const sessionIds = new Set(sessions.map((s: any) => s.id));
+      const total = sessions.length;
 
-      // Further filter events to only include those from sessions in our range
-      const filteredEvents = allEvents?.filter(e => sessionIds.includes(e.session_id)) || [];
-
-      // Get total leads created in the date range
-      let leadsQuery = supabase
-        .from("leads")
-        .select("*", { count: "exact", head: true });
-      if (from) leadsQuery = leadsQuery.gte("created_at", from);
-      if (toEnd) leadsQuery = leadsQuery.lte("created_at", toEnd);
-      const { count: leadsCount } = await leadsQuery;
-
-      // Calculate metrics from events (more accurate)
-      const sessionsWithQuizView = new Set(
-        filteredEvents.filter(e => e.event_name === "quiz_view").map(e => e.session_id)
-      );
-      const sessionsWithStepView = new Set(
-        filteredEvents.filter(e => e.event_name === "step_view").map(e => e.session_id)
-      );
-      const sessionsWithSubmit = new Set(
-        filteredEvents.filter(e => e.event_name === "submit").map(e => e.session_id)
-      );
-
-      const total = sessions?.length || 0;
-      
-      // Calculate unique visitors by IP (excluding null/empty)
-      const sessionsWithIp = sessions?.filter(s => s.ip_address && s.ip_address !== 'unknown') || [];
-      const uniqueIps = new Set(sessionsWithIp.map(s => s.ip_address));
-      
-      // Only use unique IP count if we have IPs for at least 50% of sessions
+      // Calculate unique visitors by IP
+      const sessionsWithIp = sessions.filter((s: any) => s.ip_address && s.ip_address !== 'unknown');
+      const uniqueIps = new Set(sessionsWithIp.map((s: any) => s.ip_address));
       const ipCoverage = total > 0 ? (sessionsWithIp.length / total) : 0;
       const uniqueVisitors = ipCoverage >= 0.5 ? uniqueIps.size : total;
       const hasReliableIpData = ipCoverage >= 0.5;
-      
-      // Use leads count as ground truth for completed
-      const completed = leadsCount || sessionsWithSubmit.size;
-      
-      // Ensure funnel is monotonically decreasing: entered >= started >= completed
-      const rawEnteredQuiz = sessionsWithQuizView.size;
-      const rawStartedQuiz = sessionsWithStepView.size;
-      const enteredQuiz = Math.max(rawEnteredQuiz, completed);
-      const startedQuiz = Math.max(rawStartedQuiz, completed);
 
-      // Button distribution - calculate from events (more accurate)
+      // Fetch ALL events for those sessions (paginated)
+      const allEvents = await fetchAll<any>(
+        "lead_events",
+        "event_name, step_id, session_id, metadata, button_id",
+        (q: any) => {
+          if (from) q = q.gte("created_at", from);
+          if (toEnd) q = q.lte("created_at", toEnd);
+          return q;
+        }
+      );
+      // Filter to only sessions in our range
+      const filteredEvents = allEvents.filter((e: any) => sessionIds.has(e.session_id));
+
+      // Get total leads (ground truth for completed)
+      let leadsQuery = supabase.from("leads").select("*", { count: "exact", head: true });
+      if (from) leadsQuery = leadsQuery.gte("created_at", from);
+      if (toEnd) leadsQuery = leadsQuery.lte("created_at", toEnd);
+      const { count: leadsCount } = await leadsQuery;
+      const completed = leadsCount || 0;
+
+      // Calculate event-based metrics
+      const sessionsWithQuizView = new Set(
+        filteredEvents.filter((e: any) => e.event_name === "quiz_view").map((e: any) => e.session_id)
+      );
+      const sessionsWithStepView = new Set(
+        filteredEvents.filter((e: any) => e.event_name === "step_view").map((e: any) => e.session_id)
+      );
+
+      // Ensure funnel is monotonically decreasing
+      const enteredQuiz = Math.max(sessionsWithQuizView.size, completed);
+      const startedQuiz = Math.max(sessionsWithStepView.size, completed);
+
+      // Button distribution
       const buttonEventCounts: Record<string, Set<string>> = {
-        start_btn_1: new Set(),
-        start_btn_2: new Set(),
-        start_btn_3: new Set(),
+        start_btn_1: new Set(), start_btn_2: new Set(), start_btn_3: new Set(),
       };
-      
-      filteredEvents.forEach(event => {
-        if (event.event_name === "start_click" && event.button_id) {
-          const buttonId = event.button_id;
-          if (buttonEventCounts[buttonId]) {
-            buttonEventCounts[buttonId].add(event.session_id);
-          }
+      filteredEvents.forEach((event: any) => {
+        if (event.event_name === "start_click" && event.button_id && buttonEventCounts[event.button_id]) {
+          buttonEventCounts[event.button_id].add(event.session_id);
         }
       });
-      
       const buttonDistribution = {
         start_btn_1: buttonEventCounts.start_btn_1.size,
         start_btn_2: buttonEventCounts.start_btn_2.size,
         start_btn_3: buttonEventCounts.start_btn_3.size,
       };
 
-      // Step funnel - count unique sessions per step
+      // Step funnel
       const stepOrder = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_investimento", "q7_dor"];
-      console.log("[FUNNEL] Total filtered events:", filteredEvents.length, "Sessions:", sessionIds.length);
       const stepCounts: Record<string, Set<string>> = {};
-      filteredEvents.forEach(event => {
-        if (event.event_name === "step_view" && event.step_id) {
-          if (!stepCounts[event.step_id]) {
-            stepCounts[event.step_id] = new Set();
-          }
-          stepCounts[event.step_id].add(event.session_id);
-        }
-      });
-
-      const stepFunnel = stepOrder.map(stepId => ({
-        step_id: stepId,
-        count: stepCounts[stepId]?.size || 0,
-      }));
-      console.log("[FUNNEL] Step views:", stepFunnel);
-      console.log("[FUNNEL] All step_ids found in events:", Object.keys(stepCounts));
-
-      // Drop-off analysis - find where users actually stopped (didn't advance from)
-      const dropOffs: Record<string, number> = {};
-      
-      // Track which steps each session viewed and which they advanced from (step_next)
       const sessionViewedSteps: Record<string, Set<string>> = {};
       const sessionAdvancedFrom: Record<string, Set<string>> = {};
-      
-      filteredEvents.forEach(event => {
+
+      filteredEvents.forEach((event: any) => {
         if (event.event_name === "step_view" && event.step_id) {
-          if (!sessionViewedSteps[event.session_id]) {
-            sessionViewedSteps[event.session_id] = new Set();
-          }
+          if (!stepCounts[event.step_id]) stepCounts[event.step_id] = new Set();
+          stepCounts[event.step_id].add(event.session_id);
+          if (!sessionViewedSteps[event.session_id]) sessionViewedSteps[event.session_id] = new Set();
           sessionViewedSteps[event.session_id].add(event.step_id);
         }
-        
-        // Track which steps the user advanced FROM (meaning they completed that step)
         if (event.event_name === "step_next") {
           const metadata = event.metadata as Record<string, unknown> | null;
           const fromStep = metadata?.from_step as string | undefined;
           if (fromStep) {
-            if (!sessionAdvancedFrom[event.session_id]) {
-              sessionAdvancedFrom[event.session_id] = new Set();
-            }
+            if (!sessionAdvancedFrom[event.session_id]) sessionAdvancedFrom[event.session_id] = new Set();
             sessionAdvancedFrom[event.session_id].add(fromStep);
           }
         }
       });
 
-      // For each session that didn't complete, find the last step they viewed but didn't advance from
+      const stepFunnel = stepOrder.map(stepId => ({
+        step_id: stepId, count: stepCounts[stepId]?.size || 0,
+      }));
+
+      // Drop-off analysis
+      const sessionsWithSubmit = new Set(
+        filteredEvents.filter((e: any) => e.event_name === "submit").map((e: any) => e.session_id)
+      );
+      const dropOffs: Record<string, number> = {};
       Object.entries(sessionViewedSteps).forEach(([sessionId, viewedSteps]) => {
         if (!sessionsWithSubmit.has(sessionId)) {
           const advancedFrom = sessionAdvancedFrom[sessionId] || new Set();
-          
-          // Find the furthest step they viewed but didn't advance from
           let dropOffStep: string | null = null;
           let dropOffIndex = -1;
-          
           viewedSteps.forEach(step => {
             const stepIndex = stepOrder.indexOf(step);
-            // They dropped off at this step if they viewed it but didn't advance from it
             if (!advancedFrom.has(step) && stepIndex > dropOffIndex) {
               dropOffStep = step;
               dropOffIndex = stepIndex;
             }
           });
-          
-          if (dropOffStep) {
-            dropOffs[dropOffStep] = (dropOffs[dropOffStep] || 0) + 1;
-          }
+          if (dropOffStep) dropOffs[dropOffStep] = (dropOffs[dropOffStep] || 0) + 1;
         }
       });
-      console.log("[FUNNEL] Drop-offs:", dropOffs);
-      console.log("[FUNNEL] Sessions that submitted:", sessionsWithSubmit.size);
+
+      console.log("[FUNNEL] Sessions:", total, "Events:", filteredEvents.length, "Leads:", completed, "UniqueIPs:", uniqueIps.size);
 
       return new Response(
         JSON.stringify({
