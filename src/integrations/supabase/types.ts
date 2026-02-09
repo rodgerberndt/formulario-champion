@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      kommo_webhook_logs: {
+        Row: {
+          contact_id: number | null
+          created_at: string
+          error_message: string | null
+          external_key: string | null
+          id: string
+          lead_id: number | null
+          lead_phone: string | null
+          request_payload: Json | null
+          response_payload: Json | null
+          status: string
+        }
+        Insert: {
+          contact_id?: number | null
+          created_at?: string
+          error_message?: string | null
+          external_key?: string | null
+          id?: string
+          lead_id?: number | null
+          lead_phone?: string | null
+          request_payload?: Json | null
+          response_payload?: Json | null
+          status?: string
+        }
+        Update: {
+          contact_id?: number | null
+          created_at?: string
+          error_message?: string | null
+          external_key?: string | null
+          id?: string
+          lead_id?: number | null
+          lead_phone?: string | null
+          request_payload?: Json | null
+          response_payload?: Json | null
+          status?: string
+        }
+        Relationships: []
+      }
       lead_events: {
         Row: {
           button_id: string | null
