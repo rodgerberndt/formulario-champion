@@ -345,7 +345,7 @@ export default function AdminAnalytics() {
     setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, sdr_override: newSdr } : l));
     
     try {
-      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${lead.id}`;
       const res = await fetch(url, {
         method: "PUT",
