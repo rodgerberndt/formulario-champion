@@ -224,9 +224,23 @@ export default function Quiz() {
          ...getUtmPayload(),
       };
 
-      const { error } = await supabase.from("leads").insert([dbData]);
+      const { data: insertedData, error } = await supabase.from("leads").insert([dbData]).select('id').maybeSingle();
 
       if (error) throw error;
+
+      // Send to Kommo in background (trigger doesn't work in Lovable Cloud)
+      if (insertedData?.id) {
+        supabase.functions.invoke('kommo-webhook', {
+          body: {
+            lead_db_id: insertedData.id,
+            ...dbData,
+          },
+        }).then(res => {
+          console.log('Kommo sync triggered:', res);
+        }).catch(err => {
+          console.error('Kommo sync error:', err);
+        });
+      }
 
       // Track submit with lead data
       await trackSubmit({
