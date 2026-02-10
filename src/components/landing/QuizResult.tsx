@@ -1,5 +1,4 @@
 import { User, Phone, Instagram, Briefcase, Target, FileText } from "lucide-react";
-
 interface QuizFormData {
   nome_completo: string;
   whatsapp: string;
@@ -8,26 +7,22 @@ interface QuizFormData {
   estagio_negocio: string;
   dor_desejo: string;
 }
-
 interface QuizResultProps {
   nome: string;
   formData: QuizFormData;
 }
-
-export function QuizResult({ nome, formData }: QuizResultProps) {
+export function QuizResult({
+  nome,
+  formData
+}: QuizResultProps) {
   const firstName = nome.split(" ")[0];
-
-  return (
-    <div className="max-w-md mx-auto text-center animate-fade-in">
+  return <div className="max-w-md mx-auto text-center animate-fade-in">
       <div className="bg-card/90 dark:bg-card/70 backdrop-blur-xl border border-border/50 rounded-3xl p-6 md:p-8 shadow-premium-lg">
         {/* Simple Thank You */}
-        <h2 className="text-2xl md:text-3xl font-bold mb-3 text-foreground">
-          OBRIGADO, <span className="champion-gradient-text">{firstName.toUpperCase()}</span>!
+        <h2 className="text-2xl md:text-3xl font-bold mb-3 text-foreground">PARABÉNS, TESTE!<span className="champion-gradient-text">{firstName.toUpperCase()}</span>!
         </h2>
 
-        <p className="text-muted-foreground text-base mb-8 max-w-sm mx-auto">
-          Em minutos um de nossos consultores irá lhe chamar.
-        </p>
+        <p className="text-muted-foreground text-base mb-8 max-w-sm mx-auto">FuEm alguns minutos nosso time vai te chamar, e</p>
 
         {/* Summary */}
         <div className="bg-muted/30 dark:bg-muted/20 rounded-2xl p-5 mb-8 text-left border border-border/50">
@@ -86,6 +81,5 @@ export function QuizResult({ nome, formData }: QuizResultProps) {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 }
