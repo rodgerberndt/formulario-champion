@@ -66,6 +66,7 @@ serve(async (req) => {
 📊 Segmento: ${leadData.segmento || 'N/A'}
 🎯 Mercado: ${leadData.mercado}
 📈 Estágio: ${leadData.estagio_negocio}
+💸 Investimento em Tráfego: ${leadData.investimento_faixa || 'N/A'}
 👑 Decisor: ${leadData.decisor ? 'Sim' : 'Não'}
 ━━━━━━━━━━━━━━━━━
 💰 Faturamento: ${leadData.faturamento_faixa || 'N/A'}
