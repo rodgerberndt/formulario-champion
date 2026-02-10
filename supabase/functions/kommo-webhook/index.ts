@@ -18,11 +18,37 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-secret, x-admin-token, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// ── Helpers ──────────────────────────────────────────
+
 function normalizePhone(raw: string): string {
   const digits = raw.replace(/\D/g, '');
   if (digits.startsWith('55') && digits.length >= 12) return `+${digits}`;
   if (digits.length >= 10 && digits.length <= 11) return `+55${digits}`;
   return `+55${digits}`;
+}
+
+function isValidPhone(raw: string): boolean {
+  const digits = raw.replace(/\D/g, '');
+  return digits.length >= 10;
+}
+
+function sanitizeTag(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_|_$/g, '')
+    .slice(0, 40);
+}
+
+function getMessageVariant(estagio?: string): string {
+  if (!estagio) return 'VAR_PADRAO';
+  const s = estagio.toLowerCase();
+  if (s.includes('pré-escala') || s.includes('pre-escala') || s.includes('vendas constantes')) return 'VAR_PRE_ESCALA';
+  if (s.includes('validação') || s.includes('validacao') || s.includes('primeiras vendas')) return 'VAR_VALIDACAO';
+  if (s.includes('escala') && !s.includes('pré')) return 'VAR_ESCALA';
+  if (s.includes('iniciando') || s.includes('zero')) return 'VAR_INICIO';
+  return 'VAR_PADRAO';
 }
 
 function maskSecrets(obj: unknown): unknown {
@@ -44,6 +70,8 @@ function maskSecrets(obj: unknown): unknown {
   }
   return obj;
 }
+
+// ── Logging ──────────────────────────────────────────
 
 interface LogEntry {
   lead_db_id?: string;
@@ -103,7 +131,8 @@ async function updateLeadKommoStatus(
   await supabase.from('leads').update(update).eq('id', leadDbId);
 }
 
-// Search contact by phone
+// ── Kommo API ────────────────────────────────────────
+
 async function searchContact(phone: string): Promise<{ id: number } | null> {
   const url = `https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/contacts?query=${encodeURIComponent(phone)}&limit=1`;
   console.log(`[search_contact] Searching: ${phone}`);
@@ -127,8 +156,7 @@ async function searchContact(phone: string): Promise<{ id: number } | null> {
   return null;
 }
 
-// Create new contact
-async function createContact(name: string, phone: string, instagram?: string): Promise<{ id: number }> {
+async function createContact(name: string, phone: string): Promise<{ id: number }> {
   const url = `https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/contacts`;
   
   const customFields = [
@@ -158,8 +186,7 @@ async function createContact(name: string, phone: string, instagram?: string): P
   return { id: contactId };
 }
 
-// Update existing contact
-async function updateContact(contactId: number, name: string, phone: string, instagram?: string): Promise<void> {
+async function updateContact(contactId: number, name: string, phone: string): Promise<void> {
   const url = `https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/contacts/${contactId}`;
   
   const customFields = [
@@ -181,11 +208,36 @@ async function updateContact(contactId: number, name: string, phone: string, ins
   if (!res.ok) {
     const text = await res.text();
     console.warn(`[update_contact] Update failed (${res.status}): ${text}`);
-    // Non-fatal, contact already exists
   }
 }
 
-// Create lead in pipeline
+// Build tags array from quiz data
+function buildTags(leadData: Record<string, unknown>): Array<{ name: string }> {
+  const tags: Array<{ name: string }> = [{ name: "quiz" }];
+
+  if (leadData.estagio_negocio) {
+    tags.push({ name: `stage_${sanitizeTag(String(leadData.estagio_negocio))}` });
+  }
+  if (leadData.mercado) {
+    tags.push({ name: `market_${sanitizeTag(String(leadData.mercado))}` });
+  }
+  if (leadData.objetivo) {
+    tags.push({ name: `goal_${sanitizeTag(String(leadData.objetivo))}` });
+  }
+  if (leadData.utm_source) {
+    tags.push({ name: `src_${sanitizeTag(String(leadData.utm_source))}` });
+  }
+  if (leadData.utm_campaign) {
+    tags.push({ name: `camp_${sanitizeTag(String(leadData.utm_campaign))}` });
+  }
+  if (leadData.tier) {
+    tags.push({ name: `tier_${sanitizeTag(String(leadData.tier))}` });
+  }
+
+  return tags;
+}
+
+// Create lead in pipeline with tags + custom fields note
 async function createLead(
   name: string,
   contactId: number,
@@ -193,12 +245,8 @@ async function createLead(
 ): Promise<{ id: number }> {
   const url = `https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads`;
 
-  const tags = [
-    { name: "Champion Form" },
-  ];
-  if (leadData.mercado) tags.push({ name: String(leadData.mercado) });
-  if (leadData.estagio_negocio) tags.push({ name: String(leadData.estagio_negocio) });
-  if (leadData.tier) tags.push({ name: `Tier ${leadData.tier}` });
+  const tags = buildTags(leadData);
+  const messageVariant = getMessageVariant(leadData.estagio_negocio as string | undefined);
 
   const payload: Record<string, unknown> = {
     name,
@@ -210,7 +258,7 @@ async function createLead(
     },
   };
 
-  console.log(`[create_lead] Creating lead: ${name} in pipeline ${KOMMO_PIPELINE_ID} status ${KOMMO_STATUS_ID}`);
+  console.log(`[create_lead] Creating lead: ${name} | pipeline=${KOMMO_PIPELINE_ID} status=${KOMMO_STATUS_ID} variant=${messageVariant} tags=${tags.map(t => t.name).join(',')}`);
 
   const res = await fetch(url, {
     method: 'POST',
@@ -232,7 +280,7 @@ async function createLead(
   return { id: leadId };
 }
 
-// Add note to lead
+// Add note with all quiz fields + message variant info
 async function addNoteToLead(leadId: number, noteText: string): Promise<void> {
   const url = `https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads/${leadId}/notes`;
   const payload = [{ note_type: "common", params: { text: noteText } }];
@@ -254,25 +302,38 @@ async function addNoteToLead(leadId: number, noteText: string): Promise<void> {
   }
 }
 
-function buildNoteText(d: Record<string, unknown>): string {
+function buildNoteText(d: Record<string, unknown>, messageVariant: string): string {
   return `📊 DADOS DO LEAD CHAMPION
 ━━━━━━━━━━━━━━━━━
 🏆 Score: ${d.score || 'N/A'} | Tier: ${d.tier || 'N/A'}
 ━━━━━━━━━━━━━━━━━
-👤 Nome: ${d.nome_completo || 'N/A'}
-📱 WhatsApp: ${d.whatsapp || 'N/A'}
-📸 Instagram: ${d.instagram || 'N/A'}
+👤 quiz_nome: ${d.nome_completo || 'N/A'}
+📱 quiz_whatsapp: ${d.whatsapp || 'N/A'}
+📸 quiz_instagram: ${d.instagram || 'N/A'}
 🏢 Empresa: ${d.empresa || 'N/A'}
 ━━━━━━━━━━━━━━━━━
-🎯 Mercado: ${d.mercado || 'N/A'}
-📈 Estágio: ${d.estagio_negocio || 'N/A'}
+🎯 quiz_mercado: ${d.mercado || 'N/A'}
+📈 quiz_estagio: ${d.estagio_negocio || 'N/A'}
 💸 Investimento em Tráfego: ${d.investimento_faixa || 'N/A'}
+🎯 quiz_objetivo: ${d.objetivo || 'N/A'}
 ━━━━━━━━━━━━━━━━━
-📝 Dor/Desejo:
+📝 quiz_dor_desejo:
 ${d.dor_desejo || 'N/A'}
 ━━━━━━━━━━━━━━━━━
-📊 UTMs: src=${d.utm_source || '-'} | camp=${d.utm_campaign || '-'} | content=${d.utm_content || '-'}`;
+📊 UTMs:
+  utm_source: ${d.utm_source || '-'}
+  utm_campaign: ${d.utm_campaign || '-'}
+  utm_content: ${d.utm_content || '-'}
+  utm_medium: ${d.utm_medium || '-'}
+  utm_term: ${d.utm_term || '-'}
+━━━━━━━━━━━━━━━━━
+🤖 BOT CONFIG:
+  message_variant: ${messageVariant}
+  first_message_ready: true
+  first_message_sent: false`;
 }
+
+// ── Main Handler ─────────────────────────────────────
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -282,7 +343,7 @@ Deno.serve(async (req) => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   try {
-    // Auth: webhook secret OR admin token OR service role bearer
+    // Auth check
     const webhookSecret = req.headers.get('x-webhook-secret');
     const adminToken = req.headers.get('x-admin-token');
     const authHeader = req.headers.get('authorization');
@@ -306,26 +367,30 @@ Deno.serve(async (req) => {
 
     console.log(`[kommo-webhook] Processing lead: ${leadData.nome_completo} | source: ${source}`);
 
-    // Validate required fields
-    if (!leadData.nome_completo || !leadData.whatsapp) {
-      const errMsg = 'VALIDATION_FAILED: nome_completo and whatsapp are required';
+    // ── VALIDATION ───────────────────────────────────
+    if (!leadData.nome_completo) {
+      const errMsg = 'VALIDATION_FAILED: nome_completo is required';
       console.error(errMsg);
       await writeLog(supabase, {
-        lead_db_id: leadDbId,
-        lead_name: leadData.nome_completo,
-        lead_phone: leadData.whatsapp,
-        stage: 'validation',
-        source,
-        request_payload: leadData,
-        status: 'error',
-        final_status: 'VALIDATION_FAILED',
-        error_message: errMsg,
+        lead_name: leadData.nome_completo, lead_phone: leadData.whatsapp,
+        stage: 'validation', source, request_payload: leadData,
+        status: 'error', final_status: 'VALIDATION_FAILED', error_message: errMsg,
       });
       if (leadDbId) await updateLeadKommoStatus(supabase, leadDbId, 'validation_failed', undefined, undefined, errMsg);
-      return new Response(
-        JSON.stringify({ error: errMsg }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: errMsg }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    // Phone validation – PENDING_PHONE if missing/invalid
+    if (!leadData.whatsapp || !isValidPhone(String(leadData.whatsapp))) {
+      const errMsg = 'PENDING_PHONE: whatsapp missing or invalid – lead saved locally but NOT sent to Kommo';
+      console.error(errMsg);
+      await writeLog(supabase, {
+        lead_name: leadData.nome_completo, lead_phone: leadData.whatsapp,
+        stage: 'validation', source, request_payload: leadData,
+        status: 'error', final_status: 'PENDING_PHONE', error_message: errMsg,
+      });
+      if (leadDbId) await updateLeadKommoStatus(supabase, leadDbId, 'pending_phone', undefined, undefined, errMsg);
+      return new Response(JSON.stringify({ error: errMsg, status: 'PENDING_PHONE' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     // Validate Kommo credentials
@@ -333,39 +398,31 @@ Deno.serve(async (req) => {
       const errMsg = 'Kommo credentials not configured (API_KEY or SUBDOMAIN missing)';
       console.error(errMsg);
       await writeLog(supabase, {
-        lead_db_id: leadDbId,
-        lead_name: leadData.nome_completo,
-        lead_phone: leadData.whatsapp,
-        stage: 'config_check',
-        source,
-        status: 'error',
-        final_status: 'CONFIG_ERROR',
-        error_message: errMsg,
+        lead_name: leadData.nome_completo, lead_phone: leadData.whatsapp,
+        stage: 'config_check', source, status: 'error', final_status: 'CONFIG_ERROR', error_message: errMsg,
       });
       if (leadDbId) await updateLeadKommoStatus(supabase, leadDbId, 'config_error', undefined, undefined, errMsg);
-      return new Response(
-        JSON.stringify({ error: errMsg }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: errMsg }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     const phone = normalizePhone(String(leadData.whatsapp));
     const name = String(leadData.nome_completo);
+    const messageVariant = getMessageVariant(leadData.estagio_negocio as string | undefined);
 
-    // STEP 1: Search or create contact
+    // ── STEP 1: Search or create contact (idempotent) ──
     let contactId: number;
     try {
       const existing = await searchContact(phone);
       if (existing) {
         contactId = existing.id;
-        await updateContact(contactId, name, phone, leadData.instagram);
+        await updateContact(contactId, name, phone);
         await writeLog(supabase, {
           lead_name: name, lead_phone: phone, stage: 'search_contact',
           source, status: 'success', final_status: 'IN_PROGRESS',
           contact_id: contactId, request_payload: { phone, action: 'found_existing' },
         });
       } else {
-        const created = await createContact(name, phone, leadData.instagram);
+        const created = await createContact(name, phone);
         contactId = created.id;
         await writeLog(supabase, {
           lead_name: name, lead_phone: phone, stage: 'create_contact',
@@ -382,13 +439,10 @@ Deno.serve(async (req) => {
         error_message: errMsg, request_payload: leadData,
       });
       if (leadDbId) await updateLeadKommoStatus(supabase, leadDbId, 'failed', undefined, undefined, errMsg);
-      return new Response(
-        JSON.stringify({ error: errMsg }),
-        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: errMsg }), { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    // STEP 2: Create lead in pipeline
+    // ── STEP 2: Create lead with tags ────────────────
     let kommoLeadId: number;
     try {
       const leadTitle = `[${leadData.tier || 'N/A'}] ${name}`;
@@ -398,7 +452,11 @@ Deno.serve(async (req) => {
         lead_name: name, lead_phone: phone, stage: 'create_lead',
         source, status: 'success', final_status: 'IN_PROGRESS',
         contact_id: contactId, lead_id: kommoLeadId,
-        request_payload: { pipeline_id: KOMMO_PIPELINE_ID, status_id: KOMMO_STATUS_ID },
+        request_payload: {
+          pipeline_id: KOMMO_PIPELINE_ID, status_id: KOMMO_STATUS_ID,
+          message_variant: messageVariant,
+          tags: buildTags(leadData).map(t => t.name),
+        },
       });
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
@@ -409,15 +467,12 @@ Deno.serve(async (req) => {
         error_message: errMsg, contact_id: contactId,
       });
       if (leadDbId) await updateLeadKommoStatus(supabase, leadDbId, 'failed', contactId, undefined, errMsg);
-      return new Response(
-        JSON.stringify({ error: errMsg }),
-        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: errMsg }), { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    // STEP 3: Add note to lead
+    // ── STEP 3: Add detailed note with all quiz fields + bot config ──
     try {
-      const noteText = buildNoteText(leadData);
+      const noteText = buildNoteText(leadData, messageVariant);
       await addNoteToLead(kommoLeadId, noteText);
       await writeLog(supabase, {
         lead_name: name, lead_phone: phone, stage: 'add_note',
@@ -425,7 +480,6 @@ Deno.serve(async (req) => {
         contact_id: contactId, lead_id: kommoLeadId,
       });
     } catch (err) {
-      // Note failure is non-fatal
       const errMsg = err instanceof Error ? err.message : String(err);
       console.warn(`[kommo-webhook] Note failed (non-fatal): ${errMsg}`);
       await writeLog(supabase, {
@@ -436,18 +490,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Update lead in DB
+    // ── Update local DB ──────────────────────────────
     if (leadDbId) {
       await updateLeadKommoStatus(supabase, leadDbId, 'success', contactId, kommoLeadId);
     }
 
-    console.log(`[kommo-webhook] SUCCESS - Contact: ${contactId}, Lead: ${kommoLeadId}`);
+    console.log(`[kommo-webhook] SUCCESS - Contact: ${contactId}, Lead: ${kommoLeadId}, Variant: ${messageVariant}`);
 
     return new Response(
       JSON.stringify({
         success: true,
         contact_id: contactId,
         lead_id: kommoLeadId,
+        message_variant: messageVariant,
+        first_message_ready: true,
+        tags: buildTags(leadData).map(t => t.name),
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
@@ -458,11 +515,8 @@ Deno.serve(async (req) => {
     
     try {
       await writeLog(supabase, {
-        stage: 'unhandled_error',
-        source: 'trigger',
-        status: 'error',
-        final_status: 'FAILED',
-        error_message: errorMessage,
+        stage: 'unhandled_error', source: 'trigger',
+        status: 'error', final_status: 'FAILED', error_message: errorMessage,
       });
     } catch { /* ignore logging failure */ }
 
