@@ -129,9 +129,7 @@ export function QuizResult({ nome }: QuizResultProps) {
         <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
           Seu cadastro foi concluído com sucesso.{" "}
           <span className="champion-gradient-text">
-            {countdown
-              ? `Em até ${countdown} nosso time entrará em contato com você!`
-              : "Em até 6h nosso time entrará em contato com você!"}
+            Em até 6h nosso time entrará em contato com você!
           </span>
         </h1>
 
