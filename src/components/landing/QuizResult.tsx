@@ -241,6 +241,11 @@ export function QuizResult({ nome }: QuizResultProps) {
         </p>
       </div>
 
+      {/* ── MOTIVATIONAL HEADLINE ── */}
+      <p className="text-center text-lg md:text-xl font-semibold text-foreground leading-snug">
+        Parabéns <span className="champion-gradient-text">Champs</span>, agora é só aguardar que nós iremos trazer mais um dígito de faturamento para você. 🚀
+      </p>
+
       {/* ── SUPPORT FALLBACK ── */}
       <div className="bg-card/50 border border-border/30 rounded-2xl p-4 text-center space-y-3">
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
