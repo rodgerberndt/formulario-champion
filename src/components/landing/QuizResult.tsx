@@ -19,10 +19,9 @@ export function QuizResult({
   return <div className="max-w-md mx-auto text-center animate-fade-in">
       <div className="bg-card/90 dark:bg-card/70 backdrop-blur-xl border border-border/50 rounded-3xl p-6 md:p-8 shadow-premium-lg">
         {/* Simple Thank You */}
-        <h2 className="text-2xl md:text-3xl font-bold mb-3 text-foreground">PARABÉNS, TESTE!<span className="champion-gradient-text">{firstName.toUpperCase()}</span>!
-        </h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-3 text-foreground">Parabéns, <span className="champion-gradient-text">{firstName}</span>!</h2>
 
-        <p className="text-muted-foreground text-base mb-8 max-w-sm mx-auto">FuEm alguns minutos nosso time vai te chamar, e</p>
+        <p className="text-muted-foreground text-base mb-8 max-w-sm mx-auto">Se prepare, porque já já nosso time vai te chamar e te explicar tudo.</p>
 
         {/* Summary */}
         <div className="bg-muted/30 dark:bg-muted/20 rounded-2xl p-5 mb-8 text-left border border-border/50">
