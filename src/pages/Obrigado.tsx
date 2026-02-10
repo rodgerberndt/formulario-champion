@@ -129,12 +129,9 @@ export default function Obrigado() {
         </div>
       </header>
 
-      <main className="pt-16 pb-8 px-4 min-h-[100svh] flex items-center justify-center" style={{ paddingBottom: 'calc(32px + env(safe-area-inset-bottom))' }}>
-        <div className="container mx-auto max-w-[92vw] sm:max-w-md">
-          <QuizResult
-            nome={formData.nome_completo}
-            formData={formData}
-          />
+      <main className="pt-20 pb-12 px-4 min-h-[100svh]" style={{ paddingBottom: 'calc(48px + env(safe-area-inset-bottom))' }}>
+        <div className="container mx-auto max-w-lg">
+          <QuizResult nome={formData.nome_completo} />
         </div>
       </main>
     </div>
