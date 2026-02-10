@@ -62,7 +62,7 @@ const steps = [
   },
   {
     num: 3,
-    title: "Call de alinhamento (somente para quem está na fase certa)",
+    title: "Call de diagnóstico (somente para quem está na fase certa)",
     status: "locked" as const,
     icon: Lock,
     text: "Essa call só acontece quando entendemos claramente como podemos ajudar. Acontece apenas com clientes que estão na fase correta para entrar na CGS (nosso sistema de crescimento).",
