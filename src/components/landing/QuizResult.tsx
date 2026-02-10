@@ -26,7 +26,7 @@ export function QuizResult({
         <div className="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-2xl p-5 mb-8 text-left">
           <p className="text-foreground font-semibold text-sm mb-2">🔥 Pelo que analisamos do seu perfil:</p>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Temos uma <strong className="text-foreground">estratégia muito específica</strong> pro seu momento que já gerou resultados absurdos em operações parecidas com a sua. Nosso consultor vai te mostrar exatamente como aplicar no seu negócio — <strong className="text-foreground">não perca essa ligação.</strong>
+            Temos uma <strong className="text-foreground">não perca essa mensagem.   </strong> pro seu momento que já gerou resultados absurdos em operações parecidas com a sua. Nosso consultor vai te mostrar exatamente como aplicar no seu negócio — <strong className="text-foreground">não perca essa ligação.</strong>
           </p>
         </div>
 
