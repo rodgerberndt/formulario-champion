@@ -729,6 +729,137 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // GET /kommo-logs - List kommo webhook logs
+    if (path === "/kommo-logs" && req.method === "GET") {
+      const limit = Math.min(parseInt(url.searchParams.get("limit") || "200"), 500);
+
+      const { data, error } = await supabase
+        .from("kommo_webhook_logs")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+
+      return new Response(
+        JSON.stringify(data),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // POST /kommo-test - Send test lead to Kommo
+    if (path === "/kommo-test" && req.method === "POST") {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const webhookSecret = Deno.env.get("INTERNAL_WEBHOOK_SECRET") || '';
+
+      const testPayload = {
+        _source: 'admin_test',
+        lead_db_id: null,
+        nome_completo: 'Teste Admin ' + new Date().toLocaleTimeString('pt-BR'),
+        whatsapp: '(11) 99999-8888',
+        instagram: '@teste_admin',
+        mercado: 'Infoproduto',
+        estagio_negocio: 'Escala (buscando otimização)',
+        investimento_faixa: 'R$ 8k – 20k',
+        dor_desejo: 'Teste automático do painel admin para validar integração Kommo.',
+        score: 9,
+        tier: 'Large',
+      };
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/kommo-webhook`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-webhook-secret': webhookSecret,
+          'Authorization': `Bearer ${serviceKey}`,
+        },
+        body: JSON.stringify(testPayload),
+      });
+
+      const responseText = await response.text();
+      let responseJson;
+      try { responseJson = JSON.parse(responseText); } catch { responseJson = { raw: responseText }; }
+
+      return new Response(
+        JSON.stringify({
+          test_status: response.ok ? 'SUCCESS' : 'FAILED',
+          http_status: response.status,
+          response: responseJson,
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // POST /kommo-retry/:leadId - Retry Kommo sync for a specific lead
+    const retryMatch = path.match(/^\/kommo-retry\/([a-f0-9-]+)$/);
+    if (retryMatch && req.method === "POST") {
+      const leadId = retryMatch[1];
+
+      // Get lead data
+      const { data: lead, error: leadErr } = await supabase
+        .from("leads")
+        .select("*")
+        .eq("id", leadId)
+        .single();
+
+      if (leadErr || !lead) {
+        return new Response(
+          JSON.stringify({ error: "Lead not found" }),
+          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const webhookSecretVal = Deno.env.get("INTERNAL_WEBHOOK_SECRET") || '';
+
+      const retryPayload = {
+        _source: 'admin_retry',
+        lead_db_id: lead.id,
+        nome_completo: lead.nome_completo,
+        whatsapp: lead.whatsapp,
+        instagram: lead.instagram,
+        mercado: lead.mercado,
+        estagio_negocio: lead.estagio_negocio,
+        investimento_faixa: lead.investimento_faixa,
+        dor_desejo: lead.dor_desejo,
+        score: lead.score,
+        tier: lead.tier,
+        utm_source: lead.utm_source,
+        utm_campaign: lead.utm_campaign,
+        utm_content: lead.utm_content,
+      };
+
+      // Update retry count
+      await supabase.from("leads")
+        .update({ kommo_retry_count: (lead.kommo_retry_count || 0) + 1, kommo_status: 'retrying' })
+        .eq("id", leadId);
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/kommo-webhook`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-webhook-secret': webhookSecretVal,
+          'Authorization': `Bearer ${serviceKey}`,
+        },
+        body: JSON.stringify(retryPayload),
+      });
+
+      const responseText = await response.text();
+      let responseJson;
+      try { responseJson = JSON.parse(responseText); } catch { responseJson = { raw: responseText }; }
+
+      return new Response(
+        JSON.stringify({
+          retry_status: response.ok ? 'SUCCESS' : 'FAILED',
+          http_status: response.status,
+          response: responseJson,
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: "Rota não encontrada" }),
       { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }

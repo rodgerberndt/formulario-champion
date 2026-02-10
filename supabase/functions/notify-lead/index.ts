@@ -316,19 +316,9 @@ Deno.serve(async (req: Request) => {
 
     const errors: string[] = [];
 
-    // 1. Sync to Kommo
-    let kommoSuccess = false;
-    try {
-      const kommoResult = await withRetry(() => syncToKommo(session));
-      kommoSuccess = kommoResult.success;
-      if (!kommoSuccess && kommoResult.error) {
-        errors.push(`Kommo: ${kommoResult.error}`);
-      }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error);
-      errors.push(`Kommo: ${msg}`);
-      console.error('Kommo sync failed:', msg);
-    }
+    // Kommo sync is now handled by DB trigger on leads table INSERT
+    // (notify_kommo_on_lead_insert → kommo-webhook)
+    const kommoSuccess = true; // Skip, handled elsewhere
 
     // 2. Send WhatsApp to Rodger
     let whatsappSuccess = false;

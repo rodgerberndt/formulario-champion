@@ -131,16 +131,7 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
     }
   };
 
-  const sendToKommo = async (leadData: QuizFormData, score: number, tier: string) => {
-    try {
-      const response = await supabase.functions.invoke('kommo-webhook', {
-        body: { ...leadData, score, tier }
-      });
-      console.log('Kommo response:', response);
-    } catch (error) {
-      console.error('Error sending to Kommo:', error);
-    }
-  };
+  // Kommo sync is now handled automatically via DB trigger on leads INSERT
 
   const handleSubmit = async () => {
     if (!canProceed()) return;
@@ -208,7 +199,7 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
       });
 
       // Send to Kommo in background
-      sendToKommo(formData, result.score, result.tier);
+      // Kommo sync handled automatically by DB trigger
 
       // Clear saved progress
       localStorage.removeItem(STORAGE_KEY);

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,8 @@ import { PwaInstallButton } from "@/components/PwaInstallButton";
 import { useLeadNotifications } from "@/hooks/useLeadNotifications";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+
+const KommoLogsPanel = lazy(() => import("@/components/admin/KommoLogsPanel"));
 import {
   Dialog,
   DialogContent,
@@ -1564,6 +1566,12 @@ export default function AdminAnalytics() {
               >
                 Botões
               </TabsTrigger>
+              <TabsTrigger 
+                value="kommo" 
+                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+              >
+                Kommo
+              </TabsTrigger>
             </TabsList>
 
             {/* Leads Tab */}
@@ -2740,6 +2748,13 @@ export default function AdminAnalytics() {
                   </Card>
                 </div>
               )}
+            </TabsContent>
+
+            {/* Kommo Tab */}
+            <TabsContent value="kommo">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <KommoLogsPanel />
+              </Suspense>
             </TabsContent>
 
           </Tabs>

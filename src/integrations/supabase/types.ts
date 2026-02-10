@@ -20,11 +20,16 @@ export type Database = {
           created_at: string
           error_message: string | null
           external_key: string | null
+          final_status: string | null
           id: string
           lead_id: number | null
+          lead_name: string | null
           lead_phone: string | null
           request_payload: Json | null
           response_payload: Json | null
+          retry_count: number | null
+          source: string | null
+          stage: string | null
           status: string
         }
         Insert: {
@@ -32,11 +37,16 @@ export type Database = {
           created_at?: string
           error_message?: string | null
           external_key?: string | null
+          final_status?: string | null
           id?: string
           lead_id?: number | null
+          lead_name?: string | null
           lead_phone?: string | null
           request_payload?: Json | null
           response_payload?: Json | null
+          retry_count?: number | null
+          source?: string | null
+          stage?: string | null
           status?: string
         }
         Update: {
@@ -44,11 +54,16 @@ export type Database = {
           created_at?: string
           error_message?: string | null
           external_key?: string | null
+          final_status?: string | null
           id?: string
           lead_id?: number | null
+          lead_name?: string | null
           lead_phone?: string | null
           request_payload?: Json | null
           response_payload?: Json | null
+          retry_count?: number | null
+          source?: string | null
+          stage?: string | null
           status?: string
         }
         Relationships: []
@@ -228,6 +243,12 @@ export type Database = {
           investimento_faixa: string | null
           ip_address: string | null
           is_duplicate_ip: boolean | null
+          kommo_contact_id: number | null
+          kommo_lead_id: number | null
+          kommo_retry_count: number
+          kommo_status: string
+          kommo_synced_at: string | null
+          last_kommo_error: string | null
           lido: boolean
           mercado: string
           nome_completo: string
@@ -269,6 +290,12 @@ export type Database = {
           investimento_faixa?: string | null
           ip_address?: string | null
           is_duplicate_ip?: boolean | null
+          kommo_contact_id?: number | null
+          kommo_lead_id?: number | null
+          kommo_retry_count?: number
+          kommo_status?: string
+          kommo_synced_at?: string | null
+          last_kommo_error?: string | null
           lido?: boolean
           mercado: string
           nome_completo: string
@@ -310,6 +337,12 @@ export type Database = {
           investimento_faixa?: string | null
           ip_address?: string | null
           is_duplicate_ip?: boolean | null
+          kommo_contact_id?: number | null
+          kommo_lead_id?: number | null
+          kommo_retry_count?: number
+          kommo_status?: string
+          kommo_synced_at?: string | null
+          last_kommo_error?: string | null
           lido?: boolean
           mercado?: string
           nome_completo?: string
