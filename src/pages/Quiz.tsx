@@ -13,7 +13,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { ChevronRight, ChevronLeft, Check, Loader2, ArrowLeft } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, Loader2, ArrowLeft, Target } from "lucide-react";
 import {
   calculateLeadScore,
   MERCADO_OPTIONS,
@@ -478,14 +478,19 @@ export default function Quiz() {
       case 7:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
-            <div>
-              <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground mb-1 leading-snug">
-                O que você mais está buscando resolver hoje?
-              </label>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                Descreva muito bem a sua dor ou desejo.
+            {/* Highlight block */}
+            <div className="bg-secondary/10 border border-secondary/30 rounded-2xl p-4 sm:p-5">
+              <div className="flex items-start gap-3 mb-2.5">
+                <Target className="w-6 h-6 sm:w-7 sm:h-7 text-secondary shrink-0 mt-0.5" />
+                <h2 className="text-secondary font-bold text-lg sm:text-xl md:text-2xl leading-tight">
+                  Essa é a pergunta mais importante de todo o diagnóstico.
+                </h2>
+              </div>
+              <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed pl-9 sm:pl-10">
+                Quanto mais <span className="text-secondary font-semibold">detalhada</span> for sua resposta, mais <span className="text-secondary font-semibold">preciso</span> será o nosso diagnóstico. Seja <span className="text-secondary font-semibold">honesto e específico</span>.
               </p>
             </div>
+
             <Textarea
               className="w-full text-sm sm:text-base min-h-[100px] sm:min-h-[120px] resize-none bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200"
               placeholder="Conte-nos o que você quer resolver..."
