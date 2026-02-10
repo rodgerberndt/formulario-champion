@@ -296,8 +296,8 @@ export default function FunnelMapTab({ metrics, leads, loading }: FunnelMapTabPr
           </Badge>
         </div>
 
-        {/* ── Funnel Diagram ────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        {/* ── Funnel Diagram (Vertical Funnel Shape) ──────────────── */}
+        <div className="flex flex-col items-center gap-0 py-4">
           {STAGES.map((stage, i) => {
             const conv = conversions[i];
             const data = stageData?.[stage.id as keyof typeof stageData];
@@ -307,67 +307,96 @@ export default function FunnelMapTab({ metrics, leads, loading }: FunnelMapTabPr
               stage.id === "forms" ? { green: 30, yellow: 15 } :
               { green: 50, yellow: 25 };
 
+            // Funnel width: widest at top (100%), narrowing down
+            const widthPercents = [100, 85, 70, 55, 42, 30];
+            const widthPct = widthPercents[i] || 30;
+
             return (
-              <div key={stage.id} className="relative">
-                {/* Connector arrow */}
+              <div key={stage.id} className="w-full flex flex-col items-center">
+                {/* Conversion arrow between stages */}
                 {i > 0 && (
-                  <div className="absolute -left-3 top-1/2 -translate-y-1/2 hidden lg:flex items-center">
-                    <ChevronRight className="w-5 h-5 text-muted-foreground/40" />
+                  <div className="flex items-center gap-2 py-1.5 z-10">
+                    <div className="w-px h-4 bg-muted-foreground/20" />
+                    {isActive && conv && conv.prevVolume > 0 && (
+                      <div className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${getPerformanceBg(convRate, thresholds)}`}>
+                        <span className={getPerformanceColor(convRate, thresholds)}>
+                          {pct(conv.volume, conv.prevVolume)}%
+                        </span>
+                      </div>
+                    )}
+                    <div className="w-px h-4 bg-muted-foreground/20" />
                   </div>
                 )}
 
-                <button
-                  onClick={() => setSelectedStage(stage.id)}
-                  disabled={!isActive}
-                  className={`w-full text-left rounded-2xl border-2 p-4 transition-all duration-200 group relative overflow-hidden
-                    ${isActive ? `${stage.borderColor} hover:scale-[1.02] hover:shadow-lg cursor-pointer` : "border-muted/30 opacity-50 cursor-not-allowed"}
-                    ${selectedStage === stage.id ? `ring-2 ring-offset-2 ring-offset-background ${stage.borderColor.replace("border-", "ring-")}` : ""}
-                  `}
-                >
-                  {/* Background glow */}
-                  <div className={`absolute inset-0 ${stage.bgColor} opacity-30`} />
-
-                  <div className="relative z-10 space-y-3">
-                    {/* Header */}
-                    <div className="flex items-center gap-2">
-                      <div className={`${stage.color}`}>{stage.icon}</div>
-                      <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{stage.shortLabel}</span>
-                    </div>
-
-                    {/* Main number */}
-                    <p className={`text-3xl font-black ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
-                      {data?.main ?? 0}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">{data?.label}</p>
-
-                    {/* Conversion vs previous */}
-                    {i > 0 && isActive && (
-                      <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold border ${getPerformanceBg(convRate, thresholds)}`}>
-                        <span className={getPerformanceColor(convRate, thresholds)}>
-                          {pct(conv?.volume || 0, conv?.prevVolume || 1)}%
-                        </span>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="w-3 h-3 text-muted-foreground cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs">
-                            <p>Conversão vs etapa anterior ({STAGES[i - 1].shortLabel})</p>
-                            <p className="text-muted-foreground text-xs mt-1">{conv?.volume || 0} de {conv?.prevVolume || 0}</p>
-                          </TooltipContent>
-                        </Tooltip>
+                {/* Stage row: metrics left — funnel block center */}
+                <div className="w-full flex items-center">
+                  {/* Left metrics */}
+                  <div className="flex-1 flex justify-end pr-4">
+                    {isActive && data && (
+                      <div className="text-right space-y-0.5 min-w-[120px]">
+                        <p className="text-2xl font-black text-foreground leading-none">{data.main}</p>
+                        <p className="text-[11px] text-muted-foreground">{data.label}</p>
+                        {data.secondary > 0 && data.secondary !== data.main && (
+                          <p className="text-[10px] text-muted-foreground/60">{data.secondary} {data.secondaryLabel}</p>
+                        )}
                       </div>
                     )}
-
-                    {/* Not available overlay */}
                     {!isActive && (
-                      <div className="mt-1">
-                        <Badge variant="outline" className="text-[10px] border-muted-foreground/30 text-muted-foreground">
-                          Conectar dados
-                        </Badge>
+                      <div className="text-right">
+                        <p className="text-2xl font-black text-muted-foreground/40 leading-none">—</p>
+                        <p className="text-[10px] text-muted-foreground/40">Sem dados</p>
                       </div>
                     )}
                   </div>
-                </button>
+
+                  {/* Funnel block (trapezoid shape via clip-path) */}
+                  <button
+                    onClick={() => setSelectedStage(stage.id)}
+                    disabled={!isActive}
+                    style={{ width: `${widthPct}%`, maxWidth: "480px", minWidth: "180px" }}
+                    className={`relative rounded-xl border-2 px-4 py-4 transition-all duration-300 group overflow-hidden
+                      ${isActive ? `${stage.borderColor} hover:shadow-xl hover:shadow-${stage.color.replace("text-", "")}/10 cursor-pointer` : "border-muted/30 opacity-50 cursor-not-allowed"}
+                      ${selectedStage === stage.id ? `ring-2 ring-offset-2 ring-offset-background ${stage.borderColor.replace("border-", "ring-")}` : ""}
+                    `}
+                  >
+                    <div className={`absolute inset-0 ${stage.bgColor} opacity-40`} />
+                    <div className="relative z-10 flex items-center justify-center gap-2">
+                      <div className={`${stage.color}`}>{stage.icon}</div>
+                      <span className={`text-sm font-bold ${isActive ? stage.color : "text-muted-foreground"}`}>
+                        {stage.label}
+                      </span>
+                    </div>
+                    {!isActive && (
+                      <div className="relative z-10 mt-1 flex justify-center">
+                        <Badge variant="outline" className="text-[9px] border-muted-foreground/30 text-muted-foreground">
+                          Conectar
+                        </Badge>
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Right side (empty for balance, or could add cost metrics later) */}
+                  <div className="flex-1 pl-4">
+                    {i > 0 && isActive && conv && conv.prevVolume > 0 && (
+                      <div className="space-y-0.5">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <p className={`text-xs font-semibold ${getPerformanceColor(convRate, thresholds)} cursor-help`}>
+                              {convRate > 0 ? `${convRate.toFixed(1)}% conv.` : ""}
+                            </p>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Conversão vs {STAGES[i - 1].shortLabel}</p>
+                            <p className="text-xs text-muted-foreground">{conv.volume} de {conv.prevVolume}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <p className="text-[10px] text-muted-foreground/50">
+                          vs {STAGES[i - 1].shortLabel}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             );
           })}
