@@ -185,9 +185,7 @@ export function QuizResult({
 
         <ul className="space-y-3 text-sm text-muted-foreground">
           <li className="flex items-start gap-3">
-            <div className="p-1 rounded-md bg-secondary/10 mt-0.5 shrink-0">
-              <MessageCircle className="w-4 h-4 text-secondary" />
-            </div>
+            
             <span>Fique de olho no WhatsApp e mantenha as notificações ativas.</span>
           </li>
           <li className="flex items-start gap-3">
