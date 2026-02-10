@@ -3,26 +3,21 @@ import { Check, Clock, Lock, Trophy, MessageCircle, AlertCircle, Bell, Zap, Chev
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-
 const WHATSAPP_NUMBER = "55XXXXXXXXXXX";
 const SUPPORT_WHATSAPP_NUMBER = "55XXXXXXXXXXX";
 const SUBMISSION_TS_KEY = "champion_submit_ts";
-
 interface QuizResultProps {
   nome: string;
   formData?: unknown;
 }
-
 function useCountdown() {
   const [remaining, setRemaining] = useState<string | null>(null);
-
   useEffect(() => {
     const ts = localStorage.getItem(SUBMISSION_TS_KEY);
     if (!ts) {
       // Save now if not already saved
       localStorage.setItem(SUBMISSION_TS_KEY, Date.now().toString());
     }
-
     const tick = () => {
       const saved = Number(localStorage.getItem(SUBMISSION_TS_KEY));
       if (!saved) return;
@@ -33,50 +28,41 @@ function useCountdown() {
         return;
       }
       const h = Math.floor(diff / 3_600_000);
-      const m = Math.floor((diff % 3_600_000) / 60_000);
+      const m = Math.floor(diff % 3_600_000 / 60_000);
       setRemaining(`${String(h).padStart(2, "0")}h${String(m).padStart(2, "0")}m`);
     };
-
     tick();
     const id = setInterval(tick, 30_000);
     return () => clearInterval(id);
   }, []);
-
   return remaining;
 }
-
-const steps = [
-  {
-    num: 1,
-    title: "Formulário respondido",
-    status: "done" as const,
-    icon: Check,
-    text: "Você já completou a primeira etapa.",
-  },
-  {
-    num: 2,
-    title: "Consultor te chama no WhatsApp (até 6 horas)",
-    status: "active" as const,
-    icon: Clock,
-    text: "Estamos estudando suas informações para que nosso melhor consultor te chame. Ele vai te fazer algumas perguntas rápidas para entender sua operação e confirmar se realmente conseguimos te ajudar.",
-  },
-  {
-    num: 3,
-    title: "Call de diagnóstico (somente para quem está na fase certa)",
-    status: "locked" as const,
-    icon: Lock,
-    text: "Essa call só acontece quando entendemos claramente como podemos ajudar. Acontece apenas com clientes que estão na fase correta para entrar na CGS (nosso sistema de crescimento).",
-  },
-  {
-    num: 4,
-    title: "Entrada na CGS + plano personalizado",
-    status: "locked" as const,
-    icon: Trophy,
-    text: "A entrega da CGS é personalizada conforme sua necessidade, com base nas conversas do WhatsApp e também da call.",
-    premium: true,
-  },
-];
-
+const steps = [{
+  num: 1,
+  title: "Formulário respondido",
+  status: "done" as const,
+  icon: Check,
+  text: "Você já completou a primeira etapa."
+}, {
+  num: 2,
+  title: "Consultor te chama no WhatsApp (até 6 horas)",
+  status: "active" as const,
+  icon: Clock,
+  text: "Estamos estudando suas informações para que nosso melhor consultor te chame. Ele vai te fazer algumas perguntas rápidas para entender sua operação e confirmar se realmente conseguimos te ajudar."
+}, {
+  num: 3,
+  title: "Call de diagnóstico (somente para quem está na fase certa)",
+  status: "locked" as const,
+  icon: Lock,
+  text: "Essa call só acontece quando entendemos claramente como podemos ajudar. Acontece apenas com clientes que estão na fase correta para entrar na CGS (nosso sistema de crescimento)."
+}, {
+  num: 4,
+  title: "Entrada na CGS + plano personalizado",
+  status: "locked" as const,
+  icon: Trophy,
+  text: "A entrega da CGS é personalizada conforme sua necessidade, com base nas conversas do WhatsApp e também da call.",
+  premium: true
+}];
 const statusColors = {
   done: {
     ring: "border-emerald-500/60",
@@ -84,7 +70,7 @@ const statusColors = {
     icon: "text-emerald-400",
     line: "bg-emerald-500/40",
     badge: "bg-emerald-500/20 text-emerald-300",
-    badgeText: "Concluído",
+    badgeText: "Concluído"
   },
   active: {
     ring: "border-secondary/60",
@@ -92,7 +78,7 @@ const statusColors = {
     icon: "text-secondary",
     line: "bg-border/40",
     badge: "bg-secondary/20 text-secondary",
-    badgeText: "Em andamento",
+    badgeText: "Em andamento"
   },
   locked: {
     ring: "border-muted-foreground/20",
@@ -100,25 +86,22 @@ const statusColors = {
     icon: "text-muted-foreground/50",
     line: "bg-border/20",
     badge: "bg-muted/30 text-muted-foreground/60",
-    badgeText: "Próximo",
-  },
+    badgeText: "Próximo"
+  }
 };
-
-export function QuizResult({ nome }: QuizResultProps) {
+export function QuizResult({
+  nome
+}: QuizResultProps) {
   const firstName = nome.split(" ")[0];
   const countdown = useCountdown();
   const [progressAnimated, setProgressAnimated] = useState(0);
-
   useEffect(() => {
     const timer = setTimeout(() => setProgressAnimated(25), 400);
     return () => clearTimeout(timer);
   }, []);
-
   const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Acabei de concluir meu cadastro. ✅")}`;
   const supportLink = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Já se passaram 6 horas e não recebi contato.")}`;
-
-  return (
-    <div className="max-w-lg mx-auto animate-fade-in space-y-6">
+  return <div className="max-w-lg mx-auto animate-fade-in space-y-6">
       {/* ── HERO ── */}
       <div className="text-center space-y-4">
         {/* Confirmation badge */}
@@ -163,12 +146,10 @@ export function QuizResult({ nome }: QuizResultProps) {
       <div className="bg-card/70 backdrop-blur-xl border border-border/50 rounded-2xl p-5 md:p-6 space-y-0">
         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-5">O que acontece agora</h2>
         {steps.map((step, i) => {
-          const colors = statusColors[step.status];
-          const Icon = step.icon;
-          const isLast = i === steps.length - 1;
-
-          return (
-            <div key={step.num} className="flex gap-4">
+        const colors = statusColors[step.status];
+        const Icon = step.icon;
+        const isLast = i === steps.length - 1;
+        return <div key={step.num} className="flex gap-4">
               {/* Left rail */}
               <div className="flex flex-col items-center">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 shrink-0 ${colors.ring} ${colors.bg} ${step.premium ? "shadow-[0_0_20px_-4px_hsl(43_85%_55%/0.3)]" : ""}`}>
@@ -191,9 +172,8 @@ export function QuizResult({ nome }: QuizResultProps) {
                   {step.text}
                 </p>
               </div>
-            </div>
-          );
-        })}
+            </div>;
+      })}
       </div>
 
       {/* ── CTA CARD ── */}
@@ -224,12 +204,7 @@ export function QuizResult({ nome }: QuizResultProps) {
           </li>
         </ul>
 
-        <Button
-          variant="champion"
-          size="lg"
-          className="w-full text-base animate-pulse-slow"
-          asChild
-        >
+        <Button variant="champion" size="lg" className="w-full text-base animate-pulse-slow" asChild>
           <a href={waLink} target="_blank" rel="noopener noreferrer">
             <MessageCircle className="w-5 h-5" />
             Abrir WhatsApp agora
@@ -247,17 +222,6 @@ export function QuizResult({ nome }: QuizResultProps) {
       </p>
 
       {/* ── SUPPORT FALLBACK ── */}
-      <div className="bg-card/50 border border-border/30 rounded-2xl p-4 text-center space-y-3">
-        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-          <AlertCircle className="w-4 h-4" />
-          <span>Se já passaram 6 horas e ninguém te chamou, clique abaixo.</span>
-        </div>
-        <Button variant="outline" size="sm" asChild>
-          <a href={supportLink} target="_blank" rel="noopener noreferrer">
-            Avisar suporte
-          </a>
-        </Button>
-      </div>
-    </div>
-  );
+      
+    </div>;
 }
