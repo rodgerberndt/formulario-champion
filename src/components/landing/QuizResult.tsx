@@ -132,7 +132,7 @@ export function QuizResult({
               </div>
               <Progress value={progressAnimated} className="h-3 bg-muted/40 [&>div]:bg-gradient-to-r [&>div]:from-secondary [&>div]:to-champion-gold" />
               <p className="text-xs text-muted-foreground">
-                Quando chegar em 100%, você desbloqueia algo <strong className="text-secondary">muito foda</strong> pra sua operação.
+                Quando chegar em 100%, sua operação <strong className="text-secondary">vai estar em outro nível</strong>.
               </p>
             </div>
           </TooltipTrigger>
