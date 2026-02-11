@@ -2339,7 +2339,7 @@ export default function AdminAnalytics() {
 
             <TabsContent value="funnel">
               <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
-                <FunnelMapTab metrics={metrics} leads={leads} loading={!metrics} />
+                <FunnelMapTab metrics={metrics} leads={leads} loading={!metrics} startDateOnly={startDateOnly} endDateOnly={endDateOnly} />
               </Suspense>
             </TabsContent>
 

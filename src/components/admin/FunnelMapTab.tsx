@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -79,10 +80,18 @@ interface Lead {
   ad_id: string | null;
 }
 
+interface AdSpendTotals {
+  total_spend: number;
+  total_impressions: number;
+  total_clicks: number;
+}
+
 interface FunnelMapTabProps {
   metrics: Metrics | null;
   leads: Lead[];
   loading: boolean;
+  startDateOnly?: string;
+  endDateOnly?: string;
 }
 
 // ─── Step labels ──────────────────────────────────────────────────────
@@ -136,9 +145,28 @@ function getPerformanceBg(rate: number, thresholds: { green: number; yellow: num
 }
 
 // ─── Component ────────────────────────────────────────────────────────
-export default function FunnelMapTab({ metrics, leads, loading }: FunnelMapTabProps) {
+export default function FunnelMapTab({ metrics, leads, loading, startDateOnly, endDateOnly }: FunnelMapTabProps) {
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
   const [sourceFilter, setSourceFilter] = useState<string>("all");
+  const [adSpendTotals, setAdSpendTotals] = useState<AdSpendTotals>({ total_spend: 0, total_impressions: 0, total_clicks: 0 });
+
+  // Load ad_spend totals
+  useEffect(() => {
+    async function loadAdSpend() {
+      let query = supabase.from("ad_spend").select("spend, impressions, clicks");
+      if (startDateOnly) query = query.gte("date", startDateOnly);
+      if (endDateOnly) query = query.lte("date", endDateOnly);
+      const { data } = await query;
+      if (data) {
+        setAdSpendTotals({
+          total_spend: data.reduce((s, r) => s + (r.spend || 0), 0),
+          total_impressions: data.reduce((s, r) => s + (r.impressions || 0), 0),
+          total_clicks: data.reduce((s, r) => s + (r.clicks || 0), 0),
+        });
+      }
+    }
+    loadAdSpend();
+  }, [startDateOnly, endDateOnly]);
 
   // Filter leads by source
   const filteredLeads = useMemo(() => {
@@ -240,9 +268,9 @@ export default function FunnelMapTab({ metrics, leads, loading }: FunnelMapTabPr
   const renderDrawerContent = (stageId: string) => {
     switch (stageId) {
       case "ads":
-        return <AdsDrawer metrics={metrics} />;
+        return <AdsDrawer metrics={metrics} adSpend={adSpendTotals} completedLeads={filteredLeads.length} />;
       case "forms":
-        return <FormsDrawer metrics={metrics} leads={filteredLeads} />;
+        return <FormsDrawer metrics={metrics} leads={filteredLeads} adSpend={adSpendTotals} />;
       case "whatsapp":
         return <WhatsAppDrawer leadsCount={filteredLeads.length} />;
       case "sdr":
@@ -621,9 +649,14 @@ export default function FunnelMapTab({ metrics, leads, loading }: FunnelMapTabPr
 }
 
 // ─── Drawer: Ads ──────────────────────────────────────────────────────
-function AdsDrawer({ metrics }: { metrics: Metrics | null }) {
+function AdsDrawer({ metrics, adSpend, completedLeads }: { metrics: Metrics | null; adSpend: AdSpendTotals; completedLeads: number }) {
   if (!metrics) return null;
   const visitors = metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors;
+  const hasSpend = adSpend.total_spend > 0;
+  const cpl = hasSpend && completedLeads > 0 ? adSpend.total_spend / completedLeads : 0;
+  const cpc = hasSpend && adSpend.total_clicks > 0 ? adSpend.total_spend / adSpend.total_clicks : 0;
+  const ctr = adSpend.total_impressions > 0 ? (adSpend.total_clicks / adSpend.total_impressions) * 100 : 0;
+  const cpm = adSpend.total_impressions > 0 ? (adSpend.total_spend / adSpend.total_impressions) * 1000 : 0;
 
   return (
     <div className="space-y-6">
@@ -634,24 +667,32 @@ function AdsDrawer({ metrics }: { metrics: Metrics | null }) {
         <MetricCard label="CTR Interno" value={`${pct(metrics.entered_quiz, visitors)}%`} tooltip="Quiz Views / Visitantes" />
       </div>
 
-      <div className="p-4 rounded-xl bg-muted/30 border border-muted">
-        <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
-          <Megaphone className="w-4 h-4 text-blue-400" />
-          Métricas de Anúncio (Meta Ads API)
-        </h4>
-        <div className="space-y-2 text-sm text-muted-foreground">
-          <p>Para exibir Spend, CPM, CTR, CPC, CPS e métricas de vídeo, conecte a Meta Marketing API.</p>
-          <div className="mt-3 p-3 bg-background rounded-lg border border-dashed border-muted-foreground/30">
-            <p className="text-xs font-mono text-muted-foreground">Campos necessários:</p>
-            <ul className="text-xs mt-1 space-y-0.5 text-muted-foreground/70">
-              <li>• META_ADS_ACCESS_TOKEN</li>
-              <li>• META_ADS_ACCOUNT_ID</li>
-              <li>• Campos: spend, impressions, reach, frequency, cpm, ctr, cpc, actions</li>
-              <li>• Video: video_avg_time_watched_actions, video_p25/50/75/95/100</li>
-            </ul>
+      {/* Ad Spend Metrics */}
+      {hasSpend ? (
+        <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20">
+          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <Megaphone className="w-4 h-4 text-blue-400" />
+            Métricas de Anúncio (Meta Ads)
+          </h4>
+          <div className="grid grid-cols-2 gap-3">
+            <MetricCard label="Total Gasto" value={`R$ ${adSpend.total_spend.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
+            <MetricCard label="Impressões" value={adSpend.total_impressions.toLocaleString("pt-BR")} />
+            <MetricCard label="Cliques" value={adSpend.total_clicks.toLocaleString("pt-BR")} />
+            <MetricCard label="CTR" value={`${ctr.toFixed(2)}%`} tooltip="Cliques / Impressões" />
+            <MetricCard label="CPC" value={`R$ ${cpc.toFixed(2)}`} tooltip="Gasto / Cliques" />
+            <MetricCard label="CPM" value={`R$ ${cpm.toFixed(2)}`} tooltip="Gasto / 1000 Impressões" />
+            <MetricCard label="CPL" value={`R$ ${cpl.toFixed(2)}`} tooltip="Gasto / Leads" highlight />
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="p-4 rounded-xl bg-muted/30 border border-muted">
+          <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+            <Megaphone className="w-4 h-4 text-blue-400" />
+            Métricas de Anúncio (Meta Ads API)
+          </h4>
+          <p className="text-sm text-muted-foreground">Sem dados de gastos no período selecionado. Execute o Sync Meta Ads na aba Criativos.</p>
+        </div>
+      )}
 
       {/* Button distribution */}
       <div>
@@ -672,9 +713,13 @@ function AdsDrawer({ metrics }: { metrics: Metrics | null }) {
 }
 
 // ─── Drawer: Forms ────────────────────────────────────────────────────
-function FormsDrawer({ metrics, leads }: { metrics: Metrics | null; leads: Lead[] }) {
+function FormsDrawer({ metrics, leads, adSpend }: { metrics: Metrics | null; leads: Lead[]; adSpend: AdSpendTotals }) {
   if (!metrics) return null;
   const visitors = metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors;
+  const hasSpend = adSpend.total_spend > 0;
+  const cpl = hasSpend && metrics.completed > 0 ? adSpend.total_spend / metrics.completed : 0;
+  const costPerQuizStart = hasSpend && metrics.started_quiz > 0 ? adSpend.total_spend / metrics.started_quiz : 0;
+  const costPerSession = hasSpend && metrics.total_visitors > 0 ? adSpend.total_spend / metrics.total_visitors : 0;
 
   return (
     <div className="space-y-6">
@@ -703,21 +748,21 @@ function FormsDrawer({ metrics, leads }: { metrics: Metrics | null; leads: Lead[
         );
       })()}
 
-      {/* Cost section placeholder */}
-      <div className="p-4 rounded-xl bg-muted/30 border border-dashed border-muted-foreground/30">
-        <h4 className="text-sm font-semibold mb-2">Custos (requer Meta Ads API)</h4>
-        <div className="grid grid-cols-3 gap-2 text-center text-muted-foreground/50">
+      {/* Cost section with real data */}
+      <div className={`p-4 rounded-xl ${hasSpend ? "bg-purple-500/5 border border-purple-500/20" : "bg-muted/30 border border-dashed border-muted-foreground/30"}`}>
+        <h4 className="text-sm font-semibold mb-2">Custos {!hasSpend && "(sem dados de gastos no período)"}</h4>
+        <div className="grid grid-cols-3 gap-2 text-center">
           <div className="p-2 bg-background rounded-lg">
-            <p className="text-lg font-bold">—</p>
-            <p className="text-[10px]">CPL</p>
+            <p className={`text-lg font-bold ${hasSpend ? "" : "text-muted-foreground/50"}`}>{hasSpend ? `R$ ${cpl.toFixed(2)}` : "—"}</p>
+            <p className="text-[10px] text-muted-foreground">CPL</p>
           </div>
           <div className="p-2 bg-background rounded-lg">
-            <p className="text-lg font-bold">—</p>
-            <p className="text-[10px]">Custo/Quiz Start</p>
+            <p className={`text-lg font-bold ${hasSpend ? "" : "text-muted-foreground/50"}`}>{hasSpend ? `R$ ${costPerQuizStart.toFixed(2)}` : "—"}</p>
+            <p className="text-[10px] text-muted-foreground">Custo/Quiz Start</p>
           </div>
           <div className="p-2 bg-background rounded-lg">
-            <p className="text-lg font-bold">—</p>
-            <p className="text-[10px]">CPS</p>
+            <p className={`text-lg font-bold ${hasSpend ? "" : "text-muted-foreground/50"}`}>{hasSpend ? `R$ ${costPerSession.toFixed(2)}` : "—"}</p>
+            <p className="text-[10px] text-muted-foreground">CPS</p>
           </div>
         </div>
       </div>
