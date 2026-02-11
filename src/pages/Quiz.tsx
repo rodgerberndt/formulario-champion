@@ -8,8 +8,8 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  SelectValue } from
+"@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -18,10 +18,10 @@ import {
   calculateLeadScore,
   MERCADO_OPTIONS,
   ESTAGIO_OPTIONS,
-  INVESTIMENTO_OPTIONS,
-} from "@/lib/leadScoring";
+  INVESTIMENTO_OPTIONS } from
+"@/lib/leadScoring";
 import { useTracking } from "@/hooks/useTracking";
- import { useUtmCapture, getUtmForDb } from "@/hooks/useUtmCapture";
+import { useUtmCapture, getUtmForDb } from "@/hooks/useUtmCapture";
 
 interface QuizFormData {
   nome_completo: string;
@@ -39,22 +39,22 @@ const RESULT_STORAGE_KEY = "champion_quiz_result";
 
 // Step IDs for tracking
 const STEP_IDS = [
-  "q1_nome",
-  "q2_whats",
-  "q3_insta",
-  "q4_mercado",
-  "q5_estagio",
-  "q6_investimento",
-  "q7_dor",
-  "q8_loading",
-];
+"q1_nome",
+"q2_whats",
+"q3_insta",
+"q4_mercado",
+"q5_estagio",
+"q6_investimento",
+"q7_dor",
+"q8_loading"];
+
 
 // Memoized background component
 const QuizBackground = memo(function QuizBackground() {
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
       {/* Rich gradient background */}
-      <div 
+      <div
         className="absolute inset-0"
         style={{
           background: `linear-gradient(
@@ -63,53 +63,53 @@ const QuizBackground = memo(function QuizBackground() {
             hsl(238 65% 10%) 35%,
             hsl(250 55% 12%) 60%,
             hsl(235 50% 5%) 100%
-          )`,
-        }}
-      />
+          )`
+        }} />
+
 
       {/* Subtle Grid Pattern */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.02]"
         style={{
           backgroundImage: `linear-gradient(to right, hsl(0 0% 100%) 1px, transparent 1px),
                             linear-gradient(to bottom, hsl(0 0% 100%) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px',
-        }}
-      />
+          backgroundSize: '60px 60px'
+        }} />
+
       
       {/* Noise texture */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.025]"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
+        }} />
+
 
       {/* Glow blobs - Static for performance */}
-      <div 
+      <div
         className="absolute -top-20 left-1/4 w-[350px] h-[350px] rounded-full blur-[70px]"
         style={{
-          background: 'radial-gradient(circle, hsl(238 90% 55% / 0.1) 0%, transparent 70%)',
-        }}
-      />
-      <div 
+          background: 'radial-gradient(circle, hsl(238 90% 55% / 0.1) 0%, transparent 70%)'
+        }} />
+
+      <div
         className="absolute top-1/2 -right-20 w-[300px] h-[300px] rounded-full blur-[60px]"
         style={{
-          background: 'radial-gradient(circle, hsl(43 85% 55% / 0.07) 0%, transparent 70%)',
-        }}
-      />
-      <div 
+          background: 'radial-gradient(circle, hsl(43 85% 55% / 0.07) 0%, transparent 70%)'
+        }} />
+
+      <div
         className="absolute -bottom-16 left-1/3 w-[280px] h-[280px] rounded-full blur-[50px]"
         style={{
-          background: 'radial-gradient(circle, hsl(260 80% 50% / 0.06) 0%, transparent 70%)',
-        }}
-      />
-    </div>
-  );
+          background: 'radial-gradient(circle, hsl(260 80% 50% / 0.06) 0%, transparent 70%)'
+        }} />
+
+    </div>);
+
 });
 
 // Loading commitment step component
-function LoadingCommitStep({ onFinish }: { onFinish: () => void }) {
+function LoadingCommitStep({ onFinish }: {onFinish: () => void;}) {
   const [progress, setProgress] = useState(0);
   const [committed, setCommitted] = useState(false);
   const hasSubmitted = useRef(false);
@@ -148,8 +148,8 @@ function LoadingCommitStep({ onFinish }: { onFinish: () => void }) {
         <div className="h-2 bg-muted rounded-full overflow-hidden max-w-[240px] mx-auto">
           <div
             className="h-full bg-primary rounded-full transition-all duration-100 ease-linear"
-            style={{ width: `${Math.min(progress, 100)}%` }}
-          />
+            style={{ width: `${Math.min(progress, 100)}%` }} />
+
         </div>
       </div>
 
@@ -164,30 +164,30 @@ function LoadingCommitStep({ onFinish }: { onFinish: () => void }) {
         <button
           onClick={() => setCommitted(true)}
           className={`mt-2 w-full py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300 ${
-            committed
-              ? "bg-green-500/20 border-2 border-green-500/50 text-green-400"
-              : "bg-secondary/20 border-2 border-secondary/40 text-secondary hover:bg-secondary/30"
-          }`}
-        >
-          {committed ? (
-            <span className="flex items-center justify-center gap-2">
+          committed ?
+          "bg-green-500/20 border-2 border-green-500/50 text-green-400" :
+          "bg-secondary/20 border-2 border-secondary/40 text-secondary hover:bg-secondary/30"}`
+          }>
+
+          {committed ?
+          <span className="flex items-center justify-center gap-2">
               <Check className="w-5 h-5" />
               Compromisso firmado!
-            </span>
-          ) : (
-            "Sim, me comprometo! 🤝"
-          )}
+            </span> :
+
+          "Sim, me comprometo! 🤝"
+          }
         </button>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 export default function Quiz() {
   const navigate = useNavigate();
   const { trackQuizPageView, trackStepView, trackStepNext, trackStepBack, trackSubmit } = useTracking();
-   const { getUtmPayload } = useUtmCapture();
-  
+  const { getUtmPayload } = useUtmCapture();
+
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<QuizFormData>({
@@ -198,7 +198,7 @@ export default function Quiz() {
     estagio_negocio: "",
     investimento_faixa: "",
     dor_desejo: "",
-    lgpd: false,
+    lgpd: false
   });
 
   const totalSteps = 8;
@@ -227,14 +227,14 @@ export default function Quiz() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setFormData(prev => ({ ...prev, ...parsed.formData }));
+        setFormData((prev) => ({ ...prev, ...parsed.formData }));
         if (parsed.step && parsed.step <= totalSteps) {
           setStep(parsed.step);
         }
       } catch {
+
         // Invalid saved data
-      }
-    }
+      }}
   }, []);
 
   useEffect(() => {
@@ -285,7 +285,7 @@ export default function Quiz() {
         mercado: formData.mercado,
         estagio_negocio: formData.estagio_negocio,
         investimento_faixa: formData.investimento_faixa,
-        dor_desejo: formData.dor_desejo,
+        dor_desejo: formData.dor_desejo
       });
 
       const dbData = {
@@ -299,7 +299,7 @@ export default function Quiz() {
         score: result.score,
         tier: result.tier,
         raw_answers_json: JSON.parse(JSON.stringify(formData)),
-         ...getUtmPayload(),
+        ...getUtmPayload()
       };
 
       const { error } = await supabase.from("leads").insert([dbData]);
@@ -308,10 +308,10 @@ export default function Quiz() {
 
       // Send to Kommo in background (trigger doesn't work in Lovable Cloud)
       supabase.functions.invoke('kommo-webhook', {
-        body: dbData,
-      }).then(res => {
+        body: dbData
+      }).then((res) => {
         console.log('Kommo sync triggered:', res);
-      }).catch(err => {
+      }).catch((err) => {
         console.error('Kommo sync error:', err);
       });
 
@@ -321,11 +321,11 @@ export default function Quiz() {
         whatsapp: formData.whatsapp,
         instagram: formData.instagram,
         market: formData.mercado,
-        stage: formData.estagio_negocio,
+        stage: formData.estagio_negocio
       });
 
       localStorage.removeItem(STORAGE_KEY);
-      
+
       // Save result data for the thank you page
       localStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify({
         nome_completo: formData.nome_completo,
@@ -334,12 +334,12 @@ export default function Quiz() {
         mercado: formData.mercado,
         estagio_negocio: formData.estagio_negocio,
         investimento_faixa: formData.investimento_faixa,
-        dor_desejo: formData.dor_desejo,
+        dor_desejo: formData.dor_desejo
       }));
 
       toast({
         title: "Diagnóstico enviado!",
-        description: "Em breve entraremos em contato.",
+        description: "Em breve entraremos em contato."
       });
 
       // Redirect to thank you page
@@ -349,7 +349,7 @@ export default function Quiz() {
       toast({
         title: "Erro ao enviar",
         description: "Tente novamente em alguns instantes.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
@@ -360,7 +360,7 @@ export default function Quiz() {
     if (canProceed() && step < totalSteps) {
       const fromStepId = STEP_IDS[step - 1];
       const toStepId = STEP_IDS[step];
-      
+
       // Get the field value for the current step
       const fieldData: Record<string, string> = {};
       switch (step) {
@@ -386,7 +386,7 @@ export default function Quiz() {
           fieldData.dor_desejo = formData.dor_desejo;
           break;
       }
-      
+
       await trackStepNext(fromStepId, toStepId, fieldData);
       setStep(step + 1);
     } else if (step === totalSteps && canProceed()) {
@@ -426,10 +426,10 @@ export default function Quiz() {
               placeholder="Digite seu nome"
               value={formData.nome_completo}
               onChange={(e) => updateField("nome_completo", e.target.value)}
-              autoFocus
-            />
-          </div>
-        );
+              autoFocus />
+
+          </div>);
+
       case 2:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
@@ -442,21 +442,21 @@ export default function Quiz() {
               value={formData.whatsapp}
               onChange={(e) => updateField("whatsapp", formatWhatsApp(e.target.value))}
               maxLength={16}
-              autoFocus
-            />
+              autoFocus />
+
             <div className="flex items-start gap-2.5 pt-1">
               <Checkbox
                 id="lgpd"
                 checked={formData.lgpd}
                 onCheckedChange={(checked) => updateField("lgpd", checked === true)}
-                className="border-2 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5 mt-0.5 rounded-md shrink-0"
-              />
-              <label htmlFor="lgpd" className="text-xs sm:text-sm text-muted-foreground cursor-pointer leading-relaxed">
-                Concordo em receber contato sobre o diagnóstico. Seus dados estão seguros e serão usados para contato e melhoria do atendimento.
+                className="border-2 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5 mt-0.5 rounded-md shrink-0" />
+
+              <label htmlFor="lgpd" className="text-xs sm:text-sm text-muted-foreground cursor-pointer leading-relaxed">Concordo em receber contato sobre o diagnóstico, e responder o mais rápido possível.
+
               </label>
             </div>
-          </div>
-        );
+          </div>);
+
       case 3:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
@@ -468,10 +468,10 @@ export default function Quiz() {
               placeholder="@seuinstagram"
               value={formData.instagram}
               onChange={(e) => updateField("instagram", e.target.value)}
-              autoFocus
-            />
-          </div>
-        );
+              autoFocus />
+
+          </div>);
+
       case 4:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
@@ -480,25 +480,25 @@ export default function Quiz() {
             </label>
             <Select
               value={formData.mercado}
-              onValueChange={(value) => updateField("mercado", value)}
-            >
+              onValueChange={(value) => updateField("mercado", value)}>
+
               <SelectTrigger className={selectClasses}>
                 <SelectValue placeholder="Selecione o mercado" />
               </SelectTrigger>
               <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
-                {MERCADO_OPTIONS.map((option) => (
-                  <SelectItem
-                    key={option}
-                    value={option}
-                    className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3"
-                  >
+                {MERCADO_OPTIONS.map((option) =>
+                <SelectItem
+                  key={option}
+                  value={option}
+                  className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3">
+
                     {option}
                   </SelectItem>
-                ))}
+                )}
               </SelectContent>
             </Select>
-          </div>
-        );
+          </div>);
+
       case 5:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
@@ -507,25 +507,25 @@ export default function Quiz() {
             </label>
             <Select
               value={formData.estagio_negocio}
-              onValueChange={(value) => updateField("estagio_negocio", value)}
-            >
+              onValueChange={(value) => updateField("estagio_negocio", value)}>
+
               <SelectTrigger className={selectClasses}>
                 <SelectValue placeholder="Selecione o estágio" />
               </SelectTrigger>
               <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
-                {ESTAGIO_OPTIONS.map((option) => (
-                  <SelectItem
-                    key={option}
-                    value={option}
-                    className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3"
-                  >
+                {ESTAGIO_OPTIONS.map((option) =>
+                <SelectItem
+                  key={option}
+                  value={option}
+                  className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3">
+
                     {option}
                   </SelectItem>
-                ))}
+                )}
               </SelectContent>
             </Select>
-          </div>
-        );
+          </div>);
+
       case 6:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
@@ -534,25 +534,25 @@ export default function Quiz() {
             </label>
             <Select
               value={formData.investimento_faixa}
-              onValueChange={(value) => updateField("investimento_faixa", value)}
-            >
+              onValueChange={(value) => updateField("investimento_faixa", value)}>
+
               <SelectTrigger className={selectClasses}>
                 <SelectValue placeholder="Selecione a faixa" />
               </SelectTrigger>
               <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
-                {INVESTIMENTO_OPTIONS.map((option) => (
-                  <SelectItem
-                    key={option}
-                    value={option}
-                    className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3"
-                  >
+                {INVESTIMENTO_OPTIONS.map((option) =>
+                <SelectItem
+                  key={option}
+                  value={option}
+                  className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3">
+
                     {option}
                   </SelectItem>
-                ))}
+                )}
               </SelectContent>
             </Select>
-          </div>
-        );
+          </div>);
+
       case 7:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
@@ -574,10 +574,10 @@ export default function Quiz() {
               placeholder="Conte-nos o que você quer resolver..."
               value={formData.dor_desejo}
               onChange={(e) => updateField("dor_desejo", e.target.value)}
-              autoFocus
-            />
-          </div>
-        );
+              autoFocus />
+
+          </div>);
+
       case 8:
         return <LoadingCommitStep onFinish={handleSubmit} />;
       default:
@@ -596,8 +596,8 @@ export default function Quiz() {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/")}
-            className="gap-2 text-muted-foreground hover:text-foreground"
-          >
+            className="gap-2 text-muted-foreground hover:text-foreground">
+
             <ArrowLeft className="w-4 h-4" />
             Voltar
           </Button>
@@ -608,13 +608,13 @@ export default function Quiz() {
       <main className="pt-16 pb-6 px-4 min-h-[100svh] flex items-center justify-center w-full max-w-full overflow-x-hidden" style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }}>
         <div className="w-full max-w-[92vw] sm:max-w-md mx-auto">
           {/* Quiz Card - Compact and elegant */}
-          <div 
+          <div
             className="backdrop-blur-xl border border-border/60 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl w-full overflow-hidden"
             style={{
               background: 'hsl(235 45% 7% / 0.94)',
-              boxShadow: '0 8px 40px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset',
-            }}
-          >
+              boxShadow: '0 8px 40px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset'
+            }}>
+
             {/* Header text - smaller on mobile */}
             <div className="mb-4 sm:mb-6">
               <p className="text-center text-muted-foreground text-xs sm:text-sm leading-relaxed opacity-80">
@@ -629,45 +629,45 @@ export default function Quiz() {
               </div>
 
             {/* Navigation Buttons - Hidden on loading step */}
-            {step !== 8 && (
+            {step !== 8 &&
               <div className={`mt-6 sm:mt-8 ${step > 1 ? 'flex flex-col-reverse sm:flex-row gap-3' : ''}`}>
-                {step > 1 && (
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={prevStep}
-                    className="w-full sm:flex-1 h-11 sm:h-12 md:h-14 text-sm sm:text-base rounded-xl border-2 border-border/60 hover:bg-muted hover:border-border transition-colors duration-200 min-w-0"
-                  >
+                {step > 1 &&
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={prevStep}
+                  className="w-full sm:flex-1 h-11 sm:h-12 md:h-14 text-sm sm:text-base rounded-xl border-2 border-border/60 hover:bg-muted hover:border-border transition-colors duration-200 min-w-0">
+
                     <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 shrink-0" />
                     Voltar
                   </Button>
-                )}
+                }
                 <Button
                   size="lg"
                   onClick={nextStep}
                   disabled={!canProceed() || isSubmitting}
-                  className="w-full sm:flex-1 h-11 sm:h-12 md:h-14 text-sm sm:text-base rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none min-w-0"
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-                  ) : step === totalSteps - 1 ? (
-                    <>
+                  className="w-full sm:flex-1 h-11 sm:h-12 md:h-14 text-sm sm:text-base rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none min-w-0">
+
+                  {isSubmitting ?
+                  <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> :
+                  step === totalSteps - 1 ?
+                  <>
                       Enviar
                       <Check className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2 shrink-0" />
-                    </>
-                  ) : (
-                    <>
+                    </> :
+
+                  <>
                       Continuar
                       <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2 shrink-0" />
                     </>
-                  )}
+                  }
                 </Button>
               </div>
-            )}
+              }
             </div>
           </div>
         </div>
       </main>
-    </div>
-  );
+    </div>);
+
 }
