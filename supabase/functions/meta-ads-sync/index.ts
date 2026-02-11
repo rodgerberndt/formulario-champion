@@ -9,7 +9,8 @@ const corsHeaders = {
 
 const META_API_VERSION = Deno.env.get('META_API_VERSION') || 'v21.0';
 const META_ACCESS_TOKEN = Deno.env.get('META_ACCESS_TOKEN');
-const META_AD_ACCOUNT_ID = Deno.env.get('META_AD_ACCOUNT_ID');
+const RAW_AD_ACCOUNT_ID = Deno.env.get('META_AD_ACCOUNT_ID') || '';
+const META_AD_ACCOUNT_ID = RAW_AD_ACCOUNT_ID.startsWith('act_') ? RAW_AD_ACCOUNT_ID : `act_${RAW_AD_ACCOUNT_ID}`;
 
 async function verifyAdminToken(token: string): Promise<boolean> {
   try {
