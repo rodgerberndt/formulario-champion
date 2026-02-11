@@ -107,8 +107,15 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // Clamp date_from to max 37 months ago (Meta API limit)
+    const maxMonthsBack = 37;
+    const minDate = new Date();
+    minDate.setMonth(minDate.getMonth() - maxMonthsBack);
+    const minDateStr = minDate.toISOString().slice(0, 10);
+    const clampedFrom = date_from < minDateStr ? minDateStr : date_from;
+
     // Fetch insights from Meta
-    const insights = await fetchMetaInsights(date_from, date_to);
+    const insights = await fetchMetaInsights(clampedFrom, date_to);
 
     // Prepare upsert rows
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
