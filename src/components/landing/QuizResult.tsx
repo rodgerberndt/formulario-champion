@@ -214,12 +214,35 @@ export function QuizResult({
         </p>
       </div>
 
+      {/* ── SKIP THE LINE ── */}
+      <div className="bg-card/70 backdrop-blur-xl border border-border/50 rounded-2xl p-5 md:p-6 space-y-4">
+        <h2 className="text-lg md:text-xl font-bold text-foreground leading-tight">
+          Pule a fila, caso precise
+        </h2>
+
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Somente aqui nessa seção da página quero liberar uma função inédita, somente se você <strong className="text-foreground">realmente quer ter os mesmos resultados</strong> dos clientes que implementaram a Champion na sua operação.
+        </p>
+
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Ao invés de esperar nosso time entrar em contato e marcar o diagnóstico, você pode <strong className="text-secondary">pular a fila</strong> e conseguir entrar em contato com o nosso time, caso ainda não entramos em contato com você.
+        </p>
+
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Para pular a fila, basta apertar o botão abaixo desse texto.
+        </p>
+
+        <Button variant="championOutline" size="lg" className="w-full text-base" asChild>
+          <a href={waLink} target="_blank" rel="noopener noreferrer">
+            <MessageCircle className="w-5 h-5" />
+            Pular a fila agora
+          </a>
+        </Button>
+      </div>
+
       {/* ── MOTIVATIONAL HEADLINE ── */}
       <p className="text-center text-lg md:text-xl font-semibold text-foreground leading-snug">
         Parabéns <span className="champion-gradient-text">Champs</span>, agora é só aguardar que nós iremos trazer mais um dígito de faturamento para você. 🚀
       </p>
-
-      {/* ── SUPPORT FALLBACK ── */}
-      
     </div>;
 }
