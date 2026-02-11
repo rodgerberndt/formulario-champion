@@ -39,6 +39,7 @@ import {
   Plus,
   Trash2,
   Star,
+  RefreshCw,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -174,6 +175,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [showAddSpend, setShowAddSpend] = useState(false);
   const [spendForm, setSpendForm] = useState({ date: "", spend: "", impressions: "0", clicks: "0", utm_content: "", campaign_name: "" });
   const [savingSpend, setSavingSpend] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -252,6 +254,33 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     }
   };
 
+  const handleMetaSync = async () => {
+    setSyncing(true);
+    try {
+      const token = sessionStorage.getItem("admin_token");
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const res = await fetch(`${supabaseUrl}/functions/v1/meta-ads-sync`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-token": token || "",
+        },
+        body: JSON.stringify({ date_from: startDateOnly, date_to: endDateOnly }),
+      });
+      const result = await res.json();
+      if (result.error) {
+        toast({ title: "Erro ao sincronizar", description: result.error, variant: "destructive" });
+      } else {
+        toast({ title: "Meta Ads sincronizado!", description: `${result.inserted} registros importados (${result.date_from} a ${result.date_to})` });
+        loadData();
+      }
+    } catch (err) {
+      toast({ title: "Erro ao sincronizar Meta Ads", variant: "destructive" });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   // Sort & filter creatives
   const creatives = (data?.creatives || [])
     .filter(c => {
@@ -317,6 +346,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         </Button>
 
         <div className="ml-auto flex gap-2">
+          <Button variant="default" size="sm" onClick={handleMetaSync} disabled={syncing}>
+            {syncing ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <RefreshCw className="w-4 h-4 mr-1" />}
+            {syncing ? "Sincronizando..." : "Sync Meta Ads"}
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setShowAddSpend(true)}>
             <Plus className="w-4 h-4 mr-1" /> Gasto
           </Button>
