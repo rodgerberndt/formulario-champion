@@ -333,13 +333,15 @@ export default function AdminAnalytics() {
     return { score, tier };
   };
 
-  // SDR assignment helper - uses override if set, otherwise based on tier
+  // SDR assignment helper - uses override if set, otherwise based on stage + investment
+  const SDR_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)"];
+  const SDR_INVEST_MIN = ["R$ 2k – 8k", "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k", "R$ 100k+"];
   const getLeadSdr = (lead: Lead): string => {
     if (lead.sdr_override) return lead.sdr_override;
-    const { tier } = recalcLeadScore(lead);
-    if (tier === "Enterprise" || tier === "Large") return "Rodger";
-    if (tier === "Medium" || tier === "Small") return "Dara";
-    return "-";
+    const isAdvancedStage = SDR_STAGES.includes(lead.estagio_negocio);
+    const investsEnough = lead.investimento_faixa ? SDR_INVEST_MIN.includes(lead.investimento_faixa) : false;
+    if (isAdvancedStage && investsEnough) return "Rodger";
+    return "Dara";
   };
 
   // Toggle SDR between Rodger and Dara
