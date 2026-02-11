@@ -140,11 +140,8 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Clamp date_from to max 37 months ago (Meta API limit)
-    const maxMonthsBack = 37;
-    const minDate = new Date();
-    minDate.setMonth(minDate.getMonth() - maxMonthsBack);
-    const minDateStr = minDate.toISOString().slice(0, 10);
+    // Clamp date_from to Feb 2026 minimum (earlier data is unreliable)
+    const minDateStr = '2026-02-01';
     const clampedFrom = date_from < minDateStr ? minDateStr : date_from;
 
     // Fetch insights from Meta
