@@ -121,9 +121,10 @@ function LoadingCommitStep({ onFinish }: { onFinish: () => void }) {
           clearInterval(interval);
           return 100;
         }
-        return prev + 1.5;
+        // ~8 seconds total: 100 / 0.5 = 200 ticks * 40ms = 8000ms
+        return prev + 0.5;
       });
-    }, 50);
+    }, 40);
     return () => clearInterval(interval);
   }, []);
 
