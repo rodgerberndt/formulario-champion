@@ -860,6 +860,238 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // ──── GET /creatives ────
+    if (path === "/creatives" && req.method === "GET") {
+      const from = url.searchParams.get("from");
+      const to = url.searchParams.get("to");
+      const toEnd = to ? to + "T23:59:59.999" : null;
+
+      // Helper to normalize creative key
+      function normalizeKey(raw: string): string {
+        return raw.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-_]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+      }
+
+      // MQL logic
+      const MQL_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)"];
+      const MQL_SPEND_FAIXAS = ["R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k", "R$ 100k+"];
+      function isMql(estagio: string, investimento: string | null): boolean {
+        if (MQL_STAGES.includes(estagio)) return true;
+        if (investimento && MQL_SPEND_FAIXAS.includes(investimento)) return true;
+        return false;
+      }
+
+      // Fetch ALL leads in period
+      const PAGE_SIZE = 1000;
+      let allLeads: any[] = [];
+      let offset = 0;
+      let hasMore = true;
+      while (hasMore) {
+        let q = supabase.from("leads").select("id, created_at, utm_content, utm_campaign, utm_source, estagio_negocio, investimento_faixa").range(offset, offset + PAGE_SIZE - 1);
+        if (from) q = q.gte("created_at", from);
+        if (toEnd) q = q.lte("created_at", toEnd);
+        const { data, error } = await q;
+        if (error) throw error;
+        if (data) allLeads = allLeads.concat(data);
+        hasMore = (data?.length || 0) === PAGE_SIZE;
+        offset += PAGE_SIZE;
+      }
+
+      // Fetch ad_spend in period
+      let spendQuery = supabase.from("ad_spend").select("*");
+      if (from) spendQuery = spendQuery.gte("date", from);
+      if (to) spendQuery = spendQuery.lte("date", to);
+      const { data: spendData } = await spendQuery;
+
+      // Fetch manual_sales in period
+      let salesQuery = supabase.from("manual_sales").select("*");
+      if (from) salesQuery = salesQuery.gte("sale_date", from);
+      if (to) salesQuery = salesQuery.lte("sale_date", to);
+      const { data: salesData } = await salesQuery;
+
+      // Build creative map from leads
+      interface CreativeAgg {
+        creative_key: string;
+        creative_label: string;
+        creative_source_field: string;
+        leads_count: number;
+        mql_count: number;
+        spend: number;
+        sales_count: number;
+        revenue: number;
+        last_activity: string | null;
+        leads_by_stage: Record<string, number>;
+        campaigns: Set<string>;
+      }
+
+      const creativeMap = new Map<string, CreativeAgg>();
+
+      function getOrCreate(key: string, label: string, source: string): CreativeAgg {
+        if (!creativeMap.has(key)) {
+          creativeMap.set(key, {
+            creative_key: key,
+            creative_label: label,
+            creative_source_field: source,
+            leads_count: 0,
+            mql_count: 0,
+            spend: 0,
+            sales_count: 0,
+            revenue: 0,
+            last_activity: null,
+            leads_by_stage: {},
+            campaigns: new Set(),
+          });
+        }
+        return creativeMap.get(key)!;
+      }
+
+      let leadsWithCreative = 0;
+      let leadsWithoutUtms = 0;
+
+      // Process leads
+      for (const lead of allLeads) {
+        const rawKey = lead.utm_content;
+        if (!rawKey) {
+          leadsWithoutUtms++;
+          continue;
+        }
+        const ck = normalizeKey(rawKey);
+        if (!ck) {
+          leadsWithoutUtms++;
+          continue;
+        }
+        leadsWithCreative++;
+        const agg = getOrCreate(ck, rawKey, "utm_content");
+        agg.leads_count++;
+        if (isMql(lead.estagio_negocio, lead.investimento_faixa)) {
+          agg.mql_count++;
+        }
+        agg.leads_by_stage[lead.estagio_negocio] = (agg.leads_by_stage[lead.estagio_negocio] || 0) + 1;
+        if (lead.utm_campaign) agg.campaigns.add(lead.utm_campaign);
+        if (!agg.last_activity || lead.created_at > agg.last_activity) {
+          agg.last_activity = lead.created_at;
+        }
+      }
+
+      // Process spend
+      let spendMapped = 0;
+      let spendTotal = 0;
+      for (const s of (spendData || [])) {
+        const amount = Number(s.spend) || 0;
+        spendTotal += amount;
+        const rawKey = s.utm_content || s.ad_name;
+        if (!rawKey) continue;
+        const ck = s.creative_key || normalizeKey(rawKey);
+        if (!ck) continue;
+        spendMapped += amount;
+        const agg = getOrCreate(ck, rawKey, s.utm_content ? "utm_content" : "fallback");
+        agg.spend += amount;
+        if (s.campaign_name) agg.campaigns.add(s.campaign_name);
+        const spendDate = s.date;
+        if (!agg.last_activity || spendDate > agg.last_activity) {
+          agg.last_activity = spendDate;
+        }
+      }
+
+      // Process sales
+      let salesWithoutCreative = 0;
+      for (const sale of (salesData || [])) {
+        const rawKey = sale.creative_key || sale.utm_content;
+        if (!rawKey) {
+          salesWithoutCreative++;
+          continue;
+        }
+        const ck = normalizeKey(rawKey);
+        if (!ck) {
+          salesWithoutCreative++;
+          continue;
+        }
+        const agg = getOrCreate(ck, rawKey, "utm_content");
+        agg.sales_count++;
+        agg.revenue += Number(sale.revenue) || 0;
+      }
+
+      // Calculate derived metrics
+      const creatives = Array.from(creativeMap.values()).map(c => {
+        const mql_rate = c.leads_count > 0 ? c.mql_count / c.leads_count : 0;
+        const cost_per_mql = c.mql_count > 0 ? c.spend / c.mql_count : null;
+        const cac = c.sales_count > 0 ? c.spend / c.sales_count : null;
+        const roas = c.spend > 0 ? c.revenue / c.spend : null;
+        return {
+          ...c,
+          mql_rate,
+          cost_per_mql,
+          cac,
+          roas,
+          campaigns: Array.from(c.campaigns),
+        };
+      });
+
+      // Totals
+      const totalSpend = creatives.reduce((s, c) => s + c.spend, 0) + (spendTotal - spendMapped);
+      const totalLeads = allLeads.length;
+      const totalMql = creatives.reduce((s, c) => s + c.mql_count, 0);
+      const totalSales = creatives.reduce((s, c) => s + c.sales_count, 0) + salesWithoutCreative;
+      const totalRevenue = creatives.reduce((s, c) => s + c.revenue, 0);
+
+      return new Response(
+        JSON.stringify({
+          creatives,
+          totals: {
+            spend: totalSpend,
+            leads: totalLeads,
+            mql: totalMql,
+            sales: totalSales,
+            revenue: totalRevenue,
+            cpl: totalLeads > 0 ? totalSpend / totalLeads : null,
+            cpmql: totalMql > 0 ? totalSpend / totalMql : null,
+            cac: totalSales > 0 ? totalSpend / totalSales : null,
+            roas: totalSpend > 0 ? totalRevenue / totalSpend : null,
+          },
+          data_quality: {
+            leads_with_creative: leadsWithCreative,
+            leads_total: allLeads.length,
+            spend_mapped: spendMapped,
+            spend_total: spendTotal,
+            sales_without_creative: salesWithoutCreative,
+            leads_without_utms: leadsWithoutUtms,
+          },
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ──── POST /manual-sales ────
+    if (path === "/manual-sales" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
+      const params = Object.fromEntries(url.searchParams);
+      const { data, error } = await supabase.from("manual_sales").insert([{
+        sale_date: params.sale_date,
+        revenue: parseFloat(params.revenue),
+        creative_key: params.creative_key || null,
+        utm_content: params.utm_content || null,
+        notes: params.notes || null,
+      }]).select().maybeSingle();
+
+      if (error) throw error;
+      return new Response(JSON.stringify(data), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // ──── POST /ad-spend ────
+    if (path === "/ad-spend" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
+      const params = Object.fromEntries(url.searchParams);
+      const { data, error } = await supabase.from("ad_spend").insert([{
+        date: params.date,
+        spend: parseFloat(params.spend),
+        impressions: parseInt(params.impressions) || 0,
+        clicks: parseInt(params.clicks) || 0,
+        utm_content: params.utm_content || null,
+        creative_key: params.creative_key || null,
+        campaign_name: params.campaign_name || null,
+      }]).select().maybeSingle();
+
+      if (error) throw error;
+      return new Response(JSON.stringify(data), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     return new Response(
       JSON.stringify({ error: "Rota não encontrada" }),
       { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }

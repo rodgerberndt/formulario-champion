@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_spend: {
+        Row: {
+          ad_id: string | null
+          ad_name: string | null
+          adset_id: string | null
+          adset_name: string | null
+          campaign_id: string | null
+          campaign_name: string | null
+          clicks: number
+          created_at: string
+          creative_key: string | null
+          date: string
+          id: string
+          impressions: number
+          spend: number
+          utm_content: string | null
+          utm_creative: string | null
+        }
+        Insert: {
+          ad_id?: string | null
+          ad_name?: string | null
+          adset_id?: string | null
+          adset_name?: string | null
+          campaign_id?: string | null
+          campaign_name?: string | null
+          clicks?: number
+          created_at?: string
+          creative_key?: string | null
+          date: string
+          id?: string
+          impressions?: number
+          spend?: number
+          utm_content?: string | null
+          utm_creative?: string | null
+        }
+        Update: {
+          ad_id?: string | null
+          ad_name?: string | null
+          adset_id?: string | null
+          adset_name?: string | null
+          campaign_id?: string | null
+          campaign_name?: string | null
+          clicks?: number
+          created_at?: string
+          creative_key?: string | null
+          date?: string
+          id?: string
+          impressions?: number
+          spend?: number
+          utm_content?: string | null
+          utm_creative?: string | null
+        }
+        Relationships: []
+      }
       kommo_webhook_logs: {
         Row: {
           contact_id: number | null
@@ -366,6 +420,47 @@ export type Database = {
           whatsapp?: string
         }
         Relationships: []
+      }
+      manual_sales: {
+        Row: {
+          created_at: string
+          creative_key: string | null
+          id: string
+          lead_id: string | null
+          notes: string | null
+          revenue: number
+          sale_date: string
+          utm_content: string | null
+        }
+        Insert: {
+          created_at?: string
+          creative_key?: string | null
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          revenue?: number
+          sale_date: string
+          utm_content?: string | null
+        }
+        Update: {
+          created_at?: string
+          creative_key?: string | null
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          revenue?: number
+          sale_date?: string
+          utm_content?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manual_sales_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       meta_ads_cache: {
         Row: {
