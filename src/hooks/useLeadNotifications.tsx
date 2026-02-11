@@ -4,6 +4,43 @@ import { toast } from "@/hooks/use-toast";
 const NOTIFY_PREF_KEY = "champion_notify_enabled";
 const POLL_INTERVAL_MS = 15_000; // Poll every 15 seconds
 
+/** Plays a synthetic "cha-ching" cash register sound via Web Audio API */
+function playSaleSound() {
+  try {
+    const ctx = new AudioContext();
+    const now = ctx.currentTime;
+
+    // First "cha" – short metallic hit
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = "square";
+    osc1.frequency.setValueAtTime(1200, now);
+    osc1.frequency.exponentialRampToValueAtTime(600, now + 0.08);
+    gain1.gain.setValueAtTime(0.3, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    osc1.connect(gain1).connect(ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.12);
+
+    // Second "ching" – bright bell tone
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(1800, now + 0.12);
+    osc2.frequency.exponentialRampToValueAtTime(2400, now + 0.2);
+    gain2.gain.setValueAtTime(0.35, now + 0.12);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+    osc2.connect(gain2).connect(ctx.destination);
+    osc2.start(now + 0.12);
+    osc2.stop(now + 0.6);
+
+    // Cleanup
+    setTimeout(() => ctx.close(), 1000);
+  } catch (err) {
+    console.warn("Could not play sale sound:", err);
+  }
+}
+
 interface NewLead {
   id: string;
   nome_completo: string;
@@ -45,6 +82,9 @@ export function useLeadNotifications(
   const notifyNewLeads = useCallback(
     (newLeads: NewLead[]) => {
       if (newLeads.length === 0) return;
+
+      // 🔊 Play sale/cash register sound
+      playSaleSound();
 
       // Toast notification inside the app
       if (newLeads.length === 1) {
