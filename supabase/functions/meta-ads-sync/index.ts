@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-const META_API_VERSION = Deno.env.get('META_API_VERSION') || 'v21.0';
+const META_API_VERSION = (Deno.env.get('META_API_VERSION') || 'v21.0').toLowerCase();
 const META_ACCESS_TOKEN = Deno.env.get('META_ACCESS_TOKEN');
 const RAW_AD_ACCOUNT_ID = Deno.env.get('META_AD_ACCOUNT_ID') || '';
 const META_AD_ACCOUNT_ID = RAW_AD_ACCOUNT_ID.startsWith('act_') ? RAW_AD_ACCOUNT_ID : `act_${RAW_AD_ACCOUNT_ID}`;
@@ -50,7 +50,12 @@ async function fetchMetaInsights(dateFrom: string, dateTo: string): Promise<Meta
   const limit = 500;
 
   let allData: MetaInsight[] = [];
-  let url = `https://graph.facebook.com/${META_API_VERSION}/${META_AD_ACCOUNT_ID}/insights?fields=${fields}&time_range=${encodeURIComponent(timeRange)}&level=${level}&time_increment=1&limit=${limit}&access_token=${META_ACCESS_TOKEN}`;
+  const baseUrl = `https://graph.facebook.com/${META_API_VERSION}/${META_AD_ACCOUNT_ID}/insights`;
+  let url = `${baseUrl}?fields=${fields}&time_range=${encodeURIComponent(timeRange)}&level=${level}&time_increment=1&limit=${limit}&access_token=${META_ACCESS_TOKEN}`;
+
+  console.log('Meta API URL (no token):', `${baseUrl}?fields=${fields}&time_range=${encodeURIComponent(timeRange)}&level=${level}&time_increment=1&limit=${limit}`);
+  console.log('META_API_VERSION:', META_API_VERSION);
+  console.log('META_AD_ACCOUNT_ID:', META_AD_ACCOUNT_ID);
 
   while (url) {
     console.log('Fetching Meta Insights page...');
