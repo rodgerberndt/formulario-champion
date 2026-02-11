@@ -1545,22 +1545,28 @@ export default function AdminAnalytics() {
               >
                 Leads
                 {leadsUnreadCount > 0 && (
-                  <span className="ml-2 px-2.5 py-0.5 text-xs bg-destructive text-destructive-foreground rounded-full font-bold animate-pulse">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
                     {leadsUnreadCount}
                   </span>
                 )}
-              </TabsTrigger>
-              <TabsTrigger 
-                value="sessions" 
-                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-              >
-                Sessões
               </TabsTrigger>
               <TabsTrigger 
                 value="funnel" 
                 className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
               >
                 Funil
+              </TabsTrigger>
+              <TabsTrigger 
+                value="creatives" 
+                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+              >
+                Criativos
+              </TabsTrigger>
+              <TabsTrigger 
+                value="sessions" 
+                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+              >
+                Sessões
               </TabsTrigger>
               <TabsTrigger 
                 value="campaigns" 
@@ -1573,12 +1579,6 @@ export default function AdminAnalytics() {
                 className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
               >
                 Botões
-              </TabsTrigger>
-              <TabsTrigger 
-                value="creatives" 
-                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-              >
-                Criativos
               </TabsTrigger>
               <TabsTrigger 
                 value="kommo" 
