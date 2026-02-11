@@ -51,6 +51,7 @@ import { ptBR } from "date-fns/locale";
 
 const KommoLogsPanel = lazy(() => import("@/components/admin/KommoLogsPanel"));
 const FunnelMapTab = lazy(() => import("@/components/admin/FunnelMapTab"));
+const CreativesTab = lazy(() => import("@/components/admin/CreativesTab"));
 import {
   Dialog,
   DialogContent,
@@ -1574,6 +1575,12 @@ export default function AdminAnalytics() {
                 Botões
               </TabsTrigger>
               <TabsTrigger 
+                value="creatives" 
+                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+              >
+                Criativos
+              </TabsTrigger>
+              <TabsTrigger 
                 value="kommo" 
                 className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
               >
@@ -2571,6 +2578,17 @@ export default function AdminAnalytics() {
                   </Card>
                 </div>
               )}
+            </TabsContent>
+
+            {/* Criativos Tab */}
+            <TabsContent value="creatives">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <CreativesTab 
+                  fetchAdminData={fetchAdminData}
+                  startDateOnly={startDateOnly}
+                  endDateOnly={endDateOnly}
+                />
+              </Suspense>
             </TabsContent>
 
             {/* Kommo Tab */}
