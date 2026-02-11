@@ -170,6 +170,7 @@ interface Lead {
   placement: string | null;
   site_source_name: string | null;
   sdr_override: string | null;
+  raw_answers_json: Record<string, unknown> | null;
 }
 
 export default function AdminAnalytics() {
@@ -2064,6 +2065,21 @@ export default function AdminAnalytics() {
                         <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Dor / Desejo</p>
                         <p className="whitespace-pre-wrap">{selectedLead.dor_desejo}</p>
                       </div>
+
+                      {/* Compromisso WhatsApp */}
+                      {(() => {
+                        const raw = selectedLead.raw_answers_json;
+                        const committed = raw?.compromisso_whatsapp;
+                        if (committed === undefined) return null;
+                        return (
+                          <div className={`p-4 rounded-lg border ${committed ? "bg-green-500/10 border-green-500/30" : "bg-red-500/10 border-red-500/30"}`}>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Compromisso de Resposta (WhatsApp)</p>
+                            <p className={`font-semibold text-lg ${committed ? "text-green-400" : "text-red-400"}`}>
+                              {committed ? "✅ Sim, se comprometeu" : "❌ Não se comprometeu"}
+                            </p>
+                          </div>
+                        );
+                      })()}
 
 
                       {/* Score & Tier (internal) */}

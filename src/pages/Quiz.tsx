@@ -32,6 +32,7 @@ interface QuizFormData {
   investimento_faixa: string;
   dor_desejo: string;
   lgpd: boolean;
+  compromisso_whatsapp: boolean;
 }
 
 const STORAGE_KEY = "champion_quiz_progress";
@@ -109,7 +110,7 @@ const QuizBackground = memo(function QuizBackground() {
 });
 
 // Loading commitment step component
-function LoadingCommitStep({ onFinish }: {onFinish: () => void;}) {
+function LoadingCommitStep({ onFinish, onCommit }: {onFinish: () => void; onCommit: (v: boolean) => void;}) {
   const [progress, setProgress] = useState(0);
   const [committed, setCommitted] = useState(false);
   const hasSubmitted = useRef(false);
@@ -121,8 +122,8 @@ function LoadingCommitStep({ onFinish }: {onFinish: () => void;}) {
           clearInterval(interval);
           return 100;
         }
-        // ~8 seconds total: 100 / 0.5 = 200 ticks * 40ms = 8000ms
-        return prev + 0.5;
+        // ~15 seconds total: 100 / 0.27 ≈ 370 ticks * 40ms ≈ 14800ms
+        return prev + 0.27;
       });
     }, 40);
     return () => clearInterval(interval);
@@ -162,7 +163,7 @@ function LoadingCommitStep({ onFinish }: {onFinish: () => void;}) {
           </p>
         </div>
         <button
-          onClick={() => setCommitted(true)}
+          onClick={() => { setCommitted(true); onCommit(true); }}
           className={`mt-2 w-full py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300 ${
           committed ?
           "bg-green-500/20 border-2 border-green-500/50 text-green-400" :
@@ -198,7 +199,8 @@ export default function Quiz() {
     estagio_negocio: "",
     investimento_faixa: "",
     dor_desejo: "",
-    lgpd: false
+    lgpd: false,
+    compromisso_whatsapp: false
   });
 
   const totalSteps = 8;
@@ -579,7 +581,7 @@ export default function Quiz() {
           </div>);
 
       case 8:
-        return <LoadingCommitStep onFinish={handleSubmit} />;
+        return <LoadingCommitStep onFinish={handleSubmit} onCommit={(v) => updateField("compromisso_whatsapp", v)} />;
       default:
         return null;
     }
