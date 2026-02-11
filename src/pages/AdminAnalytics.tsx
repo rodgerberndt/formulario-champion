@@ -622,7 +622,7 @@ export default function AdminAnalytics() {
   const uniqueEstagios = [...new Set(leads.map(l => l.estagio_negocio))].filter(Boolean).sort();
   const TIER_ORDER = ["Enterprise", "Large", "Medium", "Small"];
   const uniqueTiers = TIER_ORDER.filter(t => leads.some(l => getLeadTier(l) === t));
-  const uniqueAdsets = [...new Set(leads.map(l => l.adset_id).filter(Boolean) as string[])].sort();
+  const uniqueAdsets = [...new Set(leads.map(l => l.utm_content).filter(Boolean) as string[])].sort();
 
   const filteredLeads = leads.filter((lead) => {
     // Search filter
@@ -656,8 +656,8 @@ export default function AdminAnalytics() {
       if (leadsSdrFilter === "dara" && sdr !== "Dara") return false;
     }
     
-    // Adset (conjunto de anúncio) filter
-    if (leadsAdsetFilter !== "all" && lead.adset_id !== leadsAdsetFilter) return false;
+    // Adset (conjunto de anúncio / criativo) filter
+    if (leadsAdsetFilter !== "all" && lead.utm_content !== leadsAdsetFilter) return false;
     
     // Date filtering is now done server-side in loadLeads
     
