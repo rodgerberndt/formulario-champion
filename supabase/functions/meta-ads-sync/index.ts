@@ -43,25 +43,46 @@ interface MetaInsight {
   date_stop: string;
 }
 
-async function fetchMetaInsights(dateFrom: string, dateTo: string): Promise<MetaInsight[]> {
+// Split date range into monthly chunks
+function getMonthlyChunks(dateFrom: string, dateTo: string): Array<{since: string, until: string}> {
+  const chunks: Array<{since: string, until: string}> = [];
+  let current = new Date(dateFrom);
+  const end = new Date(dateTo);
+  
+  while (current <= end) {
+    const chunkEnd = new Date(current);
+    chunkEnd.setMonth(chunkEnd.getMonth() + 1);
+    chunkEnd.setDate(0); // last day of current month
+    
+    const until = chunkEnd > end ? dateTo : chunkEnd.toISOString().slice(0, 10);
+    chunks.push({ since: current.toISOString().slice(0, 10), until });
+    
+    // Move to first day of next month
+    current = new Date(chunkEnd);
+    current.setDate(current.getDate() + 1);
+  }
+  return chunks;
+}
+
+async function fetchMetaInsightsChunk(since: string, until: string): Promise<MetaInsight[]> {
   const fields = 'ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,spend,impressions,clicks';
-  const timeRange = JSON.stringify({ since: dateFrom, until: dateTo });
-  const level = 'ad';
+  const timeRange = JSON.stringify({ since, until });
   const limit = 500;
 
   let allData: MetaInsight[] = [];
   const baseUrl = `https://graph.facebook.com/${META_API_VERSION}/${META_AD_ACCOUNT_ID}/insights`;
-  let url = `${baseUrl}?fields=${fields}&time_range=${encodeURIComponent(timeRange)}&level=${level}&time_increment=1&limit=${limit}&access_token=${META_ACCESS_TOKEN}`;
-
-  console.log('Meta API URL (no token):', `${baseUrl}?fields=${fields}&time_range=${encodeURIComponent(timeRange)}&level=${level}&time_increment=1&limit=${limit}`);
-  console.log('META_API_VERSION:', META_API_VERSION);
-  console.log('META_AD_ACCOUNT_ID:', META_AD_ACCOUNT_ID);
+  let url: string | null = `${baseUrl}?fields=${fields}&time_range=${encodeURIComponent(timeRange)}&level=ad&time_increment=1&limit=${limit}&access_token=${META_ACCESS_TOKEN}`;
 
   while (url) {
-    console.log('Fetching Meta Insights page...');
+    console.log(`Fetching Meta Insights: ${since} to ${until}...`);
     const response = await fetch(url);
     if (!response.ok) {
       const errText = await response.text();
+      // If Meta returns 500/unknown error, skip this chunk instead of failing everything
+      if (response.status >= 500) {
+        console.error(`Meta API server error for ${since}-${until}, skipping chunk:`, errText);
+        return allData;
+      }
       console.error('Meta API error:', response.status, errText);
       throw new Error(`Meta API error ${response.status}: ${errText}`);
     }
@@ -69,11 +90,23 @@ async function fetchMetaInsights(dateFrom: string, dateTo: string): Promise<Meta
     if (json.data) {
       allData = allData.concat(json.data);
     }
-    // Handle pagination
     url = json.paging?.next || null;
   }
 
-  console.log(`Fetched ${allData.length} insight rows from Meta`);
+  return allData;
+}
+
+async function fetchMetaInsights(dateFrom: string, dateTo: string): Promise<MetaInsight[]> {
+  const chunks = getMonthlyChunks(dateFrom, dateTo);
+  console.log(`Splitting into ${chunks.length} monthly chunks`);
+  
+  let allData: MetaInsight[] = [];
+  for (const chunk of chunks) {
+    const data = await fetchMetaInsightsChunk(chunk.since, chunk.until);
+    allData = allData.concat(data);
+  }
+  
+  console.log(`Fetched ${allData.length} total insight rows from Meta`);
   return allData;
 }
 
