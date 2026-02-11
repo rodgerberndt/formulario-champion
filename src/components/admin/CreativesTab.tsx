@@ -257,7 +257,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const handleMetaSync = async () => {
     setSyncing(true);
     try {
-      const token = sessionStorage.getItem("admin_token");
+      const token = sessionStorage.getItem("admin_analytics_token");
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const res = await fetch(`${supabaseUrl}/functions/v1/meta-ads-sync`, {
         method: "POST",
