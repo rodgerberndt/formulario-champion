@@ -310,6 +310,7 @@ export default function AdminAnalytics() {
   const [leadsEstagioFilter, setLeadsEstagioFilter] = useState<string>("all");
   const [leadsTierFilter, setLeadsTierFilter] = useState<string>("all");
   const [leadsSdrFilter, setLeadsSdrFilter] = useState<string>("all");
+  const [leadsAdsetFilter, setLeadsAdsetFilter] = useState<string>("all");
 
   // Recalculate score/tier from lead answers (ignores stale DB values)
   const recalcLeadScore = (lead: Lead) => {
@@ -621,6 +622,7 @@ export default function AdminAnalytics() {
   const uniqueEstagios = [...new Set(leads.map(l => l.estagio_negocio))].filter(Boolean).sort();
   const TIER_ORDER = ["Enterprise", "Large", "Medium", "Small"];
   const uniqueTiers = TIER_ORDER.filter(t => leads.some(l => getLeadTier(l) === t));
+  const uniqueAdsets = [...new Set(leads.map(l => l.adset_id).filter(Boolean) as string[])].sort();
 
   const filteredLeads = leads.filter((lead) => {
     // Search filter
@@ -653,6 +655,9 @@ export default function AdminAnalytics() {
       if (leadsSdrFilter === "rodger" && sdr !== "Rodger") return false;
       if (leadsSdrFilter === "dara" && sdr !== "Dara") return false;
     }
+    
+    // Adset (conjunto de anúncio) filter
+    if (leadsAdsetFilter !== "all" && lead.adset_id !== leadsAdsetFilter) return false;
     
     // Date filtering is now done server-side in loadLeads
     
@@ -1672,6 +1677,17 @@ export default function AdminAnalytics() {
                     <SelectItem value="dara">Dara</SelectItem>
                   </SelectContent>
                 </Select>
+                <Select value={leadsAdsetFilter} onValueChange={setLeadsAdsetFilter}>
+                  <SelectTrigger className="w-52">
+                    <SelectValue placeholder="Conjunto de Anúncio" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos conjuntos</SelectItem>
+                    {uniqueAdsets.map((a) => (
+                      <SelectItem key={a} value={a}>{a}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               {/* Actions - note: date filter is now in the global header */}
@@ -1680,7 +1696,7 @@ export default function AdminAnalytics() {
                   <RefreshCw className={`w-4 h-4 mr-2 ${leadsLoading ? "animate-spin" : ""}`} />
                   Atualizar
                 </Button>
-                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsEstagioFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all") && (
+                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsEstagioFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all" || leadsAdsetFilter !== "all") && (
                   <Button 
                     variant="ghost" 
                     onClick={() => {
@@ -1689,6 +1705,7 @@ export default function AdminAnalytics() {
                       setLeadsEstagioFilter("all");
                       setLeadsTierFilter("all");
                       setLeadsSdrFilter("all");
+                      setLeadsAdsetFilter("all");
                     }}
                   >
                     <XCircle className="w-4 h-4 mr-2" />
