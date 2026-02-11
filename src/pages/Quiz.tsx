@@ -13,7 +13,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { ChevronRight, ChevronLeft, Check, Loader2, ArrowLeft, Target } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, Loader2, ArrowLeft, Target, MessageCircle } from "lucide-react";
 import {
   calculateLeadScore,
   MERCADO_OPTIONS,
@@ -46,6 +46,7 @@ const STEP_IDS = [
   "q5_estagio",
   "q6_investimento",
   "q7_dor",
+  "q8_loading",
 ];
 
 // Memoized background component
@@ -107,6 +108,80 @@ const QuizBackground = memo(function QuizBackground() {
   );
 });
 
+// Loading commitment step component
+function LoadingCommitStep({ onFinish }: { onFinish: () => void }) {
+  const [progress, setProgress] = useState(0);
+  const [committed, setCommitted] = useState(false);
+  const hasSubmitted = useRef(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 1.5;
+      });
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (progress >= 100 && !hasSubmitted.current) {
+      hasSubmitted.current = true;
+      // Small delay after bar fills for UX
+      setTimeout(() => onFinish(), 600);
+    }
+  }, [progress, onFinish]);
+
+  return (
+    <div className="space-y-6 sm:space-y-8 animate-fade-in text-center">
+      {/* Loading indicator */}
+      <div className="space-y-3">
+        <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary animate-spin mx-auto" />
+        <p className="text-muted-foreground text-sm sm:text-base">
+          Processando suas informações...
+        </p>
+        {/* Progress bar */}
+        <div className="h-2 bg-muted rounded-full overflow-hidden max-w-[240px] mx-auto">
+          <div
+            className="h-full bg-primary rounded-full transition-all duration-100 ease-linear"
+            style={{ width: `${Math.min(progress, 100)}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Commitment question */}
+      <div className="bg-secondary/10 border border-secondary/30 rounded-2xl p-4 sm:p-5">
+        <div className="flex items-start gap-3 mb-3">
+          <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 text-secondary shrink-0 mt-0.5" />
+          <p className="text-secondary font-bold text-base sm:text-lg leading-snug text-left">
+            Quando um de nossos consultores lhe chamar no WhatsApp em até 6 horas, você se compromete a responder o mais rápido possível?
+          </p>
+        </div>
+        <button
+          onClick={() => setCommitted(true)}
+          className={`mt-2 w-full py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300 ${
+            committed
+              ? "bg-green-500/20 border-2 border-green-500/50 text-green-400"
+              : "bg-secondary/20 border-2 border-secondary/40 text-secondary hover:bg-secondary/30"
+          }`}
+        >
+          {committed ? (
+            <span className="flex items-center justify-center gap-2">
+              <Check className="w-5 h-5" />
+              Compromisso firmado!
+            </span>
+          ) : (
+            "Sim, me comprometo! 🤝"
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Quiz() {
   const navigate = useNavigate();
   const { trackQuizPageView, trackStepView, trackStepNext, trackStepBack, trackSubmit } = useTracking();
@@ -125,7 +200,7 @@ export default function Quiz() {
     lgpd: false,
   });
 
-  const totalSteps = 7;
+  const totalSteps = 8;
   const hasTrackedQuizView = useRef(false);
   const lastTrackedStep = useRef<number | null>(null);
 
@@ -193,6 +268,8 @@ export default function Quiz() {
         return formData.investimento_faixa !== "";
       case 7:
         return formData.dor_desejo.trim().length >= 10;
+      case 8:
+        return true;
       default:
         return false;
     }
@@ -500,6 +577,8 @@ export default function Quiz() {
             />
           </div>
         );
+      case 8:
+        return <LoadingCommitStep onFinish={handleSubmit} />;
       default:
         return null;
     }
@@ -548,7 +627,8 @@ export default function Quiz() {
                 {renderStep()}
               </div>
 
-              {/* Navigation Buttons - Stack on mobile */}
+            {/* Navigation Buttons - Hidden on loading step */}
+            {step !== 8 && (
               <div className={`mt-6 sm:mt-8 ${step > 1 ? 'flex flex-col-reverse sm:flex-row gap-3' : ''}`}>
                 {step > 1 && (
                   <Button
@@ -569,7 +649,7 @@ export default function Quiz() {
                 >
                   {isSubmitting ? (
                     <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-                  ) : step === totalSteps ? (
+                  ) : step === totalSteps - 1 ? (
                     <>
                       Enviar
                       <Check className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2 shrink-0" />
@@ -582,6 +662,7 @@ export default function Quiz() {
                   )}
                 </Button>
               </div>
+            )}
             </div>
           </div>
         </div>
