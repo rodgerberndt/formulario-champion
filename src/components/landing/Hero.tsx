@@ -64,7 +64,8 @@ export function Hero({
                   <div className="p-1.5 rounded-lg bg-secondary/12">
                     <Sparkles className="w-3.5 h-3.5 text-secondary" />
                   </div>
-                  <span className="text-xs">+ de 8k criativos produzidos<strong className="text-foreground font-semibold">+ de 8k</strong> criativos
+                  <span className="text-xs">
+                    <strong className="text-foreground font-semibold">+ de 8k</strong> criativos
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
