@@ -300,7 +300,7 @@ Fico no aguardo.`;
         <div className="container mx-auto px-4">
           <QuizResult
             nome={formData.nome_completo}
-            formData={formData}
+            estagio_negocio={formData.estagio_negocio}
           />
         </div>
       </section>

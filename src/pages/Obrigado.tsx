@@ -131,7 +131,7 @@ export default function Obrigado() {
 
       <main className="pt-20 pb-12 px-4 min-h-[100svh]" style={{ paddingBottom: 'calc(48px + env(safe-area-inset-bottom))' }}>
         <div className="container mx-auto max-w-lg">
-          <QuizResult nome={formData.nome_completo} />
+          <QuizResult nome={formData.nome_completo} estagio_negocio={formData.estagio_negocio} />
         </div>
       </main>
     </div>
