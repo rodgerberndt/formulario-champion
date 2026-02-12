@@ -79,17 +79,22 @@ async function updateSessionDirect(sessionId: string, data: Record<string, unkno
     
     console.log("Updating session:", sessionId, payload);
     
+    // Use update without .single()/.maybeSingle() to avoid 406 errors
     const { data: result, error } = await supabase
       .from("lead_sessions")
       .update(payload)
       .eq("id", sessionId)
-      .select()
-      .maybeSingle();
+      .select("id");
     
     if (error) {
       console.error("Error updating session:", error.message, error.code);
-    } else {
-      console.log("Session updated successfully:", result?.id);
+      if (error.code === 'PGRST116' || error.code === '406') {
+        console.warn("Session not found in DB, clearing stale session ID");
+        localStorage.removeItem(SESSION_KEY);
+      }
+    } else if (!result || result.length === 0) {
+      console.warn("Session not found in DB (0 rows updated), clearing stale session ID");
+      localStorage.removeItem(SESSION_KEY);
     }
   } catch (error) {
     console.error("Error updating session:", error);
