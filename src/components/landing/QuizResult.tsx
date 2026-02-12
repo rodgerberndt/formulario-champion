@@ -8,7 +8,8 @@ const SUPPORT_WHATSAPP_NUMBER = "55XXXXXXXXXXX";
 const SUBMISSION_TS_KEY = "champion_submit_ts";
 interface QuizResultProps {
   nome: string;
-  formData?: unknown;
+  estagio_negocio?: string;
+  investimento_faixa?: string;
 }
 function useCountdown() {
   const [remaining, setRemaining] = useState<string | null>(null);
@@ -89,8 +90,22 @@ const statusColors = {
     badgeText: "Próximo"
   }
 };
+const SDR_ADVANCED_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)"];
+const SDR_MIN_INVEST = ["R$ 2k – 8k", "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k", "R$ 100k+"];
+
+const DARA_SKIP_LINK = "https://wa.me/55554896560104?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
+const RODGER_SKIP_LINK = "https://wa.me/555548996378499?text=Falaa%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
+
+function getSdrSkipLink(estagio?: string, investimento?: string): string {
+  const isAdvanced = estagio ? SDR_ADVANCED_STAGES.includes(estagio) : false;
+  const investsEnough = investimento ? SDR_MIN_INVEST.includes(investimento) : false;
+  return (isAdvanced && investsEnough) ? RODGER_SKIP_LINK : DARA_SKIP_LINK;
+}
+
 export function QuizResult({
-  nome
+  nome,
+  estagio_negocio,
+  investimento_faixa,
 }: QuizResultProps) {
   const firstName = nome.split(" ")[0];
   const countdown = useCountdown();
@@ -100,6 +115,7 @@ export function QuizResult({
     return () => clearTimeout(timer);
   }, []);
   const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Acabei de concluir meu cadastro. ✅")}`;
+  const skipLink = getSdrSkipLink(estagio_negocio, investimento_faixa);
   const supportLink = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Já se passaram 6 horas e não recebi contato.")}`;
   return <div className="max-w-lg mx-auto animate-fade-in space-y-6">
       {/* ── HERO ── */}
@@ -233,7 +249,7 @@ export function QuizResult({
         </p>
 
         <Button variant="championOutline" size="lg" className="w-full text-base" asChild>
-          <a href={waLink} target="_blank" rel="noopener noreferrer">
+          <a href={skipLink} target="_blank" rel="noopener noreferrer">
             <MessageCircle className="w-5 h-5" />
             Pular a fila agora
           </a>
