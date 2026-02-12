@@ -99,13 +99,13 @@ const RODGER_SKIP_LINK = "https://wa.me/555548996378499?text=Falaa%2C%20furei%20
 function getSdrSkipLink(estagio?: string, investimento?: string): string {
   const isAdvanced = estagio ? SDR_ADVANCED_STAGES.includes(estagio) : false;
   const investsEnough = investimento ? SDR_MIN_INVEST.includes(investimento) : false;
-  return (isAdvanced && investsEnough) ? RODGER_SKIP_LINK : DARA_SKIP_LINK;
+  return isAdvanced && investsEnough ? RODGER_SKIP_LINK : DARA_SKIP_LINK;
 }
 
 export function QuizResult({
   nome,
   estagio_negocio,
-  investimento_faixa,
+  investimento_faixa
 }: QuizResultProps) {
   const firstName = nome.split(" ")[0];
   const countdown = useCountdown();
@@ -193,42 +193,42 @@ export function QuizResult({
       </div>
 
       {/* ── CTA CARD ── */}
-      <div className="bg-card/70 backdrop-blur-xl border border-secondary/30 rounded-2xl p-5 md:p-6 space-y-4 shadow-[0_0_40px_-10px_hsl(43_85%_55%/0.15)]">
-        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide flex items-center gap-2">
-          <Bell className="w-4 h-4 text-secondary" />
-          Faça isso pra não perder o contato
-        </h2>
+      
 
-        <ul className="space-y-3 text-sm text-muted-foreground">
-          <li className="flex items-start gap-3">
-            
-            <span>Fique de olho no WhatsApp e mantenha as notificações ativas.</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <div className="p-1 rounded-md bg-secondary/10 mt-0.5 shrink-0">
-              <Zap className="w-4 h-4 text-secondary" />
-            </div>
-            <span>Responda assim que nosso consultor chamar — isso acelera o processo.</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <div className="p-1 rounded-md bg-secondary/10 mt-0.5 shrink-0">
-              <ChevronRight className="w-4 h-4 text-secondary" />
-            </div>
-            <span>Se tiver, já separa: investimento mensal, ticket médio e principal meta.</span>
-          </li>
-        </ul>
 
-        <Button variant="champion" size="lg" className="w-full text-base animate-pulse-slow" asChild>
-          <a href={waLink} target="_blank" rel="noopener noreferrer">
-            <MessageCircle className="w-5 h-5" />
-            Abrir WhatsApp agora
-          </a>
-        </Button>
 
-        <p className="text-xs text-muted-foreground text-center">
-          Dica: mande essa mensagem pra garantir que você receba nosso contato sem falhas.
-        </p>
-      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       {/* ── SKIP THE LINE ── */}
       <div className="bg-card/70 backdrop-blur-xl border border-border/50 rounded-2xl p-5 md:p-6 space-y-4">
