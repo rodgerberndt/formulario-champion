@@ -257,8 +257,8 @@ export function QuizResult({
       </div>
 
       {/* ── MOTIVATIONAL HEADLINE ── */}
-      <p className="text-center text-lg md:text-xl font-semibold text-foreground leading-snug">
-        Parabéns <span className="champion-gradient-text">Champs</span>, agora é só aguardar que nós iremos trazer mais um dígito de faturamento para você. 🚀
-      </p>
+      
+
+
     </div>;
 }
