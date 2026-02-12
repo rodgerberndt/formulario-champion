@@ -871,13 +871,13 @@ Deno.serve(async (req: Request) => {
         return raw.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-_]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
       }
 
-      // MQL logic
+      // MQL logic — requires BOTH advanced stage AND minimum investment
       const MQL_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)"];
-      const MQL_SPEND_FAIXAS = ["R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k", "R$ 100k+"];
+      const MQL_INVEST_MIN_FAIXAS = ["R$ 2k – 8k", "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k", "R$ 100k+"];
       function isMql(estagio: string, investimento: string | null): boolean {
-        if (MQL_STAGES.includes(estagio)) return true;
-        if (investimento && MQL_SPEND_FAIXAS.includes(investimento)) return true;
-        return false;
+        const isAdvancedStage = MQL_STAGES.includes(estagio);
+        const investsEnough = investimento ? MQL_INVEST_MIN_FAIXAS.includes(investimento) : false;
+        return isAdvancedStage && investsEnough;
       }
 
       // Fetch ALL leads in period
