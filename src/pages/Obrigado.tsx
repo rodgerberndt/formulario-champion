@@ -19,6 +19,7 @@ interface QuizFormData {
   instagram: string;
   mercado: string;
   estagio_negocio: string;
+  investimento_faixa: string;
   dor_desejo: string;
 }
 
@@ -131,7 +132,7 @@ export default function Obrigado() {
 
       <main className="pt-20 pb-12 px-4 min-h-[100svh]" style={{ paddingBottom: 'calc(48px + env(safe-area-inset-bottom))' }}>
         <div className="container mx-auto max-w-lg">
-          <QuizResult nome={formData.nome_completo} estagio_negocio={formData.estagio_negocio} />
+          <QuizResult nome={formData.nome_completo} estagio_negocio={formData.estagio_negocio} investimento_faixa={formData.investimento_faixa} />
         </div>
       </main>
     </div>
