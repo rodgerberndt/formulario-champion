@@ -162,8 +162,14 @@ function LoadingCommitStep({ onFinish, onCommit }: {onFinish: () => void; onComm
             Quando um de nossos consultores lhe chamar no WhatsApp em até 6 horas, você se compromete a responder o mais rápido possível?
           </p>
         </div>
-        <button
-          onClick={() => { setCommitted(true); onCommit(true); }}
+      <button
+          onClick={() => { 
+            setCommitted(true); 
+            onCommit(true); 
+            // Advance immediately on click
+            setTimeout(() => onFinish(), 400);
+          }}
+          disabled={committed}
           className={`mt-2 w-full py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300 ${
           committed ?
           "bg-green-500/20 border-2 border-green-500/50 text-green-400" :
