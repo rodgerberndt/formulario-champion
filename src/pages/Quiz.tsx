@@ -45,7 +45,7 @@ const STEP_IDS = [
 "q3_insta",
 "q4_mercado",
 "q5_estagio",
-"q6_investimento",
+"q6_faturamento",
 "q7_dor",
 "q8_loading"];
 
@@ -538,14 +538,14 @@ export default function Quiz() {
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
-              Quanto você investe em anúncios por mês?
+              Qual é o seu faturamento mensal?
             </label>
             <Select
               value={formData.investimento_faixa}
               onValueChange={(value) => updateField("investimento_faixa", value)}>
 
               <SelectTrigger className={selectClasses}>
-                <SelectValue placeholder="Selecione a faixa" />
+                <SelectValue placeholder="Selecione o faturamento" />
               </SelectTrigger>
               <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
                 {INVESTIMENTO_OPTIONS.map((option) =>

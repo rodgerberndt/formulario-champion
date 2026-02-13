@@ -129,7 +129,7 @@ const STEP_LABELS: Record<string, string> = {
   q3_insta: "Instagram",
   q4_mercado: "Mercado",
   q5_estagio: "Estágio",
-  q6_investimento: "Investimento",
+  q6_faturamento: "Faturamento",
   q7_dor: "Dor/Desejo",
 };
 
@@ -324,23 +324,38 @@ export default function AdminAnalytics() {
       "Iniciando do zero": 1, "Validação (primeiras vendas)": 2,
       "Pré-escala (vendas constantes)": 3, "Escala (buscando otimização)": 4,
     };
-    const investPts: Record<string, number> = {
-      "R$ 0 – 2k": 1, "R$ 2k – 8k": 2, "R$ 8k – 20k": 3,
-      "R$ 20k – 50k": 4, "R$ 50k – 100k": 5, "R$ 100k+": 6,
+    const fatPts: Record<string, number> = {
+      "Não vendo ainda (R$0/mês)": 1, "Até R$ 5 mil": 1,
+      "De R$ 5 mil a R$ 10 mil": 2, "De R$ 10 mil a R$ 20 mil": 2,
+      "De R$ 20 mil a R$ 30 mil": 3, "De R$ 30 mil a R$ 50 mil": 3,
+      "De R$ 50 mil a R$ 75 mil": 4, "De R$ 75 mil a R$ 100 mil": 4,
+      "De R$ 100 mil a R$ 150 mil": 5, "De R$ 150 mil a R$ 200 mil": 5,
+      "De R$ 200 mil a R$ 300 mil": 5, "De R$ 300 mil a R$ 500 mil": 5,
+      "De R$ 500 mil a R$ 750 mil": 6, "De R$ 750 mil a R$ 1 milhão": 6,
+      "De R$ 1 milhão a R$ 2 milhões": 6, "De R$ 2 milhões a R$ 3 milhões": 6,
+      "De R$ 3 milhões a R$ 5 milhões": 6, "De R$ 5 milhões a R$ 10 milhões": 6,
+      "Acima de R$ 10 milhões": 6,
     };
-    const score = (mercadoPts[lead.mercado] || 1) + (estagioPts[lead.estagio_negocio] || 1) + (investPts[lead.investimento_faixa || ""] || 1);
+    const score = (mercadoPts[lead.mercado] || 1) + (estagioPts[lead.estagio_negocio] || 1) + (fatPts[lead.investimento_faixa || ""] || 1);
     const tier = score > 12 ? "Enterprise" : score >= 9 ? "Large" : score >= 5 ? "Medium" : "Small";
     return { score, tier };
   };
 
   // SDR assignment helper - uses override if set, otherwise based on stage + investment
-  const SDR_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)"];
-  const SDR_INVEST_MIN = ["R$ 2k – 8k", "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k", "R$ 100k+"];
+  const SDR_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)", "Validação (primeiras vendas)"];
+  const SDR_FAT_MIN = [
+    "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+    "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
+    "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
+    "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
+    "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
+    "Acima de R$ 10 milhões",
+  ];
   const getLeadSdr = (lead: Lead): string => {
     if (lead.sdr_override) return lead.sdr_override;
     const isAdvancedStage = SDR_STAGES.includes(lead.estagio_negocio);
-    const investsEnough = lead.investimento_faixa ? SDR_INVEST_MIN.includes(lead.investimento_faixa) : false;
-    if (isAdvancedStage && investsEnough) return "Rodger";
+    const faturaEnough = lead.investimento_faixa ? SDR_FAT_MIN.includes(lead.investimento_faixa) : false;
+    if (isAdvancedStage && faturaEnough) return "Rodger";
     return "Dara";
   };
 
@@ -1781,7 +1796,7 @@ export default function AdminAnalytics() {
                           <th className="text-left p-4">Instagram</th>
                           <th className="text-left p-4">Mercado</th>
                           <th className="text-left p-4">Estágio</th>
-                          <th className="text-left p-4">Investimento</th>
+                          <th className="text-left p-4">Faturamento</th>
                           <th className="text-left p-4">SDR</th>
                           <th className="text-left p-4">Data</th>
                           <th className="text-right p-4">Ações</th>
@@ -2048,7 +2063,7 @@ export default function AdminAnalytics() {
                         )}
                         {selectedLead.investimento_faixa && (
                           <div className="p-4 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-lg border border-green-500/30">
-                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">💰 Investimento em Anúncios</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">💰 Faturamento Mensal</p>
                             <p className="font-semibold text-green-400 text-lg">{selectedLead.investimento_faixa}</p>
                           </div>
                         )}

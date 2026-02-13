@@ -21,12 +21,25 @@ export const ESTAGIO_OPTIONS = [
 ];
 
 export const INVESTIMENTO_OPTIONS = [
-  "R$ 0 – 2k",
-  "R$ 2k – 8k",
-  "R$ 8k – 20k",
-  "R$ 20k – 50k",
-  "R$ 50k – 100k",
-  "R$ 100k+",
+  "Não vendo ainda (R$0/mês)",
+  "Até R$ 5 mil",
+  "De R$ 5 mil a R$ 10 mil",
+  "De R$ 10 mil a R$ 20 mil",
+  "De R$ 20 mil a R$ 30 mil",
+  "De R$ 30 mil a R$ 50 mil",
+  "De R$ 50 mil a R$ 75 mil",
+  "De R$ 75 mil a R$ 100 mil",
+  "De R$ 100 mil a R$ 150 mil",
+  "De R$ 150 mil a R$ 200 mil",
+  "De R$ 200 mil a R$ 300 mil",
+  "De R$ 300 mil a R$ 500 mil",
+  "De R$ 500 mil a R$ 750 mil",
+  "De R$ 750 mil a R$ 1 milhão",
+  "De R$ 1 milhão a R$ 2 milhões",
+  "De R$ 2 milhões a R$ 3 milhões",
+  "De R$ 3 milhões a R$ 5 milhões",
+  "De R$ 5 milhões a R$ 10 milhões",
+  "Acima de R$ 10 milhões",
 ];
 
 // Points mapping - Mercado (1 ponto cada, Nutra = 2 pontos)
@@ -50,14 +63,27 @@ const ESTAGIO_POINTS: Record<string, number> = {
   "Escala (buscando otimização)": 4,
 };
 
-// Points mapping - Investimento (1-6 pontos)
+// Points mapping - Faturamento (1-6 pontos)
 const INVESTIMENTO_POINTS: Record<string, number> = {
-  "R$ 0 – 2k": 1,
-  "R$ 2k – 8k": 2,
-  "R$ 8k – 20k": 3,
-  "R$ 20k – 50k": 4,
-  "R$ 50k – 100k": 5,
-  "R$ 100k+": 6,
+  "Não vendo ainda (R$0/mês)": 1,
+  "Até R$ 5 mil": 1,
+  "De R$ 5 mil a R$ 10 mil": 2,
+  "De R$ 10 mil a R$ 20 mil": 2,
+  "De R$ 20 mil a R$ 30 mil": 3,
+  "De R$ 30 mil a R$ 50 mil": 3,
+  "De R$ 50 mil a R$ 75 mil": 4,
+  "De R$ 75 mil a R$ 100 mil": 4,
+  "De R$ 100 mil a R$ 150 mil": 5,
+  "De R$ 150 mil a R$ 200 mil": 5,
+  "De R$ 200 mil a R$ 300 mil": 5,
+  "De R$ 300 mil a R$ 500 mil": 5,
+  "De R$ 500 mil a R$ 750 mil": 6,
+  "De R$ 750 mil a R$ 1 milhão": 6,
+  "De R$ 1 milhão a R$ 2 milhões": 6,
+  "De R$ 2 milhões a R$ 3 milhões": 6,
+  "De R$ 3 milhões a R$ 5 milhões": 6,
+  "De R$ 5 milhões a R$ 10 milhões": 6,
+  "Acima de R$ 10 milhões": 6,
 };
 
 // Tier thresholds

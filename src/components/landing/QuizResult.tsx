@@ -91,15 +91,22 @@ const statusColors = {
   }
 };
 const SDR_ADVANCED_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)", "Validação (primeiras vendas)"];
-const SDR_MIN_INVEST = ["R$ 2k – 8k", "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k", "R$ 100k+"];
+const SDR_MIN_FATURAMENTO = [
+  "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+  "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
+  "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
+  "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
+  "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
+  "Acima de R$ 10 milhões",
+];
 
 const DARA_SKIP_LINK = "https://wa.me/55554896560104?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
 const RODGER_SKIP_LINK = "https://wa.me/555548996378499?text=Falaa%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
 
 function getSdrSkipLink(estagio?: string, investimento?: string): string {
   const isAdvanced = estagio ? SDR_ADVANCED_STAGES.includes(estagio) : false;
-  const investsEnough = investimento ? SDR_MIN_INVEST.includes(investimento) : false;
-  return isAdvanced && investsEnough ? RODGER_SKIP_LINK : DARA_SKIP_LINK;
+  const faturaEnough = investimento ? SDR_MIN_FATURAMENTO.includes(investimento) : false;
+  return isAdvanced && faturaEnough ? RODGER_SKIP_LINK : DARA_SKIP_LINK;
 }
 
 export function QuizResult({
