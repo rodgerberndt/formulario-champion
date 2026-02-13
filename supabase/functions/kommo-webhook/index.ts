@@ -314,7 +314,7 @@ function buildNoteText(d: Record<string, unknown>, messageVariant: string): stri
 ━━━━━━━━━━━━━━━━━
 🎯 quiz_mercado: ${d.mercado || 'N/A'}
 📈 quiz_estagio: ${d.estagio_negocio || 'N/A'}
-💸 Investimento em Tráfego: ${d.investimento_faixa || 'N/A'}
+💸 Faturamento Mensal: ${d.investimento_faixa || 'N/A'}
 🎯 quiz_objetivo: ${d.objetivo || 'N/A'}
 ━━━━━━━━━━━━━━━━━
 📝 quiz_dor_desejo:
