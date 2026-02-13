@@ -82,9 +82,10 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Bebas Neue', 'Inter', sans-serif;
-    @apply font-normal tracking-wide;
-    letter-spacing: 0.04em;
+    font-family: 'Oswald', 'Inter', sans-serif;
+    @apply font-semibold tracking-wide;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
   }
 
   h1 {
@@ -201,11 +202,11 @@
   /* Reveal animations */
   .reveal-up {
     opacity: 0;
-    transform: translateY(30px);
-    filter: blur(4px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(16px);
+    filter: blur(2px);
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .reveal-up.visible {
     opacity: 1;
