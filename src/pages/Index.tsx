@@ -1,58 +1,60 @@
 import { useNavigate } from "react-router-dom";
-import { Header } from "@/components/landing/Header";
-import { Hero } from "@/components/landing/Hero";
-import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
+import { LandingNavbar } from "@/components/landing/LandingNavbar";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { ProofMarquee } from "@/components/landing/ProofMarquee";
+import { PainSection } from "@/components/landing/PainSection";
+import { PortfolioSection } from "@/components/landing/PortfolioSection";
+import { MetodoChampion } from "@/components/landing/MetodoChampion";
+import { HowItWorks } from "@/components/landing/HowItWorks";
+import { CaseVault } from "@/components/landing/CaseVault";
+import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
-import { BackgroundDecor } from "@/components/BackgroundDecor";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 import { useTracking } from "@/hooks/useTracking";
- import { useUtmCapture } from "@/hooks/useUtmCapture";
+import { useUtmCapture } from "@/hooks/useUtmCapture";
 
 const Index = () => {
   const navigate = useNavigate();
   const { trackStartClick } = useTracking();
-   
-   // Capture UTM parameters on landing page load
-   useUtmCapture();
+  useUtmCapture();
 
   const handleStartClick = async (buttonId: string) => {
-    // Track the click and wait for it to complete before navigating
-    try {
-      await trackStartClick(buttonId);
-    } catch (error) {
-      console.error("Error tracking start click:", error);
-    }
-    // Small delay to ensure tracking is sent
+    try { await trackStartClick(buttonId); } catch {}
     await new Promise(resolve => setTimeout(resolve, 50));
     navigate("/quiz");
   };
 
   return (
-    <div className="min-h-screen relative">
-      <BackgroundDecor />
-      <Header />
-      
+    <div className="min-h-screen relative bg-background">
+      {/* Fixed background */}
+      <div className="fixed inset-0 pointer-events-none -z-10" style={{ contain: "strict" }}>
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(135deg, hsl(235 80% 3%) 0%, hsl(238 70% 6%) 40%, hsl(235 80% 3%) 100%)",
+          }}
+        />
+        {/* Subtle grid */}
+        <div
+          className="hidden md:block absolute inset-0 opacity-[0.015]"
+          style={{
+            backgroundImage: "linear-gradient(to right, hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(to bottom, hsl(0 0% 100%) 1px, transparent 1px)",
+            backgroundSize: "80px 80px",
+          }}
+        />
+      </div>
+
+      <LandingNavbar />
+
       <main>
-        <Hero onStartClick={() => handleStartClick("start_btn_1")} />
-        <SocialProofCarousel />
-        
-        {/* CTA Section before footer */}
-        <section className="py-10 md:py-16">
-          <div className="container mx-auto px-5 text-center max-w-md">
-            <p className="text-sm md:text-base text-muted-foreground mb-6">
-              Responda o formulário rápido para que o próximo feedback seja você!
-            </p>
-            <Button
-              size="lg"
-              onClick={() => handleStartClick("start_btn_2")}
-              className="group h-12 md:h-14 px-6 md:px-10 text-sm md:text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]"
-            >
-              FAZER DIAGNÓSTICO (2 MIN)
-              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </div>
-        </section>
+        <HeroSection />
+        <ProofMarquee />
+        <PainSection />
+        <PortfolioSection />
+        <MetodoChampion />
+        <HowItWorks />
+        <CaseVault />
+        <FinalCTA />
       </main>
 
       <Footer />
@@ -61,14 +63,12 @@ const Index = () => {
       <div className="md:hidden mobile-bottom-cta">
         <Button
           size="lg"
-          onClick={() => handleStartClick("start_btn_3")}
-          className="w-full h-12 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20"
+          onClick={() => handleStartClick("start_btn_mobile")}
+          className="w-full h-12 text-sm font-bold bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-xl shadow-lg"
         >
-          COMEÇAR DIAGNÓSTICO (2 MIN)
+          PREENCHER QUIZ (2 MIN)
         </Button>
       </div>
-
-      {/* Spacer for mobile bottom bar */}
       <div className="h-20 md:hidden" />
     </div>
   );
