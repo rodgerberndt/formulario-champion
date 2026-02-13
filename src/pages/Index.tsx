@@ -76,7 +76,7 @@ const Index = () => {
         {/* === NEW SECTIONS BELOW === */}
         <ProofMarquee />
         <PainSection />
-        <PortfolioSection />
+        {/* PortfolioSection removida — sem vídeos reais de portfólio ainda */}
         <MetodoChampion />
         <HowItWorks />
         <CaseVault />
