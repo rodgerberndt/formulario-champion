@@ -16,7 +16,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Montserrat', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        display: ['Bebas Neue', 'Inter', 'sans-serif'],
+        display: ['Oswald', 'Inter', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
