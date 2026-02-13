@@ -291,8 +291,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       return true;
     })
     .sort((a, b) => {
-      const aVal = (a as any)[sortField] ?? -Infinity;
-      const bVal = (b as any)[sortField] ?? -Infinity;
+      const getValue = (c: CreativeData) => {
+        if (sortField === "cpl") return c.spend > 0 && c.leads_count > 0 ? c.spend / c.leads_count : null;
+        return (c as any)[sortField] ?? null;
+      };
+      const aVal = getValue(a) ?? -Infinity;
+      const bVal = getValue(b) ?? -Infinity;
       return sortDir === "desc" ? bVal - aVal : aVal - bVal;
     });
 
@@ -522,6 +526,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <TableHead className="text-right cursor-pointer" onClick={() => handleSort("leads_count")}>
                     Leads <SortIcon field="leads_count" />
                   </TableHead>
+                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("cpl")}>
+                    CPL <SortIcon field="cpl" />
+                  </TableHead>
                   <TableHead className="text-right cursor-pointer" onClick={() => handleSort("mql_count")}>
                     MQL <SortIcon field="mql_count" />
                   </TableHead>
@@ -577,6 +584,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       </TableCell>
                       <TableCell className="text-right">{formatCurrency(c.spend)}</TableCell>
                       <TableCell className="text-right">{c.leads_count}</TableCell>
+                      <TableCell className="text-right">
+                        {c.spend > 0 && c.leads_count > 0 ? formatCurrency(c.spend / c.leads_count) : "—"}
+                      </TableCell>
                       <TableCell className="text-right font-semibold text-green-400">{c.mql_count}</TableCell>
                       <TableCell className="text-right">{formatPercent(c.mql_rate)}</TableCell>
                       <TableCell className={`text-right ${isBestCpmql2 ? "text-green-400 font-bold" : ""}`}>
