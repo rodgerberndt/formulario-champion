@@ -135,7 +135,7 @@ function formatNumber(value: number): string {
   return new Intl.NumberFormat("pt-BR").format(value);
 }
 
-const MQL_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)"];
+const MQL_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)", "Validação (primeiras vendas)"];
 const MQL_INVEST_MIN_FAIXAS = ["R$ 2k – 8k", "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k", "R$ 100k+"];
 
 function isLeadMql(estagio: string, investimento: string | null): boolean {
