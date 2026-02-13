@@ -90,7 +90,7 @@ const statusColors = {
     badgeText: "Próximo"
   }
 };
-const SDR_ADVANCED_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)"];
+const SDR_ADVANCED_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)", "Validação (primeiras vendas)"];
 const SDR_MIN_INVEST = ["R$ 2k – 8k", "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k", "R$ 100k+"];
 
 const DARA_SKIP_LINK = "https://wa.me/55554896560104?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
