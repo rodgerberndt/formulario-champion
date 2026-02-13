@@ -29,7 +29,7 @@ export function Hero({
               </div>
 
               {/* Headline */}
-              <h1 className="font-bold text-foreground mb-4 leading-tight">
+              <h1 className="font-bold text-foreground mb-4 leading-tight text-4xl">
                 SE VOCÊ NÃO TESTA CRIATIVO TODA SEMANA,{" "}
                 <span className="text-secondary font-bold">
                   PODE ESTAR DEIXANDO MUITO DINHEIRO NA MESA.
