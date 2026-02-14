@@ -145,7 +145,10 @@ const MQL_FAT_MIN_FAIXAS = [
   "Acima de R$ 10 milhões",
 ];
 
-function isLeadMql(estagio: string, investimento: string | null): boolean {
+function isLeadMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
+  // MQL = same as Rodger SDR assignment
+  if (sdrOverride === "Rodger") return true;
+  if (sdrOverride === "Dara") return false;
   const isAdvancedStage = MQL_STAGES.includes(estagio);
   const faturaEnough = investimento ? MQL_FAT_MIN_FAIXAS.includes(investimento) : false;
   return isAdvancedStage && faturaEnough;

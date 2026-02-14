@@ -16,7 +16,9 @@ export function PortfolioSection() {
   };
 
   const scrollByAmount = useCallback((dir: number) => {
+    isPausedRef.current = true;
     scrollRef.current?.scrollBy({ left: dir * 280, behavior: "smooth" });
+    setTimeout(() => { isPausedRef.current = false; }, 3000);
   }, []);
 
   // Auto-scroll slowly to the right
@@ -77,17 +79,17 @@ export function PortfolioSection() {
         <div className="flex justify-end gap-2 mb-4 px-1">
           <button
             onClick={() => scrollByAmount(-1)}
-            className="w-9 h-9 rounded-full border border-border/40 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-secondary/40 transition-colors min-w-[44px] min-h-[44px]"
+            className="w-11 h-11 rounded-full border border-border/40 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-secondary/40 active:bg-muted/50 transition-colors"
             aria-label="Anterior"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={() => scrollByAmount(1)}
-            className="w-9 h-9 rounded-full border border-border/40 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-secondary/40 transition-colors min-w-[44px] min-h-[44px]"
+            className="w-11 h-11 rounded-full border border-border/40 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-secondary/40 active:bg-muted/50 transition-colors"
             aria-label="Próximo"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
 

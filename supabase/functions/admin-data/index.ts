@@ -881,7 +881,10 @@ Deno.serve(async (req: Request) => {
         "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
         "Acima de R$ 10 milhões",
       ];
-      function isMql(estagio: string, investimento: string | null): boolean {
+      function isMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
+        // MQL = same as Rodger SDR assignment
+        if (sdrOverride === "Rodger") return true;
+        if (sdrOverride === "Dara") return false;
         const isAdvancedStage = MQL_STAGES.includes(estagio);
         const faturaEnough = investimento ? MQL_FAT_MIN_FAIXAS.includes(investimento) : false;
         return isAdvancedStage && faturaEnough;
@@ -893,7 +896,7 @@ Deno.serve(async (req: Request) => {
       let offset = 0;
       let hasMore = true;
       while (hasMore) {
-        let q = supabase.from("leads").select("id, created_at, utm_content, utm_campaign, utm_source, estagio_negocio, investimento_faixa").range(offset, offset + PAGE_SIZE - 1);
+        let q = supabase.from("leads").select("id, created_at, utm_content, utm_campaign, utm_source, estagio_negocio, investimento_faixa, sdr_override").range(offset, offset + PAGE_SIZE - 1);
         if (from) q = q.gte("created_at", from);
         if (toEnd) q = q.lte("created_at", toEnd);
         const { data, error } = await q;
@@ -969,7 +972,7 @@ Deno.serve(async (req: Request) => {
         leadsWithCreative++;
         const agg = getOrCreate(ck, rawKey, "utm_content");
         agg.leads_count++;
-        if (isMql(lead.estagio_negocio, lead.investimento_faixa)) {
+        if (isMql(lead.estagio_negocio, lead.investimento_faixa, lead.sdr_override)) {
           agg.mql_count++;
         }
         agg.leads_by_stage[lead.estagio_negocio] = (agg.leads_by_stage[lead.estagio_negocio] || 0) + 1;
