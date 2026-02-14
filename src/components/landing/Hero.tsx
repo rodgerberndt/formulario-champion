@@ -30,9 +30,9 @@ export function Hero({
 
               {/* Headline */}
               <h1 className="font-medium text-foreground mb-4 leading-tight text-4xl">
-                SEUS CRIATIVOS PODEM{" "}
+                SE VOCÊ NÃO TESTA CRIATIVO TODA SEMANA,{" "}
                 <span className="text-secondary font-bold">
-                  ESCALAR AGORA.
+                  PODE ESTAR DEIXANDO MUITO DINHEIRO NA MESA.
                 </span>
               </h1>
 
