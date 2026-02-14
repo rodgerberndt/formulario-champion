@@ -1,13 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Sparkles, TrendingUp } from "lucide-react";
 import founderPhoto from "@/assets/founder-photo.png";
+import { ShimmerText, KeywordGlow, LineReveal } from "@/components/landing/TextEffects";
+import { useReveal } from "@/hooks/useReveal";
+
 interface HeroProps {
   onStartClick?: () => void;
 }
 export function Hero({
   onStartClick
 }: HeroProps) {
-  return <section className="min-h-[80vh] md:min-h-screen flex items-center justify-center pt-16 pb-16 md:pb-12 relative overflow-hidden">
+  const { ref: sectionRef, isVisible } = useReveal();
+  return <section ref={sectionRef} className="min-h-[80vh] md:min-h-screen flex items-center justify-center pt-16 pb-16 md:pb-12 relative overflow-hidden">
       {/* Simplified Background - Remove heavy effects on mobile */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="hero-glow top-1/4 left-1/2 -translate-x-1/2" />
@@ -30,10 +34,10 @@ export function Hero({
 
               {/* Headline */}
               <h1 className="font-medium text-foreground mb-4 leading-tight text-4xl">
-                SE VOCÊ NÃO TESTA CRIATIVO TODA SEMANA,{" "}
-                <span className="text-secondary font-bold">
-                  PODE ESTAR DEIXANDO MUITO DINHEIRO NA MESA.
-                </span>
+                <ShimmerText isVisible={isVisible}>
+                  SE VOCÊ NÃO TESTA CRIATIVO TODA SEMANA,{" "}
+                </ShimmerText>
+                <KeywordGlow>PODE ESTAR DEIXANDO MUITO DINHEIRO NA MESA.</KeywordGlow>
               </h1>
 
               {/* Subheadline */}
