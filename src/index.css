@@ -188,8 +188,8 @@
     animation: glow-breathe-anim 3s ease-in-out infinite;
   }
   @keyframes glow-breathe-anim {
-    0%, 100% { box-shadow: 0 0 20px 0 hsl(42 90% 58% / 0.15), 0 0 60px -10px hsl(42 90% 58% / 0.1); }
-    50% { box-shadow: 0 0 30px 5px hsl(42 90% 58% / 0.25), 0 0 80px -5px hsl(42 90% 58% / 0.15); }
+    0%, 100% { box-shadow: 0 0 20px 0 hsl(238 98% 20% / 0.25), 0 0 60px -10px hsl(238 98% 20% / 0.15); }
+    50% { box-shadow: 0 0 30px 5px hsl(238 98% 20% / 0.35), 0 0 80px -5px hsl(238 98% 20% / 0.2); }
   }
 
   /* Mobile Bottom CTA */
