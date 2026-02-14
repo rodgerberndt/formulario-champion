@@ -9,6 +9,7 @@ const pillars = [
   { label: "Avatar IA / Real" },
   { label: "Edição" },
   { label: "Teste" },
+  { label: "Repete o Ciclo", highlight: true },
 ];
 
 /** Curved arrow SVG between two positions on the circle */
@@ -75,7 +76,7 @@ export function MetodoChampion() {
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (rect.height + window.innerHeight * 0.2)));
-      setActivePillars(Math.min(5, Math.floor(progress * 7)));
+      setActivePillars(Math.min(6, Math.floor(progress * 8)));
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
@@ -134,16 +135,16 @@ export function MetodoChampion() {
             {/* Center emblem */}
             <div className="relative w-56 h-56 flex items-center justify-center z-10">
               <div
-                className={`absolute inset-0 rounded-full transition-all duration-700 ${activePillars >= 5 ? "opacity-100" : "opacity-30"}`}
+                className={`absolute inset-0 rounded-full transition-all duration-700 ${activePillars >= 6 ? "opacity-100" : "opacity-30"}`}
                 style={{ background: "radial-gradient(circle, hsl(42 90% 58% / 0.15) 0%, transparent 70%)", filter: "blur(25px)" }}
               />
               <div
                 className={`absolute inset-4 rounded-full transition-all duration-500 ${
-                  activePillars >= 5 ? "border-2 border-secondary/60 shadow-[0_0_30px_-5px_hsl(42_90%_58%/0.3)]" : "border border-border/30"
+                  activePillars >= 6 ? "border-2 border-secondary/60 shadow-[0_0_30px_-5px_hsl(42_90%_58%/0.3)]" : "border border-border/30"
                 }`}
                 style={{ background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))" }}
               />
-              <img src="/champion-logo.png" alt="Champion" className={`relative z-10 w-20 h-20 object-contain transition-all duration-500 ${activePillars >= 5 ? "drop-shadow-[0_0_12px_hsl(42_90%_58%/0.4)]" : ""}`} />
+              <img src="/champion-logo.png" alt="Champion" className={`relative z-10 w-20 h-20 object-contain transition-all duration-500 ${activePillars >= 6 ? "drop-shadow-[0_0_12px_hsl(42_90%_58%/0.4)]" : ""}`} />
               <span className="absolute bottom-7 z-10 text-[10px] font-bold uppercase tracking-wider text-secondary/80">Esteira semanal</span>
             </div>
 
@@ -154,20 +155,30 @@ export function MetodoChampion() {
               const x = Math.cos(rad) * desktopRadius;
               const y = Math.sin(rad) * desktopRadius;
               const isActive = i < activePillars;
+              const isHighlight = (pillar as any).highlight;
               return (
                 <motion.div
                   key={pillar.label}
                   className="absolute z-20"
                   style={{ left: `calc(50% + ${x}px - 65px)`, top: `calc(50% + ${y}px - 18px)`, width: 130 }}
                   initial={{ opacity: 0, scale: 0.8 }}
-                  animate={isVisible ? { opacity: 1, scale: 1 } : {}}
-                  transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
+                  animate={isVisible ? { opacity: 1, scale: isHighlight && isActive ? [1, 1.08, 1] : 1 } : {}}
+                  transition={isHighlight && isActive
+                    ? { delay: 0.3 + i * 0.08, duration: 0.6, scale: { repeat: 1, duration: 0.5 } }
+                    : { delay: 0.3 + i * 0.08, duration: 0.4 }
+                  }
                 >
                   <div className={`text-center px-3 py-2.5 rounded-xl border transition-all duration-500 ${
-                    isActive ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)] shadow-[0_0_15px_-5px_hsl(42_90%_58%/0.2)]" : "border-border/20 bg-muted/10"
+                    isHighlight && isActive
+                      ? "border-secondary/70 bg-[hsl(42_90%_58%/0.15)] shadow-[0_0_20px_-3px_hsl(42_90%_58%/0.35)]"
+                      : isActive
+                        ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)] shadow-[0_0_15px_-5px_hsl(42_90%_58%/0.2)]"
+                        : "border-border/20 bg-muted/10"
                   }`}>
-                    <span className={`text-[11px] font-bold uppercase tracking-wider transition-colors duration-500 ${isActive ? "text-secondary" : "text-muted-foreground/50"}`}>
-                      {pillar.label}
+                    <span className={`text-[11px] font-bold uppercase tracking-wider transition-colors duration-500 ${
+                      isHighlight && isActive ? "text-secondary drop-shadow-[0_0_6px_hsl(42_90%_58%/0.5)]" : isActive ? "text-secondary" : "text-muted-foreground/50"
+                    }`}>
+                      {isHighlight ? "↻ " : ""}{pillar.label}
                     </span>
                   </div>
                 </motion.div>
@@ -180,40 +191,46 @@ export function MetodoChampion() {
             <div className="relative w-40 h-40 flex items-center justify-center mb-4">
               <div
                 className={`absolute inset-3 rounded-full transition-all duration-500 ${
-                  activePillars >= 5 ? "border-2 border-secondary/60 shadow-[0_0_20px_-5px_hsl(42_90%_58%/0.3)]" : "border border-border/30"
+                  activePillars >= 6 ? "border-2 border-secondary/60 shadow-[0_0_20px_-5px_hsl(42_90%_58%/0.3)]" : "border border-border/30"
                 }`}
                 style={{ background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))" }}
               />
-              <img src="/champion-logo.png" alt="Champion" className={`relative z-10 w-14 h-14 object-contain transition-all duration-500 ${activePillars >= 5 ? "drop-shadow-[0_0_10px_hsl(42_90%_58%/0.4)]" : ""}`} />
+              <img src="/champion-logo.png" alt="Champion" className={`relative z-10 w-14 h-14 object-contain transition-all duration-500 ${activePillars >= 6 ? "drop-shadow-[0_0_10px_hsl(42_90%_58%/0.4)]" : ""}`} />
               <span className="absolute bottom-5 z-10 text-[9px] font-bold uppercase tracking-wider text-secondary/80">Esteira semanal</span>
             </div>
 
             {pillars.map((pillar, i) => {
               const isActive = i < activePillars;
+              const isHighlight = (pillar as any).highlight;
               return (
                 <div key={pillar.label} className="flex flex-col items-center">
                   <div className={`text-center px-5 py-2.5 rounded-xl border transition-all duration-400 ${
-                    isActive ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)]" : "border-border/20 bg-muted/10"
+                    isHighlight && isActive
+                      ? "border-secondary/70 bg-[hsl(42_90%_58%/0.15)] shadow-[0_0_18px_-3px_hsl(42_90%_58%/0.3)]"
+                      : isActive
+                        ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)]"
+                        : "border-border/20 bg-muted/10"
                   }`}>
-                    <span className={`text-[11px] font-bold uppercase tracking-wider ${isActive ? "text-secondary" : "text-muted-foreground/50"}`}>
-                      {pillar.label}
+                    <span className={`text-[11px] font-bold uppercase tracking-wider ${
+                      isHighlight && isActive ? "text-secondary drop-shadow-[0_0_6px_hsl(42_90%_58%/0.5)]" : isActive ? "text-secondary" : "text-muted-foreground/50"
+                    }`}>
+                      {isHighlight ? "↻ " : ""}{pillar.label}
                     </span>
                   </div>
-                  {/* Arrow down */}
-                  <svg width="16" height="24" viewBox="0 0 16 24" className="my-1" fill="none">
-                    <path d={`M8 0 L8 18`} stroke={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} strokeWidth="1.5" className="transition-all duration-500" />
-                    <polygon points="8,23 4,17 12,17" fill={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} className="transition-all duration-500" />
-                  </svg>
+                  {/* Arrow down (skip after last) */}
+                  {!isHighlight && (
+                    <svg width="16" height="24" viewBox="0 0 16 24" className="my-1" fill="none">
+                      <path d={`M8 0 L8 18`} stroke={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} strokeWidth="1.5" className="transition-all duration-500" />
+                      <polygon points="8,23 4,17 12,17" fill={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} className="transition-all duration-500" />
+                    </svg>
+                  )}
                 </div>
               );
             })}
-            <div className="flex items-center gap-1 text-secondary/60 mt-0">
-              <span className="text-[10px] font-semibold uppercase tracking-wider">↻ volta ao início</span>
-            </div>
           </div>
         </div>
 
-        <div className={`text-center mt-10 md:mt-16 transition-all duration-500 ${activePillars >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+        <div className={`text-center mt-10 md:mt-16 transition-all duration-500 ${activePillars >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <button onClick={scrollToCTA} className="text-secondary hover:text-secondary/80 text-sm font-semibold underline underline-offset-4 transition-colors min-h-[44px]">
             Quero o diagnóstico →
           </button>

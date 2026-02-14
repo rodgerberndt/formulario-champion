@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
 import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
-import { ProofMarquee } from "@/components/landing/ProofMarquee";
 import { PainSection } from "@/components/landing/PainSection";
 import { PortfolioSection } from "@/components/landing/PortfolioSection";
 import { MetodoChampion } from "@/components/landing/MetodoChampion";
@@ -14,11 +13,15 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { useTracking } from "@/hooks/useTracking";
 import { useUtmCapture } from "@/hooks/useUtmCapture";
+import { useSmoothScroll } from "@/hooks/useSmoothScroll";
+import { useSectionThemes } from "@/hooks/useSectionThemes";
 
 const Index = () => {
   const navigate = useNavigate();
   const { trackStartClick } = useTracking();
   useUtmCapture();
+  useSmoothScroll();
+  useSectionThemes();
 
   const handleStartClick = async (buttonId: string) => {
     try { await trackStartClick(buttonId); } catch (error) {
@@ -30,34 +33,27 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative bg-background">
-      {/* Fixed background */}
-      <div className="fixed inset-0 pointer-events-none -z-10" style={{ contain: "strict" }}>
-        <div
-          className="absolute inset-0"
-          style={{
-            background: "linear-gradient(135deg, hsl(235 80% 3%) 0%, hsl(238 70% 6%) 40%, hsl(235 80% 3%) 100%)",
-          }}
-        />
-        <div
-          className="hidden md:block absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: "linear-gradient(to right, hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(to bottom, hsl(0 0% 100%) 1px, transparent 1px)",
-            backgroundSize: "80px 80px",
-          }}
-        />
-      </div>
+      {/* Cinematic background layers */}
+      <div className="cinematic-bg" />
+      <div className="cinematic-glow" />
+      <div className="cinematic-vignette" />
+      <div className="cinematic-grid" />
 
       <LandingNavbar />
 
       <main>
-        {/* Original Hero — preserved exactly */}
-        <Hero onStartClick={() => handleStartClick("start_btn_1")} />
+        {/* Hero */}
+        <section data-theme="cave">
+          <Hero onStartClick={() => handleStartClick("start_btn_1")} />
+        </section>
 
-        {/* Original Social Proof Carousel — preserved exactly */}
-        <SocialProofCarousel />
+        {/* Social Proof Carousel */}
+        <section data-theme="void">
+          <SocialProofCarousel />
+        </section>
 
-        {/* Original CTA Section — preserved exactly */}
-        <section className="py-10 md:py-16">
+        {/* CTA Section */}
+        <section data-theme="void" className="py-10 md:py-16">
           <div className="container mx-auto px-5 text-center max-w-md">
             <p className="text-sm md:text-base text-muted-foreground mb-6">
               Responda o formulário rápido para que o próximo feedback seja você!
@@ -73,24 +69,45 @@ const Index = () => {
           </div>
         </section>
 
-        {/* === NEW SECTIONS BELOW === */}
-        {/* ProofMarquee removida */}
-        <PainSection />
-        {/* PortfolioSection removida — sem vídeos reais de portfólio ainda */}
-        <MetodoChampion />
-        <HowItWorks />
-        <CaseVault />
-        <FinalCTA />
+        {/* Pain Section */}
+        <section data-theme="ember">
+          <PainSection />
+        </section>
+
+        {/* Portfolio */}
+        <section data-theme="blue-temple">
+          <PortfolioSection />
+        </section>
+
+        {/* Método Champion */}
+        <section data-theme="cave">
+          <MetodoChampion />
+        </section>
+
+        {/* How It Works */}
+        <section data-theme="blue-temple">
+          <HowItWorks />
+        </section>
+
+        {/* Cases */}
+        <section data-theme="gold-haze">
+          <CaseVault />
+        </section>
+
+        {/* Final CTA */}
+        <section data-theme="gold-haze">
+          <FinalCTA />
+        </section>
       </main>
 
       <Footer />
 
-      {/* Mobile Bottom Bar CTA — preserved */}
+      {/* Mobile Bottom Bar CTA */}
       <div className="md:hidden mobile-bottom-cta">
-          <Button
-            size="lg"
-            onClick={() => handleStartClick("start_btn_3")}
-            className="w-full h-12 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20"
+        <Button
+          size="lg"
+          onClick={() => handleStartClick("start_btn_3")}
+          className="w-full h-12 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20"
         >
           COMEÇAR DIAGNÓSTICO (2 MIN)
         </Button>

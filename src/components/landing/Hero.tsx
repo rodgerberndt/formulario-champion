@@ -1,12 +1,20 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, Users, Sparkles, TrendingUp, ClipboardCheck, BarChart3, PhoneCall, Rocket } from "lucide-react";
 import { WordCascade, KeywordGlow, LineReveal } from "./TextEffects";
 import founderPhoto from "@/assets/founder-photo.png";
 
 interface HeroProps {
   onStartClick?: () => void;
 }
+
+const heroSteps = [
+  { icon: ClipboardCheck, text: "Preencha o quiz" },
+  { icon: BarChart3, text: "Diagnóstico" },
+  { icon: PhoneCall, text: "Especialista liga" },
+  { icon: Rocket, text: "Plano de ação" },
+];
 
 export function Hero({ onStartClick }: HeroProps) {
   const [isVisible, setIsVisible] = useState(false);
@@ -65,7 +73,7 @@ export function Hero({ onStartClick }: HeroProps) {
 
               {/* CTA */}
               <LineReveal isVisible={isVisible} delay={1100}>
-                <div className="flex flex-col items-center md:items-start gap-4 mb-8">
+                <div className="flex flex-col items-center md:items-start gap-4 mb-6">
                   <Button size="lg" onClick={onStartClick} className="group h-12 md:h-14 px-6 md:px-8 text-sm md:text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-shadow duration-200 active:scale-[0.98]">
                     FAZER DIAGNÓSTICO (2 MIN)
                     <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -73,8 +81,29 @@ export function Hero({ onStartClick }: HeroProps) {
                 </div>
               </LineReveal>
 
+              {/* Step-by-step mini */}
+              <div className="flex items-center gap-1 md:gap-2 mb-6 justify-center md:justify-start">
+                {heroSteps.map((step, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={isVisible ? { opacity: 1, y: 0 } : {}}
+                    transition={{ delay: 1.3 + i * 0.1, duration: 0.4 }}
+                    className="flex items-center gap-1"
+                  >
+                    <div className="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center flex-shrink-0">
+                      <step.icon className="w-3 h-3 md:w-3.5 md:h-3.5 text-secondary" />
+                    </div>
+                    <span className="text-[10px] md:text-xs text-muted-foreground font-medium hidden sm:inline">{step.text}</span>
+                    {i < heroSteps.length - 1 && (
+                      <div className="w-3 md:w-5 h-px bg-border/40 mx-0.5" />
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+
               {/* Micro Proofs */}
-              <LineReveal isVisible={isVisible} delay={1300}>
+              <LineReveal isVisible={isVisible} delay={1600}>
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-6 text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <div className="p-1.5 rounded-lg bg-secondary/12">
