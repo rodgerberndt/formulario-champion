@@ -1777,29 +1777,29 @@ export default function AdminAnalytics() {
               {/* Leads Table */}
               <Card>
                 <CardContent className="p-0">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                  <div>
+                    <table className="w-full text-sm table-fixed">
                       <thead className="border-b bg-muted/50">
                         <tr>
-                          <th className="text-left p-4 w-12">
+                          <th className="text-left p-2 w-10">
                             <Checkbox
                               checked={selectedLeadIds.size === filteredLeads.length && filteredLeads.length > 0}
                               onCheckedChange={toggleSelectAll}
                               aria-label="Selecionar todos"
                             />
                           </th>
-                          <th className="text-left p-4 w-12">#</th>
-                          <th className="text-left p-4">Status</th>
-                          <th className="text-left p-4">Tier</th>
-                          <th className="text-left p-4">Nome</th>
-                          <th className="text-left p-4">WhatsApp</th>
-                          <th className="text-left p-4">Instagram</th>
-                          <th className="text-left p-4">Mercado</th>
-                          <th className="text-left p-4">Estágio</th>
-                          <th className="text-left p-4">Faturamento</th>
-                          <th className="text-left p-4">SDR</th>
-                          <th className="text-left p-4">Data</th>
-                          <th className="text-right p-4">Ações</th>
+                          <th className="text-left p-2 w-8">#</th>
+                          <th className="text-left p-2 w-20">Status</th>
+                          <th className="text-left p-2 w-20">Tier</th>
+                          <th className="text-left p-2">Nome</th>
+                          <th className="text-left p-2 w-28">WhatsApp</th>
+                          <th className="text-left p-2">Instagram</th>
+                          <th className="text-left p-2 w-24">Mercado</th>
+                          <th className="text-left p-2 w-28">Estágio</th>
+                          <th className="text-left p-2 w-28">Faturamento</th>
+                          <th className="text-left p-2 w-20">SDR</th>
+                          <th className="text-left p-2 w-24">Data</th>
+                          <th className="text-right p-2 w-12">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1822,7 +1822,7 @@ export default function AdminAnalytics() {
                               className={`border-b hover:bg-muted/30 cursor-pointer transition-colors ${!lead.lido ? "bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "bg-primary/10" : ""}`}
                               onClick={() => openLeadDetail(lead)}
                             >
-                              <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                              <td className="p-2" onClick={(e) => e.stopPropagation()}>
                                 <Checkbox
                                   checked={selectedLeadIds.has(lead.id)}
                                   onCheckedChange={() => {
@@ -1839,8 +1839,8 @@ export default function AdminAnalytics() {
                                   aria-label={`Selecionar ${lead.nome_completo}`}
                                 />
                               </td>
-                              <td className="p-4 text-muted-foreground font-mono">{index + 1}</td>
-                              <td className="p-4">
+                              <td className="p-2 text-muted-foreground font-mono text-xs">{index + 1}</td>
+                              <td className="p-2">
                                 <div className="flex flex-col gap-1">
                                   <Badge 
                                     variant="outline"
@@ -1861,7 +1861,7 @@ export default function AdminAnalytics() {
                                   )}
                                 </div>
                               </td>
-                              <td className="p-4">
+                              <td className="p-2">
                                 {(() => {
                                   const tier = getLeadTier(lead);
                                   return (
@@ -1879,11 +1879,11 @@ export default function AdminAnalytics() {
                                   );
                                 })()}
                               </td>
-                              <td className="p-4 font-medium">{lead.nome_completo}</td>
-                              <td className="p-4">
+                              <td className="p-2 font-medium truncate max-w-[120px]" title={lead.nome_completo}>{lead.nome_completo}</td>
+                              <td className="p-2">
                                 <button
                                   type="button"
-                                  className="text-green-500 hover:underline"
+                                  className="text-green-500 hover:underline text-xs truncate block max-w-full"
                                   title="Copiar WhatsApp"
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -1893,10 +1893,10 @@ export default function AdminAnalytics() {
                                   {lead.whatsapp}
                                 </button>
                               </td>
-                              <td className="p-4">
+                              <td className="p-2">
                                 <button
                                   type="button"
-                                  className="text-primary hover:underline"
+                                  className="text-primary hover:underline text-xs truncate block max-w-full"
                                   title="Abrir Instagram"
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -1906,10 +1906,10 @@ export default function AdminAnalytics() {
                                   {lead.instagram}
                                 </button>
                               </td>
-                              <td className="p-4 text-muted-foreground">{lead.mercado}</td>
-                              <td className="p-4 text-muted-foreground text-xs">{lead.estagio_negocio}</td>
-                              <td className="p-4 text-muted-foreground text-xs">{lead.investimento_faixa || "-"}</td>
-                              <td className="p-4">
+                              <td className="p-2 text-muted-foreground text-xs truncate" title={lead.mercado}>{lead.mercado}</td>
+                              <td className="p-2 text-muted-foreground text-xs truncate" title={lead.estagio_negocio}>{lead.estagio_negocio}</td>
+                              <td className="p-2 text-muted-foreground text-xs truncate" title={lead.investimento_faixa || "-"}>{lead.investimento_faixa || "-"}</td>
+                              <td className="p-2">
                                 {(() => {
                                   const sdr = getLeadSdr(lead);
                                   if (sdr === "Rodger") return (
@@ -1927,19 +1927,20 @@ export default function AdminAnalytics() {
                                   return <span className="text-muted-foreground">-</span>;
                                 })()}
                               </td>
-                              <td className="p-4 text-muted-foreground">
-                                {format(new Date(lead.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                              <td className="p-2 text-muted-foreground text-xs">
+                                {format(new Date(lead.created_at), "dd/MM HH:mm", { locale: ptBR })}
                               </td>
-                              <td className="p-4 text-right">
+                              <td className="p-2 text-right">
                                 <Button
                                   variant="ghost"
-                                  size="sm"
+                                  size="icon"
+                                  className="h-7 w-7"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     openLeadDetail(lead);
                                   }}
                                 >
-                                  <Eye className="w-4 h-4" />
+                                  <Eye className="w-3.5 h-3.5" />
                                 </Button>
                               </td>
                             </tr>
@@ -2114,7 +2115,7 @@ export default function AdminAnalytics() {
                         if (committed === undefined) return null;
                         return (
                           <div className={`p-4 rounded-lg border ${committed ? "bg-green-500/10 border-green-500/30" : "bg-red-500/10 border-red-500/30"}`}>
-                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Compromisso de Resposta (WhatsApp)</p>
+                            <p className="text-xs text-foreground/60 uppercase tracking-wider mb-1">Compromisso de Resposta (WhatsApp)</p>
                             <p className={`font-semibold text-lg ${committed ? "text-green-400" : "text-red-400"}`}>
                               {committed ? "✅ Sim, se comprometeu" : "❌ Não se comprometeu"}
                             </p>

@@ -197,6 +197,7 @@ export default function Quiz() {
 
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const formDataRef = useRef<QuizFormData | null>(null);
   const [formData, setFormData] = useState<QuizFormData>({
     nome_completo: "",
     whatsapp: "",
@@ -245,6 +246,11 @@ export default function Quiz() {
       }}
   }, []);
 
+  // Keep ref in sync so handleSubmit always reads latest formData
+  useEffect(() => {
+    formDataRef.current = formData;
+  }, [formData]);
+
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ formData, step }));
   }, [formData, step]);
@@ -287,26 +293,29 @@ export default function Quiz() {
   const handleSubmit = async () => {
     if (!canProceed()) return;
 
+    // Use ref to always get the latest formData (avoids stale closure with compromisso_whatsapp)
+    const currentData = formDataRef.current || formData;
+
     setIsSubmitting(true);
     try {
       const result = calculateLeadScore({
-        mercado: formData.mercado,
-        estagio_negocio: formData.estagio_negocio,
-        investimento_faixa: formData.investimento_faixa,
-        dor_desejo: formData.dor_desejo
+        mercado: currentData.mercado,
+        estagio_negocio: currentData.estagio_negocio,
+        investimento_faixa: currentData.investimento_faixa,
+        dor_desejo: currentData.dor_desejo
       });
 
       const dbData = {
-        nome_completo: formData.nome_completo,
-        whatsapp: formData.whatsapp,
-        instagram: formData.instagram,
-        mercado: formData.mercado,
-        estagio_negocio: formData.estagio_negocio,
-        investimento_faixa: formData.investimento_faixa,
-        dor_desejo: formData.dor_desejo,
+        nome_completo: currentData.nome_completo,
+        whatsapp: currentData.whatsapp,
+        instagram: currentData.instagram,
+        mercado: currentData.mercado,
+        estagio_negocio: currentData.estagio_negocio,
+        investimento_faixa: currentData.investimento_faixa,
+        dor_desejo: currentData.dor_desejo,
         score: result.score,
         tier: result.tier,
-        raw_answers_json: JSON.parse(JSON.stringify(formData)),
+        raw_answers_json: JSON.parse(JSON.stringify(currentData)),
         ...getUtmPayload()
       };
 
@@ -325,24 +334,24 @@ export default function Quiz() {
 
       // Track submit with lead data
       await trackSubmit({
-        name: formData.nome_completo,
-        whatsapp: formData.whatsapp,
-        instagram: formData.instagram,
-        market: formData.mercado,
-        stage: formData.estagio_negocio
+        name: currentData.nome_completo,
+        whatsapp: currentData.whatsapp,
+        instagram: currentData.instagram,
+        market: currentData.mercado,
+        stage: currentData.estagio_negocio
       });
 
       localStorage.removeItem(STORAGE_KEY);
 
       // Save result data for the thank you page
       localStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify({
-        nome_completo: formData.nome_completo,
-        whatsapp: formData.whatsapp,
-        instagram: formData.instagram,
-        mercado: formData.mercado,
-        estagio_negocio: formData.estagio_negocio,
-        investimento_faixa: formData.investimento_faixa,
-        dor_desejo: formData.dor_desejo
+        nome_completo: currentData.nome_completo,
+        whatsapp: currentData.whatsapp,
+        instagram: currentData.instagram,
+        mercado: currentData.mercado,
+        estagio_negocio: currentData.estagio_negocio,
+        investimento_faixa: currentData.investimento_faixa,
+        dor_desejo: currentData.dor_desejo
       }));
 
       toast({
