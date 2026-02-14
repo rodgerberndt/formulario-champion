@@ -10,7 +10,7 @@ const steps = [
     subtitle: "Quiz + entendimento",
     bullets: [
       "Preencha o quiz de 2 minutos",
-      "Nosso time analisa seu cenário, mercado e criativo atual",
+      "Nosso time analisa seu cenário, mercado e estrutura atual",
       "Você recebe um plano personalizado com os próximos passos",
     ],
   },
