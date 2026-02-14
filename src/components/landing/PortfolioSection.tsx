@@ -156,7 +156,7 @@ function PortfolioCard({ item }: {item: PortfolioItem;}) {
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
           onLoadedData={() => setIsLoaded(true)}
           onError={() => setHasError(true)}
           style={{ willChange: "transform" }}
