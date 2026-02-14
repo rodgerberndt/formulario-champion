@@ -32,7 +32,7 @@ export function PainSection() {
             <ShimmerText isVisible={isVisible}>
               O PROBLEMA NÃO É TRÁFEGO.{" "}
             </ShimmerText>
-            <KeywordGlow>É CRIATIVO QUE NÃO SUSTENTA.</KeywordGlow>
+            <KeywordGlow>É CRIATIVO QUE NÃO SUSTENTA ESCALA.</KeywordGlow>
           </h2>
           <p className="text-sm text-muted-foreground max-w-xl mx-auto">
             A maioria dos anunciantes está presa no mesmo ciclo: criar, testar, falhar, repetir — sem método.
