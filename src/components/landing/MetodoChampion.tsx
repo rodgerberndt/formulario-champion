@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
-import { ChevronRight } from "lucide-react";
 
 const pillars = [
   { label: "Onboarding / Feedback" },
@@ -11,6 +10,58 @@ const pillars = [
   { label: "Teste" },
 ];
 
+/** Curved arrow SVG between two positions on the circle */
+function CurvedArrow({ angle1, angle2, radius, isActive }: { angle1: number; angle2: number; radius: number; isActive: boolean }) {
+  const r1 = (angle1 * Math.PI) / 180;
+  const r2 = (angle2 * Math.PI) / 180;
+  const midAngle = (angle1 + angle2) / 2;
+  const rMid = (midAngle * Math.PI) / 180;
+
+  const x1 = Math.cos(r1) * radius;
+  const y1 = Math.sin(r1) * radius;
+  const x2 = Math.cos(r2) * radius;
+  const y2 = Math.sin(r2) * radius;
+
+  // Control point pushed outward for curve
+  const cpRadius = radius * 1.15;
+  const cx = Math.cos(rMid) * cpRadius;
+  const cy = Math.sin(rMid) * cpRadius;
+
+  // Arrowhead at end
+  const arrowSize = 6;
+  const dx = x2 - cx;
+  const dy = y2 - cy;
+  const len = Math.sqrt(dx * dx + dy * dy);
+  const ux = dx / len;
+  const uy = dy / len;
+  const perpX = -uy;
+  const perpY = ux;
+
+  const tip = { x: x2, y: y2 };
+  const left = { x: x2 - ux * arrowSize + perpX * arrowSize * 0.5, y: y2 - uy * arrowSize + perpY * arrowSize * 0.5 };
+  const right = { x: x2 - ux * arrowSize - perpX * arrowSize * 0.5, y: y2 - uy * arrowSize - perpY * arrowSize * 0.5 };
+
+  return (
+    <g>
+      <path
+        d={`M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`}
+        fill="none"
+        stroke={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.2)"}
+        strokeWidth={1.5}
+        strokeDasharray={isActive ? "none" : "4 4"}
+        className="transition-all duration-500"
+        opacity={isActive ? 0.7 : 0.3}
+      />
+      <polygon
+        points={`${tip.x},${tip.y} ${left.x},${left.y} ${right.x},${right.y}`}
+        fill={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.2)"}
+        opacity={isActive ? 0.7 : 0.3}
+        className="transition-all duration-500"
+      />
+    </g>
+  );
+}
+
 export function MetodoChampion() {
   const { ref, isVisible } = useReveal(0.1);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -18,7 +69,6 @@ export function MetodoChampion() {
 
   useEffect(() => {
     if (!isVisible) return;
-
     const handleScroll = () => {
       const el = sectionRef.current;
       if (!el) return;
@@ -26,7 +76,6 @@ export function MetodoChampion() {
       const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (rect.height + window.innerHeight * 0.2)));
       setActivePillars(Math.min(5, Math.floor(progress * 7)));
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
@@ -35,6 +84,11 @@ export function MetodoChampion() {
   const scrollToCTA = () => {
     document.querySelector("#cta-final")?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const desktopRadius = 190;
+  const svgSize = (desktopRadius + 80) * 2;
+  const svgCenter = svgSize / 2;
+  const arrowRadius = desktopRadius - 30;
 
   return (
     <section id="metodo" className="py-16 md:py-28 relative" ref={ref}>
@@ -46,187 +100,118 @@ export function MetodoChampion() {
           </h2>
         </div>
 
-        {/* Emblem + Pillars */}
         <div className={`reveal-up ${isVisible ? "visible" : ""}`} style={{ transitionDelay: "200ms" }}>
 
-          {/* Desktop: circular layout */}
+          {/* Desktop */}
           <div className="hidden md:flex items-center justify-center relative" style={{ minHeight: 420 }}>
+            {/* SVG arrows layer */}
+            <svg
+              width={svgSize}
+              height={svgSize}
+              className="absolute pointer-events-none"
+              style={{ left: `calc(50% - ${svgCenter}px)`, top: `calc(50% - ${svgCenter}px)` }}
+              viewBox={`${-svgCenter} ${-svgCenter} ${svgSize} ${svgSize}`}
+            >
+              {pillars.map((_, i) => {
+                const a1 = (i * 360) / pillars.length - 90 + 25;
+                const a2 = (((i + 1) % pillars.length) * 360) / pillars.length - 90 - 25;
+                const a2Adj = a2 < a1 ? a2 + 360 : a2;
+                return (
+                  <CurvedArrow
+                    key={`arrow-${i}`}
+                    angle1={a1}
+                    angle2={a2 < a1 ? a2 + 360 : a2}
+                    radius={arrowRadius}
+                    isActive={i < activePillars}
+                  />
+                );
+              })}
+            </svg>
+
             {/* Center emblem */}
             <div className="relative w-56 h-56 flex items-center justify-center z-10">
               <div
-                className={`absolute inset-0 rounded-full transition-all duration-700 ${
-                  activePillars >= 5 ? "opacity-100" : "opacity-30"
-                }`}
-                style={{
-                  background: "radial-gradient(circle, hsl(42 90% 58% / 0.15) 0%, transparent 70%)",
-                  filter: "blur(25px)",
-                }}
+                className={`absolute inset-0 rounded-full transition-all duration-700 ${activePillars >= 5 ? "opacity-100" : "opacity-30"}`}
+                style={{ background: "radial-gradient(circle, hsl(42 90% 58% / 0.15) 0%, transparent 70%)", filter: "blur(25px)" }}
               />
               <div
                 className={`absolute inset-4 rounded-full transition-all duration-500 ${
-                  activePillars >= 5
-                    ? "border-2 border-secondary/60 shadow-[0_0_30px_-5px_hsl(42_90%_58%/0.3)]"
-                    : "border border-border/30"
+                  activePillars >= 5 ? "border-2 border-secondary/60 shadow-[0_0_30px_-5px_hsl(42_90%_58%/0.3)]" : "border border-border/30"
                 }`}
-                style={{
-                  background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))",
-                }}
+                style={{ background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))" }}
               />
-              <img
-                src="/champion-logo.png"
-                alt="Champion"
-                className={`relative z-10 w-20 h-20 object-contain transition-all duration-500 ${
-                  activePillars >= 5 ? "drop-shadow-[0_0_12px_hsl(42_90%_58%/0.4)]" : ""
-                }`}
-              />
-              <span className="absolute bottom-7 z-10 text-[10px] font-bold uppercase tracking-wider text-secondary/80">
-                Esteira semanal
-              </span>
+              <img src="/champion-logo.png" alt="Champion" className={`relative z-10 w-20 h-20 object-contain transition-all duration-500 ${activePillars >= 5 ? "drop-shadow-[0_0_12px_hsl(42_90%_58%/0.4)]" : ""}`} />
+              <span className="absolute bottom-7 z-10 text-[10px] font-bold uppercase tracking-wider text-secondary/80">Esteira semanal</span>
             </div>
 
-            {/* Desktop pillars in a circle */}
+            {/* Pillars */}
             {pillars.map((pillar, i) => {
               const angle = (i * 360) / pillars.length - 90;
-              const rad = angle * (Math.PI / 180);
-              const radius = 190;
-              const x = Math.cos(rad) * radius;
-              const y = Math.sin(rad) * radius;
+              const rad = (angle * Math.PI) / 180;
+              const x = Math.cos(rad) * desktopRadius;
+              const y = Math.sin(rad) * desktopRadius;
               const isActive = i < activePillars;
-              const nextAngle = ((i + 1) % pillars.length * 360) / pillars.length - 90;
-              const arrowRad = ((angle + nextAngle) / 2 + (i === pillars.length - 1 ? 180 : 0)) * (Math.PI / 180);
-
               return (
                 <motion.div
                   key={pillar.label}
-                  className="absolute"
-                  style={{
-                    left: `calc(50% + ${x}px - 65px)`,
-                    top: `calc(50% + ${y}px - 18px)`,
-                    width: 130,
-                  }}
+                  className="absolute z-20"
+                  style={{ left: `calc(50% + ${x}px - 65px)`, top: `calc(50% + ${y}px - 18px)`, width: 130 }}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={isVisible ? { opacity: 1, scale: 1 } : {}}
                   transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
                 >
-                  <div
-                    className={`text-center px-3 py-2.5 rounded-xl border transition-all duration-500 ${
-                      isActive
-                        ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)] shadow-[0_0_15px_-5px_hsl(42_90%_58%/0.2)]"
-                        : "border-border/20 bg-muted/10"
-                    }`}
-                  >
-                    <span
-                      className={`text-[11px] font-bold uppercase tracking-wider transition-colors duration-500 ${
-                        isActive ? "text-secondary" : "text-muted-foreground/50"
-                      }`}
-                    >
+                  <div className={`text-center px-3 py-2.5 rounded-xl border transition-all duration-500 ${
+                    isActive ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)] shadow-[0_0_15px_-5px_hsl(42_90%_58%/0.2)]" : "border-border/20 bg-muted/10"
+                  }`}>
+                    <span className={`text-[11px] font-bold uppercase tracking-wider transition-colors duration-500 ${isActive ? "text-secondary" : "text-muted-foreground/50"}`}>
                       {pillar.label}
                     </span>
                   </div>
                 </motion.div>
               );
             })}
-
-            {/* Arrow indicators between pillars (desktop) */}
-            {pillars.map((_, i) => {
-              const angle1 = (i * 360) / pillars.length - 90;
-              const angle2 = (((i + 1) % pillars.length) * 360) / pillars.length - 90;
-              const midAngle = i === pillars.length - 1
-                ? (angle1 + (angle2 + 360)) / 2
-                : (angle1 + angle2) / 2;
-              const rad = midAngle * (Math.PI / 180);
-              const arrowRadius = 155;
-              const ax = Math.cos(rad) * arrowRadius;
-              const ay = Math.sin(rad) * arrowRadius;
-              const isActive = i < activePillars;
-
-              return (
-                <motion.div
-                  key={`arrow-${i}`}
-                  className="absolute"
-                  style={{
-                    left: `calc(50% + ${ax}px - 8px)`,
-                    top: `calc(50% + ${ay}px - 8px)`,
-                    transform: `rotate(${midAngle + 90}deg)`,
-                  }}
-                  initial={{ opacity: 0 }}
-                  animate={isVisible ? { opacity: isActive ? 0.8 : 0.2 } : { opacity: 0 }}
-                  transition={{ delay: 0.5 + i * 0.08, duration: 0.4 }}
-                >
-                  <ChevronRight className={`w-4 h-4 transition-colors duration-500 ${isActive ? "text-secondary" : "text-muted-foreground/30"}`} />
-                </motion.div>
-              );
-            })}
           </div>
 
-          {/* Mobile: vertical flow with arrows */}
-          <div className="md:hidden flex flex-col items-center gap-1">
-            {/* Emblem */}
+          {/* Mobile */}
+          <div className="md:hidden flex flex-col items-center gap-0">
             <div className="relative w-40 h-40 flex items-center justify-center mb-4">
               <div
                 className={`absolute inset-3 rounded-full transition-all duration-500 ${
-                  activePillars >= 5
-                    ? "border-2 border-secondary/60 shadow-[0_0_20px_-5px_hsl(42_90%_58%/0.3)]"
-                    : "border border-border/30"
+                  activePillars >= 5 ? "border-2 border-secondary/60 shadow-[0_0_20px_-5px_hsl(42_90%_58%/0.3)]" : "border border-border/30"
                 }`}
-                style={{
-                  background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))",
-                }}
+                style={{ background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))" }}
               />
-              <img
-                src="/champion-logo.png"
-                alt="Champion"
-                className={`relative z-10 w-14 h-14 object-contain transition-all duration-500 ${
-                  activePillars >= 5 ? "drop-shadow-[0_0_10px_hsl(42_90%_58%/0.4)]" : ""
-                }`}
-              />
-              <span className="absolute bottom-5 z-10 text-[9px] font-bold uppercase tracking-wider text-secondary/80">
-                Esteira semanal
-              </span>
+              <img src="/champion-logo.png" alt="Champion" className={`relative z-10 w-14 h-14 object-contain transition-all duration-500 ${activePillars >= 5 ? "drop-shadow-[0_0_10px_hsl(42_90%_58%/0.4)]" : ""}`} />
+              <span className="absolute bottom-5 z-10 text-[9px] font-bold uppercase tracking-wider text-secondary/80">Esteira semanal</span>
             </div>
 
-            {/* Pillars as flow */}
             {pillars.map((pillar, i) => {
               const isActive = i < activePillars;
               return (
                 <div key={pillar.label} className="flex flex-col items-center">
-                  <div
-                    className={`text-center px-5 py-2.5 rounded-xl border transition-all duration-400 ${
-                      isActive
-                        ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)]"
-                        : "border-border/20 bg-muted/10"
-                    }`}
-                  >
+                  <div className={`text-center px-5 py-2.5 rounded-xl border transition-all duration-400 ${
+                    isActive ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)]" : "border-border/20 bg-muted/10"
+                  }`}>
                     <span className={`text-[11px] font-bold uppercase tracking-wider ${isActive ? "text-secondary" : "text-muted-foreground/50"}`}>
                       {pillar.label}
                     </span>
                   </div>
-                  {/* Arrow between items */}
-                  {i < pillars.length - 1 && (
-                    <ChevronRight
-                      className={`w-4 h-4 rotate-90 my-1 transition-colors duration-500 ${
-                        isActive ? "text-secondary/60" : "text-muted-foreground/20"
-                      }`}
-                    />
-                  )}
-                  {/* Loop arrow after last */}
-                  {i === pillars.length - 1 && (
-                    <div className="flex items-center gap-1 mt-1 text-secondary/60">
-                      <span className="text-[10px] font-semibold uppercase tracking-wider">↻ volta ao início</span>
-                    </div>
-                  )}
+                  {/* Arrow down */}
+                  <svg width="16" height="24" viewBox="0 0 16 24" className="my-1" fill="none">
+                    <path d={`M8 0 L8 18`} stroke={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} strokeWidth="1.5" className="transition-all duration-500" />
+                    <polygon points="8,23 4,17 12,17" fill={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} className="transition-all duration-500" />
+                  </svg>
                 </div>
               );
             })}
+            <div className="flex items-center gap-1 text-secondary/60 mt-0">
+              <span className="text-[10px] font-semibold uppercase tracking-wider">↻ volta ao início</span>
+            </div>
           </div>
         </div>
 
-        {/* CTA */}
         <div className={`text-center mt-10 md:mt-16 transition-all duration-500 ${activePillars >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <button
-            onClick={scrollToCTA}
-            className="text-secondary hover:text-secondary/80 text-sm font-semibold underline underline-offset-4 transition-colors min-h-[44px]"
-          >
+          <button onClick={scrollToCTA} className="text-secondary hover:text-secondary/80 text-sm font-semibold underline underline-offset-4 transition-colors min-h-[44px]">
             Quero o diagnóstico →
           </button>
         </div>
