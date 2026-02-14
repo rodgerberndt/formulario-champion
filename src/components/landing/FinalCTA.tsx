@@ -66,10 +66,10 @@ export function FinalCTA() {
             <Button
               size="lg"
               onClick={handleCTA}
-              className="btn-shine glow-breathe h-14 px-10 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 transition-all active:scale-[0.98] min-h-[56px]"
+              className="btn-shine glow-breathe w-full sm:w-auto h-14 px-8 sm:px-10 text-sm sm:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 transition-all active:scale-[0.98] min-h-[56px]"
             >
               QUERO O DIAGNÓSTICO GRATUITO
-              <ArrowRight className="w-5 h-5 ml-2" />
+              <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
             </Button>
           </LineReveal>
         </div>
