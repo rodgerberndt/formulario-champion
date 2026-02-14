@@ -55,21 +55,12 @@ export function LandingNavbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
-          <Button
-            size="sm"
-            onClick={() => navigate("/quiz")}
-            className="btn-shine text-xs md:text-sm font-bold bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-xl shadow-lg hover:shadow-xl transition-all"
-          >
-            PREENCHER QUIZ
-          </Button>
-          <button
-            className="md:hidden text-foreground"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
+        <button
+          className="md:hidden text-foreground"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </div>
 
       {/* Mobile menu */}

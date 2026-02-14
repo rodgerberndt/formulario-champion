@@ -61,7 +61,7 @@ export function FinalCTA() {
           <Button
             size="lg"
             onClick={handleCTA}
-            className="btn-shine glow-breathe h-14 px-10 text-base font-bold bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-2xl shadow-2xl transition-all active:scale-[0.98] min-h-[56px]"
+            className="btn-shine glow-breathe h-14 px-10 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 transition-all active:scale-[0.98] min-h-[56px]"
           >
             QUERO O DIAGNÓSTICO GRATUITO
             <ArrowRight className="w-5 h-5 ml-2" />
