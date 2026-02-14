@@ -12,34 +12,6 @@ export interface PortfolioItem {
 const STORAGE = "https://zjbmcxpbdofmlaphozep.supabase.co/storage/v1/object/public/portfolio-videos";
 
 export const portfolioItems: PortfolioItem[] = [
-  // Estáticos (imagens)
-  {
-    id: "s1",
-    title: "Estático Info",
-    thumbnail: `${STORAGE}/images/1770768846212-b5t9b9.png`,
-    format: "imagem",
-    objective: "lead",
-    niche: ["infoprod"],
-    description: "Criativo estático de alta conversão para infoproduto.",
-  },
-  {
-    id: "s2",
-    title: "Nutra Estático",
-    thumbnail: `${STORAGE}/images/1770768839966-y2swj4h.png`,
-    format: "imagem",
-    objective: "venda",
-    niche: ["nutra"],
-    description: "Estático focado em conversão para nicho Nutra.",
-  },
-  {
-    id: "s3",
-    title: "Estático",
-    thumbnail: `${STORAGE}/images/1770768836430-76zz86.png`,
-    format: "imagem",
-    objective: "venda",
-    niche: ["ecom"],
-    description: "Criativo estático para e-commerce.",
-  },
   // Vídeos
   {
     id: "v1",
