@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Play, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { useReveal } from "@/hooks/useReveal";
@@ -8,14 +8,58 @@ export function PortfolioSection() {
   const { ref, isVisible } = useReveal(0.08);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
+  const autoScrollRef = useRef<number | null>(null);
+  const isPausedRef = useRef(false);
 
   const scrollToCTA = () => {
     document.querySelector("#cta-final")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const scrollBy = (dir: number) => {
+  const scrollByAmount = useCallback((dir: number) => {
     scrollRef.current?.scrollBy({ left: dir * 280, behavior: "smooth" });
-  };
+  }, []);
+
+  // Auto-scroll slowly to the right
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let lastTime = 0;
+    const speed = 0.5; // pixels per frame (~30px/s)
+
+    const tick = (time: number) => {
+      if (lastTime && !isPausedRef.current) {
+        const delta = time - lastTime;
+        el.scrollLeft += speed * (delta / 16);
+
+        // Loop back when reaching the end
+        if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 2) {
+          el.scrollLeft = 0;
+        }
+      }
+      lastTime = time;
+      autoScrollRef.current = requestAnimationFrame(tick);
+    };
+
+    autoScrollRef.current = requestAnimationFrame(tick);
+
+    // Pause on touch/interaction
+    const pause = () => { isPausedRef.current = true; };
+    const resume = () => { setTimeout(() => { isPausedRef.current = false; }, 3000); };
+
+    el.addEventListener("touchstart", pause, { passive: true });
+    el.addEventListener("touchend", resume, { passive: true });
+    el.addEventListener("mouseenter", pause);
+    el.addEventListener("mouseleave", resume);
+
+    return () => {
+      if (autoScrollRef.current) cancelAnimationFrame(autoScrollRef.current);
+      el.removeEventListener("touchstart", pause);
+      el.removeEventListener("touchend", resume);
+      el.removeEventListener("mouseenter", pause);
+      el.removeEventListener("mouseleave", resume);
+    };
+  }, []);
 
   return (
     <section id="portfolio" className="py-12 md:py-20 relative" ref={ref}>
@@ -29,12 +73,20 @@ export function PortfolioSection() {
           </p>
         </div>
 
-        {/* Carousel controls (desktop) */}
-        <div className="hidden md:flex justify-end gap-2 mb-4 px-1">
-          <button onClick={() => scrollBy(-1)} className="w-8 h-8 rounded-full border border-border/40 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-secondary/40 transition-colors">
+        {/* Carousel controls */}
+        <div className="flex justify-end gap-2 mb-4 px-1">
+          <button
+            onClick={() => scrollByAmount(-1)}
+            className="w-9 h-9 rounded-full border border-border/40 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-secondary/40 transition-colors min-w-[44px] min-h-[44px]"
+            aria-label="Anterior"
+          >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <button onClick={() => scrollBy(1)} className="w-8 h-8 rounded-full border border-border/40 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-secondary/40 transition-colors">
+          <button
+            onClick={() => scrollByAmount(1)}
+            className="w-9 h-9 rounded-full border border-border/40 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-secondary/40 transition-colors min-w-[44px] min-h-[44px]"
+            aria-label="Próximo"
+          >
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
@@ -59,17 +111,7 @@ export function PortfolioSection() {
           )}
         </div>
 
-        {/* Full portfolio link */}
-        <div className="text-center mt-6">
-          
-
-
-
-
-
-
-
-        </div>
+        <div className="text-center mt-6" />
       </div>
 
       {/* Modal */}
@@ -90,7 +132,7 @@ function PortfolioCard({ item }: {item: PortfolioItem;}) {
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => {if (e.isIntersecting) {setInView(true);obs.disconnect();}}, { rootMargin: "100px" });
+    const obs = new IntersectionObserver(([e]) => {if (e.isIntersecting) {setInView(true);obs.disconnect();}}, { rootMargin: "200px" });
     if (containerRef.current) obs.observe(containerRef.current);
     return () => obs.disconnect();
   }, []);
@@ -114,10 +156,11 @@ function PortfolioCard({ item }: {item: PortfolioItem;}) {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
           onLoadedData={() => setIsLoaded(true)}
-          onError={() => setHasError(true)} />
-
+          onError={() => setHasError(true)}
+          style={{ willChange: "transform" }}
+        />
         }
         {!isLoaded && <div className="absolute inset-0 animate-pulse bg-muted/30" />}
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
@@ -139,7 +182,6 @@ function PortfolioCard({ item }: {item: PortfolioItem;}) {
         <p className="text-xs text-muted-foreground line-clamp-2">{item.description}</p>
       </div>
     </div>);
-
 }
 
 function AdViewerModal({ item, onClose, onCTA }: {item: PortfolioItem;onClose: () => void;onCTA: () => void;}) {
