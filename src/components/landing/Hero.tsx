@@ -44,27 +44,18 @@ export function Hero({ onStartClick }: HeroProps) {
                 </div>
               </LineReveal>
 
-              {/* Headline with word cascade */}
-              <h1 className="font-bold text-foreground mb-4 leading-tight text-4xl">
-                <WordCascade
-                  text="SE VOCÊ NÃO TESTA CRIATIVO TODA SEMANA,"
-                  isVisible={isVisible}
-                  stagger={45}
-                  baseDelay={100}
-                />
-                {" "}
-                <KeywordGlow>
-                  <WordCascade
-                    text="PODE ESTAR DEIXANDO MUITO DINHEIRO NA MESA."
-                    isVisible={isVisible}
-                    stagger={45}
-                    baseDelay={500}
-                  />
-                </KeywordGlow>
-              </h1>
+              {/* Headline — simple reveal, no word cascade for readability */}
+              <LineReveal isVisible={isVisible} delay={150}>
+                <h1 className="font-bold text-foreground mb-4 leading-tight text-4xl">
+                  SE VOCÊ NÃO TESTA CRIATIVO TODA SEMANA,{" "}
+                  <KeywordGlow>
+                    PODE ESTAR DEIXANDO MUITO DINHEIRO NA MESA.
+                  </KeywordGlow>
+                </h1>
+              </LineReveal>
 
               {/* Subheadline */}
-              <LineReveal isVisible={isVisible} delay={900}>
+              <LineReveal isVisible={isVisible} delay={350}>
                 <p className="text-sm md:text-base text-muted-foreground max-w-sm mx-auto md:mx-0 mb-6">
                   C.G.S , o sistema de crescimento da Champion pode te ajudar.
                   <br />​
@@ -72,7 +63,7 @@ export function Hero({ onStartClick }: HeroProps) {
               </LineReveal>
 
               {/* CTA */}
-              <LineReveal isVisible={isVisible} delay={1100}>
+              <LineReveal isVisible={isVisible} delay={500}>
                 <div className="flex flex-col items-center md:items-start gap-4 mb-6">
                   <Button size="lg" onClick={onStartClick} className="group h-12 md:h-14 px-6 md:px-8 text-sm md:text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-shadow duration-200 active:scale-[0.98]">
                     FAZER DIAGNÓSTICO (2 MIN)
@@ -88,7 +79,7 @@ export function Hero({ onStartClick }: HeroProps) {
                     key={i}
                     initial={{ opacity: 0, y: 8 }}
                     animate={isVisible ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 1.3 + i * 0.1, duration: 0.4 }}
+                    transition={{ delay: 0.7 + i * 0.1, duration: 0.4 }}
                     className="flex items-center gap-1"
                   >
                     <div className="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center flex-shrink-0">
@@ -103,7 +94,7 @@ export function Hero({ onStartClick }: HeroProps) {
               </div>
 
               {/* Micro Proofs */}
-              <LineReveal isVisible={isVisible} delay={1600}>
+              <LineReveal isVisible={isVisible} delay={1000}>
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-6 text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <div className="p-1.5 rounded-lg bg-secondary/12">
