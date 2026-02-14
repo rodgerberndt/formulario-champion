@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { TrendingDown, AlertTriangle, Skull } from "lucide-react";
 import { useReveal } from "@/hooks/useReveal";
+import { ShimmerText, KeywordGlow } from "./TextEffects";
 
 const pains = [
   {
@@ -28,8 +29,10 @@ export function PainSection() {
       <div className="container mx-auto px-5 max-w-5xl relative z-10">
         <div className={`text-center mb-8 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-2">
-            O PROBLEMA NÃO É TRÁFEGO.{" "}
-            <span className="gold-text">É CRIATIVO QUE NÃO SUSTENTA.</span>
+            <ShimmerText isVisible={isVisible}>
+              O PROBLEMA NÃO É TRÁFEGO.{" "}
+            </ShimmerText>
+            <KeywordGlow>É CRIATIVO QUE NÃO SUSTENTA.</KeywordGlow>
           </h2>
           <p className="text-sm text-muted-foreground max-w-xl mx-auto">
             A maioria dos anunciantes está presa no mesmo ciclo: criar, testar, falhar, repetir — sem método.
@@ -49,7 +52,7 @@ export function PainSection() {
                 <pain.icon className="w-5 h-5 text-destructive" />
               </div>
               <h3 className="text-foreground mb-1.5" style={{ fontSize: "1.25rem" }}>
-                {pain.title}
+                <KeywordGlow>{pain.title}</KeywordGlow>
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{pain.desc}</p>
             </motion.div>

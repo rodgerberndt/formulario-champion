@@ -223,6 +223,66 @@
   .stroke-draw.visible {
     stroke-dashoffset: 0;
   }
+
+  /* ===== CINEMATIC TEXT EFFECTS ===== */
+
+  /* Shimmer sweep on headlines */
+  .shimmer-text-effect {
+    position: relative;
+    display: inline;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--foreground)) 0%,
+      hsl(var(--foreground)) 40%,
+      hsl(42 90% 68%) 50%,
+      hsl(var(--foreground)) 60%,
+      hsl(var(--foreground)) 100%
+    );
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .shimmer-text-effect.active {
+    animation: shimmer-sweep 1.8s ease-out forwards;
+  }
+  @keyframes shimmer-sweep {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+
+  /* Keyword glow — gold outline + soft glow */
+  .keyword-glow {
+    background: linear-gradient(135deg, hsl(42 90% 58%), hsl(42 80% 72%), hsl(42 90% 58%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 8px hsl(42 90% 58% / 0.35));
+    position: relative;
+  }
+
+  /* Animated underline for emphasis links */
+  .animated-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .animated-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, hsl(42 90% 58%), hsl(42 80% 72%));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .animated-underline.visible::after,
+  .animated-underline:hover::after {
+    transform: scaleX(1);
+  }
 }
 
 /* Reduced motion */
@@ -232,6 +292,8 @@
   .btn-shine::after { animation: none; }
   .glow-breathe { animation: none; }
   .stroke-draw { stroke-dashoffset: 0; transition: none; }
+  .shimmer-text-effect.active { animation: none; background-position: 0 0; -webkit-text-fill-color: inherit; }
+  .keyword-glow { filter: none; }
 }
 
 /* Scrollbar */
