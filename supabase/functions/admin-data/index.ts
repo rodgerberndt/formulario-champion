@@ -128,6 +128,7 @@ Deno.serve(async (req: Request) => {
       const status = url.searchParams.get("status");
       const buttonId = url.searchParams.get("button_id");
       const search = url.searchParams.get("q");
+      const showInternal = url.searchParams.get("show_internal") === "true";
       const page = parseInt(url.searchParams.get("page") || "1");
       const limit = parseInt(url.searchParams.get("limit") || "50");
       const offset = (page - 1) * limit;
@@ -137,6 +138,16 @@ Deno.serve(async (req: Request) => {
         .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
         .range(offset, offset + limit - 1);
+
+      // Filter out internal/noise sessions by default
+      if (!showInternal) {
+        // Exclude Lovable preview referrers
+        query = query.not("referrer", "ilike", "%lovable.dev%")
+          .not("referrer", "ilike", "%lovableproject.com%")
+          .not("referrer", "ilike", "%forceHideBadge%");
+        // Exclude admin-only visits
+        query = query.neq("first_page", "/admin");
+      }
 
       // Apply filters
       if (from) {
@@ -251,12 +262,27 @@ Deno.serve(async (req: Request) => {
         return all;
       }
 
-      // Fetch ALL sessions (paginated)
-      const sessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at", (q: any) => {
+      // Fetch ALL sessions (paginated) - include referrer & first_page for filtering
+      const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, referrer, first_page", (q: any) => {
         if (from) q = q.gte("created_at", from);
         if (toEnd) q = q.lte("created_at", toEnd);
         return q;
       });
+
+      // Filter out internal/noise sessions:
+      // 1. Lovable preview referrers
+      // 2. Sessions that started on /admin
+      // 3. Lovable project URLs in referrer
+      const sessions = rawSessions.filter((s: any) => {
+        const ref = (s.referrer || '').toLowerCase();
+        const firstPage = (s.first_page || '').toLowerCase();
+        // Exclude Lovable previews and editor
+        if (ref.includes('lovable.dev') || ref.includes('lovableproject.com') || ref.includes('lovable.app/?forceHideBadge')) return false;
+        // Exclude admin-only visits
+        if (firstPage === '/admin') return false;
+        return true;
+      });
+      const filteredOutCount = rawSessions.length - sessions.length;
 
       const sessionIds = new Set(sessions.map((s: any) => s.id));
       const total = sessions.length;
@@ -363,7 +389,7 @@ Deno.serve(async (req: Request) => {
         }
       });
 
-      console.log("[FUNNEL] Sessions:", total, "Events:", filteredEvents.length, "Leads:", completed, "UniqueIPs:", uniqueIps.size);
+      console.log("[FUNNEL] Raw:", rawSessions.length, "Filtered:", filteredOutCount, "Clean:", total, "Events:", filteredEvents.length, "Leads:", completed, "UniqueIPs:", uniqueIps.size);
 
       return new Response(
         JSON.stringify({
@@ -371,6 +397,7 @@ Deno.serve(async (req: Request) => {
           unique_visitors: uniqueVisitors,
           has_reliable_ip_data: hasReliableIpData,
           ip_coverage_percent: Math.round(ipCoverage * 100),
+          filtered_out: filteredOutCount,
           entered_quiz: enteredQuiz,
           started_quiz: startedQuiz,
           completed,
