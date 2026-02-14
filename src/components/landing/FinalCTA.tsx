@@ -24,19 +24,19 @@ export function FinalCTA() {
   };
 
   return (
-    <section id="cta-final" className="py-16 md:py-24 relative overflow-hidden" ref={ref}>
+    <section id="cta-final" className="py-16 md:py-24 relative overflow-hidden bg-foreground" ref={ref}>
       {/* Convergence glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[80px] bg-[hsl(42_90%_58%/0.06)]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[80px] bg-[hsl(42_90%_58%/0.1)]" />
       </div>
 
       <div className="container mx-auto px-5 max-w-2xl relative z-10">
         <div className={`text-center reveal-up ${isVisible ? "visible" : ""}`}>
-          <h2 className="text-foreground mb-3">
+          <h2 className="text-background mb-3">
             SEU CRIATIVO PODE{" "}
             <span className="gold-text">ESCALAR. AGORA.</span>
           </h2>
-          <p className="text-sm text-muted-foreground mb-8 max-w-md mx-auto">
+          <p className="text-sm text-background/60 mb-8 max-w-md mx-auto">
             Preencha o diagnóstico gratuito e descubra como a Champion pode transformar seus resultados.
           </p>
 
@@ -50,10 +50,10 @@ export function FinalCTA() {
                 transition={{ delay: 0.2 + i * 0.08, duration: 0.4 }}
                 className="flex items-center gap-2"
               >
-                <div className="w-7 h-7 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-secondary/15 border border-secondary/30 flex items-center justify-center flex-shrink-0">
                   <step.icon className="w-3.5 h-3.5 text-secondary" />
                 </div>
-                <span className="text-xs text-muted-foreground font-medium text-left">{step.text}</span>
+                <span className="text-xs text-background/60 font-medium text-left">{step.text}</span>
               </motion.div>
             ))}
           </div>
