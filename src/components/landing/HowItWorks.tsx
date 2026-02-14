@@ -39,10 +39,10 @@ export function HowItWorks() {
   const { ref, isVisible } = useReveal(0.08);
 
   return (
-    <section id="como-funciona" className="py-12 md:py-20 relative" ref={ref}>
+    <section id="como-funciona" className="py-12 md:py-20 relative bg-foreground" ref={ref}>
       <div className="container mx-auto px-5 max-w-4xl">
         <div className={`text-center mb-10 reveal-up ${isVisible ? "visible" : ""}`}>
-          <h2 className="text-foreground mb-2">
+          <h2 className="text-background mb-2">
             COMO <span className="gold-text">FUNCIONA</span>
           </h2>
         </div>
@@ -54,10 +54,9 @@ export function HowItWorks() {
               initial={{ opacity: 0, y: 16 }}
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.15 + i * 0.12, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="gold-card"
+              className="rounded-2xl p-6 bg-background/10 border border-background/20"
             >
               <div className="flex items-start gap-4">
-                {/* Step number + icon */}
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 rounded-xl bg-secondary/15 border border-secondary/30 flex items-center justify-center">
                     <step.icon className="w-5 h-5 text-secondary" />
@@ -68,14 +67,14 @@ export function HowItWorks() {
                     <span className="text-xs font-bold text-secondary" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                       STEP {i + 1}
                     </span>
-                    <span className="text-xs text-muted-foreground">— {step.subtitle}</span>
+                    <span className="text-xs text-background/50">— {step.subtitle}</span>
                   </div>
                   <h3 className="gold-text mb-2" style={{ fontSize: "1.25rem" }}>
                     {step.title}
                   </h3>
                   <ul className="space-y-1.5">
                     {step.bullets.map((b, j) => (
-                      <li key={j} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <li key={j} className="flex items-start gap-2 text-sm text-background/60">
                         <span className="w-1.5 h-1.5 rounded-full bg-secondary/50 mt-1.5 flex-shrink-0" />
                         {b}
                       </li>
