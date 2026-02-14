@@ -1,15 +1,14 @@
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
-import { RefreshCw } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 const pillars = [
-  { label: "Onboarding / Feedback", angle: 0 },
-  { label: "Copy", angle: 60 },
-  { label: "Avatar IA / Real", angle: 120 },
-  { label: "Edição", angle: 180 },
-  { label: "Teste", angle: 240 },
-  { label: "REPETE O CICLO", angle: 300, highlight: true },
+  { label: "Onboarding / Feedback" },
+  { label: "Copy" },
+  { label: "Avatar IA / Real" },
+  { label: "Edição" },
+  { label: "Teste" },
 ];
 
 export function MetodoChampion() {
@@ -25,7 +24,7 @@ export function MetodoChampion() {
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (rect.height + window.innerHeight * 0.2)));
-      setActivePillars(Math.min(6, Math.floor(progress * 8)));
+      setActivePillars(Math.min(5, Math.floor(progress * 7)));
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -48,50 +47,53 @@ export function MetodoChampion() {
         </div>
 
         {/* Emblem + Pillars */}
-        <div className={`relative flex items-center justify-center reveal-up ${isVisible ? "visible" : ""}`} style={{ transitionDelay: "200ms" }}>
-          {/* Center emblem */}
-          <div className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center">
-            <div
-              className={`absolute inset-0 rounded-full transition-all duration-700 ${
-                activePillars >= 6 ? "opacity-100" : "opacity-30"
-              }`}
-              style={{
-                background: "radial-gradient(circle, hsl(42 90% 58% / 0.15) 0%, transparent 70%)",
-                filter: "blur(25px)",
-              }}
-            />
-            <div
-              className={`absolute inset-4 md:inset-5 rounded-full transition-all duration-500 ${
-                activePillars >= 6
-                  ? "border-2 border-secondary/60 shadow-[0_0_30px_-5px_hsl(42_90%_58%/0.3)]"
-                  : "border border-border/30"
-              }`}
-              style={{
-                background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))",
-              }}
-            />
-            {/* Logo */}
-            <img
-              src="/champion-logo.png"
-              alt="Champion"
-              className={`relative z-10 w-16 h-16 md:w-24 md:h-24 object-contain transition-all duration-500 ${
-                activePillars >= 6 ? "drop-shadow-[0_0_12px_hsl(42_90%_58%/0.4)]" : ""
-              }`}
-            />
-            {/* "Esteira semanal" label */}
-            <span className="absolute bottom-6 md:bottom-8 z-10 text-[10px] md:text-xs font-bold uppercase tracking-wider text-secondary/80">
-              Esteira semanal
-            </span>
-          </div>
+        <div className={`reveal-up ${isVisible ? "visible" : ""}`} style={{ transitionDelay: "200ms" }}>
 
-          {/* Desktop pillars */}
-          <div className="hidden md:block">
+          {/* Desktop: circular layout */}
+          <div className="hidden md:flex items-center justify-center relative" style={{ minHeight: 420 }}>
+            {/* Center emblem */}
+            <div className="relative w-56 h-56 flex items-center justify-center z-10">
+              <div
+                className={`absolute inset-0 rounded-full transition-all duration-700 ${
+                  activePillars >= 5 ? "opacity-100" : "opacity-30"
+                }`}
+                style={{
+                  background: "radial-gradient(circle, hsl(42 90% 58% / 0.15) 0%, transparent 70%)",
+                  filter: "blur(25px)",
+                }}
+              />
+              <div
+                className={`absolute inset-4 rounded-full transition-all duration-500 ${
+                  activePillars >= 5
+                    ? "border-2 border-secondary/60 shadow-[0_0_30px_-5px_hsl(42_90%_58%/0.3)]"
+                    : "border border-border/30"
+                }`}
+                style={{
+                  background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))",
+                }}
+              />
+              <img
+                src="/champion-logo.png"
+                alt="Champion"
+                className={`relative z-10 w-20 h-20 object-contain transition-all duration-500 ${
+                  activePillars >= 5 ? "drop-shadow-[0_0_12px_hsl(42_90%_58%/0.4)]" : ""
+                }`}
+              />
+              <span className="absolute bottom-7 z-10 text-[10px] font-bold uppercase tracking-wider text-secondary/80">
+                Esteira semanal
+              </span>
+            </div>
+
+            {/* Desktop pillars in a circle */}
             {pillars.map((pillar, i) => {
-              const rad = (pillar.angle - 90) * (Math.PI / 180);
-              const radius = 185;
+              const angle = (i * 360) / pillars.length - 90;
+              const rad = angle * (Math.PI / 180);
+              const radius = 190;
               const x = Math.cos(rad) * radius;
               const y = Math.sin(rad) * radius;
               const isActive = i < activePillars;
+              const nextAngle = ((i + 1) % pillars.length * 360) / pillars.length - 90;
+              const arrowRad = ((angle + nextAngle) / 2 + (i === pillars.length - 1 ? 180 : 0)) * (Math.PI / 180);
 
               return (
                 <motion.div
@@ -107,17 +109,12 @@ export function MetodoChampion() {
                   transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
                 >
                   <div
-                    className={`text-center px-3 py-2 rounded-xl border transition-all duration-500 ${
+                    className={`text-center px-3 py-2.5 rounded-xl border transition-all duration-500 ${
                       isActive
-                        ? pillar.highlight
-                          ? "border-secondary/60 bg-secondary/15 shadow-[0_0_20px_-5px_hsl(42_90%_58%/0.3)]"
-                          : "border-secondary/40 bg-[hsl(42_90%_58%/0.08)] shadow-[0_0_15px_-5px_hsl(42_90%_58%/0.2)]"
+                        ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)] shadow-[0_0_15px_-5px_hsl(42_90%_58%/0.2)]"
                         : "border-border/20 bg-muted/10"
                     }`}
                   >
-                    {pillar.highlight && isActive && (
-                      <RefreshCw className="w-3.5 h-3.5 text-secondary mx-auto mb-1" />
-                    )}
                     <span
                       className={`text-[11px] font-bold uppercase tracking-wider transition-colors duration-500 ${
                         isActive ? "text-secondary" : "text-muted-foreground/50"
@@ -129,41 +126,103 @@ export function MetodoChampion() {
                 </motion.div>
               );
             })}
+
+            {/* Arrow indicators between pillars (desktop) */}
+            {pillars.map((_, i) => {
+              const angle1 = (i * 360) / pillars.length - 90;
+              const angle2 = (((i + 1) % pillars.length) * 360) / pillars.length - 90;
+              const midAngle = i === pillars.length - 1
+                ? (angle1 + (angle2 + 360)) / 2
+                : (angle1 + angle2) / 2;
+              const rad = midAngle * (Math.PI / 180);
+              const arrowRadius = 155;
+              const ax = Math.cos(rad) * arrowRadius;
+              const ay = Math.sin(rad) * arrowRadius;
+              const isActive = i < activePillars;
+
+              return (
+                <motion.div
+                  key={`arrow-${i}`}
+                  className="absolute"
+                  style={{
+                    left: `calc(50% + ${ax}px - 8px)`,
+                    top: `calc(50% + ${ay}px - 8px)`,
+                    transform: `rotate(${midAngle + 90}deg)`,
+                  }}
+                  initial={{ opacity: 0 }}
+                  animate={isVisible ? { opacity: isActive ? 0.8 : 0.2 } : { opacity: 0 }}
+                  transition={{ delay: 0.5 + i * 0.08, duration: 0.4 }}
+                >
+                  <ChevronRight className={`w-4 h-4 transition-colors duration-500 ${isActive ? "text-secondary" : "text-muted-foreground/30"}`} />
+                </motion.div>
+              );
+            })}
           </div>
 
-          {/* Mobile pillars - vertical list */}
-          <div className="md:hidden absolute -bottom-52 left-0 right-0 px-4">
-            <div className="grid grid-cols-2 gap-2">
-              {pillars.map((pillar, i) => {
-                const isActive = i < activePillars;
-                return (
-                  <div
-                    key={pillar.label}
-                    className={`text-center px-2 py-2.5 rounded-xl border transition-all duration-400 ${
-                      isActive
-                        ? pillar.highlight
-                          ? "border-secondary/60 bg-secondary/15 col-span-2"
-                          : "border-secondary/40 bg-[hsl(42_90%_58%/0.08)]"
-                        : "border-border/20 bg-muted/10"
-                    } ${pillar.highlight ? "col-span-2" : ""}`}
-                  >
-                    <div className="flex items-center justify-center gap-1.5">
-                      {pillar.highlight && isActive && (
-                        <RefreshCw className="w-3 h-3 text-secondary" />
-                      )}
-                      <span className={`text-[11px] font-bold uppercase ${isActive ? "text-secondary" : "text-muted-foreground/50"}`}>
-                        {pillar.label}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+          {/* Mobile: vertical flow with arrows */}
+          <div className="md:hidden flex flex-col items-center gap-1">
+            {/* Emblem */}
+            <div className="relative w-40 h-40 flex items-center justify-center mb-4">
+              <div
+                className={`absolute inset-3 rounded-full transition-all duration-500 ${
+                  activePillars >= 5
+                    ? "border-2 border-secondary/60 shadow-[0_0_20px_-5px_hsl(42_90%_58%/0.3)]"
+                    : "border border-border/30"
+                }`}
+                style={{
+                  background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))",
+                }}
+              />
+              <img
+                src="/champion-logo.png"
+                alt="Champion"
+                className={`relative z-10 w-14 h-14 object-contain transition-all duration-500 ${
+                  activePillars >= 5 ? "drop-shadow-[0_0_10px_hsl(42_90%_58%/0.4)]" : ""
+                }`}
+              />
+              <span className="absolute bottom-5 z-10 text-[9px] font-bold uppercase tracking-wider text-secondary/80">
+                Esteira semanal
+              </span>
             </div>
+
+            {/* Pillars as flow */}
+            {pillars.map((pillar, i) => {
+              const isActive = i < activePillars;
+              return (
+                <div key={pillar.label} className="flex flex-col items-center">
+                  <div
+                    className={`text-center px-5 py-2.5 rounded-xl border transition-all duration-400 ${
+                      isActive
+                        ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)]"
+                        : "border-border/20 bg-muted/10"
+                    }`}
+                  >
+                    <span className={`text-[11px] font-bold uppercase tracking-wider ${isActive ? "text-secondary" : "text-muted-foreground/50"}`}>
+                      {pillar.label}
+                    </span>
+                  </div>
+                  {/* Arrow between items */}
+                  {i < pillars.length - 1 && (
+                    <ChevronRight
+                      className={`w-4 h-4 rotate-90 my-1 transition-colors duration-500 ${
+                        isActive ? "text-secondary/60" : "text-muted-foreground/20"
+                      }`}
+                    />
+                  )}
+                  {/* Loop arrow after last */}
+                  {i === pillars.length - 1 && (
+                    <div className="flex items-center gap-1 mt-1 text-secondary/60">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider">↻ volta ao início</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* CTA */}
-        <div className={`text-center mt-60 md:mt-16 transition-all duration-500 ${activePillars >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+        <div className={`text-center mt-10 md:mt-16 transition-all duration-500 ${activePillars >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <button
             onClick={scrollToCTA}
             className="text-secondary hover:text-secondary/80 text-sm font-semibold underline underline-offset-4 transition-colors min-h-[44px]"
