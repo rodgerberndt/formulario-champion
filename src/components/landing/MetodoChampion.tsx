@@ -98,9 +98,9 @@ export function MetodoChampion() {
         <div className={`text-center mb-12 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-3 max-w-3xl mx-auto">
             <ShimmerText isVisible={isVisible}>
-              EXISTE UM MÉTODO COMPROVADO PRA FAZER SEU CRIATIVO{" "}
+              EXISTE UM MÉTODO COMPROVADO PARA FAZER SUA OFERTA ESCALAR INFINITAMENTE COM{" "}
             </ShimmerText>
-            <KeywordGlow>NÃO PARAR DE VENDER</KeywordGlow>
+            <KeywordGlow>OXIGENAÇÃO DE CRIATIVOS.</KeywordGlow>
           </h2>
         </div>
 
