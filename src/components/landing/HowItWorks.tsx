@@ -31,7 +31,7 @@ const steps = [
     bullets: [
       "Identificamos o criativo vencedor e escalamos com segurança",
       "Otimização por métricas reais: CPA, ROAS, CTR, frequência",
-      "Rotina de testes que mantém a conta saudável e previsível",
+      "Rotina de testes que mantém a escala saudável e previsível",
     ],
   },
 ];
