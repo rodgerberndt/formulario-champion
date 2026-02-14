@@ -25,7 +25,7 @@ export function PortfolioSection() {
             PORTFÓLIO <span className="gold-text">DE ADS</span>
           </h2>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            Alguns dos ads que a Champion usa pra validar e escalar.
+            Alguns dos ads que a Champion já fez para seus clientes.
           </p>
         </div>
 
