@@ -188,30 +188,41 @@ export function MetodoChampion() {
 
           {/* Mobile */}
           <div className="md:hidden flex flex-col items-center gap-0">
-            <div className="relative w-40 h-40 flex items-center justify-center mb-4">
+            <motion.div
+              className="relative w-40 h-40 flex items-center justify-center mb-6"
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={isVisible ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
               <div
-                className={`absolute inset-3 rounded-full transition-all duration-500 ${
+                className={`absolute inset-3 rounded-full transition-all duration-700 ${
                   activePillars >= 6 ? "border-2 border-secondary/60 shadow-[0_0_20px_-5px_hsl(42_90%_58%/0.3)]" : "border border-border/30"
                 }`}
                 style={{ background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))" }}
               />
               <img src="/champion-logo.png" alt="Champion" className={`relative z-10 w-14 h-14 object-contain transition-all duration-500 ${activePillars >= 6 ? "drop-shadow-[0_0_10px_hsl(42_90%_58%/0.4)]" : ""}`} />
               <span className="absolute bottom-5 z-10 text-[9px] font-bold uppercase tracking-wider text-secondary/80">Esteira semanal</span>
-            </div>
+            </motion.div>
 
             {pillars.map((pillar, i) => {
               const isActive = i < activePillars;
               const isHighlight = (pillar as any).highlight;
               return (
-                <div key={pillar.label} className="flex flex-col items-center">
-                  <div className={`text-center px-5 py-2.5 rounded-xl border transition-all duration-400 ${
+                <motion.div
+                  key={pillar.label}
+                  className="flex flex-col items-center"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={isVisible ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.35 + i * 0.12, duration: 0.4, ease: "easeOut" }}
+                >
+                  <div className={`text-center px-5 py-2.5 rounded-xl border transition-all duration-500 ${
                     isHighlight && isActive
                       ? "border-secondary/70 bg-[hsl(42_90%_58%/0.15)] shadow-[0_0_18px_-3px_hsl(42_90%_58%/0.3)]"
                       : isActive
                         ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)]"
                         : "border-border/20 bg-muted/10"
                   }`}>
-                    <span className={`text-[11px] font-bold uppercase tracking-wider ${
+                    <span className={`text-[11px] font-bold uppercase tracking-wider transition-colors duration-500 ${
                       isHighlight && isActive ? "text-secondary drop-shadow-[0_0_6px_hsl(42_90%_58%/0.5)]" : isActive ? "text-secondary" : "text-muted-foreground/50"
                     }`}>
                       {isHighlight ? "↻ " : ""}{pillar.label}
@@ -219,12 +230,17 @@ export function MetodoChampion() {
                   </div>
                   {/* Arrow down (skip after last) */}
                   {!isHighlight && (
-                    <svg width="16" height="24" viewBox="0 0 16 24" className="my-1" fill="none">
-                      <path d={`M8 0 L8 18`} stroke={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} strokeWidth="1.5" className="transition-all duration-500" />
-                      <polygon points="8,23 4,17 12,17" fill={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} className="transition-all duration-500" />
-                    </svg>
+                    <motion.svg
+                      width="16" height="28" viewBox="0 0 16 28" className="my-2" fill="none"
+                      initial={{ opacity: 0 }}
+                      animate={isVisible ? { opacity: 1 } : {}}
+                      transition={{ delay: 0.5 + i * 0.12, duration: 0.3 }}
+                    >
+                      <path d="M8 0 L8 20" stroke={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} strokeWidth="1.5" className="transition-all duration-500" />
+                      <polygon points="8,27 4,20 12,20" fill={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} className="transition-all duration-500" />
+                    </motion.svg>
                   )}
-                </div>
+                </motion.div>
               );
             })}
           </div>
