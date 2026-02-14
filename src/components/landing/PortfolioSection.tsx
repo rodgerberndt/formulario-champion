@@ -88,6 +88,7 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
+  const isImage = item.thumbnail.match(/\.(png|jpe?g|webp|gif)(\?|$)/i);
 
   useEffect(() => {
     const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { rootMargin: "100px" });
@@ -96,10 +97,10 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
   }, []);
 
   useEffect(() => {
-    if (inView && isLoaded && videoRef.current) {
+    if (inView && isLoaded && videoRef.current && !isImage) {
       videoRef.current.play().catch(() => {});
     }
-  }, [inView, isLoaded]);
+  }, [inView, isLoaded, isImage]);
 
   if (hasError) return null;
 
@@ -107,17 +108,27 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
     <div ref={containerRef}>
       <div className="aspect-[9/14] relative overflow-hidden rounded-t-2xl bg-muted/20">
         {inView && (
-          <video
-            ref={videoRef}
-            src={item.thumbnail}
-            className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            onLoadedData={() => setIsLoaded(true)}
-            onError={() => setHasError(true)}
-          />
+          isImage ? (
+            <img
+              src={item.thumbnail}
+              alt={item.title}
+              className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+              onLoad={() => setIsLoaded(true)}
+              onError={() => setHasError(true)}
+            />
+          ) : (
+            <video
+              ref={videoRef}
+              src={item.thumbnail}
+              className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              onLoadedData={() => setIsLoaded(true)}
+              onError={() => setHasError(true)}
+            />
+          )
         )}
         {!isLoaded && <div className="absolute inset-0 animate-pulse bg-muted/30" />}
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
@@ -126,11 +137,13 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
             {item.format}
           </span>
         </div>
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="w-12 h-12 rounded-full bg-secondary/90 flex items-center justify-center shadow-lg">
-            <Play className="w-5 h-5 text-secondary-foreground ml-0.5" />
+        {item.videoUrl && (
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="w-12 h-12 rounded-full bg-secondary/90 flex items-center justify-center shadow-lg">
+              <Play className="w-5 h-5 text-secondary-foreground ml-0.5" />
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <div className="p-3">
         <h3 className="text-sm font-bold text-foreground mb-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
