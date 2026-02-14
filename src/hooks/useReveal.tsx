@@ -9,7 +9,7 @@ export function useReveal(threshold = 0.1) {
     if (!el) return;
     const obs = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setIsVisible(true); obs.disconnect(); } },
-      { threshold: Math.min(threshold, 0.1), rootMargin: "0px 0px -10% 0px" }
+      { threshold: Math.min(threshold, 0.1), rootMargin: "0px 0px -18% 0px" }
     );
     obs.observe(el);
     return () => obs.disconnect();
