@@ -1896,7 +1896,7 @@ export default function AdminAnalytics() {
                               <td className="p-2">
                                 <button
                                   type="button"
-                                  className="text-primary hover:underline text-xs truncate block max-w-full"
+                                  className="text-pink-400 hover:underline text-xs truncate block max-w-full"
                                   title="Abrir Instagram"
                                   onClick={(e) => {
                                     e.stopPropagation();
