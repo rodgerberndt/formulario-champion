@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
+import { ShimmerText, KeywordGlow } from "./TextEffects";
 
 const pillars = [
   { label: "Onboarding / Feedback" },
@@ -95,8 +96,10 @@ export function MetodoChampion() {
       <div ref={sectionRef} className="container mx-auto px-5 max-w-5xl">
         <div className={`text-center mb-12 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-3 max-w-3xl mx-auto">
-            EXISTE UM MÉTODO COMPROVADO PRA FAZER SEU CRIATIVO{" "}
-            <span className="gold-text">NÃO PARAR DE VENDER</span>
+            <ShimmerText isVisible={isVisible}>
+              EXISTE UM MÉTODO COMPROVADO PRA FAZER SEU CRIATIVO{" "}
+            </ShimmerText>
+            <KeywordGlow>NÃO PARAR DE VENDER</KeywordGlow>
           </h2>
         </div>
 

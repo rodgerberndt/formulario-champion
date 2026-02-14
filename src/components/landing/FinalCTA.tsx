@@ -4,6 +4,7 @@ import { ArrowRight, ClipboardCheck, BarChart3, PhoneCall, Rocket } from "lucide
 import { Button } from "@/components/ui/button";
 import { useTracking } from "@/hooks/useTracking";
 import { useReveal } from "@/hooks/useReveal";
+import { ShimmerText, KeywordGlow, LineReveal } from "./TextEffects";
 
 const steps = [
   { icon: ClipboardCheck, text: "Preencha o quiz (1–2 min)" },
@@ -27,18 +28,21 @@ export function FinalCTA() {
     <section id="cta-final" className="py-16 md:py-24 relative overflow-hidden" ref={ref}>
       {/* Convergence glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[80px] bg-[hsl(42_90%_58%/0.06)]" />
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[80px] transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`} style={{ background: "hsl(42 90% 58% / 0.06)" }} />
       </div>
 
       <div className="container mx-auto px-5 max-w-2xl relative z-10">
         <div className={`text-center reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-3">
-            SEU CRIATIVO PODE{" "}
-            <span className="gold-text">ESCALAR. AGORA.</span>
+            <ShimmerText isVisible={isVisible}>SEU CRIATIVO PODE </ShimmerText>
+            <KeywordGlow>ESCALAR. AGORA.</KeywordGlow>
           </h2>
-          <p className="text-sm text-muted-foreground mb-8 max-w-md mx-auto">
-            Preencha o diagnóstico gratuito e descubra como a Champion pode transformar seus resultados.
-          </p>
+
+          <LineReveal isVisible={isVisible} delay={200}>
+            <p className="text-sm text-muted-foreground mb-8 max-w-md mx-auto">
+              Preencha o diagnóstico gratuito e descubra como a Champion pode transformar seus resultados.
+            </p>
+          </LineReveal>
 
           {/* Steps mini */}
           <div className="grid grid-cols-2 gap-3 mb-8 max-w-md mx-auto">
@@ -47,7 +51,7 @@ export function FinalCTA() {
                 key={i}
                 initial={{ opacity: 0, y: 8 }}
                 animate={isVisible ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.2 + i * 0.08, duration: 0.4 }}
+                transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
                 className="flex items-center gap-2"
               >
                 <div className="w-7 h-7 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center flex-shrink-0">
@@ -58,14 +62,16 @@ export function FinalCTA() {
             ))}
           </div>
 
-          <Button
-            size="lg"
-            onClick={handleCTA}
-            className="btn-shine glow-breathe h-14 px-10 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 transition-all active:scale-[0.98] min-h-[56px]"
-          >
-            QUERO O DIAGNÓSTICO GRATUITO
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+          <LineReveal isVisible={isVisible} delay={600}>
+            <Button
+              size="lg"
+              onClick={handleCTA}
+              className="btn-shine glow-breathe h-14 px-10 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 transition-all active:scale-[0.98] min-h-[56px]"
+            >
+              QUERO O DIAGNÓSTICO GRATUITO
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </LineReveal>
         </div>
       </div>
     </section>

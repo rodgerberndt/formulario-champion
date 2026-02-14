@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
+import { ShimmerText, KeywordGlow } from "./TextEffects";
 
 const testimonialVideos = [
   "/testimonials/video-1.mp4",
@@ -28,14 +29,14 @@ export function CaseVault() {
       <div className="container mx-auto px-5 max-w-6xl relative z-10">
         <div className={`text-center mb-8 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-2">
-            RESULTADOS <span className="gold-text">REAIS</span>
+            <ShimmerText isVisible={isVisible}>RESULTADOS </ShimmerText>
+            <KeywordGlow>REAIS</KeywordGlow>
           </h2>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
             Feedbacks de clientes da Champion.
           </p>
         </div>
 
-        {/* Horizontal snap carousel */}
         <div
           className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:snap-none"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }}

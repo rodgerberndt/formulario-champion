@@ -1,6 +1,7 @@
 import { ClipboardCheck, Zap, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
+import { ShimmerText, KeywordGlow, LineReveal } from "./TextEffects";
 
 const steps = [
   {
@@ -35,6 +36,12 @@ const steps = [
   },
 ];
 
+const motionVariants = [
+  { initial: { opacity: 0, x: -30, filter: "blur(6px)" }, animate: { opacity: 1, x: 0, filter: "blur(0px)" } },
+  { initial: { opacity: 0, y: 24, scale: 0.95 }, animate: { opacity: 1, y: 0, scale: 1 } },
+  { initial: { opacity: 0, x: 30, filter: "blur(6px)" }, animate: { opacity: 1, x: 0, filter: "blur(0px)" } },
+];
+
 export function HowItWorks() {
   const { ref, isVisible } = useReveal(0.08);
 
@@ -43,7 +50,8 @@ export function HowItWorks() {
       <div className="container mx-auto px-5 max-w-4xl">
         <div className={`text-center mb-10 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-2">
-            COMO <span className="gold-text">FUNCIONA</span>
+            <ShimmerText isVisible={isVisible}>COMO </ShimmerText>
+            <KeywordGlow>FUNCIONA</KeywordGlow>
           </h2>
         </div>
 
@@ -51,13 +59,12 @@ export function HowItWorks() {
           {steps.map((step, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 16 }}
-              animate={isVisible ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.15 + i * 0.12, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              initial={motionVariants[i].initial}
+              animate={isVisible ? motionVariants[i].animate : {}}
+              transition={{ delay: 0.15 + i * 0.15, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
               className="gold-card"
             >
               <div className="flex items-start gap-4">
-                {/* Step number + icon */}
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 rounded-xl bg-secondary/15 border border-secondary/30 flex items-center justify-center">
                     <step.icon className="w-5 h-5 text-secondary" />
@@ -75,10 +82,12 @@ export function HowItWorks() {
                   </h3>
                   <ul className="space-y-1.5">
                     {step.bullets.map((b, j) => (
-                      <li key={j} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <span className="w-1.5 h-1.5 rounded-full bg-secondary/50 mt-1.5 flex-shrink-0" />
-                        {b}
-                      </li>
+                      <LineReveal key={j} isVisible={isVisible} delay={250 + i * 150 + j * 80}>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <span className="w-1.5 h-1.5 rounded-full bg-secondary/50 mt-1.5 flex-shrink-0" />
+                          {b}
+                        </li>
+                      </LineReveal>
                     ))}
                   </ul>
                 </div>

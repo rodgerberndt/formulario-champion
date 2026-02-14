@@ -1,14 +1,20 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Sparkles, TrendingUp } from "lucide-react";
+import { WordCascade, KeywordGlow, LineReveal } from "./TextEffects";
 import founderPhoto from "@/assets/founder-photo.png";
+
 interface HeroProps {
   onStartClick?: () => void;
 }
-export function Hero({
-  onStartClick
-}: HeroProps) {
-  return <section className="min-h-[80vh] md:min-h-screen flex items-center justify-center pt-16 pb-16 md:pb-12 relative overflow-hidden">
-      {/* Simplified Background - Remove heavy effects on mobile */}
+
+export function Hero({ onStartClick }: HeroProps) {
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setIsVisible(true), 100); return () => clearTimeout(t); }, []);
+
+  return (
+    <section className="min-h-[80vh] md:min-h-screen flex items-center justify-center pt-16 pb-16 md:pb-12 relative overflow-hidden">
+      {/* Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="hero-glow top-1/4 left-1/2 -translate-x-1/2" />
         <div className="hidden md:block absolute top-20 right-10 w-32 h-32 bg-secondary/8 rounded-full blur-2xl" />
@@ -21,73 +27,95 @@ export function Hero({
             {/* Content */}
             <div className="text-center md:text-left order-2 md:order-1">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/12 border border-secondary/25 mb-5">
-                <Sparkles className="w-3.5 h-3.5 text-secondary" />
-                <span className="text-xs text-secondary font-medium">
-                  Diagnóstico gratuito de 2 minutos
-                </span>
-              </div>
+              <LineReveal isVisible={isVisible} delay={0}>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/12 border border-secondary/25 mb-5">
+                  <Sparkles className="w-3.5 h-3.5 text-secondary" />
+                  <span className="text-xs text-secondary font-medium">
+                    Diagnóstico gratuito de 2 minutos
+                  </span>
+                </div>
+              </LineReveal>
 
-              {/* Headline */}
+              {/* Headline with word cascade */}
               <h1 className="font-bold text-foreground mb-4 leading-tight text-4xl">
-                SE VOCÊ NÃO TESTA CRIATIVO TODA SEMANA,{" "}
-                <span className="text-secondary font-bold">
-                  PODE ESTAR DEIXANDO MUITO DINHEIRO NA MESA.
-                </span>
+                <WordCascade
+                  text="SE VOCÊ NÃO TESTA CRIATIVO TODA SEMANA,"
+                  isVisible={isVisible}
+                  stagger={45}
+                  baseDelay={100}
+                />
+                {" "}
+                <KeywordGlow>
+                  <WordCascade
+                    text="PODE ESTAR DEIXANDO MUITO DINHEIRO NA MESA."
+                    isVisible={isVisible}
+                    stagger={45}
+                    baseDelay={500}
+                  />
+                </KeywordGlow>
               </h1>
 
               {/* Subheadline */}
-              <p className="text-sm md:text-base text-muted-foreground max-w-sm mx-auto md:mx-0 mb-6">
-                C.G.S , o sistema de crescimento da Champion pode te ajudar.     <br />
-                ​
-              </p>
+              <LineReveal isVisible={isVisible} delay={900}>
+                <p className="text-sm md:text-base text-muted-foreground max-w-sm mx-auto md:mx-0 mb-6">
+                  C.G.S , o sistema de crescimento da Champion pode te ajudar.
+                  <br />​
+                </p>
+              </LineReveal>
 
               {/* CTA */}
-              <div className="flex flex-col items-center md:items-start gap-4 mb-8">
-                <Button size="lg" onClick={onStartClick} className="group h-12 md:h-14 px-6 md:px-8 text-sm md:text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-shadow duration-200 active:scale-[0.98]">
-                  FAZER DIAGNÓSTICO (2 MIN)
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </div>
+              <LineReveal isVisible={isVisible} delay={1100}>
+                <div className="flex flex-col items-center md:items-start gap-4 mb-8">
+                  <Button size="lg" onClick={onStartClick} className="group h-12 md:h-14 px-6 md:px-8 text-sm md:text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-shadow duration-200 active:scale-[0.98]">
+                    FAZER DIAGNÓSTICO (2 MIN)
+                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
+              </LineReveal>
 
               {/* Micro Proofs */}
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-6 text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-secondary/12">
-                    <Users className="w-3.5 h-3.5 text-secondary" />
+              <LineReveal isVisible={isVisible} delay={1300}>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-6 text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-secondary/12">
+                      <Users className="w-3.5 h-3.5 text-secondary" />
+                    </div>
+                    <span className="text-xs">
+                      <strong className="text-foreground font-semibold">+ de 1.1k</strong> clientes
+                    </span>
                   </div>
-                  <span className="text-xs">
-                    <strong className="text-foreground font-semibold">+ de 1.1k</strong> clientes
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-secondary/12">
-                    <Sparkles className="w-3.5 h-3.5 text-secondary" />
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-secondary/12">
+                      <Sparkles className="w-3.5 h-3.5 text-secondary" />
+                    </div>
+                    <span className="text-xs">
+                      <strong className="text-foreground font-semibold">+ de 8k</strong> criativos
+                    </span>
                   </div>
-                  <span className="text-xs">
-                    <strong className="text-foreground font-semibold">+ de 8k</strong> criativos
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-secondary/12">
-                    <TrendingUp className="w-3.5 h-3.5 text-secondary" />
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-secondary/12">
+                      <TrendingUp className="w-3.5 h-3.5 text-secondary" />
+                    </div>
+                    <span className="text-xs">
+                      <strong className="text-foreground font-semibold">3.7</strong> ROI médio
+                    </span>
                   </div>
-                  <span className="text-xs">
-                    <strong className="text-foreground font-semibold">3.7</strong> ROI médio
-                  </span>
                 </div>
-              </div>
+              </LineReveal>
             </div>
 
-            {/* Photo - Simplified glow */}
+            {/* Photo */}
             <div className="flex justify-center md:justify-end order-1 md:order-2">
-              <div className="relative">
-                <div className="hidden md:block absolute -inset-4 bg-secondary/15 blur-2xl rounded-full" />
-                <img src={founderPhoto} alt="Founder" className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain" loading="eager" decoding="async" />
-              </div>
+              <LineReveal isVisible={isVisible} delay={200}>
+                <div className="relative">
+                  <div className="hidden md:block absolute -inset-4 bg-secondary/15 blur-2xl rounded-full" />
+                  <img src={founderPhoto} alt="Founder" className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain" loading="eager" decoding="async" />
+                </div>
+              </LineReveal>
             </div>
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 }
