@@ -30,7 +30,7 @@ export function PainSection() {
         <div className={`text-center mb-8 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-2">
             <ShimmerText isVisible={isVisible}>
-              O PROBLEMA NÃO É TRÁFEGO.{" "}
+              O PROBLEMA NÃO É SUA OFERTA.{" "}
             </ShimmerText>
             <KeywordGlow>É CRIATIVO QUE NÃO SUSTENTA ESCALA.</KeywordGlow>
           </h2>
