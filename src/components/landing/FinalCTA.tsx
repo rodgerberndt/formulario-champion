@@ -34,7 +34,7 @@ export function FinalCTA() {
       <div className="container mx-auto px-5 max-w-2xl relative z-10">
         <div className={`text-center reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-3">
-            <ShimmerText isVisible={isVisible}>SEU CRIATIVO PODE </ShimmerText>
+            <ShimmerText isVisible={isVisible}>SEU CRIATIVO PODE{" "}</ShimmerText>
             <KeywordGlow>ESCALAR. AGORA.</KeywordGlow>
           </h2>
 
