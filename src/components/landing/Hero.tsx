@@ -46,7 +46,7 @@ export function Hero({ onStartClick }: HeroProps) {
 
               {/* Headline — simple reveal, no word cascade for readability */}
               <LineReveal isVisible={isVisible} delay={150}>
-                <h1 className="font-bold text-foreground mb-4 leading-tight text-4xl">
+                <h1 className="font-medium text-foreground mb-4 leading-tight text-4xl">
                   SE VOCÊ NÃO TESTA CRIATIVO TODA SEMANA,{" "}
                   <KeywordGlow>
                     PODE ESTAR DEIXANDO MUITO DINHEIRO NA MESA.
