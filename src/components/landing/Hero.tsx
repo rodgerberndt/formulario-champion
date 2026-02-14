@@ -77,7 +77,7 @@ export function Hero({
                     <TrendingUp className="w-3.5 h-3.5 text-secondary" />
                   </div>
                   <span className="text-xs">
-                     ROI médio
+                     3.7 ROI médio
                   </span>
                 </div>
               </div>
