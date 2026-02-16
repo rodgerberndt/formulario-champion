@@ -149,7 +149,7 @@ function PortfolioCard({ item }: {item: PortfolioItem;}) {
 
   return (
     <div ref={containerRef}>
-      <div className="aspect-[9/14] relative overflow-hidden rounded-t-2xl bg-muted/20">
+      <div className="relative overflow-hidden rounded-t-2xl bg-muted/20" style={{ aspectRatio: "9/14" }}>
         {inView &&
         <video
           ref={videoRef}
@@ -158,10 +158,11 @@ function PortfolioCard({ item }: {item: PortfolioItem;}) {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
+          width={240}
+          height={373}
           onLoadedData={() => setIsLoaded(true)}
           onError={() => setHasError(true)}
-          style={{ willChange: "transform" }}
         />
         }
         {!isLoaded && <div className="absolute inset-0 animate-pulse bg-muted/30" />}

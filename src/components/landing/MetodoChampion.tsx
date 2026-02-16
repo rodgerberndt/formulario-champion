@@ -144,7 +144,7 @@ export function MetodoChampion() {
                 }`}
                 style={{ background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))" }}
               />
-              <img src="/champion-logo.png" alt="Champion" className={`relative z-10 w-20 h-20 object-contain transition-all duration-500 ${activePillars >= 6 ? "drop-shadow-[0_0_12px_hsl(42_90%_58%/0.4)]" : ""}`} />
+              <img src="/champion-logo.png" alt="Champion" width={80} height={80} loading="lazy" decoding="async" className={`relative z-10 w-20 h-20 object-contain transition-all duration-500 ${activePillars >= 6 ? "drop-shadow-[0_0_12px_hsl(42_90%_58%/0.4)]" : ""}`} />
               <span className="absolute bottom-7 z-10 text-[10px] font-bold uppercase tracking-wider text-secondary/80">Esteira semanal</span>
             </div>
 
@@ -200,7 +200,7 @@ export function MetodoChampion() {
                 }`}
                 style={{ background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))" }}
               />
-              <img src="/champion-logo.png" alt="Champion" className={`relative z-10 w-14 h-14 object-contain transition-all duration-500 ${activePillars >= 6 ? "drop-shadow-[0_0_10px_hsl(42_90%_58%/0.4)]" : ""}`} />
+              <img src="/champion-logo.png" alt="Champion" width={56} height={56} loading="lazy" decoding="async" className={`relative z-10 w-14 h-14 object-contain transition-all duration-500 ${activePillars >= 6 ? "drop-shadow-[0_0_10px_hsl(42_90%_58%/0.4)]" : ""}`} />
               <span className="absolute bottom-5 z-10 text-[9px] font-bold uppercase tracking-wider text-secondary/80">Esteira semanal</span>
             </motion.div>
 

@@ -87,7 +87,7 @@ export function Hero({
             <div className="flex justify-center md:justify-end order-1 md:order-2">
               <div className="relative">
                 <div className="hidden md:block absolute -inset-4 bg-secondary/15 blur-2xl rounded-full" />
-                <img src={founderPhoto} alt="Founder" className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain" loading="eager" decoding="async" />
+                <img src={founderPhoto} alt="Founder" width={384} height={384} className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain" loading="eager" decoding="async" fetchPriority="high" />
               </div>
             </div>
           </div>
