@@ -105,6 +105,20 @@ Deno.serve(async (req: Request) => {
     if (leadUpdateMatch && req.method === "PUT") {
       const leadId = leadUpdateMatch[1];
       const body = await req.json();
+
+      // Check if sdr_override is being set to "Rodger" (MQL trigger)
+      const isSettingMQL = body.sdr_override === "Rodger";
+
+      // Fetch current lead to check previous sdr_override
+      let wasMQL = false;
+      if (isSettingMQL) {
+        const { data: currentLead } = await supabase
+          .from("leads")
+          .select("sdr_override")
+          .eq("id", leadId)
+          .maybeSingle();
+        wasMQL = currentLead?.sdr_override === "Rodger";
+      }
       
       const { data, error } = await supabase
         .from("leads")
@@ -114,6 +128,26 @@ Deno.serve(async (req: Request) => {
         .maybeSingle();
 
       if (error) throw error;
+
+      // Fire Meta CAPI MQL event if sdr_override just changed to "Rodger"
+      if (isSettingMQL && !wasMQL) {
+        try {
+          const capiUrl = `${supabaseUrl}/functions/v1/meta-capi`;
+          const capiRes = await fetch(capiUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-webhook-secret": Deno.env.get("INTERNAL_WEBHOOK_SECRET") || "",
+              "Authorization": `Bearer ${supabaseServiceKey}`,
+            },
+            body: JSON.stringify({ lead_id: leadId, event_name: "MQL" }),
+          });
+          const capiResult = await capiRes.json();
+          console.log("Meta CAPI MQL result:", JSON.stringify(capiResult));
+        } catch (capiErr) {
+          console.error("Error calling meta-capi:", capiErr);
+        }
+      }
 
       return new Response(
         JSON.stringify(data),
