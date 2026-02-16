@@ -1346,21 +1346,21 @@ export default function AdminAnalytics() {
       <meta name="robots" content="noindex, nofollow" />
       <div className="min-h-screen bg-background p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold">Analytics do Funil</h1>
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+            <h1 className="text-xl sm:text-2xl font-bold">Analytics do Funil</h1>
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
               <PwaInstallButton />
               <Button
                 variant={notificationsEnabled ? "default" : "outline"}
                 size="sm"
                 onClick={toggleNotifications}
-                className={notificationsEnabled ? "bg-primary/20 text-primary hover:bg-primary/30 border border-primary/30" : ""}
+                className={`text-xs sm:text-sm ${notificationsEnabled ? "bg-primary/20 text-primary hover:bg-primary/30 border border-primary/30" : ""}`}
               >
-                <Bell className={`w-4 h-4 mr-1.5 ${notificationsEnabled ? "animate-pulse" : ""}`} />
-                {notificationsEnabled ? "Notificações ON" : "Ativar notificações"}
+                <Bell className={`w-4 h-4 sm:mr-1.5 ${notificationsEnabled ? "animate-pulse" : ""}`} />
+                <span className="hidden sm:inline">{notificationsEnabled ? "Notificações ON" : "Ativar notificações"}</span>
               </Button>
-              <Button variant="ghost" onClick={handleLogout}>
-                <LogOut className="w-4 h-4 mr-2" /> Sair
+              <Button variant="ghost" size="sm" onClick={handleLogout}>
+                <LogOut className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Sair</span>
               </Button>
             </div>
           </div>
@@ -1555,55 +1555,57 @@ export default function AdminAnalytics() {
           )}
 
           <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-            <TabsList className="w-full md:w-auto h-16 p-2 bg-card border-2 border-primary/30 rounded-2xl gap-2 shadow-lg shadow-primary/10">
-              <TabsTrigger 
-                value="leads" 
-                className="relative h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-              >
-                Leads
-                {leadsUnreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
-                    {leadsUnreadCount}
-                  </span>
-                )}
-              </TabsTrigger>
-              <TabsTrigger 
-                value="funnel" 
-                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-              >
-                Funil
-              </TabsTrigger>
-              <TabsTrigger 
-                value="creatives" 
-                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-              >
-                Criativos
-              </TabsTrigger>
-              <TabsTrigger 
-                value="sessions" 
-                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-              >
-                Sessões
-              </TabsTrigger>
-              <TabsTrigger 
-                value="campaigns" 
-                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-              >
-                Campanhas
-              </TabsTrigger>
-              <TabsTrigger 
-                value="buttons" 
-                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-              >
-                Botões
-              </TabsTrigger>
-              <TabsTrigger 
-                value="kommo" 
-                className="h-12 px-8 text-lg font-bold rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-              >
-                Kommo
-              </TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+              <TabsList className="w-max md:w-auto h-12 md:h-16 p-1.5 md:p-2 bg-card border-2 border-primary/30 rounded-xl md:rounded-2xl gap-1 md:gap-2 shadow-lg shadow-primary/10">
+                <TabsTrigger 
+                  value="leads" 
+                  className="relative h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  Leads
+                  {leadsUnreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
+                      {leadsUnreadCount}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="funnel" 
+                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  Funil
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="creatives" 
+                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  Criativos
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="sessions" 
+                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  Sessões
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="campaigns" 
+                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  Campanhas
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="buttons" 
+                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  Botões
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="kommo" 
+                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  Kommo
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Leads Tab */}
             <TabsContent value="leads">
@@ -1638,18 +1640,18 @@ export default function AdminAnalytics() {
               </div>
 
               {/* Filters */}
-              <div className="flex flex-wrap gap-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <Search className="w-4 h-4 text-muted-foreground" />
+              <div className="grid grid-cols-2 md:flex md:flex-wrap gap-2 md:gap-4 mb-4">
+                <div className="flex items-center gap-2 col-span-2">
+                  <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                   <Input
-                    placeholder="Buscar por nome, whatsapp, instagram..."
+                    placeholder="Buscar nome, whatsapp, instagram..."
                     value={leadsSearchQuery}
                     onChange={(e) => setLeadsSearchQuery(e.target.value)}
-                    className="w-64"
+                    className="w-full md:w-64"
                   />
                 </div>
                 <Select value={leadsStatusFilter} onValueChange={setLeadsStatusFilter}>
-                  <SelectTrigger className="w-32">
+                  <SelectTrigger className="w-full md:w-32">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1659,7 +1661,7 @@ export default function AdminAnalytics() {
                   </SelectContent>
                 </Select>
                 <Select value={leadsMercadoFilter} onValueChange={setLeadsMercadoFilter}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-full md:w-40">
                     <SelectValue placeholder="Mercado" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1670,7 +1672,7 @@ export default function AdminAnalytics() {
                   </SelectContent>
                 </Select>
                 <Select value={leadsEstagioFilter} onValueChange={setLeadsEstagioFilter}>
-                  <SelectTrigger className="w-52">
+                  <SelectTrigger className="w-full md:w-52">
                     <SelectValue placeholder="Estágio" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1681,7 +1683,7 @@ export default function AdminAnalytics() {
                   </SelectContent>
                 </Select>
                 <Select value={leadsTierFilter} onValueChange={setLeadsTierFilter}>
-                  <SelectTrigger className="w-28">
+                  <SelectTrigger className="w-full md:w-28">
                     <SelectValue placeholder="Tier" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1692,7 +1694,7 @@ export default function AdminAnalytics() {
                   </SelectContent>
                 </Select>
                 <Select value={leadsSdrFilter} onValueChange={setLeadsSdrFilter}>
-                  <SelectTrigger className="w-36">
+                  <SelectTrigger className="w-full md:w-36">
                     <SelectValue placeholder="SDR" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1702,7 +1704,7 @@ export default function AdminAnalytics() {
                   </SelectContent>
                 </Select>
                 <Select value={leadsAdsetFilter} onValueChange={setLeadsAdsetFilter}>
-                  <SelectTrigger className="w-52">
+                  <SelectTrigger className="w-full md:w-52">
                     <SelectValue placeholder="Conjunto de Anúncio" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1774,8 +1776,8 @@ export default function AdminAnalytics() {
                 </p>
               )}
 
-              {/* Leads Table */}
-              <Card>
+              {/* Leads Table - Desktop */}
+              <Card className="hidden md:block">
                 <CardContent className="p-0">
                   <div>
                     <table className="w-full text-sm table-fixed">
@@ -1951,6 +1953,114 @@ export default function AdminAnalytics() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Leads Cards - Mobile */}
+              <div className="md:hidden space-y-3">
+                {leadsLoading ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  </div>
+                ) : filteredLeads.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">Nenhum lead encontrado</p>
+                ) : (
+                  filteredLeads.map((lead, index) => {
+                    const tier = getLeadTier(lead);
+                    const sdr = getLeadSdr(lead);
+                    return (
+                      <Card 
+                        key={lead.id}
+                        className={`cursor-pointer transition-colors ${!lead.lido ? "border-primary/30 bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "bg-primary/10 border-primary/50" : ""}`}
+                        onClick={() => openLeadDetail(lead)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-start gap-3 min-w-0">
+                              <Checkbox
+                                checked={selectedLeadIds.has(lead.id)}
+                                onCheckedChange={() => {
+                                  setSelectedLeadIds((prev) => {
+                                    const newSet = new Set(prev);
+                                    if (newSet.has(lead.id)) { newSet.delete(lead.id); } else { newSet.add(lead.id); }
+                                    return newSet;
+                                  });
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="mt-1"
+                              />
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="font-semibold truncate">{lead.nome_completo}</p>
+                                  <Badge 
+                                    variant="outline"
+                                    className={`text-[10px] ${
+                                      !lead.lido 
+                                        ? "bg-green-500 text-white border-green-500" 
+                                        : "border-muted-foreground text-muted-foreground"
+                                    }`}
+                                    onClick={(e) => toggleLeadLido(lead, e)}
+                                  >
+                                    {lead.lido ? "Lido" : "Novo"}
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                  <Badge 
+                                    variant="outline"
+                                    className={`text-[10px] ${
+                                      tier === "Enterprise" ? "border-purple-500 text-purple-500 bg-purple-500/10" :
+                                      tier === "Large" ? "border-green-500 text-green-500 bg-green-500/10" :
+                                      tier === "Medium" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
+                                      "border-red-500 text-red-500 bg-red-500/10"
+                                    }`}
+                                  >
+                                    {tier}
+                                  </Badge>
+                                  <Badge 
+                                    className={`text-[10px] cursor-pointer ${sdr === "Rodger" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : "bg-pink-500/20 text-pink-400 border-pink-500/30"}`}
+                                    onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
+                                  >
+                                    {sdr}
+                                  </Badge>
+                                  {lead.is_duplicate_ip && (
+                                    <Badge variant="outline" className="border-orange-500 text-orange-500 bg-orange-500/10 text-[10px]">⚠️ Dup</Badge>
+                                  )}
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-1">{lead.mercado} · {lead.estagio_negocio}</p>
+                                {lead.investimento_faixa && (
+                                  <p className="text-xs text-green-500 mt-0.5">💰 {lead.investimento_faixa}</p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              <p className="text-xs text-muted-foreground">
+                                {format(new Date(lead.created_at), "dd/MM", { locale: ptBR })}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground">
+                                {format(new Date(lead.created_at), "HH:mm", { locale: ptBR })}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex gap-3 mt-3 pt-2 border-t border-muted">
+                            <button
+                              type="button"
+                              className="text-green-500 hover:underline text-xs"
+                              onClick={(e) => { e.stopPropagation(); void copyWhatsappToClipboard(lead.whatsapp); }}
+                            >
+                              📱 {lead.whatsapp}
+                            </button>
+                            <button
+                              type="button"
+                              className="text-pink-400 hover:underline text-xs"
+                              onClick={(e) => { e.stopPropagation(); openInstagramProfile(lead.instagram); }}
+                            >
+                              📷 {lead.instagram}
+                            </button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                )}
+              </div>
 
               {/* Lead Detail Dialog */}
               <Dialog open={!!selectedLead} onOpenChange={() => setSelectedLead(null)}>
@@ -2171,18 +2281,18 @@ export default function AdminAnalytics() {
 
             <TabsContent value="sessions">
               {/* Filters */}
-              <div className="flex flex-wrap gap-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <Search className="w-4 h-4 text-muted-foreground" />
+              <div className="grid grid-cols-2 md:flex md:flex-wrap gap-2 md:gap-4 mb-4">
+                <div className="flex items-center gap-2 col-span-2">
+                  <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                   <Input
                     placeholder="Buscar nome, whatsapp, instagram..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-64"
+                    className="w-full md:w-64"
                   />
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-44">
+                  <SelectTrigger className="w-full md:w-44">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -2195,7 +2305,7 @@ export default function AdminAnalytics() {
                   </SelectContent>
                 </Select>
                 <Select value={buttonFilter} onValueChange={setButtonFilter}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-full md:w-40">
                     <SelectValue placeholder="Botão" />
                   </SelectTrigger>
                   <SelectContent>
@@ -2205,7 +2315,7 @@ export default function AdminAnalytics() {
                     <SelectItem value="start_btn_3">Botão 3 (Mobile)</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="outline" onClick={exportCSV}>
+                <Button variant="outline" onClick={exportCSV} className="col-span-2 md:col-span-1">
                   <Download className="w-4 h-4 mr-2" /> Exportar CSV
                 </Button>
               </div>
