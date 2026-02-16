@@ -50,10 +50,11 @@ function VideoCard({ video, index }: { video: string; index: number }) {
   return (
     <div
       ref={containerRef}
-      className="flex-shrink-0 w-[130px] md:w-[160px] aspect-[9/16] rounded-xl overflow-hidden bg-muted/20 border border-border/30"
+      className="flex-shrink-0 w-[130px] md:w-[160px] rounded-xl overflow-hidden bg-muted/20 border border-border/30"
       style={{ 
         contain: "layout style paint",
-        contentVisibility: "auto"
+        contentVisibility: "auto",
+        aspectRatio: "9/16",
       }}
     >
       {isVisible && (
@@ -66,6 +67,8 @@ function VideoCard({ video, index }: { video: string; index: number }) {
           playsInline
           autoPlay
           preload="none"
+          width={160}
+          height={284}
           onLoadedData={() => setIsLoaded(true)}
           onError={() => setHasError(true)}
         />

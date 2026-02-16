@@ -79,7 +79,7 @@ function VideoCard({ video, index, isVisible }: { video: string; index: number; 
       transition={{ delay: 0.1 + index * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className="flex-shrink-0 w-[70vw] max-w-[240px] md:w-auto snap-start gold-card group p-0 overflow-hidden hover:border-secondary/40 transition-all duration-300"
     >
-      <div className="aspect-[9/14] relative overflow-hidden rounded-2xl bg-muted/10">
+      <div className="relative overflow-hidden rounded-2xl bg-muted/10" style={{ aspectRatio: "9/14" }}>
         {inView && (
           <video
             ref={videoRef}
@@ -88,7 +88,9 @@ function VideoCard({ video, index, isVisible }: { video: string; index: number; 
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="none"
+            width={240}
+            height={373}
             onLoadedData={() => setIsLoaded(true)}
             onError={() => setHasError(true)}
           />
