@@ -185,7 +185,43 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [showAddSpend, setShowAddSpend] = useState(false);
   const [spendForm, setSpendForm] = useState({ date: "", spend: "", impressions: "0", clicks: "0", utm_content: "", campaign_name: "" });
   const [savingSpend, setSavingSpend] = useState(false);
+  
+  // Sales listing
+  const [salesList, setSalesList] = useState<ManualSale[]>([]);
+  const [salesLoading, setSalesLoading] = useState(false);
+  const [showSalesList, setShowSalesList] = useState(false);
+  const [deletingSaleId, setDeletingSaleId] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const loadSales = useCallback(async () => {
+    setSalesLoading(true);
+    try {
+      const result = await fetchAdminData("/manual-sales", { from: startDateOnly, to: endDateOnly });
+      setSalesList(Array.isArray(result) ? result : []);
+    } catch (err) {
+      console.error("Error loading sales:", err);
+    } finally {
+      setSalesLoading(false);
+    }
+  }, [fetchAdminData, startDateOnly, endDateOnly]);
+
+  const handleDeleteSale = async (saleId: string) => {
+    setDeletingSaleId(saleId);
+    try {
+      const token = sessionStorage.getItem("admin_analytics_token");
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      await fetch(`${supabaseUrl}/functions/v1/admin-data/manual-sales/${saleId}`, {
+        method: "DELETE",
+        headers: { "x-admin-token": token || "" },
+      });
+      toast({ title: "Venda removida!" });
+      setSalesList(prev => prev.filter(s => s.id !== saleId));
+      loadData();
+    } catch {
+      toast({ title: "Erro ao remover venda", variant: "destructive" });
+    } finally {
+      setDeletingSaleId(null);
+    }
+  };
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -662,6 +698,82 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </CardContent>
         </Card>
       )}
+
+      {/* Sales Listing */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <DollarSign className="w-5 h-5" />
+              Vendas Registradas
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setShowSalesList(!showSalesList);
+                if (!showSalesList && salesList.length === 0) loadSales();
+              }}
+            >
+              {showSalesList ? <ChevronUp className="w-4 h-4 mr-1" /> : <ChevronDown className="w-4 h-4 mr-1" />}
+              {showSalesList ? "Ocultar" : "Ver vendas"}
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        {showSalesList && (
+          <CardContent>
+            {salesLoading ? (
+              <div className="flex justify-center py-6">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              </div>
+            ) : salesList.length === 0 ? (
+              <p className="text-center text-muted-foreground py-6">Nenhuma venda registrada no período.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Data</TableHead>
+                    <TableHead className="text-right">Receita</TableHead>
+                    <TableHead>Criativo</TableHead>
+                    <TableHead>Notas</TableHead>
+                    <TableHead className="w-10"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {salesList.map((sale) => (
+                    <TableRow key={sale.id}>
+                      <TableCell>{format(new Date(sale.sale_date + "T12:00:00"), "dd/MM/yyyy", { locale: ptBR })}</TableCell>
+                      <TableCell className="text-right font-semibold">{formatCurrency(sale.revenue)}</TableCell>
+                      <TableCell>
+                        {sale.utm_content || sale.creative_key ? (
+                          <Badge variant="outline" className="text-xs">{sale.utm_content || sale.creative_key}</Badge>
+                        ) : (
+                          <span className="text-muted-foreground text-xs">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{sale.notes || "—"}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteSale(sale.id)}
+                          disabled={deletingSaleId === sale.id}
+                        >
+                          {deletingSaleId === sale.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          )}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        )}
+      </Card>
 
       {/* Drill-down Dialog */}
       <Dialog open={!!drillCreative} onOpenChange={(open) => !open && setDrillCreative(null)}>

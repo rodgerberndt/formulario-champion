@@ -1131,6 +1131,30 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // ──── GET /manual-sales ────
+    if (path === "/manual-sales" && req.method === "GET") {
+      const from = url.searchParams.get("from");
+      const to = url.searchParams.get("to");
+      
+      let query = supabase.from("manual_sales").select("*").order("sale_date", { ascending: false });
+      if (from) query = query.gte("sale_date", from);
+      if (to) query = query.lte("sale_date", to);
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      
+      return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // ──── DELETE /manual-sales/:id ────
+    const deleteSaleMatch = path.match(/^\/manual-sales\/([a-f0-9-]+)$/);
+    if (deleteSaleMatch && req.method === "DELETE") {
+      const saleId = deleteSaleMatch[1];
+      const { error } = await supabase.from("manual_sales").delete().eq("id", saleId);
+      if (error) throw error;
+      return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ──── POST /manual-sales ────
     if (path === "/manual-sales" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
       const params = Object.fromEntries(url.searchParams);
