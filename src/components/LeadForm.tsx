@@ -56,8 +56,13 @@ export function LeadForm() {
     switch (step) {
       case 1:
         return formData.nome_completo.trim().length >= 3;
-      case 2:
-        return formData.whatsapp.trim().length >= 10;
+      case 2: {
+        const digits = formData.whatsapp.replace(/\D/g, '');
+        const validDDD = digits.length >= 2 && parseInt(digits.slice(0, 2)) >= 11 && parseInt(digits.slice(0, 2)) <= 99;
+        const validMobile = digits.length === 11 && digits[2] === '9';
+        const validLandline = digits.length === 10;
+        return validDDD && (validMobile || validLandline);
+      }
       case 3:
         return formData.instagram.trim().length >= 2;
       case 4:
