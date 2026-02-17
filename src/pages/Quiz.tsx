@@ -271,8 +271,14 @@ export default function Quiz() {
     switch (step) {
       case 1:
         return formData.nome_completo.trim().length >= 3;
-      case 2:
-        return formData.whatsapp.replace(/\D/g, '').length >= 10 && formData.lgpd;
+      case 2: {
+        const digits = formData.whatsapp.replace(/\D/g, '');
+        // Must be 10-11 digits, DDD 11-99, and mobile must start with 9
+        const validDDD = digits.length >= 2 && parseInt(digits.slice(0, 2)) >= 11 && parseInt(digits.slice(0, 2)) <= 99;
+        const validMobile = digits.length === 11 && digits[2] === '9';
+        const validLandline = digits.length === 10;
+        return (validDDD && (validMobile || validLandline)) && formData.lgpd;
+      }
       case 3:
         return formData.instagram.trim().length >= 1;
       case 4:
@@ -458,8 +464,28 @@ export default function Quiz() {
               placeholder="(00) 00000-0000"
               value={formData.whatsapp}
               onChange={(e) => updateField("whatsapp", formatWhatsApp(e.target.value))}
+              inputMode="tel"
               maxLength={16}
               autoFocus />
+            {(() => {
+              const digits = formData.whatsapp.replace(/\D/g, '');
+              if (digits.length > 0 && digits.length < 10) {
+                return <p className="text-xs text-destructive">Digite um número completo com DDD</p>;
+              }
+              if (digits.length >= 10) {
+                const ddd = parseInt(digits.slice(0, 2));
+                if (ddd < 11 || ddd > 99) {
+                  return <p className="text-xs text-destructive">DDD inválido</p>;
+                }
+                if (digits.length === 11 && digits[2] !== '9') {
+                  return <p className="text-xs text-destructive">Celular deve começar com 9 após o DDD</p>;
+                }
+                if (digits.length === 10 && digits[2] === '9') {
+                  return <p className="text-xs text-destructive">Número incompleto — falta um dígito</p>;
+                }
+              }
+              return null;
+            })()}
 
             <div className="flex items-start gap-2.5 pt-1">
               <Checkbox
