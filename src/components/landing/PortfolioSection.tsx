@@ -158,7 +158,7 @@ function PortfolioCard({ item }: {item: PortfolioItem;}) {
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
           width={240}
           height={373}
           onLoadedData={() => setIsLoaded(true)}
