@@ -52,22 +52,6 @@ const Index = () => {
           <SocialProofCarousel />
         </section>
 
-        {/* CTA Section */}
-        <section data-theme="void" className="py-10 md:py-16">
-          <div className="container mx-auto px-5 text-center max-w-md">
-            <p className="text-sm md:text-base text-muted-foreground mb-6">
-              Responda o formulário rápido para que o próximo feedback seja você!
-            </p>
-            <Button
-              size="lg"
-              onClick={() => handleStartClick("start_btn_2")}
-              className="group h-12 md:h-14 px-6 md:px-10 text-sm md:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]"
-            >
-              FAZER DIAGNÓSTICO (2 MIN)
-              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </div>
-        </section>
 
         {/* Pain Section */}
         <section data-theme="ember">
@@ -102,17 +86,6 @@ const Index = () => {
 
       <Footer />
 
-      {/* Mobile Bottom Bar CTA */}
-      <div className="md:hidden mobile-bottom-cta">
-        <Button
-          size="lg"
-          onClick={() => handleStartClick("start_btn_3")}
-          className="w-full h-12 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20"
-        >
-          COMEÇAR DIAGNÓSTICO (2 MIN)
-        </Button>
-      </div>
-      <div className="h-20 md:hidden" />
     </div>
   );
 };

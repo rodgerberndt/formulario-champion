@@ -88,7 +88,7 @@ function VideoCard({ video, index, isVisible }: { video: string; index: number; 
             muted
             loop
             playsInline
-            preload="none"
+            preload="metadata"
             width={240}
             height={373}
             onLoadedData={() => setIsLoaded(true)}
