@@ -100,8 +100,8 @@ const SDR_MIN_FATURAMENTO = [
   "Acima de R$ 10 milhões",
 ];
 
-const DARA_SKIP_LINK = "https://wa.me/55554896560104?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
-const RODGER_SKIP_LINK = "https://wa.me/555548996378499?text=Falaa%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
+const DARA_SKIP_LINK = "https://wa.me/554896560104?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
+const RODGER_SKIP_LINK = "https://wa.me/554896378499?text=Falaa%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
 
 function getSdrSkipLink(estagio?: string, investimento?: string): string {
   const isAdvanced = estagio ? SDR_ADVANCED_STAGES.includes(estagio) : false;
