@@ -10,48 +10,45 @@ import { useTracking } from "@/hooks/useTracking";
 /* ── narrative lines with keyword markup ── */
 const narrativeLines = [
   {
-    text: "O nosso maior diferencial no mercado é trabalhar com ",
-    highlights: [
-      { word: "CORPO", type: "corpo" as const },
-      { word: "GANCHO", type: "gancho" as const },
-    ],
-    suffix: ".",
-  },
-  {
-    text: "Depois do Andrômeda, criativos pro Meta que não se comunicam com ",
+    text: "A Champion entendeu que depois do Andrômeda, criativos pro Meta que não estivessem se comunicando com ",
     highlights: [{ word: "FATIAS DE PÚBLICO DIFERENTES", type: "fatias" as const }],
-    suffix: " simplesmente não escalam,",
+    suffix: ", não iriam escalar,",
   },
   {
-    text: "e talvez, nem minimamente performem a ponto de passar da pré-escala.",
+    text: "e talvez, nem minimamente performar a ponto de passar da pré-escala.",
     highlights: [],
     suffix: "",
   },
   {
-    text: "Quando a gente tem formatos, ângulos e ",
+    text: "O que a Champion entendeu, é que quando a gente tem formatos, ângulos, e ",
     highlights: [{ word: "PERSONAS", type: "persona" as const }],
-    suffix: " diferentes nos criativos, tudo muda.",
+    suffix: " diferentes nos criativos, tudo muda,",
   },
   {
-    text: "Nossos testes são extremamente assertivos: ",
+    text: "nossos testes podem ser muito assertivos: ",
     highlights: [{ word: "33% de acerto", type: "badge" as const }],
-    suffix: ".",
+    suffix: "…",
   },
   {
-    text: "Isso acontece porque trabalhamos com cada ",
+    text: "principalmente pelo fato de trabalharmos com cada ",
     highlights: [
       { word: "CORPO", type: "corpo" as const },
       { word: "4 GANCHOS", type: "gancho" as const },
     ],
+    suffix: ", veja um exemplo:",
+  },
+  {
+    text: "A resposta é simples, ",
+    highlights: [{ word: "PERSONAS", type: "persona" as const }],
     suffix: ".",
   },
   {
-    text: "Cada ",
+    text: "Na estratégia da Champion de criativos, cada ",
     highlights: [{ word: "GANCHO", type: "gancho" as const }],
-    suffix: " atinge uma persona diferente do seu público,",
+    suffix: " bate em uma persona do seu público diferente,",
   },
   {
-    text: "e é isso que faz total diferença nos resultados dos nossos clientes.",
+    text: "e é isso que faz total diferente nos resultados de nossos clientes.",
     highlights: [],
     suffix: "",
   },
@@ -236,7 +233,7 @@ export function GanchoCorpoSection() {
 
           <h2 className="text-foreground mb-4">
             <ShimmerText isVisible={isVisible}>
-              Mesmo corpo, 4 ganchos…
+              Mesmo corpo, 4 ganchos diferentes…
             </ShimmerText>
             <br />
             <ShimmerText isVisible={isVisible} delay={200}>
@@ -247,7 +244,7 @@ export function GanchoCorpoSection() {
           <LineReveal isVisible={isVisible} delay={500} className="max-w-2xl mx-auto">
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
               Como 1 <span className="text-secondary font-semibold">SIMPLES GANCHO</span> de míseros{" "}
-              <span className="text-secondary font-semibold">3 SEGUNDOS</span> pode fazer tanta diferença?
+              <span className="text-secondary font-semibold">3 SEGUNDOS</span> podem fazer tanta diferença?
             </p>
           </LineReveal>
         </div>
