@@ -263,10 +263,10 @@ export function GanchoCorpoSection() {
         {/* ── 2-col: Narrative + Proofs ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14 mb-12 md:mb-16">
           {/* Left: Narrative */}
-          <div className="space-y-3 md:space-y-4">
+          <div className="space-y-4 md:space-y-5">
             {narrativeLines.map((line, i) => (
               <LineReveal key={i} isVisible={isVisible} delay={600 + i * 120}>
-                <p className="text-sm md:text-[15px] text-foreground/80 leading-relaxed">
+                <p className="text-[15px] md:text-base text-foreground/80 leading-relaxed">
                   <NarrativeLine line={line} />
                 </p>
               </LineReveal>
