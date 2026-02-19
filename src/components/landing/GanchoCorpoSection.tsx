@@ -35,7 +35,7 @@ const narrativeLines = [
       { word: "CORPO", type: "corpo" as const },
       { word: "4 GANCHOS", type: "gancho" as const },
     ],
-    suffix: ", veja um exemplo:",
+    suffix: ".",
   },
   {
     text: "A resposta é simples, ",
