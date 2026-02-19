@@ -957,7 +957,7 @@ Deno.serve(async (req: Request) => {
       let offset = 0;
       let hasMore = true;
       while (hasMore) {
-        let q = supabase.from("leads").select("id, created_at, utm_content, utm_campaign, utm_source, estagio_negocio, investimento_faixa, sdr_override").range(offset, offset + PAGE_SIZE - 1);
+        let q = supabase.from("leads").select("id, created_at, utm_content, utm_campaign, utm_source, estagio_negocio, investimento_faixa, sdr_override, tier").range(offset, offset + PAGE_SIZE - 1);
         if (from) q = q.gte("created_at", from);
         if (toEnd) q = q.lte("created_at", toEnd);
         const { data, error } = await q;
@@ -986,6 +986,7 @@ Deno.serve(async (req: Request) => {
         creative_source_field: string;
         leads_count: number;
         mql_count: number;
+        tier_large_count: number;
         spend: number;
         sales_count: number;
         revenue: number;
@@ -1004,6 +1005,7 @@ Deno.serve(async (req: Request) => {
             creative_source_field: source,
             leads_count: 0,
             mql_count: 0,
+            tier_large_count: 0,
             spend: 0,
             sales_count: 0,
             revenue: 0,
@@ -1035,6 +1037,9 @@ Deno.serve(async (req: Request) => {
         agg.leads_count++;
         if (isMql(lead.estagio_negocio, lead.investimento_faixa, lead.sdr_override)) {
           agg.mql_count++;
+        }
+        if (lead.tier === "Large") {
+          agg.tier_large_count++;
         }
         agg.leads_by_stage[lead.estagio_negocio] = (agg.leads_by_stage[lead.estagio_negocio] || 0) + 1;
         if (lead.utm_campaign) agg.campaigns.add(lead.utm_campaign);
@@ -1085,12 +1090,14 @@ Deno.serve(async (req: Request) => {
       const creatives = Array.from(creativeMap.values()).map(c => {
         const mql_rate = c.leads_count > 0 ? c.mql_count / c.leads_count : 0;
         const cost_per_mql = c.mql_count > 0 ? c.spend / c.mql_count : null;
+        const cost_per_tier_large = c.tier_large_count > 0 ? c.spend / c.tier_large_count : null;
         const cac = c.sales_count > 0 ? c.spend / c.sales_count : null;
         const roas = c.spend > 0 ? c.revenue / c.spend : null;
         return {
           ...c,
           mql_rate,
           cost_per_mql,
+          cost_per_tier_large,
           cac,
           roas,
           campaigns: Array.from(c.campaigns),
@@ -1101,6 +1108,7 @@ Deno.serve(async (req: Request) => {
       const totalSpend = creatives.reduce((s, c) => s + c.spend, 0) + (spendTotal - spendMapped);
       const totalLeads = allLeads.length;
       const totalMql = creatives.reduce((s, c) => s + c.mql_count, 0);
+      const totalTierLarge = creatives.reduce((s, c) => s + c.tier_large_count, 0);
       const totalSales = creatives.reduce((s, c) => s + c.sales_count, 0) + salesWithoutCreative;
       const totalRevenue = creatives.reduce((s, c) => s + c.revenue, 0);
 
@@ -1111,10 +1119,12 @@ Deno.serve(async (req: Request) => {
             spend: totalSpend,
             leads: totalLeads,
             mql: totalMql,
+            tier_large: totalTierLarge,
             sales: totalSales,
             revenue: totalRevenue,
             cpl: totalLeads > 0 ? totalSpend / totalLeads : null,
             cpmql: totalMql > 0 ? totalSpend / totalMql : null,
+            cp_tier_large: totalTierLarge > 0 ? totalSpend / totalTierLarge : null,
             cac: totalSales > 0 ? totalSpend / totalSales : null,
             roas: totalSpend > 0 ? totalRevenue / totalSpend : null,
           },
