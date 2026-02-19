@@ -118,7 +118,7 @@ function HookCard({ id, roas, winner }: { id: number; roas: string; winner: bool
       whileHover={{ scale: 1.04, y: -4 }}
       className={`relative cursor-pointer rounded-2xl p-4 md:p-5 border transition-all duration-300 ${
         winner
-          ? "border-green-500/50 bg-green-500/[0.07] shadow-[0_0_30px_-5px_rgba(34,197,94,0.2)] mt-5 md:mt-0"
+          ? "border-green-500/50 bg-green-500/[0.07] shadow-[0_0_30px_-5px_rgba(34,197,94,0.2)]"
           : "border-secondary/20 bg-secondary/[0.04]"
       }`}
     >
@@ -311,7 +311,7 @@ export function GanchoCorpoSection() {
           <p className="text-center text-xs font-bold tracking-[0.2em] text-secondary/60 mb-5" style={{ fontFamily: "'Montserrat', sans-serif" }}>
             MESMO CORPO, 4 GANCHOS
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 pt-4">
             {hookCards.map((card, i) => (
               <motion.div
                 key={card.id}
@@ -341,7 +341,7 @@ export function GanchoCorpoSection() {
           <Button
             size="lg"
             onClick={handleCTA}
-            className="group h-12 md:h-14 px-6 md:px-10 text-sm md:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]"
+            className="group h-12 md:h-14 px-5 md:px-10 text-xs md:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98] w-full md:w-auto max-w-sm"
           >
             QUERO APLICAR ISSO NA MINHA OPERAÇÃO
             <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
