@@ -1,7 +1,8 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
 import { ShimmerText, KeywordGlow } from "./TextEffects";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const pillars = [
   { label: "Onboarding / Feedback" },
@@ -11,6 +12,8 @@ const pillars = [
   { label: "Teste" },
   { label: "Repete o Ciclo", highlight: true },
 ];
+
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 /** Curved arrow SVG between two positions on the circle */
 function CurvedArrow({ angle1, angle2, radius, isActive }: { angle1: number; angle2: number; radius: number; isActive: boolean }) {
@@ -67,8 +70,11 @@ function CurvedArrow({ angle1, angle2, radius, isActive }: { angle1: number; ang
 export function MetodoChampion() {
   const { ref, isVisible } = useReveal(0.1);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const mobileRef = useRef<HTMLDivElement>(null);
   const [activePillars, setActivePillars] = useState(0);
+  const isMobile = useIsMobile();
 
+  // Desktop scroll-driven pillar activation
   useEffect(() => {
     if (!isVisible) return;
     const handleScroll = () => {
@@ -82,6 +88,76 @@ export function MetodoChampion() {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isVisible]);
+
+  // Mobile cascade glow cycle
+  const [litIndex, setLitIndex] = useState(-1); // -1 = all off, 0-5 = lighting step i, 6 = all lit hold
+  const [trophyPulse, setTrophyPulse] = useState(false);
+  const [mobileVisible, setMobileVisible] = useState(false);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const el = mobileRef.current;
+    if (!el) return;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setMobileVisible(entry.isIntersecting),
+      { threshold: 0.4 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (!isMobile || !mobileVisible) {
+      setLitIndex(-1);
+      setTrophyPulse(false);
+      return;
+    }
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      setTrophyPulse(true);
+      setLitIndex(6);
+      return;
+    }
+
+    let cancelled = false;
+    const STEP_DELAY = 220;
+    const HOLD_DURATION = 1200;
+    const CYCLE_PAUSE = 4500;
+
+    const runCycle = async () => {
+      if (cancelled) return;
+      // Trophy pulse
+      setTrophyPulse(true);
+      await sleep(300);
+      if (cancelled) return;
+
+      // Light each step
+      for (let i = 0; i <= 5; i++) {
+        if (cancelled) return;
+        setLitIndex(i);
+        await sleep(STEP_DELAY);
+      }
+
+      // Hold all lit
+      setLitIndex(6);
+      await sleep(HOLD_DURATION);
+      if (cancelled) return;
+
+      // Fade out
+      setTrophyPulse(false);
+      setLitIndex(-1);
+      await sleep(CYCLE_PAUSE);
+      if (cancelled) return;
+
+      runCycle();
+    };
+
+    runCycle();
+    return () => { cancelled = true; };
+  }, [isMobile, mobileVisible]);
 
   const scrollToCTA = () => {
     document.querySelector("#cta-final")?.scrollIntoView({ behavior: "smooth" });
@@ -187,63 +263,85 @@ export function MetodoChampion() {
           </div>
 
           {/* Mobile */}
-          <div className="md:hidden flex flex-col items-center gap-0">
+          <div ref={mobileRef} className="md:hidden flex flex-col items-center gap-0">
+            {/* Trophy — bigger, no ring, strong glow */}
             <motion.div
-              className="relative w-40 h-40 flex items-center justify-center mb-6"
+              className="relative flex items-center justify-center mb-8 py-4"
               initial={{ opacity: 0, scale: 0.85 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
+              {/* Radial glow behind trophy */}
               <div
-                className={`absolute inset-3 rounded-full transition-all duration-700 ${
-                  activePillars >= 6 ? "border-2 border-secondary/60 shadow-[0_0_20px_-5px_hsl(42_90%_58%/0.3)]" : "border border-border/30"
+                className={`absolute w-48 h-48 rounded-full transition-all duration-700 ${
+                  trophyPulse ? "opacity-100 scale-110" : "opacity-30 scale-100"
                 }`}
-                style={{ background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))" }}
+                style={{
+                  background: "radial-gradient(circle, hsl(42 90% 58% / 0.25) 0%, hsl(42 90% 58% / 0.08) 40%, transparent 70%)",
+                  filter: "blur(20px)",
+                }}
               />
-              <img src="/champion-logo.png" alt="Champion" width={56} height={56} loading="lazy" decoding="async" className={`relative z-10 w-14 h-14 object-contain transition-all duration-500 ${activePillars >= 6 ? "drop-shadow-[0_0_10px_hsl(42_90%_58%/0.4)]" : ""}`} />
-              <span className="absolute bottom-5 z-10 text-[9px] font-bold uppercase tracking-wider text-secondary/80">Esteira semanal</span>
+              <img
+                src="/champion-logo.png"
+                alt="Champion"
+                width={100}
+                height={100}
+                loading="lazy"
+                decoding="async"
+                className={`relative z-10 w-24 h-24 max-w-[30vw] object-contain transition-all duration-700 ${
+                  trophyPulse
+                    ? "drop-shadow-[0_0_25px_hsl(42_90%_58%/0.6)] trophy-shine"
+                    : "drop-shadow-[0_0_8px_hsl(42_90%_58%/0.2)]"
+                }`}
+              />
+              <span className="absolute -bottom-1 z-10 text-[10px] font-bold uppercase tracking-wider text-secondary/80">
+                Esteira semanal
+              </span>
             </motion.div>
 
             {pillars.map((pillar, i) => {
-              const isActive = i < activePillars;
               const isHighlight = (pillar as any).highlight;
+              const isLit = litIndex >= i || litIndex === 6;
               return (
-                <motion.div
-                  key={pillar.label}
-                  className="flex flex-col items-center"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ delay: 0.15 + i * 0.2, duration: 0.7, ease: "easeOut" }}
-                >
-                  <div className={`text-center px-5 py-2.5 rounded-xl border transition-all duration-500 ${
-                    isHighlight && isActive
-                      ? "border-secondary/70 bg-[hsl(42_90%_58%/0.15)] shadow-[0_0_18px_-3px_hsl(42_90%_58%/0.3)]"
-                      : isActive
-                        ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)]"
+                <div key={pillar.label} className="flex flex-col items-center">
+                  <div
+                    className={`text-center px-5 py-2.5 rounded-xl border transition-all duration-500 ${
+                      isLit
+                        ? isHighlight
+                          ? "border-secondary/70 bg-[hsl(42_90%_58%/0.15)] shadow-[0_0_20px_-3px_hsl(42_90%_58%/0.35)]"
+                          : "border-secondary/50 bg-[hsl(42_90%_58%/0.08)] shadow-[0_0_12px_-3px_hsl(42_90%_58%/0.2)]"
                         : "border-border/20 bg-muted/10"
-                  }`}>
-                    <span className={`text-[11px] font-bold uppercase tracking-wider transition-colors duration-500 ${
-                      isHighlight && isActive ? "text-secondary drop-shadow-[0_0_6px_hsl(42_90%_58%/0.5)]" : isActive ? "text-secondary" : "text-muted-foreground/50"
-                    }`}>
-                      {isHighlight ? "↻ " : ""}{pillar.label}
+                    }`}
+                  >
+                    <span
+                      className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-500 ${
+                        isLit
+                          ? "text-secondary drop-shadow-[0_0_6px_hsl(42_90%_58%/0.4)]"
+                          : "text-muted-foreground/50"
+                      }`}
+                    >
+                      {isHighlight ? "↻ " : ""}
+                      {pillar.label}
                     </span>
                   </div>
-                  {/* Arrow down (skip after last) */}
+                  {/* Arrow down */}
                   {!isHighlight && (
-                    <motion.svg
-                      width="16" height="28" viewBox="0 0 16 28" className="my-2" fill="none"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.3 + i * 0.2, duration: 0.5 }}
-                    >
-                      <path d="M8 0 L8 20" stroke={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} strokeWidth="1.5" className="transition-all duration-500" />
-                      <polygon points="8,27 4,20 12,20" fill={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} className="transition-all duration-500" />
-                    </motion.svg>
+                    <svg width="16" height="28" viewBox="0 0 16 28" className="my-2" fill="none">
+                      <path
+                        d="M8 0 L8 20"
+                        stroke={isLit ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"}
+                        strokeWidth="1.5"
+                        className="transition-all duration-500"
+                      />
+                      <polygon
+                        points="8,27 4,20 12,20"
+                        fill={isLit ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"}
+                        className="transition-all duration-500"
+                      />
+                    </svg>
                   )}
-                </motion.div>
+                </div>
               );
             })}
           </div>
