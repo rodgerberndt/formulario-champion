@@ -41,8 +41,8 @@ export function Hero({
               </h1>
 
               {/* Subheadline */}
-              <p className="text-sm md:text-base text-muted-foreground max-w-sm mx-auto md:mx-0 mb-6">
-                C.G.S , o sistema de crescimento da Champion pode te ajudar.     <br />
+              <p className="text-sm md:text-base text-muted-foreground max-w-sm mx-auto md:mx-0 mb-6">C.G.S , a maquina de criativos da Champion pode te ajudar.
+​<br />
                 ​
               </p>
 
