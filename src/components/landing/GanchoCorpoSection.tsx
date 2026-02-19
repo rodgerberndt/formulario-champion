@@ -233,7 +233,7 @@ export function GanchoCorpoSection() {
 
           <h2 className="text-foreground mb-4">
             <ShimmerText isVisible={isVisible}>
-              Mesmo corpo, 4 ganchos diferentes…
+              Mesmo corpo, 4 ganchos diferentes...
             </ShimmerText>
             <br />
             <ShimmerText isVisible={isVisible} delay={200}>
