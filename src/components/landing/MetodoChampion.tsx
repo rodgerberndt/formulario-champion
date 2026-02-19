@@ -191,8 +191,9 @@ export function MetodoChampion() {
             <motion.div
               className="relative w-40 h-40 flex items-center justify-center mb-6"
               initial={{ opacity: 0, scale: 0.85 }}
-              animate={isVisible ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, ease: "easeOut" }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
             >
               <div
                 className={`absolute inset-3 rounded-full transition-all duration-700 ${
@@ -211,9 +212,10 @@ export function MetodoChampion() {
                 <motion.div
                   key={pillar.label}
                   className="flex flex-col items-center"
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={isVisible ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.35 + i * 0.12, duration: 0.4, ease: "easeOut" }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ delay: 0.15 + i * 0.2, duration: 0.7, ease: "easeOut" }}
                 >
                   <div className={`text-center px-5 py-2.5 rounded-xl border transition-all duration-500 ${
                     isHighlight && isActive
@@ -233,8 +235,9 @@ export function MetodoChampion() {
                     <motion.svg
                       width="16" height="28" viewBox="0 0 16 28" className="my-2" fill="none"
                       initial={{ opacity: 0 }}
-                      animate={isVisible ? { opacity: 1 } : {}}
-                      transition={{ delay: 0.5 + i * 0.12, duration: 0.3 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 + i * 0.2, duration: 0.5 }}
                     >
                       <path d="M8 0 L8 20" stroke={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} strokeWidth="1.5" className="transition-all duration-500" />
                       <polygon points="8,27 4,20 12,20" fill={isActive ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"} className="transition-all duration-500" />
