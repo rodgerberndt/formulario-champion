@@ -123,36 +123,24 @@ export function MetodoChampion() {
     }
 
     let cancelled = false;
-    const STEP_DELAY = 220;
-    const HOLD_DURATION = 1200;
-    const CYCLE_PAUSE = 4500;
+    const STEP_DELAY = 440;
 
     const runCycle = async () => {
       if (cancelled) return;
       // Trophy pulse
       setTrophyPulse(true);
-      await sleep(300);
+      await sleep(500);
       if (cancelled) return;
 
-      // Light each step
+      // Light each step — stays lit permanently
       for (let i = 0; i <= 5; i++) {
         if (cancelled) return;
         setLitIndex(i);
         await sleep(STEP_DELAY);
       }
 
-      // Hold all lit
+      // Keep everything lit forever
       setLitIndex(6);
-      await sleep(HOLD_DURATION);
-      if (cancelled) return;
-
-      // Fade out
-      setTrophyPulse(false);
-      setLitIndex(-1);
-      await sleep(CYCLE_PAUSE);
-      if (cancelled) return;
-
-      runCycle();
     };
 
     runCycle();
