@@ -247,6 +247,17 @@ export function GanchoCorpoSection() {
               <span className="text-secondary font-semibold">3 SEGUNDOS</span> podem fazer tanta diferença?
             </p>
           </LineReveal>
+
+          {/* Mobile-only: proof image right after subheadline */}
+          <div className="block lg:hidden mt-8">
+            <ProofCard
+              src="/proofs/depoimento-ganchos.png?v=2"
+              alt="Print mostrando ROAS diferente apenas mudando o gancho do criativo"
+              caption="Mesma estrutura. Só muda o GANCHO. Olha a diferença de ROAS."
+              delay={600}
+              isVisible={isVisible}
+            />
+          </div>
         </div>
 
         {/* ── 2-col: Narrative + Proofs ── */}
@@ -264,13 +275,15 @@ export function GanchoCorpoSection() {
 
           {/* Right: Proof images */}
           <div className="space-y-6">
-            <ProofCard
-              src="/proofs/depoimento-ganchos.png?v=2"
-              alt="Print mostrando ROAS diferente apenas mudando o gancho do criativo"
-              caption="Mesma estrutura. Só muda o GANCHO. Olha a diferença de ROAS."
-              delay={800}
-              isVisible={isVisible}
-            />
+            <div className="hidden lg:block">
+              <ProofCard
+                src="/proofs/depoimento-ganchos.png?v=2"
+                alt="Print mostrando ROAS diferente apenas mudando o gancho do criativo"
+                caption="Mesma estrutura. Só muda o GANCHO. Olha a diferença de ROAS."
+                delay={800}
+                isVisible={isVisible}
+              />
+            </div>
             <ProofCard
               src="/proofs/feedback-matheus.png?v=2"
               alt="Planilha com métricas de conjuntos, vendas, IC, CPI e CPA"
