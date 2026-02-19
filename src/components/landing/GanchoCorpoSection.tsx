@@ -10,53 +10,48 @@ import { useTracking } from "@/hooks/useTracking";
 /* ── narrative lines with keyword markup ── */
 const narrativeLines = [
   {
-    text: "A base do conteúdo que deve ser apresentado, deve ser a explicação da nossa diferenciação de mercado, que é trabalhar com ",
+    text: "O nosso maior diferencial no mercado é trabalhar com ",
     highlights: [
       { word: "CORPO", type: "corpo" as const },
       { word: "GANCHO", type: "gancho" as const },
     ],
-    suffix: ",",
+    suffix: ".",
   },
   {
-    text: "A Champion entendeu que depois do Andrômeda, criativos pro Meta que não estivessem se comunicando com ",
+    text: "Depois do Andrômeda, criativos pro Meta que não se comunicam com ",
     highlights: [{ word: "FATIAS DE PÚBLICO DIFERENTES", type: "fatias" as const }],
-    suffix: ", não iriam escalar,",
+    suffix: " simplesmente não escalam,",
   },
   {
-    text: "e talvez, nem minimamente performar a ponto de passar da pré-escala.",
+    text: "e talvez, nem minimamente performem a ponto de passar da pré-escala.",
     highlights: [],
     suffix: "",
   },
   {
-    text: "O que a Champion entendeu, é que quando a gente tem formatos, ângulos, e ",
+    text: "Quando a gente tem formatos, ângulos e ",
     highlights: [{ word: "PERSONAS", type: "persona" as const }],
-    suffix: " diferentes nos criativos, tudo muda,",
+    suffix: " diferentes nos criativos, tudo muda.",
   },
   {
-    text: "nossos testes podem ser muito assertivos: ",
+    text: "Nossos testes são extremamente assertivos: ",
     highlights: [{ word: "33% de acerto", type: "badge" as const }],
-    suffix: "…",
+    suffix: ".",
   },
   {
-    text: "principalmente pelo fato de trabalharmos com cada ",
+    text: "Isso acontece porque trabalhamos com cada ",
     highlights: [
       { word: "CORPO", type: "corpo" as const },
       { word: "4 GANCHOS", type: "gancho" as const },
     ],
-    suffix: ", veja um exemplo:",
-  },
-  {
-    text: "A resposta é simples, ",
-    highlights: [{ word: "PERSONAS", type: "persona" as const }],
     suffix: ".",
   },
   {
-    text: "Na estratégia da Champion de criativos, cada ",
+    text: "Cada ",
     highlights: [{ word: "GANCHO", type: "gancho" as const }],
-    suffix: " bate em uma persona do seu público diferente,",
+    suffix: " atinge uma persona diferente do seu público,",
   },
   {
-    text: "e é isso que faz total diferença nos resultados de nossos clientes.",
+    text: "e é isso que faz total diferença nos resultados dos nossos clientes.",
     highlights: [],
     suffix: "",
   },
@@ -273,14 +268,14 @@ export function GanchoCorpoSection() {
           {/* Right: Proof images */}
           <div className="space-y-6">
             <ProofCard
-              src="/proofs/depoimento-ganchos.png"
+              src="/proofs/depoimento-ganchos.png?v=2"
               alt="Print mostrando ROAS diferente apenas mudando o gancho do criativo"
               caption="Mesma estrutura. Só muda o GANCHO. Olha a diferença de ROAS."
               delay={800}
               isVisible={isVisible}
             />
             <ProofCard
-              src="/proofs/feedback-matheus.png"
+              src="/proofs/feedback-matheus.png?v=2"
               alt="Planilha com métricas de conjuntos, vendas, IC, CPI e CPA"
               caption="Formatos e ângulos diferentes = leitura diferente do Meta."
               delay={1100}
