@@ -6,6 +6,7 @@ import { PainSection } from "@/components/landing/PainSection";
 import { PortfolioSection } from "@/components/landing/PortfolioSection";
 import { MetodoChampion } from "@/components/landing/MetodoChampion";
 import { HowItWorks } from "@/components/landing/HowItWorks";
+import { GanchoCorpoSection } from "@/components/landing/GanchoCorpoSection";
 import { CaseVault } from "@/components/landing/CaseVault";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
@@ -82,6 +83,11 @@ const Index = () => {
         {/* Método Champion */}
         <section data-theme="cave">
           <MetodoChampion />
+        </section>
+
+        {/* Gancho & Corpo — diferencial Champion */}
+        <section data-theme="blue-temple">
+          <GanchoCorpoSection />
         </section>
 
         {/* How It Works */}

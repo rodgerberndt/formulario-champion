@@ -291,6 +291,77 @@
   .animated-underline:hover::after {
     transform: scaleX(1);
   }
+
+  /* ── Gancho & Corpo keyword styles ── */
+  .gancho-keyword {
+    @apply font-bold relative inline-block;
+    color: hsl(42 90% 58%);
+    text-shadow: 0 0 12px hsl(42 90% 58% / 0.35);
+  }
+  .gancho-keyword::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, hsl(42 90% 58%), hsl(42 80% 72%));
+    animation: shimmerUnderline 2s ease-in-out infinite;
+  }
+  @keyframes shimmerUnderline {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .corpo-keyword {
+    @apply font-bold;
+    color: hsl(238 80% 70%);
+    text-shadow: 0 0 10px hsl(238 80% 70% / 0.3);
+    -webkit-text-stroke: 0.3px hsl(238 80% 80% / 0.5);
+  }
+
+  .fatias-keyword {
+    @apply font-bold relative inline;
+    background: linear-gradient(180deg, transparent 55%, hsl(42 90% 58% / 0.2) 55%);
+    padding: 0 2px;
+  }
+
+  .persona-keyword {
+    @apply font-bold transition-colors duration-300;
+    color: hsl(42 90% 58%);
+  }
+  .persona-keyword:hover {
+    color: hsl(42 80% 72%);
+  }
+
+  .badge-keyword {
+    @apply font-bold inline-flex items-center px-2 py-0.5 rounded-full text-xs;
+    background: hsl(42 90% 58% / 0.12);
+    border: 1px solid hsl(42 90% 58% / 0.3);
+    color: hsl(42 90% 58%);
+    animation: badgePulse 2.5s ease-in-out infinite;
+  }
+  @keyframes badgePulse {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(42 90% 58% / 0.15); }
+    50% { box-shadow: 0 0 8px 2px hsl(42 90% 58% / 0.25); }
+  }
+
+  .proof-image-card {
+    @apply relative;
+  }
+  .proof-image-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 0.875rem;
+    background: linear-gradient(135deg, hsl(42 90% 58% / 0.3), hsl(238 80% 50% / 0.2), transparent);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .proof-image-card:hover::before {
+    opacity: 1;
+  }
 }
 
 /* Reduced motion */
