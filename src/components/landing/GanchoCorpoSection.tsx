@@ -118,12 +118,12 @@ function HookCard({ id, roas, winner }: { id: number; roas: string; winner: bool
       whileHover={{ scale: 1.04, y: -4 }}
       className={`relative cursor-pointer rounded-2xl p-4 md:p-5 border transition-all duration-300 ${
         winner
-          ? "border-green-500/50 bg-green-500/[0.07] shadow-[0_0_30px_-5px_rgba(34,197,94,0.2)]"
+          ? "border-green-500/50 bg-green-500/[0.07] shadow-[0_0_30px_-5px_rgba(34,197,94,0.2)] mt-5 md:mt-0"
           : "border-secondary/20 bg-secondary/[0.04]"
       }`}
     >
       {winner && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/20 border border-green-500/40 text-[10px] font-bold text-green-400 uppercase tracking-wider">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/20 border border-green-500/40 text-[10px] font-bold text-green-400 uppercase tracking-wider whitespace-nowrap">
           <Trophy className="w-3 h-3" />
           Pré-escala
         </div>
@@ -261,7 +261,13 @@ export function GanchoCorpoSection() {
         </div>
 
         {/* ── 2-col: Narrative + Proofs ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14 mb-12 md:mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14 mb-12 md:mb-16"
+        >
           {/* Left: Narrative */}
           <div className="space-y-4 md:space-y-5">
             {narrativeLines.map((line, i) => (
@@ -292,13 +298,14 @@ export function GanchoCorpoSection() {
               isVisible={isVisible}
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* ── Hook Cards Strip ── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isVisible ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 1.4, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="mb-12 md:mb-16"
         >
           <p className="text-center text-xs font-bold tracking-[0.2em] text-secondary/60 mb-5" style={{ fontFamily: "'Montserrat', sans-serif" }}>
@@ -309,8 +316,9 @@ export function GanchoCorpoSection() {
               <motion.div
                 key={card.id}
                 initial={{ opacity: 0, y: 20 }}
-                animate={isVisible ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 1.5 + i * 0.1, duration: 0.5 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
               >
                 <HookCard {...card} />
               </motion.div>
@@ -320,9 +328,10 @@ export function GanchoCorpoSection() {
 
         {/* ── Closing CTA ── */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={isVisible ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 1.9, duration: 0.6 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
           className="text-center"
         >
           <p className="text-base md:text-lg text-foreground/90 font-medium mb-6 leading-relaxed max-w-xl mx-auto">
