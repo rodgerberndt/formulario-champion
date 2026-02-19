@@ -12,7 +12,7 @@ const narrativeLines = [
   {
     text: "A Champion entendeu que depois do Andrômeda, criativos pro Meta que não estivessem se comunicando com ",
     highlights: [{ word: "FATIAS DE PÚBLICO DIFERENTES", type: "fatias" as const }],
-    suffix: ", não iriam escalar,",
+    suffix: ", não iriam escalar...",
   },
   {
     text: "e talvez, nem minimamente performar a ponto de passar da pré-escala.",
@@ -20,35 +20,22 @@ const narrativeLines = [
     suffix: "",
   },
   {
-    text: "O que a Champion entendeu, é que quando a gente tem formatos, ângulos, e ",
+    text: "O que a Champion entendeu, é que quando a gente tem mais formatos, mais ângulos, e mais ",
     highlights: [{ word: "PERSONAS", type: "persona" as const }],
-    suffix: " diferentes nos criativos, tudo muda,",
+    suffix: " diferentes nos criativos, tudo muda...",
   },
   {
-    text: "nossos testes podem ser muito assertivos: ",
+    text: "E é por isso que os nossos testes podem ser muito assertivos, cerca de ",
     highlights: [{ word: "33% de acerto", type: "badge" as const }],
     suffix: "…",
   },
   {
-    text: "principalmente pelo fato de trabalharmos com cada ",
-    highlights: [
-      { word: "CORPO", type: "corpo" as const },
-      { word: "4 GANCHOS", type: "gancho" as const },
-    ],
-    suffix: ".",
-  },
-  {
-    text: "A resposta é simples, ",
-    highlights: [{ word: "PERSONAS", type: "persona" as const }],
-    suffix: ".",
-  },
-  {
     text: "Na estratégia da Champion de criativos, cada ",
     highlights: [{ word: "GANCHO", type: "gancho" as const }],
-    suffix: " bate em uma persona do seu público diferente,",
+    suffix: " bate em uma persona do seu público diferente",
   },
   {
-    text: "e é isso que faz total diferente nos resultados de nossos clientes.",
+    text: "e é isso que faz total diferença nos resultados de nossos clientes.",
     highlights: [],
     suffix: "",
   },
