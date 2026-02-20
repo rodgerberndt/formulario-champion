@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
 import { PainSection } from "@/components/landing/PainSection";
 import { PortfolioSection } from "@/components/landing/PortfolioSection";
@@ -20,6 +21,7 @@ import { useSectionThemes } from "@/hooks/useSectionThemes";
 const Index = () => {
   const navigate = useNavigate();
   const { trackStartClick } = useTracking();
+  const isMobile = useIsMobile();
   useUtmCapture();
   useSmoothScroll();
   useSectionThemes();
@@ -108,6 +110,19 @@ const Index = () => {
 
       <Footer />
 
+      {/* Mobile sticky CTA */}
+      {isMobile && (
+        <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
+          <Button
+            size="lg"
+            onClick={() => handleStartClick("mobile_sticky_cta")}
+            className="w-full h-14 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 transition-all active:scale-[0.98]"
+          >
+            FAZER DIAGNÓSTICO
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
