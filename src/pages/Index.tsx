@@ -112,14 +112,14 @@ const Index = () => {
 
       {/* Mobile sticky CTA */}
       {isMobile && (
-        <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
+        <div className="fixed bottom-3 left-3 right-3 z-50 md:hidden">
           <Button
-            size="lg"
+            size="sm"
             onClick={() => handleStartClick("mobile_sticky_cta")}
-            className="w-full h-14 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 transition-all active:scale-[0.98]"
+            className="w-full h-11 text-xs font-semibold bg-primary/95 hover:bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/20 backdrop-blur-sm transition-all active:scale-[0.98]"
           >
             FAZER DIAGNÓSTICO
-            <ArrowRight className="w-5 h-5 ml-2" />
+            <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
         </div>
       )}
