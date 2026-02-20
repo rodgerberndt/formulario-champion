@@ -1142,7 +1142,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // ──── GET /manual-sales ────
-    if (path === "/manual-sales" && req.method === "GET") {
+    if (path === "/manual-sales" && req.method === "GET" && url.searchParams.get("_method") !== "POST") {
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
       
