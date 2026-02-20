@@ -23,7 +23,7 @@ export function Header() {
           <Button
             size="sm"
             onClick={() => navigate("/quiz")}
-            className="hidden md:flex text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/25 transition-all duration-200"
+            className="text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/25 transition-all duration-200"
           >
             FAZER DIAGNÓSTICO
           </Button>
