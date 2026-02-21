@@ -113,6 +113,7 @@ function LoadingCommitStep({ onFinish, onCommit }: {onFinish: () => void; onComm
   const [progress, setProgress] = useState(0);
   const [committed, setCommitted] = useState(false);
   const hasSubmitted = useRef(false);
+  const hasFinished = useRef(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -129,10 +130,15 @@ function LoadingCommitStep({ onFinish, onCommit }: {onFinish: () => void; onComm
   }, []);
 
   useEffect(() => {
-    if (progress >= 100 && !hasSubmitted.current) {
+    if (progress >= 100 && !hasSubmitted.current && !hasFinished.current) {
       hasSubmitted.current = true;
       // Small delay after bar fills for UX
-      setTimeout(() => onFinish(), 600);
+      setTimeout(() => {
+        if (!hasFinished.current) {
+          hasFinished.current = true;
+          onFinish();
+        }
+      }, 600);
     }
   }, [progress, onFinish]);
 
@@ -165,8 +171,11 @@ function LoadingCommitStep({ onFinish, onCommit }: {onFinish: () => void; onComm
           onClick={() => { 
             setCommitted(true); 
             onCommit(true); 
-            // Advance immediately on click
-            setTimeout(() => onFinish(), 400);
+            // Advance immediately on click - but only once
+            if (!hasFinished.current) {
+              hasFinished.current = true;
+              setTimeout(() => onFinish(), 400);
+            }
           }}
           disabled={committed}
           className={`mt-2 w-full py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300 ${
@@ -298,7 +307,7 @@ export default function Quiz() {
   }, [step, formData]);
 
   const handleSubmit = async () => {
-    if (!canProceed()) return;
+    if (!canProceed() || isSubmitting) return;
 
     // Use ref to always get the latest formData (avoids stale closure with compromisso_whatsapp)
     const currentData = formDataRef.current || formData;

@@ -121,7 +121,7 @@ interface QuizAnswers {
 
 export function calculateLeadScore(answers: QuizAnswers): LeadScoreResult {
   const mercadoPoints = MERCADO_POINTS[answers.mercado || ""] || 1;
-  const estagioPoints = ESTAGIO_POINTS[answers.estagio_negocio || ""] || 1;
+  const estagioPoints = ESTAGIO_POINTS[answers.estagio_negocio || ""] || 0;
   const investimentoPoints = INVESTIMENTO_POINTS[answers.investimento_faixa || ""] || 1;
 
   const totalScore = mercadoPoints + estagioPoints + investimentoPoints;
