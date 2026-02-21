@@ -128,9 +128,8 @@ const STEP_LABELS: Record<string, string> = {
   q2_whats: "WhatsApp",
   q3_insta: "Instagram",
   q4_mercado: "Mercado",
-  q5_estagio: "Estágio",
-  q6_faturamento: "Faturamento",
-  q7_dor: "Dor/Desejo",
+  q5_faturamento: "Faturamento",
+  q6_dor: "Dor/Desejo",
 };
 
 interface Lead {
@@ -308,7 +307,7 @@ export default function AdminAnalytics() {
   // Leads filters
   const [leadsStatusFilter, setLeadsStatusFilter] = useState<string>("all");
   const [leadsMercadoFilter, setLeadsMercadoFilter] = useState<string>("all");
-  const [leadsEstagioFilter, setLeadsEstagioFilter] = useState<string>("all");
+  
   const [leadsTierFilter, setLeadsTierFilter] = useState<string>("all");
   const [leadsSdrFilter, setLeadsSdrFilter] = useState<string>("all");
   const [leadsAdsetFilter, setLeadsAdsetFilter] = useState<string>("all");
@@ -319,10 +318,6 @@ export default function AdminAnalytics() {
       "Infoproduto": 1, "E-commerce": 1, "SaaS / Software": 1,
       "Serviços / Consultoria": 1, "Agência": 1, "Dropshipping": 1,
       "Afiliado": 1, "Nutra / Encapsulado": 2, "Outro": 1,
-    };
-    const estagioPts: Record<string, number> = {
-      "Iniciando do zero": 1, "Validação (primeiras vendas)": 2,
-      "Pré-escala (vendas constantes)": 3, "Escala (buscando otimização)": 4,
     };
     const fatPts: Record<string, number> = {
       "Não vendo ainda (R$0/mês)": 1, "Até R$ 5 mil": 1,
@@ -336,7 +331,7 @@ export default function AdminAnalytics() {
       "De R$ 3 milhões a R$ 5 milhões": 6, "De R$ 5 milhões a R$ 10 milhões": 6,
       "Acima de R$ 10 milhões": 6,
     };
-    const score = (mercadoPts[lead.mercado] || 1) + (estagioPts[lead.estagio_negocio] || 1) + (fatPts[lead.investimento_faixa || ""] || 1);
+    const score = (mercadoPts[lead.mercado] || 1) + (fatPts[lead.investimento_faixa || ""] || 1);
     const tier = score > 12 ? "Enterprise" : score >= 9 ? "Large" : score >= 5 ? "Medium" : "Small";
     return { score, tier };
   };
@@ -635,7 +630,7 @@ export default function AdminAnalytics() {
 
   // Get unique values for filter dropdowns
   const uniqueMercados = [...new Set(leads.map(l => l.mercado))].filter(Boolean).sort();
-  const uniqueEstagios = [...new Set(leads.map(l => l.estagio_negocio))].filter(Boolean).sort();
+  
   const TIER_ORDER = ["Enterprise", "Large", "Medium", "Small"];
   const uniqueTiers = TIER_ORDER.filter(t => leads.some(l => getLeadTier(l) === t));
   const uniqueAdsets = [...new Set(leads.map(l => l.utm_content).filter(Boolean) as string[])].sort();
@@ -659,8 +654,6 @@ export default function AdminAnalytics() {
     // Mercado filter
     if (leadsMercadoFilter !== "all" && lead.mercado !== leadsMercadoFilter) return false;
     
-    // Estágio filter
-    if (leadsEstagioFilter !== "all" && lead.estagio_negocio !== leadsEstagioFilter) return false;
     
     // Tier filter
     if (leadsTierFilter !== "all" && getLeadTier(lead) !== leadsTierFilter) return false;
@@ -856,7 +849,6 @@ export default function AdminAnalytics() {
       "WhatsApp",
       "Instagram",
       "Mercado",
-      "Estágio",
       "UTM Source",
       "UTM Medium",
       "UTM Campaign",
@@ -879,7 +871,6 @@ export default function AdminAnalytics() {
       s.lead_whatsapp || "-",
       s.lead_instagram || "-",
       s.lead_market || "-",
-      s.lead_stage || "-",
       s.utm_source || "-",
       s.utm_medium || "-",
       s.utm_campaign || "-",
@@ -1038,12 +1029,6 @@ export default function AdminAnalytics() {
                       <div className="p-4 bg-muted/30 rounded-lg">
                         <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Mercado</p>
                         <p className="text-lg font-semibold">{selectedSession.lead_market}</p>
-                      </div>
-                    )}
-                    {selectedSession.lead_stage && (
-                      <div className="p-4 bg-muted/30 rounded-lg">
-                        <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Estágio do Negócio</p>
-                        <p className="text-lg font-semibold">{selectedSession.lead_stage}</p>
                       </div>
                     )}
                   </div>
@@ -1669,17 +1654,6 @@ export default function AdminAnalytics() {
                     ))}
                   </SelectContent>
                 </Select>
-                <Select value={leadsEstagioFilter} onValueChange={setLeadsEstagioFilter}>
-                  <SelectTrigger className="w-full md:w-52">
-                    <SelectValue placeholder="Estágio" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos estágios</SelectItem>
-                    {uniqueEstagios.map((e) => (
-                      <SelectItem key={e} value={e}>{e}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
                 <Select value={leadsTierFilter} onValueChange={setLeadsTierFilter}>
                   <SelectTrigger className="w-full md:w-28">
                     <SelectValue placeholder="Tier" />
@@ -1720,13 +1694,13 @@ export default function AdminAnalytics() {
                   <RefreshCw className={`w-4 h-4 mr-2 ${leadsLoading ? "animate-spin" : ""}`} />
                   Atualizar
                 </Button>
-                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsEstagioFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all" || leadsAdsetFilter !== "all") && (
+                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all" || leadsAdsetFilter !== "all") && (
                   <Button 
                     variant="ghost" 
                     onClick={() => {
                       setLeadsStatusFilter("all");
                       setLeadsMercadoFilter("all");
-                      setLeadsEstagioFilter("all");
+                      
                       setLeadsTierFilter("all");
                       setLeadsSdrFilter("all");
                       setLeadsAdsetFilter("all");
@@ -1795,7 +1769,7 @@ export default function AdminAnalytics() {
                           <th className="text-left p-2 w-28">WhatsApp</th>
                           <th className="text-left p-2">Instagram</th>
                           <th className="text-left p-2 w-24">Mercado</th>
-                          <th className="text-left p-2 w-28">Estágio</th>
+                          
                           <th className="text-left p-2 w-28">Faturamento</th>
                           <th className="text-left p-2 w-20">SDR</th>
                           <th className="text-left p-2 w-24">Data</th>
@@ -1907,7 +1881,7 @@ export default function AdminAnalytics() {
                                 </button>
                               </td>
                               <td className="p-2 text-muted-foreground text-xs truncate" title={lead.mercado}>{lead.mercado}</td>
-                              <td className="p-2 text-muted-foreground text-xs truncate" title={lead.estagio_negocio}>{lead.estagio_negocio}</td>
+                              
                               <td className="p-2 text-muted-foreground text-xs truncate" title={lead.investimento_faixa || "-"}>{lead.investimento_faixa || "-"}</td>
                               <td className="p-2">
                                 {(() => {
@@ -2022,7 +1996,7 @@ export default function AdminAnalytics() {
                                     <Badge variant="outline" className="border-orange-500 text-orange-500 bg-orange-500/10 text-[10px]">⚠️ Dup</Badge>
                                   )}
                                 </div>
-                                <p className="text-xs text-muted-foreground mt-1">{lead.mercado} · {lead.estagio_negocio}</p>
+                                <p className="text-xs text-muted-foreground mt-1">{lead.mercado}</p>
                                 {lead.investimento_faixa && (
                                   <p className="text-xs text-green-500 mt-0.5">💰 {lead.investimento_faixa}</p>
                                 )}
@@ -2141,10 +2115,6 @@ export default function AdminAnalytics() {
                         <div className="p-4 bg-muted/30 rounded-lg">
                           <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Mercado</p>
                           <p className="font-medium">{selectedLead.mercado}</p>
-                        </div>
-                        <div className="p-4 bg-muted/30 rounded-lg">
-                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Estágio do Negócio</p>
-                          <p className="font-medium">{selectedLead.estagio_negocio}</p>
                         </div>
                         {selectedLead.empresa && (
                           <div className="p-4 bg-muted/30 rounded-lg">
@@ -2779,8 +2749,6 @@ export default function AdminAnalytics() {
                                 </div>
                                 <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                                   <span>{lead.mercado}</span>
-                                  <span>•</span>
-                                  <span>{lead.estagio_negocio}</span>
                                 </div>
                               </div>
                             </div>
