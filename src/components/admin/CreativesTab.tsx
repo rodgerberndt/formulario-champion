@@ -139,7 +139,6 @@ function formatNumber(value: number): string {
   return new Intl.NumberFormat("pt-BR").format(value);
 }
 
-const MQL_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)", "Validação (primeiras vendas)"];
 const MQL_FAT_MIN_FAIXAS = [
   "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
   "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
@@ -150,12 +149,11 @@ const MQL_FAT_MIN_FAIXAS = [
 ];
 
 function isLeadMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
-  // MQL = same as Rodger SDR assignment
+  // MQL = same as Rodger SDR assignment (based on faturamento only since estagio was removed)
   if (sdrOverride === "Rodger") return true;
   if (sdrOverride === "Dara") return false;
-  const isAdvancedStage = MQL_STAGES.includes(estagio);
   const faturaEnough = investimento ? MQL_FAT_MIN_FAIXAS.includes(investimento) : false;
-  return isAdvancedStage && faturaEnough;
+  return faturaEnough;
 }
 
 // ── Props ──

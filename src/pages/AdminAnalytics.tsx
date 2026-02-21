@@ -341,8 +341,7 @@ export default function AdminAnalytics() {
     return { score, tier };
   };
 
-  // SDR assignment helper - uses override if set, otherwise based on stage + investment
-  const SDR_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)", "Validação (primeiras vendas)"];
+  // SDR assignment helper - uses override if set, otherwise based on faturamento only
   const SDR_FAT_MIN = [
     "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
     "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
@@ -353,9 +352,8 @@ export default function AdminAnalytics() {
   ];
   const getLeadSdr = (lead: Lead): string => {
     if (lead.sdr_override) return lead.sdr_override;
-    const isAdvancedStage = SDR_STAGES.includes(lead.estagio_negocio);
     const faturaEnough = lead.investimento_faixa ? SDR_FAT_MIN.includes(lead.investimento_faixa) : false;
-    if (isAdvancedStage && faturaEnough) return "Rodger";
+    if (faturaEnough) return "Rodger";
     return "Dara";
   };
 
