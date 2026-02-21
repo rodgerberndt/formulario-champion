@@ -597,21 +597,22 @@ export default function Quiz() {
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             {/* Highlight block */}
-            <div className="bg-secondary/10 border border-secondary/30 rounded-2xl p-4 sm:p-5">
-              <div className="flex items-start gap-3 mb-2.5">
-                <Target className="w-6 h-6 sm:w-7 sm:h-7 text-secondary shrink-0 mt-0.5" />
-                <h2 className="text-secondary font-bold text-lg sm:text-xl md:text-2xl leading-tight">
-                  Essa é a pergunta mais importante de todo o diagnóstico.
-                </h2>
+            <div className="bg-secondary/10 border border-secondary/20 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
+              <div className="flex items-center gap-2">
+                <Target className="w-4 h-4 sm:w-5 sm:h-5 text-secondary shrink-0" />
+                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
+                  Quanto mais <span className="text-secondary font-semibold">detalhada</span> sua resposta, mais <span className="text-secondary font-semibold">preciso</span> será o diagnóstico.
+                </p>
               </div>
-              <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed pl-9 sm:pl-10">
-                Quanto mais <span className="text-secondary font-semibold">detalhada</span> for sua resposta, mais <span className="text-secondary font-semibold">preciso</span> será o nosso diagnóstico. Seja <span className="text-secondary font-semibold">honesto e específico</span>.
-              </p>
             </div>
 
+            <label className="block text-base sm:text-lg font-medium text-foreground">
+              O que você mais busca resolver na sua operação hoje?
+            </label>
+
             <Textarea
-              className="w-full text-sm sm:text-base min-h-[100px] sm:min-h-[120px] resize-none bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200"
-              placeholder="Conte-nos o que você quer resolver..."
+              className="w-full text-sm sm:text-base min-h-[90px] sm:min-h-[110px] resize-none bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200"
+              placeholder="Ex: Quero escalar meu tráfego mas não consigo manter o ROAS..."
               value={formData.dor_desejo}
               onChange={(e) => updateField("dor_desejo", e.target.value)}
               autoFocus />
