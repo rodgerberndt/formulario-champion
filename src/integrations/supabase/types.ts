@@ -287,7 +287,7 @@ export type Database = {
           dor_desejo: string
           email: string | null
           empresa: string | null
-          estagio_negocio: string
+          estagio_negocio: string | null
           faturamento_faixa: string | null
           fbclid: string | null
           gargalo: string | null
@@ -334,7 +334,7 @@ export type Database = {
           dor_desejo: string
           email?: string | null
           empresa?: string | null
-          estagio_negocio: string
+          estagio_negocio?: string | null
           faturamento_faixa?: string | null
           fbclid?: string | null
           gargalo?: string | null
@@ -381,7 +381,7 @@ export type Database = {
           dor_desejo?: string
           email?: string | null
           empresa?: string | null
-          estagio_negocio?: string
+          estagio_negocio?: string | null
           faturamento_faixa?: string | null
           fbclid?: string | null
           gargalo?: string | null

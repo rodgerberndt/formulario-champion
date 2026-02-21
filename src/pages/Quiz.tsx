@@ -17,7 +17,6 @@ import { ChevronRight, ChevronLeft, Check, Loader2, ArrowLeft, Target, MessageCi
 import {
   calculateLeadScore,
   MERCADO_OPTIONS,
-  ESTAGIO_OPTIONS,
   INVESTIMENTO_OPTIONS } from
 "@/lib/leadScoring";
 import { useTracking } from "@/hooks/useTracking";
@@ -27,8 +26,8 @@ interface QuizFormData {
   nome_completo: string;
   whatsapp: string;
   instagram: string;
+  email: string;
   mercado: string;
-  estagio_negocio: string;
   investimento_faixa: string;
   dor_desejo: string;
   lgpd: boolean;
@@ -43,8 +42,8 @@ const STEP_IDS = [
 "q1_nome",
 "q2_whats",
 "q3_insta",
-"q4_mercado",
-"q5_estagio",
+"q4_email",
+"q5_mercado",
 "q6_faturamento",
 "q7_dor",
 "q8_loading"];
@@ -202,8 +201,8 @@ export default function Quiz() {
     nome_completo: "",
     whatsapp: "",
     instagram: "",
+    email: "",
     mercado: "",
-    estagio_negocio: "",
     investimento_faixa: "",
     dor_desejo: "",
     lgpd: false,
@@ -281,10 +280,12 @@ export default function Quiz() {
       }
       case 3:
         return formData.instagram.trim().length >= 1;
-      case 4:
-        return formData.mercado !== "";
+      case 4: {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(formData.email.trim());
+      }
       case 5:
-        return formData.estagio_negocio !== "";
+        return formData.mercado !== "";
       case 6:
         return formData.investimento_faixa !== "";
       case 7:
@@ -306,7 +307,6 @@ export default function Quiz() {
     try {
       const result = calculateLeadScore({
         mercado: currentData.mercado,
-        estagio_negocio: currentData.estagio_negocio,
         investimento_faixa: currentData.investimento_faixa,
         dor_desejo: currentData.dor_desejo
       });
@@ -315,8 +315,8 @@ export default function Quiz() {
         nome_completo: currentData.nome_completo,
         whatsapp: currentData.whatsapp,
         instagram: currentData.instagram,
+        email: currentData.email,
         mercado: currentData.mercado,
-        estagio_negocio: currentData.estagio_negocio,
         investimento_faixa: currentData.investimento_faixa,
         dor_desejo: currentData.dor_desejo,
         score: result.score,
@@ -344,7 +344,7 @@ export default function Quiz() {
         whatsapp: currentData.whatsapp,
         instagram: currentData.instagram,
         market: currentData.mercado,
-        stage: currentData.estagio_negocio
+        stage: currentData.mercado
       });
 
       localStorage.removeItem(STORAGE_KEY);
@@ -354,8 +354,8 @@ export default function Quiz() {
         nome_completo: currentData.nome_completo,
         whatsapp: currentData.whatsapp,
         instagram: currentData.instagram,
+        email: currentData.email,
         mercado: currentData.mercado,
-        estagio_negocio: currentData.estagio_negocio,
         investimento_faixa: currentData.investimento_faixa,
         dor_desejo: currentData.dor_desejo
       }));
@@ -397,10 +397,10 @@ export default function Quiz() {
           fieldData.instagram = formData.instagram;
           break;
         case 4:
-          fieldData.mercado = formData.mercado;
+          fieldData.email = formData.email;
           break;
         case 5:
-          fieldData.estagio = formData.estagio_negocio;
+          fieldData.mercado = formData.mercado;
           break;
         case 6:
           fieldData.investimento = formData.investimento_faixa;
@@ -517,6 +517,21 @@ export default function Quiz() {
 
       case 4:
         return (
+          <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
+              Qual é o seu e-mail?
+            </label>
+            <Input
+              className={inputClasses}
+              placeholder="seu@email.com"
+              type="email"
+              value={formData.email}
+              onChange={(e) => updateField("email", e.target.value)}
+              autoFocus />
+          </div>);
+
+      case 5:
+        return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
               Em que mercado você trabalha?
@@ -530,33 +545,6 @@ export default function Quiz() {
               </SelectTrigger>
               <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
                 {MERCADO_OPTIONS.map((option) =>
-                <SelectItem
-                  key={option}
-                  value={option}
-                  className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3">
-
-                    {option}
-                  </SelectItem>
-                )}
-              </SelectContent>
-            </Select>
-          </div>);
-
-      case 5:
-        return (
-          <div className="space-y-4 sm:space-y-5 animate-fade-in">
-            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
-              Em que estágio está o seu negócio hoje?
-            </label>
-            <Select
-              value={formData.estagio_negocio}
-              onValueChange={(value) => updateField("estagio_negocio", value)}>
-
-              <SelectTrigger className={selectClasses}>
-                <SelectValue placeholder="Selecione o estágio" />
-              </SelectTrigger>
-              <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
-                {ESTAGIO_OPTIONS.map((option) =>
                 <SelectItem
                   key={option}
                   value={option}
