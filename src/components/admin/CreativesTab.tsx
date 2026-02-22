@@ -618,24 +618,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Table>
               <TableHeader>
                 <TableRow className="text-[11px]">
-                  <TableHead className="min-w-[150px]">Criativo</TableHead>
+                  <TableHead className="min-w-[120px]">Criativo</TableHead>
                   <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("spend")}>
                     Spend <SortIcon field="spend" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("leads_count")}>
-                    Leads <SortIcon field="leads_count" />
-                  </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cpl")}>
-                    CPL <SortIcon field="cpl" />
+                    Leads / CPL <SortIcon field="leads_count" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("mql_count")}>
-                    MQL <SortIcon field="mql_count" />
+                    MQL / CPMQL <SortIcon field="mql_count" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("mql_rate")}>
                     %MQL <SortIcon field="mql_rate" />
-                  </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_mql")}>
-                    CPMQL <SortIcon field="cost_per_mql" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_small")}>
                     CPMQL - S <SortIcon field="cost_per_small" />
@@ -653,10 +647,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     CPMQL - E+ <SortIcon field="cost_per_enterprise_plus" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("sales_count")}>
-                    Vendas <SortIcon field="sales_count" />
-                  </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cac")}>
-                    CAC <SortIcon field="cac" />
+                    Vendas / CAC <SortIcon field="sales_count" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("revenue")}>
                     Receita <SortIcon field="revenue" />
@@ -668,6 +659,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   const isBestMql = topMql && c.creative_key === topMql.creative_key && c.mql_count > 0;
                   const isBestCpmql2 = bestCpmql && c.creative_key === bestCpmql.creative_key;
                   const isBestRevenue = topRevenue && c.creative_key === topRevenue.creative_key && c.revenue > 0;
+                  const cpl = c.spend > 0 && c.leads_count > 0 ? c.spend / c.leads_count : null;
 
                   return (
                     <TableRow
@@ -675,50 +667,57 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       className={`cursor-pointer hover:bg-muted/50 ${isBestMql ? "bg-green-500/5" : ""} ${isBestRevenue ? "bg-emerald-500/5" : ""}`}
                       onClick={() => setDrillCreative(c)}
                     >
-                      <TableCell>
+                      <TableCell className="py-2">
                         <div className="flex items-center gap-1.5">
                           {i < 3 && c.mql_count > 0 && (
                             <Star className="w-3 h-3 text-yellow-400 flex-shrink-0" />
                           )}
                           <div>
-                            <p className="font-medium truncate max-w-[130px] text-[11px]">{c.creative_label}</p>
+                            <p className="font-medium truncate max-w-[120px] text-[11px]">{c.creative_label}</p>
                             <code className="text-[9px] text-muted-foreground">{c.creative_key}</code>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-right text-[11px]">{formatCurrency(c.spend)}</TableCell>
-                      <TableCell className="text-right text-[11px]">{c.leads_count}</TableCell>
-                      <TableCell className="text-right text-[11px]">
-                        {c.spend > 0 && c.leads_count > 0 ? formatCurrency(c.spend / c.leads_count) : "—"}
+                      <TableCell className="text-right text-[11px] py-2">{formatCurrency(c.spend)}</TableCell>
+                      <TableCell className="text-right text-[11px] py-2">
+                        <div className="font-semibold">{c.leads_count}</div>
+                        <div className="text-muted-foreground text-[10px]">{formatCurrency(cpl)}</div>
                       </TableCell>
-                      <TableCell className="text-right text-[11px] font-semibold text-green-400">{c.mql_count}</TableCell>
-                      <TableCell className="text-right text-[11px]">{formatPercent(c.mql_rate)}</TableCell>
-                      <TableCell className={`text-right text-[11px] ${isBestCpmql2 ? "text-green-400 font-bold" : ""}`}>
-                        {formatCurrency(c.cost_per_mql)}
+                      <TableCell className={`text-right text-[11px] py-2 ${isBestCpmql2 ? "text-green-400" : ""}`}>
+                        <div className="font-semibold text-green-400">{c.mql_count}</div>
+                        <div className={`text-[10px] ${isBestCpmql2 ? "font-bold text-green-400" : "text-muted-foreground"}`}>{formatCurrency(c.cost_per_mql)}</div>
                       </TableCell>
-                      <TableCell className="text-right text-[11px]">
-                        <span className="text-muted-foreground">{c.tier_small_count}</span>{" "}
-                        {formatCurrency(c.cost_per_small)}
+                      <TableCell className="text-right text-[11px] py-2">{formatPercent(c.mql_rate)}</TableCell>
+                      <TableCell className="text-right text-[11px] py-2">
+                        {c.tier_small_count > 0 ? (
+                          <><div className="font-semibold">{c.tier_small_count}</div><div className="text-muted-foreground text-[10px]">{formatCurrency(c.cost_per_small)}</div></>
+                        ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] text-blue-400">
-                        <span className="text-muted-foreground">{c.tier_medium_count}</span>{" "}
-                        {formatCurrency(c.cost_per_medium)}
+                      <TableCell className="text-right text-[11px] py-2 text-blue-400">
+                        {c.tier_medium_count > 0 ? (
+                          <><div className="font-semibold">{c.tier_medium_count}</div><div className="text-[10px]">{formatCurrency(c.cost_per_medium)}</div></>
+                        ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] text-amber-400">
-                        <span className="text-muted-foreground">{c.tier_large_count}</span>{" "}
-                        {formatCurrency(c.cost_per_tier_large)}
+                      <TableCell className="text-right text-[11px] py-2 text-amber-400">
+                        {c.tier_large_count > 0 ? (
+                          <><div className="font-semibold">{c.tier_large_count}</div><div className="text-[10px]">{formatCurrency(c.cost_per_tier_large)}</div></>
+                        ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] text-purple-400">
-                        <span className="text-muted-foreground">{c.tier_enterprise_count}</span>{" "}
-                        {formatCurrency(c.cost_per_enterprise)}
+                      <TableCell className="text-right text-[11px] py-2 text-purple-400">
+                        {c.tier_enterprise_count > 0 ? (
+                          <><div className="font-semibold">{c.tier_enterprise_count}</div><div className="text-[10px]">{formatCurrency(c.cost_per_enterprise)}</div></>
+                        ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] text-pink-400">
-                        <span className="text-muted-foreground">{c.tier_enterprise_plus_count}</span>{" "}
-                        {formatCurrency(c.cost_per_enterprise_plus)}
+                      <TableCell className="text-right text-[11px] py-2 text-pink-400">
+                        {c.tier_enterprise_plus_count > 0 ? (
+                          <><div className="font-semibold">{c.tier_enterprise_plus_count}</div><div className="text-[10px]">{formatCurrency(c.cost_per_enterprise_plus)}</div></>
+                        ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px]">{c.sales_count}</TableCell>
-                      <TableCell className="text-right text-[11px]">{formatCurrency(c.cac)}</TableCell>
-                      <TableCell className="text-right text-[11px]">{formatCurrency(c.revenue)}</TableCell>
+                      <TableCell className="text-right text-[11px] py-2">
+                        <div className="font-semibold">{c.sales_count}</div>
+                        {c.cac !== null && <div className="text-muted-foreground text-[10px]">{formatCurrency(c.cac)}</div>}
+                      </TableCell>
+                      <TableCell className="text-right text-[11px] py-2">{formatCurrency(c.revenue)}</TableCell>
                     </TableRow>
                   );
                 })}
