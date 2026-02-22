@@ -617,67 +617,49 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="min-w-[200px]">Criativo</TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("spend")}>
+                <TableRow className="text-[11px]">
+                  <TableHead className="min-w-[150px]">Criativo</TableHead>
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("spend")}>
                     Spend <SortIcon field="spend" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("leads_count")}>
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("leads_count")}>
                     Leads <SortIcon field="leads_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("cpl")}>
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cpl")}>
                     CPL <SortIcon field="cpl" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("mql_count")}>
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("mql_count")}>
                     MQL <SortIcon field="mql_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("mql_rate")}>
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("mql_rate")}>
                     %MQL <SortIcon field="mql_rate" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("cost_per_mql")}>
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_mql")}>
                     CPMQL <SortIcon field="cost_per_mql" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_small_count")}>
-                    S <SortIcon field="tier_small_count" />
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_small")}>
+                    CPMQL - S <SortIcon field="cost_per_small" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_medium_count")}>
-                    M <SortIcon field="tier_medium_count" />
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_medium")}>
+                    CPMQL - M <SortIcon field="cost_per_medium" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_large_count")}>
-                    L <SortIcon field="tier_large_count" />
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_tier_large")}>
+                    CPMQL - L <SortIcon field="cost_per_tier_large" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_enterprise_count")}>
-                    E <SortIcon field="tier_enterprise_count" />
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_enterprise")}>
+                    CPMQL - E <SortIcon field="cost_per_enterprise" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_enterprise_plus_count")}>
-                    E+ <SortIcon field="tier_enterprise_plus_count" />
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_enterprise_plus")}>
+                    CPMQL - E+ <SortIcon field="cost_per_enterprise_plus" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer text-[11px]" onClick={() => handleSort("cost_per_small")}>
-                    CP S <SortIcon field="cost_per_small" />
-                  </TableHead>
-                  <TableHead className="text-right cursor-pointer text-[11px]" onClick={() => handleSort("cost_per_medium")}>
-                    CP M <SortIcon field="cost_per_medium" />
-                  </TableHead>
-                  <TableHead className="text-right cursor-pointer text-[11px]" onClick={() => handleSort("cost_per_tier_large")}>
-                    CP L <SortIcon field="cost_per_tier_large" />
-                  </TableHead>
-                  <TableHead className="text-right cursor-pointer text-[11px]" onClick={() => handleSort("cost_per_enterprise")}>
-                    CP E <SortIcon field="cost_per_enterprise" />
-                  </TableHead>
-                  <TableHead className="text-right cursor-pointer text-[11px]" onClick={() => handleSort("cost_per_enterprise_plus")}>
-                    CP E+ <SortIcon field="cost_per_enterprise_plus" />
-                  </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("sales_count")}>
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("sales_count")}>
                     Vendas <SortIcon field="sales_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("cac")}>
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cac")}>
                     CAC <SortIcon field="cac" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("revenue")}>
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("revenue")}>
                     Receita <SortIcon field="revenue" />
-                  </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("roas")}>
-                    ROAS <SortIcon field="roas" />
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -694,47 +676,49 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       onClick={() => setDrillCreative(c)}
                     >
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
                           {i < 3 && c.mql_count > 0 && (
-                            <Star className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                            <Star className="w-3 h-3 text-yellow-400 flex-shrink-0" />
                           )}
                           <div>
-                            <p className="font-medium truncate max-w-[180px]">{c.creative_label}</p>
-                            <div className="flex items-center gap-1.5">
-                              <code className="text-[10px] text-muted-foreground">{c.creative_key}</code>
-                              {c.creative_source_field === "fallback" && (
-                                <Badge variant="outline" className="text-[10px] px-1 py-0 border-yellow-500/50 text-yellow-400">
-                                  fallback
-                                </Badge>
-                              )}
-                            </div>
+                            <p className="font-medium truncate max-w-[130px] text-[11px]">{c.creative_label}</p>
+                            <code className="text-[9px] text-muted-foreground">{c.creative_key}</code>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-right">{formatCurrency(c.spend)}</TableCell>
-                      <TableCell className="text-right">{c.leads_count}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right text-[11px]">{formatCurrency(c.spend)}</TableCell>
+                      <TableCell className="text-right text-[11px]">{c.leads_count}</TableCell>
+                      <TableCell className="text-right text-[11px]">
                         {c.spend > 0 && c.leads_count > 0 ? formatCurrency(c.spend / c.leads_count) : "—"}
                       </TableCell>
-                      <TableCell className="text-right font-semibold text-green-400">{c.mql_count}</TableCell>
-                      <TableCell className="text-right">{formatPercent(c.mql_rate)}</TableCell>
-                      <TableCell className={`text-right ${isBestCpmql2 ? "text-green-400 font-bold" : ""}`}>
+                      <TableCell className="text-right text-[11px] font-semibold text-green-400">{c.mql_count}</TableCell>
+                      <TableCell className="text-right text-[11px]">{formatPercent(c.mql_rate)}</TableCell>
+                      <TableCell className={`text-right text-[11px] ${isBestCpmql2 ? "text-green-400 font-bold" : ""}`}>
                         {formatCurrency(c.cost_per_mql)}
                       </TableCell>
-                      <TableCell className="text-right">{c.tier_small_count}</TableCell>
-                      <TableCell className="text-right text-blue-400">{c.tier_medium_count}</TableCell>
-                      <TableCell className="text-right font-semibold text-amber-400">{c.tier_large_count}</TableCell>
-                      <TableCell className="text-right text-purple-400">{c.tier_enterprise_count}</TableCell>
-                      <TableCell className="text-right text-pink-400">{c.tier_enterprise_plus_count}</TableCell>
-                      <TableCell className="text-right text-[11px]">{formatCurrency(c.cost_per_small)}</TableCell>
-                      <TableCell className="text-right text-[11px] text-blue-400">{formatCurrency(c.cost_per_medium)}</TableCell>
-                      <TableCell className="text-right text-[11px] text-amber-400">{formatCurrency(c.cost_per_tier_large)}</TableCell>
-                      <TableCell className="text-right text-[11px] text-purple-400">{formatCurrency(c.cost_per_enterprise)}</TableCell>
-                      <TableCell className="text-right text-[11px] text-pink-400">{formatCurrency(c.cost_per_enterprise_plus)}</TableCell>
-                      <TableCell className="text-right">{c.sales_count}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(c.cac)}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(c.revenue)}</TableCell>
-                      <TableCell className="text-right">{c.roas !== null ? `${c.roas.toFixed(2)}x` : "—"}</TableCell>
+                      <TableCell className="text-right text-[11px]">
+                        <span className="text-muted-foreground">{c.tier_small_count}</span>{" "}
+                        {formatCurrency(c.cost_per_small)}
+                      </TableCell>
+                      <TableCell className="text-right text-[11px] text-blue-400">
+                        <span className="text-muted-foreground">{c.tier_medium_count}</span>{" "}
+                        {formatCurrency(c.cost_per_medium)}
+                      </TableCell>
+                      <TableCell className="text-right text-[11px] text-amber-400">
+                        <span className="text-muted-foreground">{c.tier_large_count}</span>{" "}
+                        {formatCurrency(c.cost_per_tier_large)}
+                      </TableCell>
+                      <TableCell className="text-right text-[11px] text-purple-400">
+                        <span className="text-muted-foreground">{c.tier_enterprise_count}</span>{" "}
+                        {formatCurrency(c.cost_per_enterprise)}
+                      </TableCell>
+                      <TableCell className="text-right text-[11px] text-pink-400">
+                        <span className="text-muted-foreground">{c.tier_enterprise_plus_count}</span>{" "}
+                        {formatCurrency(c.cost_per_enterprise_plus)}
+                      </TableCell>
+                      <TableCell className="text-right text-[11px]">{c.sales_count}</TableCell>
+                      <TableCell className="text-right text-[11px]">{formatCurrency(c.cac)}</TableCell>
+                      <TableCell className="text-right text-[11px]">{formatCurrency(c.revenue)}</TableCell>
                     </TableRow>
                   );
                 })}
