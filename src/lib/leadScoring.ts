@@ -65,6 +65,12 @@ const FATURAMENTO_TIER: Record<string, TierType> = {
   "De R$ 3 milhões a R$ 5 milhões": "Enterprise+",
   "De R$ 5 milhões a R$ 10 milhões": "Enterprise+",
   "Acima de R$ 10 milhões": "Enterprise+",
+  // Legacy traffic investment values (~2.5x multiplier to estimate revenue)
+  "R$ 0 – 2k": "Small",        // ~R$0-5k revenue
+  "R$ 2k – 8k": "Medium",      // ~R$5-20k revenue
+  "R$ 8k – 20k": "Large",      // ~R$20-50k revenue
+  "R$ 20k – 50k": "Enterprise", // ~R$50-125k revenue
+  "R$ 50k – 100k": "Enterprise", // ~R$125-250k revenue
 };
 
 // Numeric order for tiers (used for score field compatibility)

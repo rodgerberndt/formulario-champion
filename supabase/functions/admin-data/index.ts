@@ -986,7 +986,11 @@ Deno.serve(async (req: Request) => {
         creative_source_field: string;
         leads_count: number;
         mql_count: number;
+        tier_small_count: number;
+        tier_medium_count: number;
         tier_large_count: number;
+        tier_enterprise_count: number;
+        tier_enterprise_plus_count: number;
         spend: number;
         sales_count: number;
         revenue: number;
@@ -1005,7 +1009,11 @@ Deno.serve(async (req: Request) => {
             creative_source_field: source,
             leads_count: 0,
             mql_count: 0,
+            tier_small_count: 0,
+            tier_medium_count: 0,
             tier_large_count: 0,
+            tier_enterprise_count: 0,
+            tier_enterprise_plus_count: 0,
             spend: 0,
             sales_count: 0,
             revenue: 0,
@@ -1015,6 +1023,31 @@ Deno.serve(async (req: Request) => {
           });
         }
         return creativeMap.get(key)!;
+      }
+
+      // Tier mapping for leads (including legacy traffic values)
+      const FATURAMENTO_TIER: Record<string, string> = {
+        "Não vendo ainda (R$0/mês)": "Desqualificado",
+        "Até R$ 5 mil": "Small",
+        "De R$ 5 mil a R$ 10 mil": "Medium", "De R$ 10 mil a R$ 20 mil": "Medium",
+        "De R$ 20 mil a R$ 30 mil": "Medium",
+        "De R$ 30 mil a R$ 50 mil": "Large", "De R$ 50 mil a R$ 75 mil": "Large",
+        "De R$ 75 mil a R$ 100 mil": "Large",
+        "De R$ 100 mil a R$ 150 mil": "Enterprise", "De R$ 150 mil a R$ 200 mil": "Enterprise",
+        "De R$ 200 mil a R$ 300 mil": "Enterprise", "De R$ 300 mil a R$ 500 mil": "Enterprise",
+        "De R$ 500 mil a R$ 750 mil": "Enterprise+", "De R$ 750 mil a R$ 1 milhão": "Enterprise+",
+        "De R$ 1 milhão a R$ 2 milhões": "Enterprise+", "De R$ 2 milhões a R$ 3 milhões": "Enterprise+",
+        "De R$ 3 milhões a R$ 5 milhões": "Enterprise+", "De R$ 5 milhões a R$ 10 milhões": "Enterprise+",
+        "Acima de R$ 10 milhões": "Enterprise+",
+        "R$ 0 – 2k": "Small",
+        "R$ 2k – 8k": "Medium",
+        "R$ 8k – 20k": "Large",
+        "R$ 20k – 50k": "Enterprise",
+        "R$ 50k – 100k": "Enterprise",
+      };
+
+      function getLeadTier(lead: any): string {
+        return FATURAMENTO_TIER[lead.investimento_faixa || ""] || (lead.tier || "Desqualificado");
       }
 
       let leadsWithCreative = 0;
@@ -1038,9 +1071,12 @@ Deno.serve(async (req: Request) => {
         if (isMql(lead.estagio_negocio, lead.investimento_faixa, lead.sdr_override)) {
           agg.mql_count++;
         }
-        if (lead.tier === "Large") {
-          agg.tier_large_count++;
-        }
+        const computedTier = getLeadTier(lead);
+        if (computedTier === "Small") agg.tier_small_count++;
+        else if (computedTier === "Medium") agg.tier_medium_count++;
+        else if (computedTier === "Large") agg.tier_large_count++;
+        else if (computedTier === "Enterprise") agg.tier_enterprise_count++;
+        else if (computedTier === "Enterprise+") agg.tier_enterprise_plus_count++;
         agg.leads_by_stage[lead.estagio_negocio] = (agg.leads_by_stage[lead.estagio_negocio] || 0) + 1;
         if (lead.utm_campaign) agg.campaigns.add(lead.utm_campaign);
         if (!agg.last_activity || lead.created_at > agg.last_activity) {
@@ -1091,6 +1127,10 @@ Deno.serve(async (req: Request) => {
         const mql_rate = c.leads_count > 0 ? c.mql_count / c.leads_count : 0;
         const cost_per_mql = c.mql_count > 0 ? c.spend / c.mql_count : null;
         const cost_per_tier_large = c.tier_large_count > 0 ? c.spend / c.tier_large_count : null;
+        const cost_per_small = c.tier_small_count > 0 ? c.spend / c.tier_small_count : null;
+        const cost_per_medium = c.tier_medium_count > 0 ? c.spend / c.tier_medium_count : null;
+        const cost_per_enterprise = c.tier_enterprise_count > 0 ? c.spend / c.tier_enterprise_count : null;
+        const cost_per_enterprise_plus = c.tier_enterprise_plus_count > 0 ? c.spend / c.tier_enterprise_plus_count : null;
         const cac = c.sales_count > 0 ? c.spend / c.sales_count : null;
         const roas = c.spend > 0 ? c.revenue / c.spend : null;
         return {
@@ -1098,6 +1138,10 @@ Deno.serve(async (req: Request) => {
           mql_rate,
           cost_per_mql,
           cost_per_tier_large,
+          cost_per_small,
+          cost_per_medium,
+          cost_per_enterprise,
+          cost_per_enterprise_plus,
           cac,
           roas,
           campaigns: Array.from(c.campaigns),
@@ -1108,7 +1152,11 @@ Deno.serve(async (req: Request) => {
       const totalSpend = creatives.reduce((s, c) => s + c.spend, 0) + (spendTotal - spendMapped);
       const totalLeads = allLeads.length;
       const totalMql = creatives.reduce((s, c) => s + c.mql_count, 0);
+      const totalTierSmall = creatives.reduce((s, c) => s + c.tier_small_count, 0);
+      const totalTierMedium = creatives.reduce((s, c) => s + c.tier_medium_count, 0);
       const totalTierLarge = creatives.reduce((s, c) => s + c.tier_large_count, 0);
+      const totalTierEnterprise = creatives.reduce((s, c) => s + c.tier_enterprise_count, 0);
+      const totalTierEnterprisePlus = creatives.reduce((s, c) => s + c.tier_enterprise_plus_count, 0);
       const totalSales = creatives.reduce((s, c) => s + c.sales_count, 0) + salesWithoutCreative;
       const totalRevenue = creatives.reduce((s, c) => s + c.revenue, 0);
 
@@ -1119,12 +1167,20 @@ Deno.serve(async (req: Request) => {
             spend: totalSpend,
             leads: totalLeads,
             mql: totalMql,
+            tier_small: totalTierSmall,
+            tier_medium: totalTierMedium,
             tier_large: totalTierLarge,
+            tier_enterprise: totalTierEnterprise,
+            tier_enterprise_plus: totalTierEnterprisePlus,
             sales: totalSales,
             revenue: totalRevenue,
             cpl: totalLeads > 0 ? totalSpend / totalLeads : null,
             cpmql: totalMql > 0 ? totalSpend / totalMql : null,
+            cp_tier_small: totalTierSmall > 0 ? totalSpend / totalTierSmall : null,
+            cp_tier_medium: totalTierMedium > 0 ? totalSpend / totalTierMedium : null,
             cp_tier_large: totalTierLarge > 0 ? totalSpend / totalTierLarge : null,
+            cp_tier_enterprise: totalTierEnterprise > 0 ? totalSpend / totalTierEnterprise : null,
+            cp_tier_enterprise_plus: totalTierEnterprisePlus > 0 ? totalSpend / totalTierEnterprisePlus : null,
             cac: totalSales > 0 ? totalSpend / totalSales : null,
             roas: totalSpend > 0 ? totalRevenue / totalSpend : null,
           },

@@ -52,11 +52,19 @@ interface CreativeData {
   creative_source_field: string;
   leads_count: number;
   mql_count: number;
+  tier_small_count: number;
+  tier_medium_count: number;
   tier_large_count: number;
+  tier_enterprise_count: number;
+  tier_enterprise_plus_count: number;
   mql_rate: number;
   spend: number;
   cost_per_mql: number | null;
+  cost_per_small: number | null;
+  cost_per_medium: number | null;
   cost_per_tier_large: number | null;
+  cost_per_enterprise: number | null;
+  cost_per_enterprise_plus: number | null;
   sales_count: number;
   cac: number | null;
   revenue: number;
@@ -72,12 +80,20 @@ interface CreativesResponse {
     spend: number;
     leads: number;
     mql: number;
+    tier_small: number;
+    tier_medium: number;
     tier_large: number;
+    tier_enterprise: number;
+    tier_enterprise_plus: number;
     sales: number;
     revenue: number;
     cpl: number | null;
     cpmql: number | null;
+    cp_tier_small: number | null;
+    cp_tier_medium: number | null;
     cp_tier_large: number | null;
+    cp_tier_enterprise: number | null;
+    cp_tier_enterprise_plus: number | null;
     cac: number | null;
     roas: number | null;
   };
@@ -485,14 +501,37 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </Card>
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Tier Large</p>
-              <p className="text-xl font-bold text-amber-400">{formatNumber(totals.tier_large)}</p>
+              <p className="text-xs text-muted-foreground uppercase">Small</p>
+              <p className="text-xl font-bold">{formatNumber(totals.tier_small)}</p>
+              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_small)}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">CP Tier Large</p>
-              <p className="text-lg font-bold">{formatCurrency(totals.cp_tier_large)}</p>
+              <p className="text-xs text-muted-foreground uppercase">Medium</p>
+              <p className="text-xl font-bold text-blue-400">{formatNumber(totals.tier_medium)}</p>
+              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_medium)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Large</p>
+              <p className="text-xl font-bold text-amber-400">{formatNumber(totals.tier_large)}</p>
+              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_large)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Enterprise</p>
+              <p className="text-xl font-bold text-purple-400">{formatNumber(totals.tier_enterprise)}</p>
+              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_enterprise)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Enterprise+</p>
+              <p className="text-xl font-bold text-pink-400">{formatNumber(totals.tier_enterprise_plus)}</p>
+              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_enterprise_plus)}</p>
             </CardContent>
           </Card>
           <Card>
@@ -598,11 +637,20 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <TableHead className="text-right cursor-pointer" onClick={() => handleSort("cost_per_mql")}>
                     CPMQL <SortIcon field="cost_per_mql" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_large_count")}>
-                    Tier L <SortIcon field="tier_large_count" />
+                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_small_count")}>
+                    S <SortIcon field="tier_small_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("cost_per_tier_large")}>
-                    CP Tier L <SortIcon field="cost_per_tier_large" />
+                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_medium_count")}>
+                    M <SortIcon field="tier_medium_count" />
+                  </TableHead>
+                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_large_count")}>
+                    L <SortIcon field="tier_large_count" />
+                  </TableHead>
+                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_enterprise_count")}>
+                    E <SortIcon field="tier_enterprise_count" />
+                  </TableHead>
+                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_enterprise_plus_count")}>
+                    E+ <SortIcon field="tier_enterprise_plus_count" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer" onClick={() => handleSort("sales_count")}>
                     Vendas <SortIcon field="sales_count" />
@@ -658,8 +706,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       <TableCell className={`text-right ${isBestCpmql2 ? "text-green-400 font-bold" : ""}`}>
                         {formatCurrency(c.cost_per_mql)}
                       </TableCell>
+                      <TableCell className="text-right">{c.tier_small_count}</TableCell>
+                      <TableCell className="text-right text-blue-400">{c.tier_medium_count}</TableCell>
                       <TableCell className="text-right font-semibold text-amber-400">{c.tier_large_count}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(c.cost_per_tier_large)}</TableCell>
+                      <TableCell className="text-right text-purple-400">{c.tier_enterprise_count}</TableCell>
+                      <TableCell className="text-right text-pink-400">{c.tier_enterprise_plus_count}</TableCell>
                       <TableCell className="text-right">{c.sales_count}</TableCell>
                       <TableCell className="text-right">{formatCurrency(c.cac)}</TableCell>
                       <TableCell className="text-right">{formatCurrency(c.revenue)}</TableCell>
@@ -834,13 +885,30 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     <p className="text-xs text-muted-foreground">CPMQL</p>
                     <p className="text-lg font-bold">{formatCurrency(drillCreative.cost_per_mql)}</p>
                   </div>
-                  <div className="p-3 bg-amber-500/10 rounded-lg text-center">
-                    <p className="text-xs text-muted-foreground">Tier Large</p>
-                    <p className="text-lg font-bold text-amber-400">{drillCreative.tier_large_count}</p>
-                  </div>
                   <div className="p-3 bg-muted/30 rounded-lg text-center">
-                    <p className="text-xs text-muted-foreground">CP Tier Large</p>
-                    <p className="text-lg font-bold">{formatCurrency(drillCreative.cost_per_tier_large)}</p>
+                    <p className="text-xs text-muted-foreground">Small</p>
+                    <p className="text-lg font-bold">{drillCreative.tier_small_count}</p>
+                    <p className="text-[10px] text-muted-foreground">{formatCurrency(drillCreative.cost_per_small)}</p>
+                  </div>
+                  <div className="p-3 bg-blue-500/10 rounded-lg text-center">
+                    <p className="text-xs text-muted-foreground">Medium</p>
+                    <p className="text-lg font-bold text-blue-400">{drillCreative.tier_medium_count}</p>
+                    <p className="text-[10px] text-muted-foreground">{formatCurrency(drillCreative.cost_per_medium)}</p>
+                  </div>
+                  <div className="p-3 bg-amber-500/10 rounded-lg text-center">
+                    <p className="text-xs text-muted-foreground">Large</p>
+                    <p className="text-lg font-bold text-amber-400">{drillCreative.tier_large_count}</p>
+                    <p className="text-[10px] text-muted-foreground">{formatCurrency(drillCreative.cost_per_tier_large)}</p>
+                  </div>
+                  <div className="p-3 bg-purple-500/10 rounded-lg text-center">
+                    <p className="text-xs text-muted-foreground">Enterprise</p>
+                    <p className="text-lg font-bold text-purple-400">{drillCreative.tier_enterprise_count}</p>
+                    <p className="text-[10px] text-muted-foreground">{formatCurrency(drillCreative.cost_per_enterprise)}</p>
+                  </div>
+                  <div className="p-3 bg-pink-500/10 rounded-lg text-center">
+                    <p className="text-xs text-muted-foreground">Enterprise+</p>
+                    <p className="text-lg font-bold text-pink-400">{drillCreative.tier_enterprise_plus_count}</p>
+                    <p className="text-[10px] text-muted-foreground">{formatCurrency(drillCreative.cost_per_enterprise_plus)}</p>
                   </div>
                   <div className="p-3 bg-muted/30 rounded-lg text-center">
                     <p className="text-xs text-muted-foreground">ROAS</p>
