@@ -40,6 +40,7 @@ import {
   Trash2,
   Star,
   RefreshCw,
+  Calendar,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -115,6 +116,14 @@ interface ManualSale {
   creative_key: string | null;
   utm_content: string | null;
   notes: string | null;
+}
+
+interface Meeting {
+  id: string;
+  creative_key: string | null;
+  utm_content: string | null;
+  notes: string | null;
+  created_at: string;
 }
 
 interface AdSpendEntry {
@@ -210,6 +219,15 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [showSalesList, setShowSalesList] = useState(false);
   const [deletingSaleId, setDeletingSaleId] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
+
+  // Meeting state
+  const [showAddMeeting, setShowAddMeeting] = useState(false);
+  const [meetingForm, setMeetingForm] = useState({ creative_key: "", notes: "" });
+  const [savingMeeting, setSavingMeeting] = useState(false);
+  const [meetingsList, setMeetingsList] = useState<Meeting[]>([]);
+  const [meetingsLoading, setMeetingsLoading] = useState(false);
+  const [showMeetingsList, setShowMeetingsList] = useState(false);
+  const [deletingMeetingId, setDeletingMeetingId] = useState<string | null>(null);
   const loadSales = useCallback(async () => {
     setSalesLoading(true);
     try {
@@ -219,6 +237,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       console.error("Error loading sales:", err);
     } finally {
       setSalesLoading(false);
+    }
+  }, [fetchAdminData, startDateOnly, endDateOnly]);
+
+  const loadMeetings = useCallback(async () => {
+    setMeetingsLoading(true);
+    try {
+      const result = await fetchAdminData("/meetings", { from: startDateOnly, to: endDateOnly });
+      setMeetingsList(Array.isArray(result) ? result : []);
+    } catch (err) {
+      console.error("Error loading meetings:", err);
+    } finally {
+      setMeetingsLoading(false);
     }
   }, [fetchAdminData, startDateOnly, endDateOnly]);
 
@@ -286,6 +316,51 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       toast({ title: "Erro ao salvar venda", variant: "destructive" });
     } finally {
       setSavingSale(false);
+    }
+  };
+
+  const handleAddMeeting = async () => {
+    if (!meetingForm.creative_key) {
+      toast({ title: "Selecione um criativo", variant: "destructive" });
+      return;
+    }
+    setSavingMeeting(true);
+    try {
+      const ck = normalizeCreativeKey(meetingForm.creative_key);
+      await fetchAdminData("/meetings", {
+        _method: "POST",
+        creative_key: ck || "",
+        utm_content: meetingForm.creative_key || "",
+        notes: meetingForm.notes,
+      });
+      toast({ title: "Reunião registrada!" });
+      setMeetingForm({ creative_key: "", notes: "" });
+      setShowAddMeeting(false);
+      loadData();
+      if (showMeetingsList) loadMeetings();
+    } catch {
+      toast({ title: "Erro ao salvar reunião", variant: "destructive" });
+    } finally {
+      setSavingMeeting(false);
+    }
+  };
+
+  const handleDeleteMeeting = async (meetingId: string) => {
+    setDeletingMeetingId(meetingId);
+    try {
+      const token = sessionStorage.getItem("admin_analytics_token");
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      await fetch(`${supabaseUrl}/functions/v1/admin-data/meetings/${meetingId}`, {
+        method: "DELETE",
+        headers: { "x-admin-token": token || "" },
+      });
+      toast({ title: "Reunião removida!" });
+      setMeetingsList(prev => prev.filter(m => m.id !== meetingId));
+      loadData();
+    } catch {
+      toast({ title: "Erro ao remover reunião", variant: "destructive" });
+    } finally {
+      setDeletingMeetingId(null);
     }
   };
 
@@ -423,6 +498,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </Button>
           <Button variant="outline" size="sm" onClick={() => setShowAddSale(true)}>
             <Plus className="w-4 h-4 mr-1" /> Venda
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setShowAddMeeting(true)}>
+            <Calendar className="w-4 h-4 mr-1" /> Reunião
           </Button>
           <Button variant="ghost" size="sm" onClick={loadData} disabled={loading}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Atualizar"}
@@ -1048,6 +1126,114 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Add Meeting Dialog */}
+      <Dialog open={showAddMeeting} onOpenChange={setShowAddMeeting}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Registrar Reunião</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm text-muted-foreground">Criativo *</label>
+              <Select value={meetingForm.creative_key} onValueChange={(v) => setMeetingForm(p => ({ ...p, creative_key: v }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o criativo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {creatives.map(c => (
+                    <SelectItem key={c.creative_key} value={c.creative_label}>
+                      {c.creative_label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Observação</label>
+              <Input placeholder="Nome do lead, etc." value={meetingForm.notes} onChange={e => setMeetingForm(p => ({ ...p, notes: e.target.value }))} />
+            </div>
+            <Button onClick={handleAddMeeting} disabled={savingMeeting} className="w-full">
+              {savingMeeting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Registrar Reunião
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Meetings Listing */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              Reuniões Registradas
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setShowMeetingsList(!showMeetingsList);
+                if (!showMeetingsList && meetingsList.length === 0) loadMeetings();
+              }}
+            >
+              {showMeetingsList ? <ChevronUp className="w-4 h-4 mr-1" /> : <ChevronDown className="w-4 h-4 mr-1" />}
+              {showMeetingsList ? "Ocultar" : "Ver reuniões"}
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        {showMeetingsList && (
+          <CardContent>
+            {meetingsLoading ? (
+              <div className="flex justify-center py-6">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              </div>
+            ) : meetingsList.length === 0 ? (
+              <p className="text-center text-muted-foreground py-6">Nenhuma reunião registrada no período.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Data</TableHead>
+                    <TableHead>Criativo</TableHead>
+                    <TableHead>Observação</TableHead>
+                    <TableHead className="w-10"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {meetingsList.map((meeting) => (
+                    <TableRow key={meeting.id}>
+                      <TableCell>{format(new Date(meeting.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}</TableCell>
+                      <TableCell>
+                        {meeting.utm_content || meeting.creative_key ? (
+                          <Badge variant="outline" className="text-xs">{meeting.utm_content || meeting.creative_key}</Badge>
+                        ) : (
+                          <span className="text-muted-foreground text-xs">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{meeting.notes || "—"}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteMeeting(meeting.id)}
+                          disabled={deletingMeetingId === meeting.id}
+                        >
+                          {deletingMeetingId === meeting.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          )}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        )}
+      </Card>
     </div>
   );
 }
