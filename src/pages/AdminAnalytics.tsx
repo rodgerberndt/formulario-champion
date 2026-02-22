@@ -327,6 +327,12 @@ export default function AdminAnalytics() {
       "De R$ 1 milhão a R$ 2 milhões": "Enterprise+", "De R$ 2 milhões a R$ 3 milhões": "Enterprise+",
       "De R$ 3 milhões a R$ 5 milhões": "Enterprise+", "De R$ 5 milhões a R$ 10 milhões": "Enterprise+",
       "Acima de R$ 10 milhões": "Enterprise+",
+      // Legacy traffic investment values (~2.5x multiplier)
+      "R$ 0 – 2k": "Small",
+      "R$ 2k – 8k": "Medium",
+      "R$ 8k – 20k": "Large",
+      "R$ 20k – 50k": "Enterprise",
+      "R$ 50k – 100k": "Enterprise",
     };
     const TIER_SCORE: Record<string, number> = { "Desqualificado": 0, "Small": 1, "Medium": 2, "Large": 3, "Enterprise": 4, "Enterprise+": 5 };
     const tier = FATURAMENTO_TIER[lead.investimento_faixa || ""] || "Desqualificado";
