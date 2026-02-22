@@ -282,6 +282,7 @@ export type Database = {
           ad_id: string | null
           adset_id: string | null
           campaign_id: string | null
+          capi_events_sent: Json | null
           created_at: string
           decisor: boolean | null
           dor_desejo: string
@@ -329,6 +330,7 @@ export type Database = {
           ad_id?: string | null
           adset_id?: string | null
           campaign_id?: string | null
+          capi_events_sent?: Json | null
           created_at?: string
           decisor?: boolean | null
           dor_desejo: string
@@ -376,6 +378,7 @@ export type Database = {
           ad_id?: string | null
           adset_id?: string | null
           campaign_id?: string | null
+          capi_events_sent?: Json | null
           created_at?: string
           decisor?: boolean | null
           dor_desejo?: string

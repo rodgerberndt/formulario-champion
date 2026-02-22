@@ -932,7 +932,7 @@ Deno.serve(async (req: Request) => {
         return raw.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-_]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
       }
 
-      // MQL logic — requires BOTH advanced stage AND minimum faturamento (>= R$10k)
+      // MQL logic
       const MQL_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)", "Validação (primeiras vendas)"];
       const MQL_FAT_MIN_FAIXAS = [
         "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
@@ -943,7 +943,6 @@ Deno.serve(async (req: Request) => {
         "Acima de R$ 10 milhões",
       ];
       function isMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
-        // MQL = same as Rodger SDR assignment
         if (sdrOverride === "Rodger") return true;
         if (sdrOverride === "Dara") return false;
         const isAdvancedStage = MQL_STAGES.includes(estagio);
@@ -979,6 +978,26 @@ Deno.serve(async (req: Request) => {
       if (to) salesQuery = salesQuery.lte("sale_date", to);
       const { data: salesData } = await salesQuery;
 
+      // Fetch meetings in period
+      let meetingsQuery = supabase.from("meetings").select("*");
+      if (from) meetingsQuery = meetingsQuery.gte("created_at", from);
+      if (toEnd) meetingsQuery = meetingsQuery.lte("created_at", toEnd);
+      const { data: meetingsData } = await meetingsQuery;
+
+      // Determine active status: check if creative has ad_spend in the last 3 days
+      const now = new Date();
+      const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+      const recentSpendKeys = new Set<string>();
+      for (const s of (spendData || [])) {
+        if (s.date >= threeDaysAgo) {
+          const rawKey = s.utm_content || s.ad_name;
+          if (rawKey) {
+            const ck = s.creative_key || normalizeKey(rawKey);
+            if (ck) recentSpendKeys.add(ck);
+          }
+        }
+      }
+
       // Build creative map from leads
       interface CreativeAgg {
         creative_key: string;
@@ -994,6 +1013,7 @@ Deno.serve(async (req: Request) => {
         spend: number;
         sales_count: number;
         revenue: number;
+        meetings_count: number;
         last_activity: string | null;
         leads_by_stage: Record<string, number>;
         campaigns: Set<string>;
@@ -1017,6 +1037,7 @@ Deno.serve(async (req: Request) => {
             spend: 0,
             sales_count: 0,
             revenue: 0,
+            meetings_count: 0,
             last_activity: null,
             leads_by_stage: {},
             campaigns: new Set(),
@@ -1025,7 +1046,7 @@ Deno.serve(async (req: Request) => {
         return creativeMap.get(key)!;
       }
 
-      // Tier mapping for leads (including legacy traffic values)
+      // Tier mapping
       const FATURAMENTO_TIER: Record<string, string> = {
         "Não vendo ainda (R$0/mês)": "Desqualificado",
         "Até R$ 5 mil": "Small",
@@ -1122,6 +1143,18 @@ Deno.serve(async (req: Request) => {
         agg.revenue += Number(sale.revenue) || 0;
       }
 
+      // Process meetings
+      let totalMeetingsCount = 0;
+      for (const meeting of (meetingsData || [])) {
+        const rawKey = meeting.creative_key || meeting.utm_content;
+        if (!rawKey) continue;
+        const ck = normalizeKey(rawKey);
+        if (!ck) continue;
+        const agg = getOrCreate(ck, rawKey, "utm_content");
+        agg.meetings_count++;
+        totalMeetingsCount++;
+      }
+
       // Calculate derived metrics
       const creatives = Array.from(creativeMap.values()).map(c => {
         const mql_rate = c.leads_count > 0 ? c.mql_count / c.leads_count : 0;
@@ -1133,6 +1166,8 @@ Deno.serve(async (req: Request) => {
         const cost_per_enterprise_plus = c.tier_enterprise_plus_count > 0 ? c.spend / c.tier_enterprise_plus_count : null;
         const cac = c.sales_count > 0 ? c.spend / c.sales_count : null;
         const roas = c.spend > 0 ? c.revenue / c.spend : null;
+        const cost_per_meeting = c.meetings_count > 0 ? c.spend / c.meetings_count : null;
+        const is_active = recentSpendKeys.has(c.creative_key);
         return {
           ...c,
           mql_rate,
@@ -1144,6 +1179,9 @@ Deno.serve(async (req: Request) => {
           cost_per_enterprise_plus,
           cac,
           roas,
+          cost_per_meeting,
+          meetings_count: c.meetings_count,
+          is_active,
           campaigns: Array.from(c.campaigns),
         };
       });
@@ -1174,6 +1212,7 @@ Deno.serve(async (req: Request) => {
             tier_enterprise_plus: totalTierEnterprisePlus,
             sales: totalSales,
             revenue: totalRevenue,
+            meetings: totalMeetingsCount,
             cpl: totalLeads > 0 ? totalSpend / totalLeads : null,
             cpmql: totalMql > 0 ? totalSpend / totalMql : null,
             cp_tier_small: totalTierSmall > 0 ? totalSpend / totalTierSmall : null,
@@ -1183,6 +1222,7 @@ Deno.serve(async (req: Request) => {
             cp_tier_enterprise_plus: totalTierEnterprisePlus > 0 ? totalSpend / totalTierEnterprisePlus : null,
             cac: totalSales > 0 ? totalSpend / totalSales : null,
             roas: totalSpend > 0 ? totalRevenue / totalSpend : null,
+            cp_meeting: totalMeetingsCount > 0 ? totalSpend / totalMeetingsCount : null,
           },
           data_quality: {
             leads_with_creative: leadsWithCreative,

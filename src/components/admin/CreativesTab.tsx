@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +41,7 @@ import {
   Star,
   RefreshCw,
   Calendar,
+  Circle,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -73,6 +74,9 @@ interface CreativeData {
   last_activity: string | null;
   leads_by_stage: Record<string, number>;
   campaigns: string[];
+  meetings_count: number;
+  cost_per_meeting: number | null;
+  is_active: boolean;
 }
 
 interface CreativesResponse {
@@ -88,6 +92,7 @@ interface CreativesResponse {
     tier_enterprise_plus: number;
     sales: number;
     revenue: number;
+    meetings: number;
     cpl: number | null;
     cpmql: number | null;
     cp_tier_small: number | null;
@@ -97,6 +102,7 @@ interface CreativesResponse {
     cp_tier_enterprise_plus: number | null;
     cac: number | null;
     roas: number | null;
+    cp_meeting: number | null;
   };
   data_quality: {
     leads_with_creative: number;
@@ -174,7 +180,6 @@ const MQL_FAT_MIN_FAIXAS = [
 ];
 
 function isLeadMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
-  // MQL = same as Rodger SDR assignment (based on faturamento only since estagio was removed)
   if (sdrOverride === "Rodger") return true;
   if (sdrOverride === "Dara") return false;
   const faturaEnough = investimento ? MQL_FAT_MIN_FAIXAS.includes(investimento) : false;
@@ -228,6 +233,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [meetingsLoading, setMeetingsLoading] = useState(false);
   const [showMeetingsList, setShowMeetingsList] = useState(false);
   const [deletingMeetingId, setDeletingMeetingId] = useState<string | null>(null);
+
   const loadSales = useCallback(async () => {
     setSalesLoading(true);
     try {
@@ -443,6 +449,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const topMql = creatives.length > 0 ? creatives.reduce((best, c) => c.mql_count > best.mql_count ? c : best, creatives[0]) : null;
   const topRevenue = creatives.length > 0 ? creatives.reduce((best, c) => c.revenue > best.revenue ? c : best, creatives[0]) : null;
   const topSales = creatives.length > 0 ? creatives.reduce((best, c) => c.sales_count > best.sales_count ? c : best, creatives[0]) : null;
+  const topMeetings = creatives.length > 0 ? creatives.reduce((best, c) => c.meetings_count > best.meetings_count ? c : best, creatives[0]) : null;
   const bestCpmql = creatives.filter(c => c.cost_per_mql !== null && c.cost_per_mql > 0).sort((a, b) => (a.cost_per_mql || Infinity) - (b.cost_per_mql || Infinity))[0] || null;
 
   const handleSort = (field: string) => {
@@ -567,6 +574,13 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </Card>
           <Card>
             <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Total Reuniões</p>
+              <p className="text-xl font-bold text-orange-400">{formatNumber(totals.meetings)}</p>
+              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_meeting)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">CPL</p>
               <p className="text-lg font-bold">{formatCurrency(totals.cpl)}</p>
             </CardContent>
@@ -629,7 +643,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
       {/* Ranking Cards */}
       {creatives.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {topMql && topMql.mql_count > 0 && (
             <Card className="border-green-500/30 bg-green-500/5">
               <CardContent className="pt-4">
@@ -641,6 +655,21 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 <div className="flex gap-4 mt-1 text-sm text-muted-foreground">
                   <span>{topMql.mql_count} MQL</span>
                   <span>CPMQL: {formatCurrency(topMql.cost_per_mql)}</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {topMeetings && topMeetings.meetings_count > 0 && (
+            <Card className="border-orange-500/30 bg-orange-500/5">
+              <CardContent className="pt-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="w-5 h-5 text-orange-400" />
+                  <p className="text-xs text-muted-foreground uppercase">#1 em Reuniões</p>
+                </div>
+                <p className="font-bold text-lg truncate">{topMeetings.creative_label}</p>
+                <div className="flex gap-4 mt-1 text-sm text-muted-foreground">
+                  <span>{topMeetings.meetings_count} reuniões</span>
+                  <span>CP Reunião: {formatCurrency(topMeetings.cost_per_meeting)}</span>
                 </div>
               </CardContent>
             </Card>
@@ -696,7 +725,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Table>
               <TableHeader>
                 <TableRow className="text-[11px]">
-                  <TableHead className="min-w-[120px]">Criativo</TableHead>
+                  <TableHead className="min-w-[140px]">Criativo</TableHead>
                   <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("spend")}>
                     Spend <SortIcon field="spend" />
                   </TableHead>
@@ -724,6 +753,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_enterprise_plus")}>
                     CPMQL - E+ <SortIcon field="cost_per_enterprise_plus" />
                   </TableHead>
+                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("meetings_count")}>
+                    Reuniões <SortIcon field="meetings_count" />
+                  </TableHead>
                   <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("sales_count")}>
                     Vendas / CAC <SortIcon field="sales_count" />
                   </TableHead>
@@ -747,6 +779,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     >
                       <TableCell className="py-2">
                         <div className="flex items-center gap-1.5">
+                          <Circle className={`w-2.5 h-2.5 flex-shrink-0 ${c.is_active ? "fill-green-500 text-green-500" : "fill-muted-foreground/30 text-muted-foreground/30"}`} />
                           {i < 3 && c.mql_count > 0 && (
                             <Star className="w-3 h-3 text-yellow-400 flex-shrink-0" />
                           )}
@@ -789,6 +822,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       <TableCell className="text-right text-[11px] py-2 text-pink-400">
                         {c.tier_enterprise_plus_count > 0 ? (
                           <><div className="font-semibold">{c.tier_enterprise_plus_count}</div><div className="text-[10px]">{formatCurrency(c.cost_per_enterprise_plus)}</div></>
+                        ) : <span className="text-muted-foreground">0</span>}
+                      </TableCell>
+                      <TableCell className="text-right text-[11px] py-2 text-orange-400">
+                        {c.meetings_count > 0 ? (
+                          <><div className="font-semibold">{c.meetings_count}</div><div className="text-[10px]">{formatCurrency(c.cost_per_meeting)}</div></>
                         ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
                       <TableCell className="text-right text-[11px] py-2">
@@ -939,7 +977,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
+                  <Circle className={`w-3 h-3 ${drillCreative.is_active ? "fill-green-500 text-green-500" : "fill-muted-foreground/30 text-muted-foreground/30"}`} />
                   {drillCreative.creative_label}
+                  <Badge variant="outline" className={`text-[10px] ${drillCreative.is_active ? "border-green-500/50 text-green-400" : "border-muted text-muted-foreground"}`}>
+                    {drillCreative.is_active ? "Ativo" : "Inativo"}
+                  </Badge>
                   {drillCreative.creative_source_field === "fallback" && (
                     <Badge variant="outline" className="border-yellow-500/50 text-yellow-400">fallback</Badge>
                   )}
@@ -968,6 +1010,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <div className="p-3 bg-muted/30 rounded-lg text-center">
                     <p className="text-xs text-muted-foreground">CPMQL</p>
                     <p className="text-lg font-bold">{formatCurrency(drillCreative.cost_per_mql)}</p>
+                  </div>
+                  <div className="p-3 bg-orange-500/10 rounded-lg text-center">
+                    <p className="text-xs text-muted-foreground">Reuniões</p>
+                    <p className="text-lg font-bold text-orange-400">{drillCreative.meetings_count}</p>
+                    <p className="text-[10px] text-muted-foreground">{formatCurrency(drillCreative.cost_per_meeting)}</p>
                   </div>
                   <div className="p-3 bg-muted/30 rounded-lg text-center">
                     <p className="text-xs text-muted-foreground">Small</p>
@@ -1015,7 +1062,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   </div>
                 )}
 
-                {/* Campaigns that contributed */}
+                {/* Campaigns */}
                 {drillCreative.campaigns.length > 0 && (
                   <div>
                     <h4 className="text-sm font-semibold mb-2 text-muted-foreground uppercase">Campanhas associadas</h4>
@@ -1071,8 +1118,19 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <Input type="number" step="0.01" placeholder="5000.00" value={saleForm.revenue} onChange={e => setSaleForm(p => ({ ...p, revenue: e.target.value }))} />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground">Criativo (utm_content ou nome)</label>
-              <Input placeholder="Ex: T01 - C3 - CL" value={saleForm.creative_key} onChange={e => setSaleForm(p => ({ ...p, creative_key: e.target.value }))} />
+              <label className="text-sm text-muted-foreground">Criativo *</label>
+              <Select value={saleForm.creative_key} onValueChange={(v) => setSaleForm(p => ({ ...p, creative_key: v }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o criativo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {creatives.map(c => (
+                    <SelectItem key={c.creative_key} value={c.creative_label}>
+                      {c.creative_label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Notas</label>
