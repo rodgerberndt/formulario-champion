@@ -652,6 +652,21 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <TableHead className="text-right cursor-pointer" onClick={() => handleSort("tier_enterprise_plus_count")}>
                     E+ <SortIcon field="tier_enterprise_plus_count" />
                   </TableHead>
+                  <TableHead className="text-right cursor-pointer text-[11px]" onClick={() => handleSort("cost_per_small")}>
+                    CP S <SortIcon field="cost_per_small" />
+                  </TableHead>
+                  <TableHead className="text-right cursor-pointer text-[11px]" onClick={() => handleSort("cost_per_medium")}>
+                    CP M <SortIcon field="cost_per_medium" />
+                  </TableHead>
+                  <TableHead className="text-right cursor-pointer text-[11px]" onClick={() => handleSort("cost_per_tier_large")}>
+                    CP L <SortIcon field="cost_per_tier_large" />
+                  </TableHead>
+                  <TableHead className="text-right cursor-pointer text-[11px]" onClick={() => handleSort("cost_per_enterprise")}>
+                    CP E <SortIcon field="cost_per_enterprise" />
+                  </TableHead>
+                  <TableHead className="text-right cursor-pointer text-[11px]" onClick={() => handleSort("cost_per_enterprise_plus")}>
+                    CP E+ <SortIcon field="cost_per_enterprise_plus" />
+                  </TableHead>
                   <TableHead className="text-right cursor-pointer" onClick={() => handleSort("sales_count")}>
                     Vendas <SortIcon field="sales_count" />
                   </TableHead>
@@ -711,6 +726,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       <TableCell className="text-right font-semibold text-amber-400">{c.tier_large_count}</TableCell>
                       <TableCell className="text-right text-purple-400">{c.tier_enterprise_count}</TableCell>
                       <TableCell className="text-right text-pink-400">{c.tier_enterprise_plus_count}</TableCell>
+                      <TableCell className="text-right text-[11px]">{formatCurrency(c.cost_per_small)}</TableCell>
+                      <TableCell className="text-right text-[11px] text-blue-400">{formatCurrency(c.cost_per_medium)}</TableCell>
+                      <TableCell className="text-right text-[11px] text-amber-400">{formatCurrency(c.cost_per_tier_large)}</TableCell>
+                      <TableCell className="text-right text-[11px] text-purple-400">{formatCurrency(c.cost_per_enterprise)}</TableCell>
+                      <TableCell className="text-right text-[11px] text-pink-400">{formatCurrency(c.cost_per_enterprise_plus)}</TableCell>
                       <TableCell className="text-right">{c.sales_count}</TableCell>
                       <TableCell className="text-right">{formatCurrency(c.cac)}</TableCell>
                       <TableCell className="text-right">{formatCurrency(c.revenue)}</TableCell>
