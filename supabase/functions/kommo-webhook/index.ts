@@ -492,6 +492,79 @@ Deno.serve(async (req) => {
       await updateLeadKommoStatus(supabase, leadDbId, 'success', contactId, kommoLeadId);
     }
 
+    // ── STEP 4: Fire Meta CAPI events (CompleteRegistration + tier) ──
+    if (leadDbId) {
+      try {
+        // Check dedup: only send if not already sent
+        const { data: leadRow } = await supabase
+          .from("leads")
+          .select("capi_events_sent, tier, investimento_faixa")
+          .eq("id", leadDbId)
+          .maybeSingle();
+
+        const capiSent = (leadRow?.capi_events_sent as Record<string, boolean>) || {};
+        const tier = leadRow?.tier || "Desqualificado";
+        const capiUrl = `${SUPABASE_URL}/functions/v1/meta-capi`;
+        const webhookSecret = INTERNAL_WEBHOOK_SECRET || "";
+        const serviceKey = SUPABASE_SERVICE_ROLE_KEY;
+        const eventsToSend: string[] = [];
+
+        // Send CompleteRegistration if not sent
+        if (!capiSent["CompleteRegistration"]) {
+          eventsToSend.push("CompleteRegistration");
+          try {
+            const res = await fetch(capiUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-webhook-secret": webhookSecret,
+                "Authorization": `Bearer ${serviceKey}`,
+              },
+              body: JSON.stringify({ lead_id: leadDbId, event_name: "CompleteRegistration" }),
+            });
+            const result = await res.json();
+            console.log(`[kommo-webhook] CAPI CompleteRegistration:`, JSON.stringify(result));
+            capiSent["CompleteRegistration"] = true;
+          } catch (e) {
+            console.error("[kommo-webhook] CAPI CompleteRegistration error:", e);
+          }
+        }
+
+        // Send tier event (Lead_Small, Lead_Medium, etc.)
+        const tierEventName = `Lead_${tier.replace("+", "Plus")}`;
+        if (!capiSent[tierEventName] && tier !== "Desqualificado") {
+          eventsToSend.push(tierEventName);
+          try {
+            const res = await fetch(capiUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-webhook-secret": webhookSecret,
+                "Authorization": `Bearer ${serviceKey}`,
+              },
+              body: JSON.stringify({ lead_id: leadDbId, event_name: tierEventName }),
+            });
+            const result = await res.json();
+            console.log(`[kommo-webhook] CAPI ${tierEventName}:`, JSON.stringify(result));
+            capiSent[tierEventName] = true;
+          } catch (e) {
+            console.error(`[kommo-webhook] CAPI ${tierEventName} error:`, e);
+          }
+        }
+
+        // Update dedup tracking
+        if (eventsToSend.length > 0) {
+          await supabase
+            .from("leads")
+            .update({ capi_events_sent: capiSent })
+            .eq("id", leadDbId);
+          console.log(`[kommo-webhook] CAPI events sent: ${eventsToSend.join(", ")}`);
+        }
+      } catch (capiErr) {
+        console.error("[kommo-webhook] CAPI integration error:", capiErr);
+      }
+    }
+
     console.log(`[kommo-webhook] SUCCESS - Contact: ${contactId}, Lead: ${kommoLeadId}, Variant: ${messageVariant}`);
 
     return new Response(
