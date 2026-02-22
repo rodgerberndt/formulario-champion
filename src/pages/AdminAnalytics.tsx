@@ -312,27 +312,25 @@ export default function AdminAnalytics() {
   const [leadsSdrFilter, setLeadsSdrFilter] = useState<string>("all");
   const [leadsAdsetFilter, setLeadsAdsetFilter] = useState<string>("all");
 
-  // Recalculate score/tier from lead answers (ignores stale DB values)
+  // Recalculate score/tier from lead answers (direct faturamento mapping)
   const recalcLeadScore = (lead: Lead) => {
-    const mercadoPts: Record<string, number> = {
-      "Infoproduto": 1, "E-commerce": 1, "SaaS / Software": 1,
-      "Serviços / Consultoria": 1, "Agência": 1, "Dropshipping": 1,
-      "Afiliado": 1, "Nutra / Encapsulado": 2, "Outro": 1,
+    const FATURAMENTO_TIER: Record<string, string> = {
+      "Não vendo ainda (R$0/mês)": "Desqualificado",
+      "Até R$ 5 mil": "Small",
+      "De R$ 5 mil a R$ 10 mil": "Medium", "De R$ 10 mil a R$ 20 mil": "Medium",
+      "De R$ 20 mil a R$ 30 mil": "Medium",
+      "De R$ 30 mil a R$ 50 mil": "Large", "De R$ 50 mil a R$ 75 mil": "Large",
+      "De R$ 75 mil a R$ 100 mil": "Large",
+      "De R$ 100 mil a R$ 150 mil": "Enterprise", "De R$ 150 mil a R$ 200 mil": "Enterprise",
+      "De R$ 200 mil a R$ 300 mil": "Enterprise", "De R$ 300 mil a R$ 500 mil": "Enterprise",
+      "De R$ 500 mil a R$ 750 mil": "Enterprise", "De R$ 750 mil a R$ 1 milhão": "Enterprise",
+      "De R$ 1 milhão a R$ 2 milhões": "Enterprise", "De R$ 2 milhões a R$ 3 milhões": "Enterprise",
+      "De R$ 3 milhões a R$ 5 milhões": "Enterprise", "De R$ 5 milhões a R$ 10 milhões": "Enterprise",
+      "Acima de R$ 10 milhões": "Enterprise",
     };
-    const fatPts: Record<string, number> = {
-      "Não vendo ainda (R$0/mês)": 1, "Até R$ 5 mil": 1,
-      "De R$ 5 mil a R$ 10 mil": 2, "De R$ 10 mil a R$ 20 mil": 2,
-      "De R$ 20 mil a R$ 30 mil": 3, "De R$ 30 mil a R$ 50 mil": 3,
-      "De R$ 50 mil a R$ 75 mil": 4, "De R$ 75 mil a R$ 100 mil": 4,
-      "De R$ 100 mil a R$ 150 mil": 5, "De R$ 150 mil a R$ 200 mil": 5,
-      "De R$ 200 mil a R$ 300 mil": 5, "De R$ 300 mil a R$ 500 mil": 5,
-      "De R$ 500 mil a R$ 750 mil": 6, "De R$ 750 mil a R$ 1 milhão": 6,
-      "De R$ 1 milhão a R$ 2 milhões": 6, "De R$ 2 milhões a R$ 3 milhões": 6,
-      "De R$ 3 milhões a R$ 5 milhões": 6, "De R$ 5 milhões a R$ 10 milhões": 6,
-      "Acima de R$ 10 milhões": 6,
-    };
-    const score = (mercadoPts[lead.mercado] || 1) + (fatPts[lead.investimento_faixa || ""] || 1);
-    const tier = score > 12 ? "Enterprise" : score >= 9 ? "Large" : score >= 5 ? "Medium" : "Small";
+    const TIER_SCORE: Record<string, number> = { "Desqualificado": 0, "Small": 1, "Medium": 2, "Large": 3, "Enterprise": 4 };
+    const tier = FATURAMENTO_TIER[lead.investimento_faixa || ""] || "Desqualificado";
+    const score = TIER_SCORE[tier] || 0;
     return { score, tier };
   };
 
@@ -631,7 +629,7 @@ export default function AdminAnalytics() {
   // Get unique values for filter dropdowns
   const uniqueMercados = [...new Set(leads.map(l => l.mercado))].filter(Boolean).sort();
   
-  const TIER_ORDER = ["Enterprise", "Large", "Medium", "Small"];
+  const TIER_ORDER = ["Enterprise", "Large", "Medium", "Small", "Desqualificado"];
   const uniqueTiers = TIER_ORDER.filter(t => leads.some(l => getLeadTier(l) === t));
   const uniqueAdsets = [...new Set(leads.map(l => l.utm_content).filter(Boolean) as string[])].sort();
 
@@ -2214,6 +2212,7 @@ export default function AdminAnalytics() {
                                   calcTier === "Enterprise" ? "border-purple-500 text-purple-500 bg-purple-500/10" :
                                   calcTier === "Large" ? "border-green-500 text-green-500 bg-green-500/10" :
                                   calcTier === "Medium" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
+                                  calcTier === "Desqualificado" ? "border-gray-400 text-gray-400 bg-gray-400/10" :
                                   "border-red-500 text-red-500 bg-red-500/10"
                                 }
                               >
