@@ -387,6 +387,11 @@ export default function AdminAnalytics() {
     return recalcLeadScore(lead).tier;
   };
 
+  const tierShortLabel = (tier: string): string => {
+    if (tier === "Desqualificado") return "Desq.";
+    return tier;
+  };
+
   // Funnel drop-off detail state
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
   const [dropoffSessions, setDropoffSessions] = useState<Session[]>([]);
@@ -1845,15 +1850,16 @@ export default function AdminAnalytics() {
                                   return (
                                     <Badge 
                                       variant="outline"
-                                      className={
+                                      className={`whitespace-nowrap text-[10px] ${
                                         tier === "Enterprise+" ? "border-pink-500 text-pink-500 bg-pink-500/10" :
                                         tier === "Enterprise" ? "border-purple-500 text-purple-500 bg-purple-500/10" :
                                         tier === "Large" ? "border-green-500 text-green-500 bg-green-500/10" :
                                         tier === "Medium" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
+                                        tier === "Desqualificado" ? "border-gray-400 text-gray-400 bg-gray-400/10" :
                                         "border-red-500 text-red-500 bg-red-500/10"
-                                      }
+                                      }`}
                                     >
-                                      {tier}
+                                      {tierShortLabel(tier)}
                                     </Badge>
                                   );
                                 })()}
@@ -1990,7 +1996,7 @@ export default function AdminAnalytics() {
                                       "border-red-500 text-red-500 bg-red-500/10"
                                     }`}
                                   >
-                                    {tier}
+                                    {tierShortLabel(tier)}
                                   </Badge>
                                   <Badge 
                                     className={`text-[10px] cursor-pointer ${sdr === "Rodger" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : "bg-pink-500/20 text-pink-400 border-pink-500/30"}`}
