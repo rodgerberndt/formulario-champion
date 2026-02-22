@@ -1253,6 +1253,44 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify(data), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ──── GET /meetings ────
+    if (path === "/meetings" && req.method === "GET" && url.searchParams.get("_method") !== "POST") {
+      const from = url.searchParams.get("from");
+      const to = url.searchParams.get("to");
+      
+      let query = supabase.from("meetings").select("*").order("created_at", { ascending: false });
+      if (from) query = query.gte("created_at", from);
+      if (to) query = query.lte("created_at", to + "T23:59:59.999");
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      
+      return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // ──── POST /meetings ────
+    if (path === "/meetings" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
+      const params = Object.fromEntries(url.searchParams);
+      const ck = params.creative_key || null;
+      const { data, error } = await supabase.from("meetings").insert([{
+        creative_key: ck,
+        utm_content: params.utm_content || null,
+        notes: params.notes || null,
+      }]).select().maybeSingle();
+
+      if (error) throw error;
+      return new Response(JSON.stringify(data), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // ──── DELETE /meetings/:id ────
+    const deleteMeetingMatch = path.match(/^\/meetings\/([a-f0-9-]+)$/);
+    if (deleteMeetingMatch && req.method === "DELETE") {
+      const meetingId = deleteMeetingMatch[1];
+      const { error } = await supabase.from("meetings").delete().eq("id", meetingId);
+      if (error) throw error;
+      return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     return new Response(
       JSON.stringify({ error: "Rota não encontrada" }),
       { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }

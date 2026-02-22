@@ -462,6 +462,30 @@ export type Database = {
           },
         ]
       }
+      meetings: {
+        Row: {
+          created_at: string
+          creative_key: string | null
+          id: string
+          notes: string | null
+          utm_content: string | null
+        }
+        Insert: {
+          created_at?: string
+          creative_key?: string | null
+          id?: string
+          notes?: string | null
+          utm_content?: string | null
+        }
+        Update: {
+          created_at?: string
+          creative_key?: string | null
+          id?: string
+          notes?: string | null
+          utm_content?: string | null
+        }
+        Relationships: []
+      }
       meta_ads_cache: {
         Row: {
           ad_id: string | null
