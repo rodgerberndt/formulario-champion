@@ -43,7 +43,7 @@ export const INVESTIMENTO_OPTIONS = [
 ];
 
 // Direct tier mapping by revenue range
-export type TierType = "Desqualificado" | "Small" | "Medium" | "Large" | "Enterprise";
+export type TierType = "Desqualificado" | "Small" | "Medium" | "Large" | "Enterprise" | "Enterprise+";
 
 const FATURAMENTO_TIER: Record<string, TierType> = {
   "Não vendo ainda (R$0/mês)": "Desqualificado",
@@ -58,13 +58,13 @@ const FATURAMENTO_TIER: Record<string, TierType> = {
   "De R$ 150 mil a R$ 200 mil": "Enterprise",
   "De R$ 200 mil a R$ 300 mil": "Enterprise",
   "De R$ 300 mil a R$ 500 mil": "Enterprise",
-  "De R$ 500 mil a R$ 750 mil": "Enterprise",
-  "De R$ 750 mil a R$ 1 milhão": "Enterprise",
-  "De R$ 1 milhão a R$ 2 milhões": "Enterprise",
-  "De R$ 2 milhões a R$ 3 milhões": "Enterprise",
-  "De R$ 3 milhões a R$ 5 milhões": "Enterprise",
-  "De R$ 5 milhões a R$ 10 milhões": "Enterprise",
-  "Acima de R$ 10 milhões": "Enterprise",
+  "De R$ 500 mil a R$ 750 mil": "Enterprise+",
+  "De R$ 750 mil a R$ 1 milhão": "Enterprise+",
+  "De R$ 1 milhão a R$ 2 milhões": "Enterprise+",
+  "De R$ 2 milhões a R$ 3 milhões": "Enterprise+",
+  "De R$ 3 milhões a R$ 5 milhões": "Enterprise+",
+  "De R$ 5 milhões a R$ 10 milhões": "Enterprise+",
+  "Acima de R$ 10 milhões": "Enterprise+",
 };
 
 // Numeric order for tiers (used for score field compatibility)
@@ -74,6 +74,7 @@ const TIER_SCORE: Record<TierType, number> = {
   "Medium": 2,
   "Large": 3,
   "Enterprise": 4,
+  "Enterprise+": 5,
 };
 
 export interface LeadScoreResult {
