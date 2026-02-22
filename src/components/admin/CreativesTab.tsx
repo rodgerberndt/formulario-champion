@@ -650,7 +650,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     Vendas / CAC <SortIcon field="sales_count" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("revenue")}>
-                    Receita <SortIcon field="revenue" />
+                    Receita / ROAS <SortIcon field="revenue" />
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -717,7 +717,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         <div className="font-semibold">{c.sales_count}</div>
                         {c.cac !== null && <div className="text-muted-foreground text-[10px]">{formatCurrency(c.cac)}</div>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] py-2">{formatCurrency(c.revenue)}</TableCell>
+                      <TableCell className="text-right text-[11px] py-2">
+                        <div className="font-semibold">{formatCurrency(c.revenue)}</div>
+                        {c.roas !== null && <div className="text-muted-foreground text-[10px]">{c.roas.toFixed(1)}x</div>}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
