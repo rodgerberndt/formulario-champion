@@ -3,13 +3,18 @@
 
 export const MERCADO_OPTIONS = [
   "Infoproduto",
+  "Lowticket",
+  "Afiliado BR",
   "E-commerce",
+  "Dropshipping",
   "SaaS / Software",
   "Serviços / Consultoria",
   "Agência",
-  "Dropshipping",
-  "Afiliado",
-  "Nutra / Encapsulado",
+  "Afiliado Nutra Gringa",
+  "Nutra / Encapsulado Produtor",
+  "Igaming",
+  "X1 WhatsApp",
+  "Hot",
   "Outro",
 ];
 
