@@ -347,7 +347,7 @@ export default function Quiz() {
         console.error('Kommo sync error:', err);
       });
 
-      // Send to n8n webhook
+      // Send to n8n webhook via edge function
       const utmPayload = getUtmPayload();
       const n8nBody = {
         name: currentData.nome_completo,
@@ -370,14 +370,12 @@ export default function Quiz() {
       };
 
       try {
-        const n8nRes = await fetch("http://host.docker.internal:5678/webhook/quiz-lead", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(n8nBody),
+        const n8nRes = await supabase.functions.invoke('send-quiz-data', {
+          body: n8nBody,
         });
-        if (!n8nRes.ok) {
-          console.error("n8n webhook error:", n8nRes.status);
-          throw new Error(`n8n webhook failed: ${n8nRes.status}`);
+        if (n8nRes.error) {
+          console.error("n8n webhook error:", n8nRes.error);
+          throw new Error('n8n webhook failed');
         }
         console.log("n8n webhook sent successfully");
       } catch (n8nErr) {
@@ -388,7 +386,7 @@ export default function Quiz() {
           variant: "destructive",
         });
         setIsSubmitting(false);
-        return; // Don't redirect — allow retry
+        return;
       }
 
       // Track submit with lead data
