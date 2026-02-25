@@ -338,7 +338,7 @@ export default function Quiz() {
 
       if (error) throw error;
 
-      // Send to Kommo in background (trigger doesn't work in Lovable Cloud)
+      // Send to Kommo in background
       supabase.functions.invoke('kommo-webhook', {
         body: dbData
       }).then((res) => {
@@ -346,6 +346,50 @@ export default function Quiz() {
       }).catch((err) => {
         console.error('Kommo sync error:', err);
       });
+
+      // Send to n8n webhook
+      const utmPayload = getUtmPayload();
+      const n8nBody = {
+        name: currentData.nome_completo,
+        phone: currentData.whatsapp,
+        email: currentData.email,
+        answers: {
+          nome_completo: currentData.nome_completo,
+          whatsapp: currentData.whatsapp,
+          instagram: currentData.instagram,
+          email: currentData.email,
+          mercado: currentData.mercado,
+          investimento_faixa: currentData.investimento_faixa,
+          dor_desejo: currentData.dor_desejo,
+          compromisso_whatsapp: currentData.compromisso_whatsapp,
+        },
+        utm_source: utmPayload.utm_source || null,
+        utm_medium: utmPayload.utm_medium || null,
+        utm_campaign: utmPayload.utm_campaign || null,
+        utm_content: utmPayload.utm_content || null,
+      };
+
+      try {
+        const n8nRes = await fetch("http://host.docker.internal:5678/webhook/quiz-lead", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(n8nBody),
+        });
+        if (!n8nRes.ok) {
+          console.error("n8n webhook error:", n8nRes.status);
+          throw new Error(`n8n webhook failed: ${n8nRes.status}`);
+        }
+        console.log("n8n webhook sent successfully");
+      } catch (n8nErr) {
+        console.error("n8n webhook error:", n8nErr);
+        toast({
+          title: "Erro ao processar",
+          description: "Não foi possível completar o envio. Tente novamente.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return; // Don't redirect — allow retry
+      }
 
       // Track submit with lead data
       await trackSubmit({
