@@ -19,29 +19,18 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
 
-    const res = await fetch(webhookUrl, {
+    // Fire-and-forget: don't await the webhook response to avoid timeouts
+    fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
+    }).then(res => {
+      console.log(`n8n webhook responded: ${res.status}`);
+    }).catch(err => {
+      console.error("n8n webhook error:", err);
     });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error(`n8n webhook error: ${res.status} - ${errText}`);
-      return new Response(JSON.stringify({ error: `Webhook failed: ${res.status}` }), {
-        status: res.status,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    let data;
-    try {
-      data = await res.json();
-    } catch {
-      data = { ok: true };
-    }
-
-    return new Response(JSON.stringify(data), {
+    return new Response(JSON.stringify({ status: "sent" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
