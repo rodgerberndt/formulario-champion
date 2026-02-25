@@ -189,6 +189,30 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
         console.error("Error checking lead IP:", ipError);
       }
 
+      // Send to n8n webhook via edge function
+      const n8nBody = {
+        name: formData.nome_completo,
+        phone: formData.whatsapp,
+        email: '',
+        answers: {
+          nome_completo: formData.nome_completo,
+          whatsapp: formData.whatsapp,
+          instagram: formData.instagram,
+          mercado: formData.mercado,
+          estagio_negocio: formData.estagio_negocio,
+          dor_desejo: formData.dor_desejo,
+        },
+      };
+
+      supabase.functions.invoke('send-quiz-data', {
+        body: n8nBody,
+      }).then((res) => {
+        if (res.error) console.error("n8n webhook error:", res.error);
+        else console.log("n8n webhook sent successfully");
+      }).catch((err) => {
+        console.error("n8n webhook error:", err);
+      });
+
       // Track the submit event
       await trackSubmit({
         name: formData.nome_completo,
