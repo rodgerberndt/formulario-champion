@@ -90,7 +90,6 @@ const statusColors = {
     badgeText: "Próximo"
   }
 };
-const SDR_ADVANCED_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)", "Validação (primeiras vendas)"];
 const SDR_MIN_FATURAMENTO = [
   "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
   "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
@@ -103,10 +102,9 @@ const SDR_MIN_FATURAMENTO = [
 const DARA_SKIP_LINK = "https://wa.me/554896560104?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
 const RODGER_SKIP_LINK = "https://wa.me/554896378499?text=Falaa%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
 
-function getSdrSkipLink(estagio?: string, investimento?: string): string {
-  const isAdvanced = estagio ? SDR_ADVANCED_STAGES.includes(estagio) : false;
+function getSdrSkipLink(_estagio?: string, investimento?: string): string {
   const faturaEnough = investimento ? SDR_MIN_FATURAMENTO.includes(investimento) : false;
-  return isAdvanced && faturaEnough ? RODGER_SKIP_LINK : DARA_SKIP_LINK;
+  return faturaEnough ? RODGER_SKIP_LINK : DARA_SKIP_LINK;
 }
 
 export function QuizResult({
