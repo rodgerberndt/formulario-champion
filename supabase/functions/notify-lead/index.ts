@@ -19,8 +19,26 @@ const KOMMO_SUBDOMAIN = KOMMO_SUBDOMAIN_RAW
 const WHATSAPP_ACCESS_TOKEN = Deno.env.get('WHATSAPP_ACCESS_TOKEN');
 const WHATSAPP_PHONE_NUMBER_ID = Deno.env.get('WHATSAPP_PHONE_NUMBER_ID');
 const RODGER_WHATSAPP_E164 = Deno.env.get('RODGER_WHATSAPP_E164');
+const DARA_WHATSAPP_E164 = Deno.env.get('DARA_WHATSAPP_E164');
 const WHATSAPP_TEMPLATE_NAME = Deno.env.get('WHATSAPP_TEMPLATE_NAME');
 const WHATSAPP_TEMPLATE_LANG = Deno.env.get('WHATSAPP_TEMPLATE_LANG') || 'pt_BR';
+
+// SDR routing: leads with faturamento >= R$10k go to Rodger, others to Dara
+const SDR_RODGER_FATURAMENTO = [
+  "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+  "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
+  "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
+  "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
+  "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
+  "Acima de R$ 10 milhões",
+];
+
+function getSdrForLead(investimentoFaixa?: string | null): { name: string; phone: string } {
+  const isRodger = investimentoFaixa ? SDR_RODGER_FATURAMENTO.includes(investimentoFaixa) : false;
+  return isRodger
+    ? { name: "Rodger", phone: RODGER_WHATSAPP_E164 || "" }
+    : { name: "Dara", phone: DARA_WHATSAPP_E164 || "" };
+}
 
 // URLs
 const PUBLIC_BASE_URL = Deno.env.get('PUBLIC_BASE_URL') || 'https://formulariochampion.lovable.app';
@@ -145,10 +163,10 @@ async function syncToKommo(lead: Record<string, unknown>): Promise<{ success: bo
   return { success: true };
 }
 
-// Send WhatsApp message to Rodger
-async function sendWhatsAppToRodger(lead: Record<string, unknown>, sessionId: string): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_PHONE_NUMBER_ID || !RODGER_WHATSAPP_E164) {
-    console.log('WhatsApp credentials not configured');
+// Send WhatsApp message to the assigned SDR (Rodger or Dara)
+async function sendWhatsAppToSdr(lead: Record<string, unknown>, sessionId: string, sdr: { name: string; phone: string }): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_PHONE_NUMBER_ID || !sdr.phone) {
+    console.log('WhatsApp credentials not configured or SDR phone missing');
     return { success: false, error: 'WhatsApp not configured' };
   }
 
@@ -169,7 +187,7 @@ async function sendWhatsAppToRodger(lead: Record<string, unknown>, sessionId: st
   if (WHATSAPP_TEMPLATE_NAME) {
     body = {
       messaging_product: "whatsapp",
-      to: RODGER_WHATSAPP_E164,
+      to: sdr.phone,
       type: "template",
       template: {
         name: WHATSAPP_TEMPLATE_NAME,
@@ -208,13 +226,13 @@ async function sendWhatsAppToRodger(lead: Record<string, unknown>, sessionId: st
 
     body = {
       messaging_product: "whatsapp",
-      to: RODGER_WHATSAPP_E164,
+      to: sdr.phone,
       type: "text",
       text: { preview_url: false, body: resumo }
     };
   }
 
-  console.log('Sending WhatsApp message to Rodger:', RODGER_WHATSAPP_E164);
+  console.log(`Sending WhatsApp message to ${sdr.name}:`, sdr.phone);
 
   const response = await fetch(whatsappUrl, {
     method: 'POST',
@@ -316,15 +334,33 @@ Deno.serve(async (req: Request) => {
 
     const errors: string[] = [];
 
+    // Look up the lead's investimento_faixa to determine SDR
+    let leadInvestimentoFaixa: string | null = null;
+    if (session.lead_whatsapp || session.lead_name) {
+      const { data: leadRow } = await supabase
+        .from('leads')
+        .select('investimento_faixa')
+        .or(`whatsapp.eq.${session.lead_whatsapp},nome_completo.eq.${session.lead_name}`)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      if (leadRow) {
+        leadInvestimentoFaixa = leadRow.investimento_faixa;
+      }
+    }
+
+    const sdr = getSdrForLead(leadInvestimentoFaixa);
+    console.log(`SDR assigned: ${sdr.name} (faturamento: ${leadInvestimentoFaixa || 'N/A'})`);
+
     // Kommo sync is now handled by DB trigger on leads table INSERT
     // (notify_kommo_on_lead_insert → kommo-webhook)
     const kommoSuccess = true; // Skip, handled elsewhere
 
-    // 2. Send WhatsApp to Rodger
+    // 2. Send WhatsApp to assigned SDR
     let whatsappSuccess = false;
     let messageId: string | undefined;
     try {
-      const waResult = await withRetry(() => sendWhatsAppToRodger(session, targetId));
+      const waResult = await withRetry(() => sendWhatsAppToSdr(session, targetId, sdr));
       whatsappSuccess = waResult.success;
       messageId = waResult.messageId;
       if (!whatsappSuccess && waResult.error) {
