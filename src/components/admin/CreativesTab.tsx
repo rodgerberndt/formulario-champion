@@ -1130,7 +1130,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <SelectValue placeholder="Selecione o criativo" />
                 </SelectTrigger>
                 <SelectContent>
-                  {creatives.map(c => (
+                  {(data?.creatives || []).map(c => (
                     <SelectItem key={c.creative_key} value={c.creative_label}>
                       {c.creative_label}
                     </SelectItem>
@@ -1205,7 +1205,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <SelectValue placeholder="Selecione o criativo" />
                 </SelectTrigger>
                 <SelectContent>
-                  {creatives.map(c => (
+                  {(data?.creatives || []).map(c => (
                     <SelectItem key={c.creative_key} value={c.creative_label}>
                       {c.creative_label}
                     </SelectItem>
