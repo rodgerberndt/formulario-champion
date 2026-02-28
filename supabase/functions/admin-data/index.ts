@@ -1072,21 +1072,24 @@ Deno.serve(async (req: Request) => {
 
       let leadsWithCreative = 0;
       let leadsWithoutUtms = 0;
+      const UNATTRIBUTED_KEY = "__sem_criativo__";
+      const UNATTRIBUTED_LABEL = "(Sem criativo)";
 
       // Process leads
       for (const lead of allLeads) {
         const rawKey = lead.utm_content;
-        if (!rawKey) {
+        let ck: string;
+        let label: string;
+        if (!rawKey || !normalizeKey(rawKey)) {
           leadsWithoutUtms++;
-          continue;
+          ck = UNATTRIBUTED_KEY;
+          label = UNATTRIBUTED_LABEL;
+        } else {
+          ck = normalizeKey(rawKey);
+          label = rawKey;
+          leadsWithCreative++;
         }
-        const ck = normalizeKey(rawKey);
-        if (!ck) {
-          leadsWithoutUtms++;
-          continue;
-        }
-        leadsWithCreative++;
-        const agg = getOrCreate(ck, rawKey, "utm_content");
+        const agg = getOrCreate(ck, label, "utm_content");
         agg.leads_count++;
         if (isMql(lead.estagio_negocio, lead.investimento_faixa, lead.sdr_override)) {
           agg.mql_count++;
@@ -1128,16 +1131,17 @@ Deno.serve(async (req: Request) => {
       let salesWithoutCreative = 0;
       for (const sale of (salesData || [])) {
         const rawKey = sale.creative_key || sale.utm_content;
-        if (!rawKey) {
+        let ck: string;
+        let label: string;
+        if (!rawKey || !normalizeKey(rawKey)) {
           salesWithoutCreative++;
-          continue;
+          ck = UNATTRIBUTED_KEY;
+          label = UNATTRIBUTED_LABEL;
+        } else {
+          ck = normalizeKey(rawKey);
+          label = rawKey;
         }
-        const ck = normalizeKey(rawKey);
-        if (!ck) {
-          salesWithoutCreative++;
-          continue;
-        }
-        const agg = getOrCreate(ck, rawKey, "utm_content");
+        const agg = getOrCreate(ck, label, "utm_content");
         agg.sales_count++;
         agg.revenue += Number(sale.revenue) || 0;
       }
@@ -1146,10 +1150,16 @@ Deno.serve(async (req: Request) => {
       let totalMeetingsCount = 0;
       for (const meeting of (meetingsData || [])) {
         const rawKey = meeting.creative_key || meeting.utm_content;
-        if (!rawKey) continue;
-        const ck = normalizeKey(rawKey);
-        if (!ck) continue;
-        const agg = getOrCreate(ck, rawKey, "utm_content");
+        let ck: string;
+        let label: string;
+        if (!rawKey || !normalizeKey(rawKey)) {
+          ck = UNATTRIBUTED_KEY;
+          label = UNATTRIBUTED_LABEL;
+        } else {
+          ck = normalizeKey(rawKey);
+          label = rawKey;
+        }
+        const agg = getOrCreate(ck, label, "utm_content");
         agg.meetings_count++;
         totalMeetingsCount++;
       }
@@ -1194,7 +1204,7 @@ Deno.serve(async (req: Request) => {
       const totalTierLarge = creatives.reduce((s, c) => s + c.tier_large_count, 0);
       const totalTierEnterprise = creatives.reduce((s, c) => s + c.tier_enterprise_count, 0);
       const totalTierEnterprisePlus = creatives.reduce((s, c) => s + c.tier_enterprise_plus_count, 0);
-      const totalSales = creatives.reduce((s, c) => s + c.sales_count, 0) + salesWithoutCreative;
+      const totalSales = creatives.reduce((s, c) => s + c.sales_count, 0);
       const totalRevenue = creatives.reduce((s, c) => s + c.revenue, 0);
 
       return new Response(
