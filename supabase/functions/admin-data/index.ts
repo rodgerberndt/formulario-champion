@@ -1072,20 +1072,23 @@ Deno.serve(async (req: Request) => {
 
       let leadsWithCreative = 0;
       let leadsWithoutUtms = 0;
-      const UNATTRIBUTED_KEY = "__sem_criativo__";
-      const UNATTRIBUTED_LABEL = "(Sem criativo)";
+      const UNATTRIBUTED_KEY = "direct-link-in-bio";
+      const UNATTRIBUTED_LABEL = "Direct / Link in Bio";
+      // Keys that should be merged into the unattributed/direct bucket
+      const DIRECT_KEYS = new Set(["__sem_criativo__", "ad-name", "link-in-bio", "link_in_bio", "ad.name"]);
 
       // Process leads
       for (const lead of allLeads) {
         const rawKey = lead.utm_content;
         let ck: string;
         let label: string;
-        if (!rawKey || !normalizeKey(rawKey)) {
+        const normalized = rawKey ? normalizeKey(rawKey) : "";
+        if (!rawKey || !normalized || DIRECT_KEYS.has(normalized) || rawKey === "{{ad.name}}") {
           leadsWithoutUtms++;
           ck = UNATTRIBUTED_KEY;
           label = UNATTRIBUTED_LABEL;
         } else {
-          ck = normalizeKey(rawKey);
+          ck = normalized;
           label = rawKey;
           leadsWithCreative++;
         }
@@ -1133,12 +1136,13 @@ Deno.serve(async (req: Request) => {
         const rawKey = sale.creative_key || sale.utm_content;
         let ck: string;
         let label: string;
-        if (!rawKey || !normalizeKey(rawKey)) {
+        const normalized = rawKey ? normalizeKey(rawKey) : "";
+        if (!rawKey || !normalized || DIRECT_KEYS.has(normalized) || rawKey === "{{ad.name}}") {
           salesWithoutCreative++;
           ck = UNATTRIBUTED_KEY;
           label = UNATTRIBUTED_LABEL;
         } else {
-          ck = normalizeKey(rawKey);
+          ck = normalized;
           label = rawKey;
         }
         const agg = getOrCreate(ck, label, "utm_content");
@@ -1152,11 +1156,12 @@ Deno.serve(async (req: Request) => {
         const rawKey = meeting.creative_key || meeting.utm_content;
         let ck: string;
         let label: string;
-        if (!rawKey || !normalizeKey(rawKey)) {
+        const normalized = rawKey ? normalizeKey(rawKey) : "";
+        if (!rawKey || !normalized || DIRECT_KEYS.has(normalized) || rawKey === "{{ad.name}}") {
           ck = UNATTRIBUTED_KEY;
           label = UNATTRIBUTED_LABEL;
         } else {
-          ck = normalizeKey(rawKey);
+          ck = normalized;
           label = rawKey;
         }
         const agg = getOrCreate(ck, label, "utm_content");
