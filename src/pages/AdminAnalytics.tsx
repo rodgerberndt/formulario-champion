@@ -170,6 +170,7 @@ interface Lead {
   placement: string | null;
   site_source_name: string | null;
   sdr_override: string | null;
+  decisor: boolean | null;
   raw_answers_json: Record<string, unknown> | null;
 }
 
@@ -893,6 +894,35 @@ export default function AdminAnalytics() {
     const link = document.createElement("a");
     link.href = url;
     link.download = `sessoes_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportLeadsCSV = () => {
+    const escCSV = (v: unknown) => `"${String(v ?? "-").replace(/"/g, '""')}"`;
+    const headers = [
+      "ID","Criado em","Lido","Nome","WhatsApp","Instagram","Email","Empresa","Segmento",
+      "Mercado","Estágio","Faturamento","Tráfego","Ticket","Gargalo","Objetivo","Timing",
+      "Orçamento","Investimento","Dor/Desejo","Score","Tier","SDR","Decisor",
+      "UTM Source","UTM Medium","UTM Campaign","UTM Content","UTM Term",
+      "FBCLID","GCLID","Campaign ID","Adset ID","Ad ID","Placement","IP","IP Duplicado"
+    ];
+    const rows = leads.map((l) => [
+      l.id, new Date(l.created_at).toLocaleString("pt-BR"), l.lido ? "Sim" : "Não",
+      l.nome_completo, l.whatsapp, l.instagram, l.email, l.empresa, l.segmento,
+      l.mercado, l.estagio_negocio, l.faturamento_faixa, l.trafego_faixa, l.ticket_faixa,
+      l.gargalo, l.objetivo, l.timing, l.orcamento_faixa, l.investimento_faixa, l.dor_desejo,
+      l.score, l.tier, l.sdr_override, l.decisor != null ? (l.decisor ? "Sim" : "Não") : "-",
+      l.utm_source, l.utm_medium, l.utm_campaign, l.utm_content, l.utm_term,
+      l.fbclid, l.gclid, l.campaign_id, l.adset_id, l.ad_id, l.placement,
+      l.ip_address, l.is_duplicate_ip ? "Sim" : "Não"
+    ]);
+    const csv = [headers.join(","), ...rows.map((r) => r.map(escCSV).join(","))].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `leads_${new Date().toISOString().split("T")[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -1678,6 +1708,10 @@ export default function AdminAnalytics() {
                 <Button variant="outline" onClick={loadLeads} disabled={leadsLoading}>
                   <RefreshCw className={`w-4 h-4 mr-2 ${leadsLoading ? "animate-spin" : ""}`} />
                   Atualizar
+                </Button>
+                <Button variant="outline" onClick={exportLeadsCSV} disabled={leads.length === 0}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Exportar CSV
                 </Button>
                 {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all" || leadsAdsetFilter !== "all") && (
                   <Button 
