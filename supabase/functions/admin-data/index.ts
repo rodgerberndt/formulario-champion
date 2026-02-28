@@ -932,21 +932,21 @@ Deno.serve(async (req: Request) => {
         return raw.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-_]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
       }
 
-      // MQL logic
-      const MQL_STAGES = ["Pré-escala (vendas constantes)", "Escala (buscando otimização)", "Validação (primeiras vendas)"];
-      const MQL_FAT_MIN_FAIXAS = [
+      // MQL logic — MQL = SDR is Rodger (same list as notify-lead + legacy quiz faixas)
+      const SDR_RODGER_FAIXAS = [
         "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
         "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
         "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
         "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
         "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
         "Acima de R$ 10 milhões",
+        // Legacy quiz format faixas that also map to Rodger
+        "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k",
       ];
-      function isMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
+      function isMql(_estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
         if (sdrOverride === "Rodger") return true;
         if (sdrOverride === "Dara") return false;
-        const faturaEnough = investimento ? MQL_FAT_MIN_FAIXAS.includes(investimento) : false;
-        return faturaEnough;
+        return investimento ? SDR_RODGER_FAIXAS.includes(investimento) : false;
       }
 
       // Fetch ALL leads in period
