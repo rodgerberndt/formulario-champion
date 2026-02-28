@@ -202,7 +202,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [drillCreative, setDrillCreative] = useState<CreativeData | null>(null);
 
   // Filters
-  const [filterOnlyActive, setFilterOnlyActive] = useState(true);
+  const [filterOnlyActive, setFilterOnlyActive] = useState(false);
   const [filterOnlyWithSpend, setFilterOnlyWithSpend] = useState(false);
   const [filterOnlyWithLeads, setFilterOnlyWithLeads] = useState(false);
   const [filterOnlyWithMql, setFilterOnlyWithMql] = useState(false);
