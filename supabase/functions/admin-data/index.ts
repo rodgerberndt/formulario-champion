@@ -945,9 +945,8 @@ Deno.serve(async (req: Request) => {
       function isMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
         if (sdrOverride === "Rodger") return true;
         if (sdrOverride === "Dara") return false;
-        const isAdvancedStage = MQL_STAGES.includes(estagio);
         const faturaEnough = investimento ? MQL_FAT_MIN_FAIXAS.includes(investimento) : false;
-        return isAdvancedStage && faturaEnough;
+        return faturaEnough;
       }
 
       // Fetch ALL leads in period

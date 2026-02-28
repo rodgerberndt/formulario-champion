@@ -202,6 +202,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [drillCreative, setDrillCreative] = useState<CreativeData | null>(null);
 
   // Filters
+  const [filterOnlyActive, setFilterOnlyActive] = useState(true);
   const [filterOnlyWithSpend, setFilterOnlyWithSpend] = useState(false);
   const [filterOnlyWithLeads, setFilterOnlyWithLeads] = useState(false);
   const [filterOnlyWithMql, setFilterOnlyWithMql] = useState(false);
@@ -429,6 +430,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   // Sort & filter creatives
   const creatives = (data?.creatives || [])
     .filter(c => {
+      if (filterOnlyActive && !c.is_active) return false;
       if (filterOnlyWithSpend && c.spend <= 0) return false;
       if (filterOnlyWithLeads && c.leads_count <= 0) return false;
       if (filterOnlyWithMql && c.mql_count <= 0) return false;
@@ -519,6 +521,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       {showAdvancedFilters && (
         <Card>
           <CardContent className="pt-4 flex flex-wrap gap-6">
+            <label className="flex items-center gap-2 text-sm">
+              <Switch checked={filterOnlyActive} onCheckedChange={setFilterOnlyActive} />
+              Somente ativos
+            </label>
             <label className="flex items-center gap-2 text-sm">
               <Switch checked={filterOnlyWithSpend} onCheckedChange={setFilterOnlyWithSpend} />
               Somente com gasto
