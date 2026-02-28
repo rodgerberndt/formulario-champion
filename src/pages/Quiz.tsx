@@ -312,6 +312,10 @@ export default function Quiz() {
     // Use ref to always get the latest formData (avoids stale closure with compromisso_whatsapp)
     const currentData = formDataRef.current || formData;
 
+    console.log("[QUIZ_SUBMIT_DEBUG] formData(state):", formData);
+    console.log("[QUIZ_SUBMIT_DEBUG] currentData(used):", currentData);
+    console.log("[QUIZ_SUBMIT_DEBUG] localStorage champion_quiz_progress:", localStorage.getItem(STORAGE_KEY));
+
     setIsSubmitting(true);
     try {
       const result = calculateLeadScore({
@@ -368,6 +372,8 @@ export default function Quiz() {
         utm_campaign: utmPayload.utm_campaign || null,
         utm_content: utmPayload.utm_content || null,
       };
+
+      console.log("[QUIZ_SUBMIT_DEBUG] n8nBody(final):", n8nBody);
 
       try {
         const n8nRes = await supabase.functions.invoke('send-quiz-data', {
