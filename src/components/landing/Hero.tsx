@@ -35,9 +35,9 @@ export function Hero({
               {/* Headline */}
               <h1 className="font-medium text-foreground mb-4 leading-tight text-4xl">
                 <ShimmerText isVisible={isVisible}>
-                  SE VOCÊ NÃO TESTA CRIATIVO TODA SEMANA,{" "}
+                  99% DAS OPERAÇÕES QUEBRAM POR{" "}
                 </ShimmerText>
-                <KeywordGlow>PODE ESTAR DEIXANDO MUITO DINHEIRO NA MESA.</KeywordGlow>
+                <KeywordGlow>NÃO TESTAR CRIATIVO TODA SEMANA.</KeywordGlow>
               </h1>
 
               {/* Subheadline */}
