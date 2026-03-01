@@ -567,6 +567,39 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_leads: {
+        Row: {
+          answers: Json
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          phone: string
+          status: string
+          utm: Json
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          phone: string
+          status?: string
+          utm?: Json
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string
+          status?: string
+          utm?: Json
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
