@@ -338,6 +338,43 @@ export default function Quiz() {
 
       if (error) throw error;
 
+      // Insert into quiz_leads (direct Supabase insert)
+      const utmData = getUtmPayload();
+      const quizLeadPayload = {
+        name: currentData.nome_completo,
+        phone: currentData.whatsapp,
+        email: currentData.email || null,
+        status: 'Novo',
+        answers: {
+          nome_completo: currentData.nome_completo,
+          whatsapp: currentData.whatsapp,
+          instagram: currentData.instagram,
+          email: currentData.email,
+          mercado: currentData.mercado,
+          investimento_faixa: currentData.investimento_faixa,
+          dor_desejo: currentData.dor_desejo,
+          compromisso_whatsapp: currentData.compromisso_whatsapp,
+        },
+        utm: {
+          utm_source: utmData.utm_source || null,
+          utm_medium: utmData.utm_medium || null,
+          utm_campaign: utmData.utm_campaign || null,
+          utm_content: utmData.utm_content || null,
+          utm_term: utmData.utm_term || null,
+          fbclid: utmData.fbclid || null,
+          gclid: utmData.gclid || null,
+        },
+      };
+
+      const { error: quizLeadError } = await supabase
+        .from("quiz_leads")
+        .insert([quizLeadPayload]);
+
+      if (quizLeadError) {
+        console.error("quiz_leads insert error:", quizLeadError);
+        // Non-blocking: don't throw, the lead was already saved in `leads`
+      }
+
       // Send to Kommo in background
       supabase.functions.invoke('kommo-webhook', {
         body: dbData
