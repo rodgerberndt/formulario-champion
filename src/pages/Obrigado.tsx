@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { QuizResult } from "@/components/landing/QuizResult";
+import { supabase } from "@/integrations/supabase/client";
 
 // Declare fbq for TypeScript
 declare global {
@@ -80,6 +81,8 @@ export default function Obrigado() {
   const [formData, setFormData] = useState<QuizFormData | null>(null);
   const conversionEventFired = useRef(false);
 
+  const n8nSent = useRef(false);
+
   // Fire CompleteRegistration conversion event when page loads with valid data
   useEffect(() => {
     if (formData && !conversionEventFired.current) {
@@ -88,6 +91,33 @@ export default function Obrigado() {
         console.log('Facebook Pixel: CompleteRegistration event fired');
         conversionEventFired.current = true;
       }
+    }
+  }, [formData]);
+
+  // Send quiz data to n8n via edge function
+  useEffect(() => {
+    if (formData && !n8nSent.current) {
+      n8nSent.current = true;
+      const payload = {
+        name: formData.nome_completo,
+        phone: formData.whatsapp,
+        email: '',
+        answers: {
+          nome_completo: formData.nome_completo,
+          whatsapp: formData.whatsapp,
+          instagram: formData.instagram,
+          mercado: formData.mercado,
+          estagio_negocio: formData.estagio_negocio,
+          investimento_faixa: formData.investimento_faixa,
+          dor_desejo: formData.dor_desejo,
+        },
+      };
+      supabase.functions.invoke('send-quiz-data', { body: payload })
+        .then(res => {
+          if (res.error) console.error("n8n obrigado error:", res.error);
+          else console.log("n8n obrigado sent successfully");
+        })
+        .catch(err => console.error("n8n obrigado error:", err));
     }
   }, [formData]);
 
