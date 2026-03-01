@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, memo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +22,16 @@ import {
 "@/lib/leadScoring";
 import { useTracking } from "@/hooks/useTracking";
 import { useUtmCapture, getUtmForDb } from "@/hooks/useUtmCapture";
+
+const env = import.meta.env as Record<string, string | undefined>;
+const externalSupabaseUrl = env.SUPABASE_URL ?? env.VITE_SUPABASE_URL;
+const externalSupabaseAnonKey = env.SUPABASE_ANON_KEY ?? env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+if (!externalSupabaseUrl || !externalSupabaseAnonKey) {
+  throw new Error("External Supabase env vars are missing (SUPABASE_URL/SUPABASE_ANON_KEY)");
+}
+
+const supabaseExternal = createClient(externalSupabaseUrl, externalSupabaseAnonKey);
 
 interface QuizFormData {
   nome_completo: string;
@@ -338,13 +349,13 @@ export default function Quiz() {
 
       if (error) throw error;
 
-      // Insert into quiz_leads (direct Supabase insert)
+      // Insert into quiz_leads on external Supabase (blocking before redirect)
       const utmData = getUtmPayload();
       const quizLeadPayload = {
-        name: currentData.nome_completo,
-        phone: currentData.whatsapp,
-        email: currentData.email || null,
-        status: 'Novo',
+        name: currentData.nome_completo ?? null,
+        phone: currentData.whatsapp ?? null,
+        email: currentData.email ?? null,
+        status: "Novo",
         answers: {
           nome_completo: currentData.nome_completo,
           whatsapp: currentData.whatsapp,
@@ -356,24 +367,27 @@ export default function Quiz() {
           compromisso_whatsapp: currentData.compromisso_whatsapp,
         },
         utm: {
-          utm_source: utmData.utm_source || null,
-          utm_medium: utmData.utm_medium || null,
-          utm_campaign: utmData.utm_campaign || null,
-          utm_content: utmData.utm_content || null,
-          utm_term: utmData.utm_term || null,
-          fbclid: utmData.fbclid || null,
-          gclid: utmData.gclid || null,
+          utm_source: utmData.utm_source ?? null,
+          utm_medium: utmData.utm_medium ?? null,
+          utm_campaign: utmData.utm_campaign ?? null,
+          utm_content: utmData.utm_content ?? null,
+          utm_term: utmData.utm_term ?? null,
         },
       };
 
-      const { error: quizLeadError } = await supabase
+      console.log("QUIZ_LEADS_PAYLOAD", quizLeadPayload);
+
+      const { data: quizLeadInsertData, error: quizLeadError } = await supabaseExternal
         .from("quiz_leads")
         .insert([quizLeadPayload]);
 
       if (quizLeadError) {
-        console.error("quiz_leads insert error:", quizLeadError);
-        // Non-blocking: don't throw, the lead was already saved in `leads`
+        console.error("QUIZ_LEADS_INSERT_ERROR", quizLeadError);
+        console.error("QUIZ_LEADS_INSERT_ERROR_PAYLOAD", quizLeadPayload);
+        throw quizLeadError;
       }
+
+      console.log("QUIZ_LEADS_INSERT_SUCCESS", quizLeadInsertData);
 
       // Send to Kommo in background
       supabase.functions.invoke('kommo-webhook', {
