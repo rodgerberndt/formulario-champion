@@ -42,6 +42,7 @@ import {
   RefreshCw,
   Calendar,
   Circle,
+  Search,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -129,6 +130,16 @@ interface Meeting {
   creative_key: string | null;
   utm_content: string | null;
   notes: string | null;
+  created_at: string;
+}
+
+interface LeadOption {
+  id: string;
+  nome_completo: string;
+  whatsapp: string;
+  mercado: string;
+  utm_content: string | null;
+  tier: string | null;
   created_at: string;
 }
 
@@ -235,6 +246,26 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [showMeetingsList, setShowMeetingsList] = useState(false);
   const [deletingMeetingId, setDeletingMeetingId] = useState<string | null>(null);
 
+  // Leads for picker
+  const [leadsList, setLeadsList] = useState<LeadOption[]>([]);
+  const [leadsLoading, setLeadsLoading] = useState(false);
+  const [leadSearch, setLeadSearch] = useState("");
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+  const [meetingLeadSearch, setMeetingLeadSearch] = useState("");
+  const [meetingSelectedLeadId, setMeetingSelectedLeadId] = useState<string | null>(null);
+
+  const loadLeads = useCallback(async () => {
+    setLeadsLoading(true);
+    try {
+      const result = await fetchAdminData("/leads", { from: startDateOnly, to: endDateOnly });
+      setLeadsList(Array.isArray(result) ? result : []);
+    } catch (err) {
+      console.error("Error loading leads:", err);
+    } finally {
+      setLeadsLoading(false);
+    }
+  }, [fetchAdminData, startDateOnly, endDateOnly]);
+
   const loadSales = useCallback(async () => {
     setSalesLoading(true);
     try {
@@ -304,19 +335,24 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       toast({ title: "Preencha data e receita", variant: "destructive" });
       return;
     }
+    const selectedLead = selectedLeadId ? leadsList.find(l => l.id === selectedLeadId) : null;
+    const creativeFromLead = selectedLead?.utm_content || "";
+    const ck = creativeFromLead ? normalizeCreativeKey(creativeFromLead) : (saleForm.creative_key ? normalizeCreativeKey(saleForm.creative_key) : null);
     setSavingSale(true);
     try {
-      const ck = saleForm.creative_key ? normalizeCreativeKey(saleForm.creative_key) : null;
       await fetchAdminData("/manual-sales", {
         _method: "POST",
         sale_date: saleForm.sale_date,
         revenue: saleForm.revenue,
         creative_key: ck || "",
-        utm_content: saleForm.creative_key || "",
-        notes: saleForm.notes,
+        utm_content: creativeFromLead || saleForm.creative_key || "",
+        notes: selectedLead ? `${selectedLead.nome_completo}${saleForm.notes ? ` — ${saleForm.notes}` : ""}` : saleForm.notes,
+        lead_id: selectedLeadId || "",
       });
       toast({ title: "Venda registrada!" });
       setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "" });
+      setSelectedLeadId(null);
+      setLeadSearch("");
       setShowAddSale(false);
       loadData();
     } catch {
@@ -327,21 +363,25 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   };
 
   const handleAddMeeting = async () => {
-    if (!meetingForm.creative_key) {
-      toast({ title: "Selecione um criativo", variant: "destructive" });
+    const selectedLead = meetingSelectedLeadId ? leadsList.find(l => l.id === meetingSelectedLeadId) : null;
+    const creativeFromLead = selectedLead?.utm_content || meetingForm.creative_key;
+    if (!creativeFromLead && !selectedLead) {
+      toast({ title: "Selecione um lead ou criativo", variant: "destructive" });
       return;
     }
     setSavingMeeting(true);
     try {
-      const ck = normalizeCreativeKey(meetingForm.creative_key);
+      const ck = creativeFromLead ? normalizeCreativeKey(creativeFromLead) : "";
       await fetchAdminData("/meetings", {
         _method: "POST",
         creative_key: ck || "",
-        utm_content: meetingForm.creative_key || "",
-        notes: meetingForm.notes,
+        utm_content: creativeFromLead || "",
+        notes: selectedLead ? `${selectedLead.nome_completo}${meetingForm.notes ? ` — ${meetingForm.notes}` : ""}` : meetingForm.notes,
       });
       toast({ title: "Reunião registrada!" });
       setMeetingForm({ creative_key: "", notes: "" });
+      setMeetingSelectedLeadId(null);
+      setMeetingLeadSearch("");
       setShowAddMeeting(false);
       loadData();
       if (showMeetingsList) loadMeetings();
@@ -1109,12 +1149,81 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       </Dialog>
 
       {/* Add Sale Dialog */}
-      <Dialog open={showAddSale} onOpenChange={setShowAddSale}>
-        <DialogContent>
+      <Dialog open={showAddSale} onOpenChange={(open) => {
+        setShowAddSale(open);
+        if (open && leadsList.length === 0) loadLeads();
+        if (!open) { setSelectedLeadId(null); setLeadSearch(""); }
+      }}>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Registrar Venda Manual</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {/* Lead Picker */}
+            <div>
+              <label className="text-sm text-muted-foreground">Selecionar Lead</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar lead por nome ou WhatsApp..."
+                  value={leadSearch}
+                  onChange={e => { setLeadSearch(e.target.value); setSelectedLeadId(null); }}
+                  className="pl-9"
+                />
+              </div>
+              {leadSearch.length >= 2 && !selectedLeadId && (
+                <div className="mt-1 max-h-40 overflow-y-auto border rounded-md bg-popover">
+                  {leadsLoading ? (
+                    <div className="flex justify-center py-3"><Loader2 className="w-4 h-4 animate-spin" /></div>
+                  ) : (
+                    leadsList
+                      .filter(l => l.nome_completo.toLowerCase().includes(leadSearch.toLowerCase()) || l.whatsapp.includes(leadSearch))
+                      .slice(0, 15)
+                      .map(l => (
+                        <button
+                          key={l.id}
+                          type="button"
+                          className="w-full text-left px-3 py-2 hover:bg-accent text-sm flex justify-between items-center"
+                          onClick={() => {
+                            setSelectedLeadId(l.id);
+                            setLeadSearch(l.nome_completo);
+                            setSaleForm(p => ({
+                              ...p,
+                              creative_key: l.utm_content || "",
+                            }));
+                          }}
+                        >
+                          <div>
+                            <span className="font-medium">{l.nome_completo}</span>
+                            <span className="text-muted-foreground ml-2 text-xs">{l.whatsapp}</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground flex gap-2">
+                            {l.tier && <Badge variant="outline" className="text-[10px]">{l.tier}</Badge>}
+                            {l.utm_content && <span className="truncate max-w-[100px]">{l.utm_content}</span>}
+                          </div>
+                        </button>
+                      ))
+                  )}
+                  {!leadsLoading && leadsList.filter(l => l.nome_completo.toLowerCase().includes(leadSearch.toLowerCase()) || l.whatsapp.includes(leadSearch)).length === 0 && (
+                    <p className="text-center text-muted-foreground text-xs py-3">Nenhum lead encontrado</p>
+                  )}
+                </div>
+              )}
+              {selectedLeadId && (() => {
+                const sl = leadsList.find(l => l.id === selectedLeadId);
+                return sl ? (
+                  <div className="mt-2 p-2 bg-accent/30 rounded-md text-sm flex items-center justify-between">
+                    <div>
+                      <span className="font-medium">{sl.nome_completo}</span>
+                      <span className="text-muted-foreground ml-2">{sl.mercado}</span>
+                      {sl.utm_content && <Badge variant="outline" className="ml-2 text-[10px]">{sl.utm_content}</Badge>}
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => { setSelectedLeadId(null); setLeadSearch(""); setSaleForm(p => ({ ...p, creative_key: "" })); }}>✕</Button>
+                  </div>
+                ) : null;
+              })()}
+            </div>
+
             <div>
               <label className="text-sm text-muted-foreground">Data da Venda *</label>
               <Input type="date" value={saleForm.sale_date} onChange={e => setSaleForm(p => ({ ...p, sale_date: e.target.value }))} />
@@ -1124,23 +1233,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <Input type="number" step="0.01" placeholder="5000.00" value={saleForm.revenue} onChange={e => setSaleForm(p => ({ ...p, revenue: e.target.value }))} />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground">Criativo *</label>
-              <Select value={saleForm.creative_key} onValueChange={(v) => setSaleForm(p => ({ ...p, creative_key: v }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o criativo" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(data?.creatives || []).map(c => (
-                    <SelectItem key={c.creative_key} value={c.creative_label}>
-                      {c.creative_label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label className="text-sm text-muted-foreground">Criativo {selectedLeadId ? "(auto-preenchido)" : ""}</label>
+              <Input
+                placeholder="Criativo (utm_content)"
+                value={saleForm.creative_key}
+                onChange={e => setSaleForm(p => ({ ...p, creative_key: e.target.value }))}
+                disabled={!!selectedLeadId}
+                className={selectedLeadId ? "opacity-60" : ""}
+              />
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Notas</label>
-              <Input placeholder="Observações" value={saleForm.notes} onChange={e => setSaleForm(p => ({ ...p, notes: e.target.value }))} />
+              <Input placeholder="Observações adicionais" value={saleForm.notes} onChange={e => setSaleForm(p => ({ ...p, notes: e.target.value }))} />
             </div>
             <Button onClick={handleAddSale} disabled={savingSale} className="w-full">
               {savingSale ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
@@ -1192,30 +1296,94 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       </Dialog>
 
       {/* Add Meeting Dialog */}
-      <Dialog open={showAddMeeting} onOpenChange={setShowAddMeeting}>
-        <DialogContent>
+      <Dialog open={showAddMeeting} onOpenChange={(open) => {
+        setShowAddMeeting(open);
+        if (open && leadsList.length === 0) loadLeads();
+        if (!open) { setMeetingSelectedLeadId(null); setMeetingLeadSearch(""); }
+      }}>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Registrar Reunião</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {/* Lead Picker */}
             <div>
-              <label className="text-sm text-muted-foreground">Criativo *</label>
-              <Select value={meetingForm.creative_key} onValueChange={(v) => setMeetingForm(p => ({ ...p, creative_key: v }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o criativo" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(data?.creatives || []).map(c => (
-                    <SelectItem key={c.creative_key} value={c.creative_label}>
-                      {c.creative_label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label className="text-sm text-muted-foreground">Selecionar Lead</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar lead por nome ou WhatsApp..."
+                  value={meetingLeadSearch}
+                  onChange={e => { setMeetingLeadSearch(e.target.value); setMeetingSelectedLeadId(null); }}
+                  className="pl-9"
+                />
+              </div>
+              {meetingLeadSearch.length >= 2 && !meetingSelectedLeadId && (
+                <div className="mt-1 max-h-40 overflow-y-auto border rounded-md bg-popover">
+                  {leadsLoading ? (
+                    <div className="flex justify-center py-3"><Loader2 className="w-4 h-4 animate-spin" /></div>
+                  ) : (
+                    leadsList
+                      .filter(l => l.nome_completo.toLowerCase().includes(meetingLeadSearch.toLowerCase()) || l.whatsapp.includes(meetingLeadSearch))
+                      .slice(0, 15)
+                      .map(l => (
+                        <button
+                          key={l.id}
+                          type="button"
+                          className="w-full text-left px-3 py-2 hover:bg-accent text-sm flex justify-between items-center"
+                          onClick={() => {
+                            setMeetingSelectedLeadId(l.id);
+                            setMeetingLeadSearch(l.nome_completo);
+                            setMeetingForm(p => ({
+                              ...p,
+                              creative_key: l.utm_content || "",
+                            }));
+                          }}
+                        >
+                          <div>
+                            <span className="font-medium">{l.nome_completo}</span>
+                            <span className="text-muted-foreground ml-2 text-xs">{l.whatsapp}</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground flex gap-2">
+                            {l.tier && <Badge variant="outline" className="text-[10px]">{l.tier}</Badge>}
+                            {l.utm_content && <span className="truncate max-w-[100px]">{l.utm_content}</span>}
+                          </div>
+                        </button>
+                      ))
+                  )}
+                  {!leadsLoading && leadsList.filter(l => l.nome_completo.toLowerCase().includes(meetingLeadSearch.toLowerCase()) || l.whatsapp.includes(meetingLeadSearch)).length === 0 && (
+                    <p className="text-center text-muted-foreground text-xs py-3">Nenhum lead encontrado</p>
+                  )}
+                </div>
+              )}
+              {meetingSelectedLeadId && (() => {
+                const sl = leadsList.find(l => l.id === meetingSelectedLeadId);
+                return sl ? (
+                  <div className="mt-2 p-2 bg-accent/30 rounded-md text-sm flex items-center justify-between">
+                    <div>
+                      <span className="font-medium">{sl.nome_completo}</span>
+                      <span className="text-muted-foreground ml-2">{sl.mercado}</span>
+                      {sl.utm_content && <Badge variant="outline" className="ml-2 text-[10px]">{sl.utm_content}</Badge>}
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => { setMeetingSelectedLeadId(null); setMeetingLeadSearch(""); setMeetingForm(p => ({ ...p, creative_key: "" })); }}>✕</Button>
+                  </div>
+                ) : null;
+              })()}
+            </div>
+
+            <div>
+              <label className="text-sm text-muted-foreground">Criativo {meetingSelectedLeadId ? "(auto-preenchido)" : ""}</label>
+              <Input
+                placeholder="Criativo (utm_content)"
+                value={meetingForm.creative_key}
+                onChange={e => setMeetingForm(p => ({ ...p, creative_key: e.target.value }))}
+                disabled={!!meetingSelectedLeadId}
+                className={meetingSelectedLeadId ? "opacity-60" : ""}
+              />
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Observação</label>
-              <Input placeholder="Nome do lead, etc." value={meetingForm.notes} onChange={e => setMeetingForm(p => ({ ...p, notes: e.target.value }))} />
+              <Input placeholder="Notas adicionais" value={meetingForm.notes} onChange={e => setMeetingForm(p => ({ ...p, notes: e.target.value }))} />
             </div>
             <Button onClick={handleAddMeeting} disabled={savingMeeting} className="w-full">
               {savingMeeting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
