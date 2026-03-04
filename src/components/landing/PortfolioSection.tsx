@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Play } from "lucide-react";
+import { X, Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { useReveal } from "@/hooks/useReveal";
 import { portfolioItems, type PortfolioItem } from "@/data/portfolioItems";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function YouTubeThumb({ item, onClick }: { item: PortfolioItem; onClick: () => void }) {
   const [inView, setInView] = useState(false);
@@ -21,7 +22,7 @@ function YouTubeThumb({ item, onClick }: { item: PortfolioItem; onClick: () => v
     <div
       ref={ref}
       onClick={onClick}
-      className="group cursor-pointer gold-card overflow-hidden p-0 rounded-2xl"
+      className="group cursor-pointer gold-card overflow-hidden p-0 rounded-2xl flex-shrink-0 snap-center"
     >
       <div className="relative bg-muted/20" style={{ aspectRatio: "9/16" }}>
         {inView ? (
@@ -35,9 +36,9 @@ function YouTubeThumb({ item, onClick }: { item: PortfolioItem; onClick: () => v
           <div className="w-full h-full animate-pulse bg-muted/30" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="w-14 h-14 rounded-full bg-secondary/90 flex items-center justify-center shadow-lg">
-            <Play className="w-6 h-6 text-secondary-foreground ml-0.5" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-secondary/90 flex items-center justify-center shadow-lg opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-200">
+            <Play className="w-5 h-5 md:w-6 md:h-6 text-secondary-foreground ml-0.5" />
           </div>
         </div>
         <div className="absolute bottom-3 left-3 right-3 flex gap-1.5 flex-wrap">
@@ -95,10 +96,36 @@ function VideoModal({ item, onClose }: { item: PortfolioItem; onClose: () => voi
 export function PortfolioSection() {
   const { ref, isVisible } = useReveal(0.08);
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollButtons = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateScrollButtons, { passive: true });
+    updateScrollButtons();
+    return () => el.removeEventListener("scroll", updateScrollButtons);
+  }, [updateScrollButtons]);
+
+  const scroll = (dir: "left" | "right") => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cardWidth = el.querySelector<HTMLElement>(":scope > div")?.offsetWidth ?? 200;
+    el.scrollBy({ left: dir === "left" ? -cardWidth * 2 : cardWidth * 2, behavior: "smooth" });
+  };
 
   return (
     <section id="portfolio" className="py-12 md:py-20 relative" ref={ref}>
-      <div className="container mx-auto px-5 max-w-5xl">
+      <div className="container mx-auto px-5 max-w-6xl">
         <div className={`text-center mb-8 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-2">
             PORTFÓLIO <span className="gold-text">DE ADS</span>
@@ -108,18 +135,55 @@ export function PortfolioSection() {
           </p>
         </div>
 
-        {/* Responsive Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
-          {portfolioItems.map((item, i) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isVisible ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: i * 0.06, duration: 0.4 }}
+        {/* Carousel wrapper */}
+        <div className="relative group/carousel">
+          {/* Navigation arrows - desktop only */}
+          {!isMobile && canScrollLeft && (
+            <button
+              onClick={() => scroll("left")}
+              className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-card/80 backdrop-blur border border-border/40 flex items-center justify-center text-foreground hover:bg-card transition-colors shadow-lg opacity-0 group-hover/carousel:opacity-100"
+              aria-label="Anterior"
             >
-              <YouTubeThumb item={item} onClick={() => setSelectedItem(item)} />
-            </motion.div>
-          ))}
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+          )}
+          {!isMobile && canScrollRight && (
+            <button
+              onClick={() => scroll("right")}
+              className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-card/80 backdrop-blur border border-border/40 flex items-center justify-center text-foreground hover:bg-card transition-colors shadow-lg opacity-0 group-hover/carousel:opacity-100"
+              aria-label="Próximo"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          )}
+
+          {/* Scrollable carousel */}
+          <div
+            ref={scrollRef}
+            className="flex gap-3 md:gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
+            {portfolioItems.map((item, i) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={isVisible ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.1 + i * 0.05, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                className="w-[42vw] max-w-[200px] md:w-[180px] lg:w-[200px] flex-shrink-0"
+              >
+                <YouTubeThumb item={item} onClick={() => setSelectedItem(item)} />
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Scroll indicator dots - mobile */}
+          {isMobile && (
+            <div className="flex justify-center gap-1 mt-2">
+              <div className="w-8 h-0.5 rounded-full bg-secondary/40" />
+              <div className="w-2 h-0.5 rounded-full bg-muted-foreground/20" />
+              <div className="w-2 h-0.5 rounded-full bg-muted-foreground/20" />
+            </div>
+          )}
         </div>
       </div>
 
