@@ -409,9 +409,7 @@
 }
 @media (max-width: 767px) {
   .cinematic-glow {
-    width: 300px;
-    height: 200px;
-    filter: blur(60px);
+    display: none;
   }
   .cinematic-vignette {
     display: none;

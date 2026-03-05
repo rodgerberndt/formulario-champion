@@ -8,7 +8,7 @@ import { PortfolioSection } from "@/components/landing/PortfolioSection";
 import { MetodoChampion } from "@/components/landing/MetodoChampion";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { GanchoCorpoSection } from "@/components/landing/GanchoCorpoSection";
-import { CaseVault } from "@/components/landing/CaseVault";
+
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import { Button } from "@/components/ui/button";
@@ -97,10 +97,7 @@ const Index = () => {
           <HowItWorks />
         </section>
 
-        {/* Cases */}
-        <section data-theme="gold-haze">
-          <CaseVault />
-        </section>
+        {/* CaseVault removed — duplicate of SocialProofCarousel */}
 
         {/* Final CTA */}
         <section data-theme="gold-haze">
