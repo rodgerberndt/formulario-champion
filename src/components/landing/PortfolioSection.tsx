@@ -5,8 +5,15 @@ import { useReveal } from "@/hooks/useReveal";
 import { portfolioItems, type PortfolioItem } from "@/data/portfolioItems";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+const YT_THUMB_URLS = (id: string) => [
+  `https://i.ytimg.com/vi/${id}/hq720.jpg`,
+  `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
+  `https://img.youtube.com/vi/${id}/0.jpg`,
+];
+
 function YouTubeThumb({ item, onClick }: { item: PortfolioItem; onClick: () => void }) {
   const [inView, setInView] = useState(false);
+  const [thumbIdx, setThumbIdx] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -18,6 +25,8 @@ function YouTubeThumb({ item, onClick }: { item: PortfolioItem; onClick: () => v
     return () => obs.disconnect();
   }, []);
 
+  const urls = YT_THUMB_URLS(item.youtubeId);
+
   return (
     <div
       ref={ref}
@@ -27,10 +36,11 @@ function YouTubeThumb({ item, onClick }: { item: PortfolioItem; onClick: () => v
       <div className="relative bg-muted/20" style={{ aspectRatio: "9/16" }}>
         {inView ? (
           <img
-            src={`https://img.youtube.com/vi/${item.youtubeId}/0.jpg`}
+            src={urls[thumbIdx]}
             alt={item.title}
             className="w-full h-full object-cover"
             loading="lazy"
+            onError={() => setThumbIdx((prev) => Math.min(prev + 1, urls.length - 1))}
           />
         ) : (
           <div className="w-full h-full animate-pulse bg-muted/30" />
