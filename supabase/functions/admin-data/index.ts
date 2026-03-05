@@ -78,12 +78,14 @@ Deno.serve(async (req: Request) => {
         .select("*")
         .order("created_at", { ascending: false });
 
-      // Apply date filters
+      // Apply date filters — supports both ISO timestamps and date-only strings
       if (from) {
         query = query.gte("created_at", from);
       }
       if (to) {
-        query = query.lte("created_at", to + "T23:59:59.999");
+        // If already ISO (contains T), use directly; otherwise append end-of-day
+        const toEnd = to.includes("T") ? to : to + "T23:59:59.999Z";
+        query = query.lte("created_at", toEnd);
       }
 
       if (search) {
