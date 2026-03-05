@@ -969,16 +969,16 @@ Deno.serve(async (req: Request) => {
         offset += PAGE_SIZE;
       }
 
-      // Fetch ad_spend in period
+      // Fetch ad_spend in period (date-only column)
       let spendQuery = supabase.from("ad_spend").select("*");
-      if (from) spendQuery = spendQuery.gte("date", from);
-      if (to) spendQuery = spendQuery.lte("date", to);
+      if (fromDate) spendQuery = spendQuery.gte("date", fromDate);
+      if (toDate) spendQuery = spendQuery.lte("date", toDate);
       const { data: spendData } = await spendQuery;
 
-      // Fetch manual_sales in period
+      // Fetch manual_sales in period (date-only column)
       let salesQuery = supabase.from("manual_sales").select("*");
-      if (from) salesQuery = salesQuery.gte("sale_date", from);
-      if (to) salesQuery = salesQuery.lte("sale_date", to);
+      if (fromDate) salesQuery = salesQuery.gte("sale_date", fromDate);
+      if (toDate) salesQuery = salesQuery.lte("sale_date", toDate);
       const { data: salesData } = await salesQuery;
 
       // Fetch meetings in period
