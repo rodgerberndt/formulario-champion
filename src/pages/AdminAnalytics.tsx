@@ -814,8 +814,8 @@ export default function AdminAnalytics() {
       const params: Record<string, string> = {
         page: sessionsPage.toString(),
         limit: "20",
-        from: startDateOnly,
-        to: endDateOnly,
+        from: startISO,
+        to: endISO,
       };
       if (statusFilter !== "all") params.status = statusFilter;
       if (buttonFilter !== "all") params.button_id = buttonFilter;
