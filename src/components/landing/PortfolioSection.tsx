@@ -110,12 +110,15 @@ export function PortfolioSection() {
   const isMobile = useIsMobile();
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const updateScrollButtons = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
     setCanScrollLeft(el.scrollLeft > 4);
     setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    setScrollProgress(maxScroll > 0 ? (el.scrollLeft / maxScroll) * 100 : 0);
   }, []);
 
   useEffect(() => {
@@ -184,14 +187,15 @@ export function PortfolioSection() {
             ))}
           </div>
 
-          {/* Scroll indicator dots - mobile */}
-          {isMobile && (
-            <div className="flex justify-center gap-1 mt-2">
-              <div className="w-8 h-0.5 rounded-full bg-secondary/40" />
-              <div className="w-2 h-0.5 rounded-full bg-muted-foreground/20" />
-              <div className="w-2 h-0.5 rounded-full bg-muted-foreground/20" />
+          {/* Scroll progress bar */}
+          <div className="flex justify-center mt-3">
+            <div className="w-24 h-1 rounded-full bg-muted/30 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-secondary/70 transition-all duration-150"
+                style={{ width: `${Math.max(10, scrollProgress)}%` }}
+              />
             </div>
-          )}
+          </div>
         </div>
       </div>
 

@@ -14,11 +14,10 @@ const testimonialVideos = [
   "/testimonials/video-8.mp4",
 ];
 
-/** Thumbnail card — video only loads on click via modal */
+/** Thumbnail card — shows paused video frame, plays on click via modal */
 function VideoCard({ video, index, onPlay }: { video: string; index: number; onPlay: () => void }) {
-  const [posterReady, setPosterReady] = useState(false);
-  const [posterUrl, setPosterUrl] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [inView, setInView] = useState(false);
 
   // Lazy observe
@@ -31,59 +30,33 @@ function VideoCard({ video, index, onPlay }: { video: string; index: number; onP
     return () => obs.disconnect();
   }, []);
 
-  // Extract a poster frame from the video when in view
+  // Seek to 1s to show a real frame as thumbnail
   useEffect(() => {
-    if (!inView) return;
-    const vid = document.createElement("video");
-    vid.crossOrigin = "anonymous";
-    vid.preload = "metadata";
-    vid.muted = true;
-    vid.src = video;
-    vid.currentTime = 1; // grab frame at 1s
-
-    vid.addEventListener("seeked", () => {
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = vid.videoWidth || 320;
-        canvas.height = vid.videoHeight || 568;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
-          setPosterUrl(canvas.toDataURL("image/jpeg", 0.7));
-          setPosterReady(true);
-        }
-      } catch {
-        // CORS or other error — show placeholder
-        setPosterReady(true);
-      }
-      vid.remove();
-    }, { once: true });
-
-    vid.addEventListener("error", () => {
-      setPosterReady(true);
-      vid.remove();
-    }, { once: true });
-
-    vid.load();
-    return () => { vid.src = ""; vid.remove(); };
-  }, [inView, video]);
+    if (!inView || !videoRef.current) return;
+    const vid = videoRef.current;
+    const onLoaded = () => { vid.currentTime = 1; };
+    vid.addEventListener("loadedmetadata", onLoaded, { once: true });
+    return () => vid.removeEventListener("loadedmetadata", onLoaded);
+  }, [inView]);
 
   return (
     <div
       ref={containerRef}
       onClick={onPlay}
-      className="flex-shrink-0 w-[180px] md:w-[200px] rounded-2xl overflow-hidden bg-muted/20 border border-border/30 cursor-pointer group snap-center"
+      className="relative flex-shrink-0 w-[180px] md:w-[200px] rounded-2xl overflow-hidden bg-muted/20 border border-border/30 cursor-pointer group snap-center"
       style={{ aspectRatio: "9/16", contain: "layout style paint" }}
     >
-      {posterUrl ? (
-        <img
-          src={posterUrl}
-          alt={`Depoimento ${index + 1}`}
-          className="w-full h-full object-cover"
-          loading="lazy"
+      {inView ? (
+        <video
+          ref={videoRef}
+          src={video}
+          muted
+          playsInline
+          preload="metadata"
+          className="w-full h-full object-cover pointer-events-none"
         />
       ) : (
-        <div className={`w-full h-full ${posterReady ? 'bg-muted/30' : 'animate-pulse bg-muted/20'}`} />
+        <div className="w-full h-full animate-pulse bg-muted/20" />
       )}
 
       {/* Play overlay */}
@@ -146,12 +119,15 @@ export function SocialProofCarousel() {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const updateScrollButtons = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
     setCanScrollLeft(el.scrollLeft > 4);
     setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    setScrollProgress(maxScroll > 0 ? (el.scrollLeft / maxScroll) * 100 : 0);
   }, []);
 
   useEffect(() => {
@@ -217,14 +193,15 @@ export function SocialProofCarousel() {
             ))}
           </div>
 
-          {/* Mobile dots */}
-          {isMobile && (
-            <div className="flex justify-center gap-1 mt-2">
-              <div className="w-8 h-0.5 rounded-full bg-secondary/40" />
-              <div className="w-2 h-0.5 rounded-full bg-muted-foreground/20" />
-              <div className="w-2 h-0.5 rounded-full bg-muted-foreground/20" />
+          {/* Scroll progress bar */}
+          <div className="flex justify-center mt-3">
+            <div className="w-24 h-1 rounded-full bg-muted/30 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-secondary/70 transition-all duration-150"
+                style={{ width: `${Math.max(10, scrollProgress)}%` }}
+              />
             </div>
-          )}
+          </div>
         </div>
       </div>
 
