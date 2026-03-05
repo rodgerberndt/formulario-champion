@@ -119,15 +119,25 @@ export function SocialProofCarousel() {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const updateScrollButtons = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
     setCanScrollLeft(el.scrollLeft > 4);
     setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    setScrollProgress(maxScroll > 0 ? (el.scrollLeft / maxScroll) * 100 : 0);
+    // Calculate active dot based on scroll position
+    const children = Array.from(el.children) as HTMLElement[];
+    if (children.length === 0) return;
+    const scrollCenter = el.scrollLeft + el.clientWidth / 2;
+    let closest = 0;
+    let minDist = Infinity;
+    children.forEach((child, i) => {
+      const childCenter = child.offsetLeft + child.offsetWidth / 2;
+      const dist = Math.abs(scrollCenter - childCenter);
+      if (dist < minDist) { minDist = dist; closest = i; }
+    });
+    setActiveIndex(closest);
   }, []);
 
   useEffect(() => {
@@ -193,14 +203,29 @@ export function SocialProofCarousel() {
             ))}
           </div>
 
-          {/* Scroll progress bar */}
-          <div className="flex justify-center mt-3">
-            <div className="w-24 h-1 rounded-full bg-muted/30 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-secondary/70 transition-all duration-150"
-                style={{ width: `${Math.max(10, scrollProgress)}%` }}
-              />
-            </div>
+          {/* Dots indicator */}
+          <div className="flex justify-center items-center gap-1.5 mt-3">
+            {testimonialVideos.map((_, i) => (
+              <button
+                key={i}
+                aria-label={`Ir para vídeo ${i + 1}`}
+                onClick={() => {
+                  const el = scrollRef.current;
+                  if (!el) return;
+                  const child = el.children[i] as HTMLElement;
+                  if (child) el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.offsetWidth) / 2, behavior: "smooth" });
+                }}
+                className="p-0.5"
+              >
+                <div
+                  className={`rounded-full transition-all duration-300 ease-out ${
+                    i === activeIndex
+                      ? "w-2.5 h-2.5 bg-secondary scale-100"
+                      : "w-2 h-2 bg-transparent border border-muted-foreground/40 scale-90"
+                  }`}
+                />
+              </button>
+            ))}
           </div>
         </div>
       </div>
