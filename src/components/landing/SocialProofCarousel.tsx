@@ -193,14 +193,15 @@ export function SocialProofCarousel() {
             ))}
           </div>
 
-          {/* Mobile dots */}
-          {isMobile && (
-            <div className="flex justify-center gap-1 mt-2">
-              <div className="w-8 h-0.5 rounded-full bg-secondary/40" />
-              <div className="w-2 h-0.5 rounded-full bg-muted-foreground/20" />
-              <div className="w-2 h-0.5 rounded-full bg-muted-foreground/20" />
+          {/* Scroll progress bar */}
+          <div className="flex justify-center mt-3">
+            <div className="w-24 h-1 rounded-full bg-muted/30 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-secondary/70 transition-all duration-150"
+                style={{ width: `${Math.max(10, scrollProgress)}%` }}
+              />
             </div>
-          )}
+          </div>
         </div>
       </div>
 
