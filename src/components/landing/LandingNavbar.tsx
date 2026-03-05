@@ -7,7 +7,7 @@ const navItems = [
   { label: "Portfólio", href: "#portfolio" },
   { label: "Método", href: "#metodo" },
   { label: "Como funciona", href: "#como-funciona" },
-  { label: "Cases", href: "#cases" },
+  
 ];
 
 export function LandingNavbar() {
