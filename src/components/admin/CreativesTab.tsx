@@ -287,7 +287,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     } finally {
       setMeetingsLoading(false);
     }
-  }, [fetchAdminData, startDateOnly, endDateOnly]);
+  }, [fetchAdminData, startISO, endISO]);
 
   const handleDeleteSale = async (saleId: string) => {
     setDeletingSaleId(saleId);
