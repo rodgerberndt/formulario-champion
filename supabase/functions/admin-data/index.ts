@@ -927,7 +927,9 @@ Deno.serve(async (req: Request) => {
     if (path === "/creatives" && req.method === "GET") {
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
-      const toEnd = to ? to + "T23:59:59.999" : null;
+      const fromDate = url.searchParams.get("from_date") || (from && !from.includes("T") ? from : null);
+      const toDate = url.searchParams.get("to_date") || (to && !to.includes("T") ? to : null);
+      const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
 
       // Helper to normalize creative key
       function normalizeKey(raw: string): string {
