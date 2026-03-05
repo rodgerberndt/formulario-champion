@@ -170,7 +170,7 @@ export function PortfolioSection() {
                 style={{ transitionDelay: `${50 + i * 40}ms` }}
               >
                 <YouTubeThumb item={item} onClick={() => setSelectedItem(item)} />
-              </motion.div>
+              </div>
             ))}
           </div>
 

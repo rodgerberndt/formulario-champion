@@ -46,12 +46,9 @@ const themes: Record<string, ThemeConfig> = {
   },
 };
 
-/**
- * Observes sections with data-theme and smoothly transitions
- * CSS custom properties on the root element.
- */
 export function useSectionThemes() {
   const currentTheme = useRef("void");
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -69,12 +66,10 @@ export function useSectionThemes() {
       root.style.setProperty("--theme-noise-opacity", String(t.noiseOpacity));
     };
 
-    // Default
     applyTheme("void");
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Pick the most visible section
         let best: IntersectionObserverEntry | null = null;
         entries.forEach((e) => {
           if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) {
@@ -82,14 +77,19 @@ export function useSectionThemes() {
           }
         });
         if (best) {
-          const theme = (best as IntersectionObserverEntry).target.getAttribute("data-theme") || "void";
-          applyTheme(theme);
+          const theme = best.target.getAttribute("data-theme") || "void";
+          // Debounce theme application to reduce jank
+          if (debounceTimer.current) clearTimeout(debounceTimer.current);
+          debounceTimer.current = setTimeout(() => applyTheme(theme), 150);
         }
       },
-      { threshold: [0.2, 0.5], rootMargin: "-10% 0px -10% 0px" }
+      { threshold: [0.5], rootMargin: "-10% 0px -10% 0px" }
     );
 
     sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    };
   }, []);
 }
