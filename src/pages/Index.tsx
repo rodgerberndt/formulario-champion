@@ -97,10 +97,7 @@ const Index = () => {
           <HowItWorks />
         </section>
 
-        {/* Cases */}
-        <section data-theme="gold-haze">
-          <CaseVault />
-        </section>
+        {/* CaseVault removed — duplicate of SocialProofCarousel */}
 
         {/* Final CTA */}
         <section data-theme="gold-haze">
