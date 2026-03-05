@@ -92,7 +92,7 @@ function VideoModal({ item, onClose }: { item: PortfolioItem; onClose: () => voi
           <X className="w-5 h-5" />
         </button>
         <iframe
-          src={`https://www.youtube.com/embed/${item.youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+          src={`https://www.youtube.com/embed/${item.youtubeId}?autoplay=1&fs=1&rel=0&modestbranding=1`}
           className="w-full h-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
