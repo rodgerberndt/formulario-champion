@@ -763,7 +763,7 @@ Deno.serve(async (req: Request) => {
         .limit(limit);
 
       if (from) query = query.gte("created_at", from);
-      if (to) query = query.lte("created_at", to + "T23:59:59");
+      if (to) query = query.lte("created_at", to.includes("T") ? to : to + "T23:59:59Z");
       if (source && source !== "all") query = query.eq("utm_source", source);
       if (campaign && campaign !== "all") {
         query = query.or(`utm_campaign.eq.${campaign},campaign_id.eq.${campaign}`);
