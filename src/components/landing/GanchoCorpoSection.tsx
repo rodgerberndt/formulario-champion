@@ -319,16 +319,16 @@ export function GanchoCorpoSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.6 }}
-          className="text-center"
+          className="flex flex-col items-center text-center"
         >
-          <p className="text-base md:text-lg text-foreground/90 font-medium mb-6 leading-relaxed max-w-xl mx-auto">
+          <p className="text-base md:text-lg text-foreground/90 font-medium mb-6 leading-relaxed max-w-xl">
             Não é sobre fazer mais criativos. É sobre falar com mais{" "}
             <span className="text-secondary font-bold">PERSONAS</span> — do jeito certo.
           </p>
           <Button
             size="lg"
             onClick={handleCTA}
-            className="group h-12 md:h-14 px-5 md:px-10 text-xs md:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98] w-full md:w-auto max-w-sm"
+            className="group h-12 md:h-14 px-6 md:px-10 text-xs md:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]"
           >
             QUERO APLICAR ISSO NA MINHA OPERAÇÃO
             <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
