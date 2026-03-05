@@ -1318,7 +1318,7 @@ Deno.serve(async (req: Request) => {
       
       let query = supabase.from("meetings").select("*").order("created_at", { ascending: false });
       if (from) query = query.gte("created_at", from);
-      if (to) query = query.lte("created_at", to + "T23:59:59.999");
+      if (to) query = query.lte("created_at", to.includes("T") ? to : to + "T23:59:59.999Z");
       
       const { data, error } = await query;
       if (error) throw error;
