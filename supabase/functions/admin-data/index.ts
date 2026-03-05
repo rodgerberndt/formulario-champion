@@ -78,12 +78,14 @@ Deno.serve(async (req: Request) => {
         .select("*")
         .order("created_at", { ascending: false });
 
-      // Apply date filters
+      // Apply date filters — supports both ISO timestamps and date-only strings
       if (from) {
         query = query.gte("created_at", from);
       }
       if (to) {
-        query = query.lte("created_at", to + "T23:59:59.999");
+        // If already ISO (contains T), use directly; otherwise append end-of-day
+        const toEnd = to.includes("T") ? to : to + "T23:59:59.999Z";
+        query = query.lte("created_at", toEnd);
       }
 
       if (search) {
@@ -188,8 +190,8 @@ Deno.serve(async (req: Request) => {
         query = query.gte("created_at", from);
       }
       if (to) {
-        // Include entire day by adding time component
-        query = query.lte("created_at", to + "T23:59:59.999");
+        const toEnd = to.includes("T") ? to : to + "T23:59:59.999Z";
+        query = query.lte("created_at", toEnd);
       }
       if (buttonId) {
         query = query.eq("start_button_id", buttonId);
@@ -276,7 +278,7 @@ Deno.serve(async (req: Request) => {
     if (path === "/metrics" && req.method === "GET") {
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
-      const toEnd = to ? to + "T23:59:59.999" : null;
+      const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
 
       // Helper to fetch ALL rows (bypass 1000-row limit) with pagination
       async function fetchAll<T>(table: string, select: string, filters: (q: any) => any): Promise<T[]> {
@@ -589,7 +591,7 @@ Deno.serve(async (req: Request) => {
       // Get sessions with campaign data
       let sessionsQuery = supabase.from("lead_sessions").select("*");
       if (from) sessionsQuery = sessionsQuery.gte("created_at", from);
-      if (to) sessionsQuery = sessionsQuery.lte("created_at", to + "T23:59:59");
+      if (to) sessionsQuery = sessionsQuery.lte("created_at", to.includes("T") ? to : to + "T23:59:59Z");
       if (source && source !== "all") sessionsQuery = sessionsQuery.eq("utm_source", source);
       if (campaign && campaign !== "all") {
         sessionsQuery = sessionsQuery.or(`utm_campaign.eq.${campaign},campaign_id.eq.${campaign}`);
@@ -761,7 +763,7 @@ Deno.serve(async (req: Request) => {
         .limit(limit);
 
       if (from) query = query.gte("created_at", from);
-      if (to) query = query.lte("created_at", to + "T23:59:59");
+      if (to) query = query.lte("created_at", to.includes("T") ? to : to + "T23:59:59Z");
       if (source && source !== "all") query = query.eq("utm_source", source);
       if (campaign && campaign !== "all") {
         query = query.or(`utm_campaign.eq.${campaign},campaign_id.eq.${campaign}`);
@@ -925,7 +927,9 @@ Deno.serve(async (req: Request) => {
     if (path === "/creatives" && req.method === "GET") {
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
-      const toEnd = to ? to + "T23:59:59.999" : null;
+      const fromDate = url.searchParams.get("from_date") || (from && !from.includes("T") ? from : null);
+      const toDate = url.searchParams.get("to_date") || (to && !to.includes("T") ? to : null);
+      const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
 
       // Helper to normalize creative key
       function normalizeKey(raw: string): string {
@@ -965,16 +969,16 @@ Deno.serve(async (req: Request) => {
         offset += PAGE_SIZE;
       }
 
-      // Fetch ad_spend in period
+      // Fetch ad_spend in period (date-only column)
       let spendQuery = supabase.from("ad_spend").select("*");
-      if (from) spendQuery = spendQuery.gte("date", from);
-      if (to) spendQuery = spendQuery.lte("date", to);
+      if (fromDate) spendQuery = spendQuery.gte("date", fromDate);
+      if (toDate) spendQuery = spendQuery.lte("date", toDate);
       const { data: spendData } = await spendQuery;
 
-      // Fetch manual_sales in period
+      // Fetch manual_sales in period (date-only column)
       let salesQuery = supabase.from("manual_sales").select("*");
-      if (from) salesQuery = salesQuery.gte("sale_date", from);
-      if (to) salesQuery = salesQuery.lte("sale_date", to);
+      if (fromDate) salesQuery = salesQuery.gte("sale_date", fromDate);
+      if (toDate) salesQuery = salesQuery.lte("sale_date", toDate);
       const { data: salesData } = await salesQuery;
 
       // Fetch meetings in period
@@ -1314,7 +1318,7 @@ Deno.serve(async (req: Request) => {
       
       let query = supabase.from("meetings").select("*").order("created_at", { ascending: false });
       if (from) query = query.gte("created_at", from);
-      if (to) query = query.lte("created_at", to + "T23:59:59.999");
+      if (to) query = query.lte("created_at", to.includes("T") ? to : to + "T23:59:59.999Z");
       
       const { data, error } = await query;
       if (error) throw error;

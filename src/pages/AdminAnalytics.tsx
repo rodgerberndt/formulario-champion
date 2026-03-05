@@ -177,7 +177,7 @@ interface Lead {
 export default function AdminAnalytics() {
   const navigate = useNavigate();
   const { activeUsers, uniqueCount, getUsersWithDuration } = useActiveUsers();
-  const { start: globalStart, end: globalEnd, startDateOnly, endDateOnly } = useDateRange();
+  const { start: globalStart, end: globalEnd, startISO, endISO, startDateOnly, endDateOnly } = useDateRange();
 
   // Realtime lead notifications callback (ref to avoid stale closure)
   const handleNewLeadRef = useRef<() => void>();
@@ -471,15 +471,15 @@ export default function AdminAnalytics() {
       loadLeads();
       loadCampaignMetrics();
     }
-  }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, startDateOnly, endDateOnly, sessionsPage]);
+  }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, startISO, endISO, sessionsPage]);
 
   // Load leads from legacy table via edge function
   const loadLeads = async () => {
     setLeadsLoading(true);
     try {
       const params: Record<string, string> = {
-        from: startDateOnly,
-        to: endDateOnly,
+        from: startISO,
+        to: endISO,
       };
       const data = await fetchAdminData("/leads", params);
       setLeads(data || []);
@@ -780,8 +780,8 @@ export default function AdminAnalytics() {
   const loadMetrics = async () => {
     try {
       const params: Record<string, string> = {
-        from: startDateOnly,
-        to: endDateOnly,
+        from: startISO,
+        to: endISO,
       };
 
       const data = await fetchAdminData("/metrics", params);
@@ -795,8 +795,8 @@ export default function AdminAnalytics() {
     setCampaignMetricsLoading(true);
     try {
       const params: Record<string, string> = {
-        from: startDateOnly,
-        to: endDateOnly,
+        from: startISO,
+        to: endISO,
       };
 
       const data = await fetchAdminData("/campaigns", params);
@@ -814,8 +814,8 @@ export default function AdminAnalytics() {
       const params: Record<string, string> = {
         page: sessionsPage.toString(),
         limit: "20",
-        from: startDateOnly,
-        to: endDateOnly,
+        from: startISO,
+        to: endISO,
       };
       if (statusFilter !== "all") params.status = statusFilter;
       if (buttonFilter !== "all") params.button_id = buttonFilter;
@@ -2707,6 +2707,8 @@ export default function AdminAnalytics() {
                   fetchAdminData={fetchAdminData}
                   startDateOnly={startDateOnly}
                   endDateOnly={endDateOnly}
+                  startISO={startISO}
+                  endISO={endISO}
                 />
               </Suspense>
             </TabsContent>

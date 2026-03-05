@@ -201,9 +201,11 @@ interface CreativesTabProps {
   fetchAdminData: (path: string, params?: Record<string, string>) => Promise<any>;
   startDateOnly: string;
   endDateOnly: string;
+  startISO: string;
+  endISO: string;
 }
 
-export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnly }: CreativesTabProps) {
+export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnly, startISO, endISO }: CreativesTabProps) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<CreativesResponse | null>(null);
   const [attribution, setAttribution] = useState<"first" | "last">("first");
@@ -254,14 +256,14 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const loadLeads = useCallback(async () => {
     setLeadsLoading(true);
     try {
-      const result = await fetchAdminData("/leads", { from: startDateOnly, to: endDateOnly });
+      const result = await fetchAdminData("/leads", { from: startISO, to: endISO });
       setLeadsList(Array.isArray(result) ? result : []);
     } catch (err) {
       console.error("Error loading leads:", err);
     } finally {
       setLeadsLoading(false);
     }
-  }, [fetchAdminData, startDateOnly, endDateOnly]);
+  }, [fetchAdminData, startISO, endISO]);
 
   const loadSales = useCallback(async () => {
     setSalesLoading(true);
@@ -278,14 +280,14 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const loadMeetings = useCallback(async () => {
     setMeetingsLoading(true);
     try {
-      const result = await fetchAdminData("/meetings", { from: startDateOnly, to: endDateOnly });
+      const result = await fetchAdminData("/meetings", { from: startISO, to: endISO });
       setMeetingsList(Array.isArray(result) ? result : []);
     } catch (err) {
       console.error("Error loading meetings:", err);
     } finally {
       setMeetingsLoading(false);
     }
-  }, [fetchAdminData, startDateOnly, endDateOnly]);
+  }, [fetchAdminData, startISO, endISO]);
 
   const handleDeleteSale = async (saleId: string) => {
     setDeletingSaleId(saleId);
@@ -310,9 +312,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     setLoading(true);
     try {
       const params: Record<string, string> = {
-        from: startDateOnly,
-        to: endDateOnly,
+        from: startISO,
+        to: endISO,
         attribution,
+        from_date: startDateOnly,
+        to_date: endDateOnly,
       };
       const result = await fetchAdminData("/creatives", params);
       setData(result);
