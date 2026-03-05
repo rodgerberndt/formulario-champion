@@ -190,8 +190,8 @@ Deno.serve(async (req: Request) => {
         query = query.gte("created_at", from);
       }
       if (to) {
-        // Include entire day by adding time component
-        query = query.lte("created_at", to + "T23:59:59.999");
+        const toEnd = to.includes("T") ? to : to + "T23:59:59.999Z";
+        query = query.lte("created_at", toEnd);
       }
       if (buttonId) {
         query = query.eq("start_button_id", buttonId);
