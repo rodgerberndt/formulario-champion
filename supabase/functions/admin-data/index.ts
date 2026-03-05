@@ -278,7 +278,7 @@ Deno.serve(async (req: Request) => {
     if (path === "/metrics" && req.method === "GET") {
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
-      const toEnd = to ? to + "T23:59:59.999" : null;
+      const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
 
       // Helper to fetch ALL rows (bypass 1000-row limit) with pagination
       async function fetchAll<T>(table: string, select: string, filters: (q: any) => any): Promise<T[]> {
