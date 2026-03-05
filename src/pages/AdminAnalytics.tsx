@@ -795,8 +795,8 @@ export default function AdminAnalytics() {
     setCampaignMetricsLoading(true);
     try {
       const params: Record<string, string> = {
-        from: startDateOnly,
-        to: endDateOnly,
+        from: startISO,
+        to: endISO,
       };
 
       const data = await fetchAdminData("/campaigns", params);
