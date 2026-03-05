@@ -780,8 +780,8 @@ export default function AdminAnalytics() {
   const loadMetrics = async () => {
     try {
       const params: Record<string, string> = {
-        from: startDateOnly,
-        to: endDateOnly,
+        from: startISO,
+        to: endISO,
       };
 
       const data = await fetchAdminData("/metrics", params);
