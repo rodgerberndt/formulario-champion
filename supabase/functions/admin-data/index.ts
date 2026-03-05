@@ -591,7 +591,7 @@ Deno.serve(async (req: Request) => {
       // Get sessions with campaign data
       let sessionsQuery = supabase.from("lead_sessions").select("*");
       if (from) sessionsQuery = sessionsQuery.gte("created_at", from);
-      if (to) sessionsQuery = sessionsQuery.lte("created_at", to + "T23:59:59");
+      if (to) sessionsQuery = sessionsQuery.lte("created_at", to.includes("T") ? to : to + "T23:59:59Z");
       if (source && source !== "all") sessionsQuery = sessionsQuery.eq("utm_source", source);
       if (campaign && campaign !== "all") {
         sessionsQuery = sessionsQuery.or(`utm_campaign.eq.${campaign},campaign_id.eq.${campaign}`);
