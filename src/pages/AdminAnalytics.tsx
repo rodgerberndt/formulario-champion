@@ -2707,6 +2707,8 @@ export default function AdminAnalytics() {
                   fetchAdminData={fetchAdminData}
                   startDateOnly={startDateOnly}
                   endDateOnly={endDateOnly}
+                  startISO={startISO}
+                  endISO={endISO}
                 />
               </Suspense>
             </TabsContent>
