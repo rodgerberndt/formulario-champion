@@ -177,7 +177,7 @@ interface Lead {
 export default function AdminAnalytics() {
   const navigate = useNavigate();
   const { activeUsers, uniqueCount, getUsersWithDuration } = useActiveUsers();
-  const { start: globalStart, end: globalEnd, startDateOnly, endDateOnly } = useDateRange();
+  const { start: globalStart, end: globalEnd, startISO, endISO, startDateOnly, endDateOnly } = useDateRange();
 
   // Realtime lead notifications callback (ref to avoid stale closure)
   const handleNewLeadRef = useRef<() => void>();
