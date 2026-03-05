@@ -203,14 +203,29 @@ export function SocialProofCarousel() {
             ))}
           </div>
 
-          {/* Scroll progress bar */}
-          <div className="flex justify-center mt-3">
-            <div className="w-24 h-1 rounded-full bg-muted/30 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-secondary/70 transition-all duration-150"
-                style={{ width: `${Math.max(10, scrollProgress)}%` }}
-              />
-            </div>
+          {/* Dots indicator */}
+          <div className="flex justify-center items-center gap-1.5 mt-3">
+            {testimonialVideos.map((_, i) => (
+              <button
+                key={i}
+                aria-label={`Ir para vídeo ${i + 1}`}
+                onClick={() => {
+                  const el = scrollRef.current;
+                  if (!el) return;
+                  const child = el.children[i] as HTMLElement;
+                  if (child) el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.offsetWidth) / 2, behavior: "smooth" });
+                }}
+                className="p-0.5"
+              >
+                <div
+                  className={`rounded-full transition-all duration-300 ease-out ${
+                    i === activeIndex
+                      ? "w-2.5 h-2.5 bg-secondary scale-100"
+                      : "w-2 h-2 bg-transparent border border-muted-foreground/40 scale-90"
+                  }`}
+                />
+              </button>
+            ))}
           </div>
         </div>
       </div>
