@@ -256,7 +256,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const loadLeads = useCallback(async () => {
     setLeadsLoading(true);
     try {
-      const result = await fetchAdminData("/leads", { from: startDateOnly, to: endDateOnly });
+      const result = await fetchAdminData("/leads", { from: startISO, to: endISO });
       setLeadsList(Array.isArray(result) ? result : []);
     } catch (err) {
       console.error("Error loading leads:", err);
