@@ -478,8 +478,8 @@ export default function AdminAnalytics() {
     setLeadsLoading(true);
     try {
       const params: Record<string, string> = {
-        from: startDateOnly,
-        to: endDateOnly,
+        from: startISO,
+        to: endISO,
       };
       const data = await fetchAdminData("/leads", params);
       setLeads(data || []);
