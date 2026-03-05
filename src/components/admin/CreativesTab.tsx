@@ -263,7 +263,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     } finally {
       setLeadsLoading(false);
     }
-  }, [fetchAdminData, startDateOnly, endDateOnly]);
+  }, [fetchAdminData, startISO, endISO]);
 
   const loadSales = useCallback(async () => {
     setSalesLoading(true);
