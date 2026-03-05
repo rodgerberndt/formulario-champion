@@ -94,9 +94,11 @@ function VideoModal({ item, onClose }: { item: PortfolioItem; onClose: () => voi
         <iframe
           src={`https://www.youtube.com/embed/${item.youtubeId}?autoplay=1&rel=0&modestbranding=1`}
           className="w-full h-full"
-          allow="autoplay; encrypted-media"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
-          title={item.title}
+          loading="lazy"
+          title="Video do Portfolio"
+          referrerPolicy="strict-origin-when-cross-origin"
         />
       </motion.div>
     </motion.div>
