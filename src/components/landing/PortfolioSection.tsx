@@ -164,12 +164,10 @@ export function PortfolioSection() {
             style={{ WebkitOverflowScrolling: "touch" }}
           >
             {portfolioItems.map((item, i) => (
-              <motion.div
+              <div
                 key={item.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={isVisible ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.1 + i * 0.05, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                className="w-[42vw] max-w-[200px] md:w-[180px] lg:w-[200px] flex-shrink-0"
+                className={`w-[42vw] max-w-[200px] md:w-[180px] lg:w-[200px] flex-shrink-0 reveal-up ${isVisible ? "visible" : ""}`}
+                style={{ transitionDelay: `${50 + i * 40}ms` }}
               >
                 <YouTubeThumb item={item} onClick={() => setSelectedItem(item)} />
               </motion.div>
