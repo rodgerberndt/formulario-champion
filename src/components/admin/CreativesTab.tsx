@@ -312,9 +312,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     setLoading(true);
     try {
       const params: Record<string, string> = {
-        from: startDateOnly,
-        to: endDateOnly,
+        from: startISO,
+        to: endISO,
         attribution,
+        from_date: startDateOnly,
+        to_date: endDateOnly,
       };
       const result = await fetchAdminData("/creatives", params);
       setData(result);
