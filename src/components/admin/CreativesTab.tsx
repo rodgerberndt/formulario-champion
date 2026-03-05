@@ -201,9 +201,11 @@ interface CreativesTabProps {
   fetchAdminData: (path: string, params?: Record<string, string>) => Promise<any>;
   startDateOnly: string;
   endDateOnly: string;
+  startISO: string;
+  endISO: string;
 }
 
-export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnly }: CreativesTabProps) {
+export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnly, startISO, endISO }: CreativesTabProps) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<CreativesResponse | null>(null);
   const [attribution, setAttribution] = useState<"first" | "last">("first");
