@@ -280,7 +280,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const loadMeetings = useCallback(async () => {
     setMeetingsLoading(true);
     try {
-      const result = await fetchAdminData("/meetings", { from: startDateOnly, to: endDateOnly });
+      const result = await fetchAdminData("/meetings", { from: startISO, to: endISO });
       setMeetingsList(Array.isArray(result) ? result : []);
     } catch (err) {
       console.error("Error loading meetings:", err);
