@@ -471,7 +471,7 @@ export default function AdminAnalytics() {
       loadLeads();
       loadCampaignMetrics();
     }
-  }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, startDateOnly, endDateOnly, sessionsPage]);
+  }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, startISO, endISO, sessionsPage]);
 
   // Load leads from legacy table via edge function
   const loadLeads = async () => {
