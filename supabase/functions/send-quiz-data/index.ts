@@ -10,6 +10,10 @@ Deno.serve(async (req) => {
 
   try {
     const webhookUrl = Deno.env.get("N8N_WEBHOOK_URL");
+    const wahaApiUrl = Deno.env.get("WAHA_API_URL");
+    const wahaApiKey = Deno.env.get("WAHA_API_KEY");
+    const wahaPhoneNumberId = Deno.env.get("WAHA_PHONE_NUMBER_ID");
+
     if (!webhookUrl) {
       return new Response(JSON.stringify({ error: "N8N_WEBHOOK_URL not configured" }), {
         status: 500,
@@ -19,11 +23,20 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
 
+    const payload = {
+      ...body,
+      waha: {
+        api_url: wahaApiUrl || null,
+        api_key: wahaApiKey || null,
+        phone_number_id: wahaPhoneNumberId || null,
+      },
+    };
+
     // Fire-and-forget: don't await the webhook response to avoid timeouts
     fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
     }).then(res => {
       console.log(`n8n webhook responded: ${res.status}`);
     }).catch(err => {
