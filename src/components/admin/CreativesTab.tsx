@@ -205,7 +205,78 @@ const MQL_FAT_MIN_FAIXAS = [
   "Acima de R$ 10 milhões",
 ];
 
-function isLeadMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
+function MeetingLeadSearch({ leads, loading, selectedId, onSelect }: {
+  leads: LeadOption[];
+  loading: boolean;
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = selectedId ? leads.find(l => l.id === selectedId) : null;
+
+  if (loading) {
+    return (
+      <div>
+        <label className="text-sm text-muted-foreground">Lead *</label>
+        <div className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
+          <Loader2 className="w-4 h-4 animate-spin" /> Carregando leads...
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <label className="text-sm text-muted-foreground">Lead *</label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between font-normal">
+            {selected ? (
+              <span className="truncate">
+                {selected.nome_completo} <span className="text-muted-foreground text-xs">({selected.whatsapp})</span>
+              </span>
+            ) : (
+              <span className="text-muted-foreground">Pesquisar lead pelo nome...</span>
+            )}
+            <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+          <Command>
+            <CommandInput placeholder="Digite o nome do lead..." />
+            <CommandList>
+              <CommandEmpty>Nenhum lead encontrado.</CommandEmpty>
+              <CommandGroup>
+                {leads.map(l => (
+                  <CommandItem
+                    key={l.id}
+                    value={`${l.nome_completo} ${l.whatsapp}`}
+                    onSelect={() => {
+                      onSelect(l.id);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check className={`mr-2 h-4 w-4 ${selectedId === l.id ? "opacity-100" : "opacity-0"}`} />
+                    <span className="font-medium">{l.nome_completo}</span>
+                    <span className="text-muted-foreground ml-1 text-xs">({l.whatsapp})</span>
+                    {l.tier && <span className="ml-1 text-xs text-muted-foreground">[{l.tier}]</span>}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      {selected && (
+        <Button variant="ghost" size="sm" className="mt-1 text-xs h-6" onClick={() => onSelect(null)}>
+          <X className="w-3 h-3 mr-1" /> Limpar seleção
+        </Button>
+      )}
+    </div>
+  );
+}
+
+
   if (sdrOverride === "Rodger") return true;
   if (sdrOverride === "Dara") return false;
   const faturaEnough = investimento ? MQL_FAT_MIN_FAIXAS.includes(investimento) : false;
