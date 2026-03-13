@@ -1305,7 +1305,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               selectedId={meetingSelectedLeadId}
               onSelect={setMeetingSelectedLeadId}
             />
-            </div>
 
             {/* Auto-filled info */}
             {selectedMeetingLead && (
