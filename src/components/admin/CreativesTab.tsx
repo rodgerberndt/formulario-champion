@@ -276,7 +276,7 @@ function MeetingLeadSearch({ leads, loading, selectedId, onSelect }: {
   );
 }
 
-
+function isLeadMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
   if (sdrOverride === "Rodger") return true;
   if (sdrOverride === "Dara") return false;
   const faturaEnough = investimento ? MQL_FAT_MIN_FAIXAS.includes(investimento) : false;
