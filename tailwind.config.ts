@@ -117,6 +117,7 @@ export default {
         "slide-up": "slide-up 0.25s ease-out forwards",
         "float": "float 6s ease-in-out infinite",
         "pulse-slow": "pulse-slow 4s ease-in-out infinite",
+        "pulse-gentle": "pulse-gentle 2.5s ease-in-out infinite",
       },
     },
   },
