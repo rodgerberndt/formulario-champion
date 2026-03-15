@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Check, Clock, Lock, Trophy, MessageCircle, AlertCircle, Bell, Zap, ChevronRight } from "lucide-react";
+import { QuizResultDara } from "./QuizResultDara";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
