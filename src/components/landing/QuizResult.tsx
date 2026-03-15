@@ -113,6 +113,7 @@ export function QuizResult({
   estagio_negocio,
   investimento_faixa
 }: QuizResultProps) {
+  const isDaraLead = !investimento_faixa || !SDR_MIN_FATURAMENTO.includes(investimento_faixa);
   const firstName = nome.split(" ")[0];
   const countdown = useCountdown();
   const [progressAnimated, setProgressAnimated] = useState(0);
@@ -120,6 +121,12 @@ export function QuizResult({
     const timer = setTimeout(() => setProgressAnimated(25), 400);
     return () => clearTimeout(timer);
   }, []);
+
+  // Dara leads get a dedicated conversion-focused page
+  if (isDaraLead) {
+    return <QuizResultDara nome={nome} />;
+  }
+
   const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Acabei de concluir meu cadastro. ✅")}`;
   const skipLink = getSdrSkipLink(estagio_negocio, investimento_faixa);
   const supportLink = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Já se passaram 6 horas e não recebi contato.")}`;
