@@ -105,6 +105,10 @@ export default {
           "0%, 100%": { opacity: "0.5" },
           "50%": { opacity: "0.7" },
         },
+        "pulse-gentle": {
+          "0%, 100%": { boxShadow: "0 4px 30px -5px hsla(43, 65%, 52%, 0.4)" },
+          "50%": { boxShadow: "0 8px 50px -5px hsla(43, 65%, 52%, 0.7)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
