@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Check, MessageCircle, AlertTriangle, ArrowRight, Clock, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const DARA_WA_LINK = "https://wa.me/554896560104?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
+const DARA_WA_LINK = "https://wa.me/554896631376?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
 
 interface QuizResultDaraProps {
   nome: string;
