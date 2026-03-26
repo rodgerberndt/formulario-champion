@@ -1375,13 +1375,46 @@ Deno.serve(async (req: Request) => {
     if (path === "/meetings" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
       const params = Object.fromEntries(url.searchParams);
       const ck = params.creative_key || null;
+      const leadId = params.lead_id || null;
       const { data, error } = await supabase.from("meetings").insert([{
         creative_key: ck,
         utm_content: params.utm_content || null,
         notes: params.notes || null,
+        lead_id: leadId,
       }]).select().maybeSingle();
 
       if (error) throw error;
+
+      // Fire CAPI Meeting event if lead_id is present
+      if (leadId) {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+        const internalSecret = Deno.env.get("INTERNAL_WEBHOOK_SECRET");
+        const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+        try {
+          const resp = await fetch(`${supabaseUrl}/functions/v1/meta-capi`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-webhook-secret": internalSecret || "",
+              "Authorization": `Bearer ${serviceKey}`,
+            },
+            body: JSON.stringify({ lead_id: leadId, event_name: "Meeting" }),
+          });
+          const capiResult = await resp.text();
+          console.log(`[admin-data] CAPI Meeting event for lead ${leadId}: ${resp.status}`, capiResult);
+
+          // Track in capi_events_sent
+          if (resp.ok) {
+            const { data: lead } = await supabase.from("leads").select("capi_events_sent").eq("id", leadId).maybeSingle();
+            const sent = (lead?.capi_events_sent as Record<string, boolean>) || {};
+            sent["Meeting"] = true;
+            await supabase.from("leads").update({ capi_events_sent: sent }).eq("id", leadId);
+          }
+        } catch (e) {
+          console.error("[admin-data] CAPI Meeting error:", e);
+        }
+      }
+
       return new Response(JSON.stringify(data), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
