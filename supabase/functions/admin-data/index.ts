@@ -930,6 +930,14 @@ Deno.serve(async (req: Request) => {
       const fromDate = url.searchParams.get("from_date") || (from && !from.includes("T") ? from : null);
       const toDate = url.searchParams.get("to_date") || (to && !to.includes("T") ? to : null);
       const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
+      const campaignType = url.searchParams.get("campaign_type"); // "mql" | "lead" | null (all)
+
+      // Helper to check if a campaign name is an MQL campaign
+      function isMqlCampaign(campaignName: string | null): boolean {
+        if (!campaignName) return false;
+        const lower = campaignName.toLowerCase();
+        return lower.includes('obj: "mql"') || lower.includes('obj: \u201cmql\u201d') || lower.includes('"mql"');
+      }
 
       // Helper to normalize creative key
       function normalizeKey(raw: string): string {
@@ -1081,8 +1089,12 @@ Deno.serve(async (req: Request) => {
       // Keys that should be merged into the unattributed/direct bucket
       const DIRECT_KEYS = new Set(["__sem_criativo__", "ad-name", "link-in-bio", "link_in_bio", "ad.name"]);
 
-      // Process leads
+      // Process leads (filter by campaign_type if specified)
       for (const lead of allLeads) {
+        // Campaign type filter
+        if (campaignType === "mql" && !isMqlCampaign(lead.utm_campaign)) continue;
+        if (campaignType === "lead" && isMqlCampaign(lead.utm_campaign)) continue;
+
         const rawKey = lead.utm_content;
         let ck: string;
         let label: string;
@@ -1118,6 +1130,9 @@ Deno.serve(async (req: Request) => {
       let spendMapped = 0;
       let spendTotal = 0;
       for (const s of (spendData || [])) {
+        // Campaign type filter for spend
+        if (campaignType === "mql" && !isMqlCampaign(s.campaign_name)) continue;
+        if (campaignType === "lead" && isMqlCampaign(s.campaign_name)) continue;
         const amount = Number(s.spend) || 0;
         spendTotal += amount;
         const rawKey = s.utm_content || s.ad_name;
