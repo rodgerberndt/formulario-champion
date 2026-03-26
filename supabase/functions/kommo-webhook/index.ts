@@ -531,9 +531,9 @@ Deno.serve(async (req) => {
               },
               body: JSON.stringify({ lead_id: leadDbId, event_name: "CompleteRegistration" }),
             });
-            const result = await res.json();
-            console.log(`[kommo-webhook] CAPI CompleteRegistration:`, JSON.stringify(result));
-            capiSent["CompleteRegistration"] = true;
+            const resultText = await res.text();
+            console.log(`[kommo-webhook] CAPI CompleteRegistration status=${res.status}:`, resultText);
+            if (res.ok) capiSent["CompleteRegistration"] = true;
           } catch (e) {
             console.error("[kommo-webhook] CAPI CompleteRegistration error:", e);
           }
@@ -553,9 +553,9 @@ Deno.serve(async (req) => {
               },
               body: JSON.stringify({ lead_id: leadDbId, event_name: tierEventName }),
             });
-            const result = await res.json();
-            console.log(`[kommo-webhook] CAPI ${tierEventName}:`, JSON.stringify(result));
-            capiSent[tierEventName] = true;
+            const resultText = await res.text();
+            console.log(`[kommo-webhook] CAPI ${tierEventName} status=${res.status}:`, resultText);
+            if (res.ok) capiSent[tierEventName] = true;
           } catch (e) {
             console.error(`[kommo-webhook] CAPI ${tierEventName} error:`, e);
           }
