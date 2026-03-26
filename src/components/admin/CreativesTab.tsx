@@ -634,6 +634,17 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </SelectContent>
         </Select>
 
+        <Select value={campaignTypeFilter} onValueChange={(v) => setCampaignTypeFilter(v as "all" | "conversao" | "mql")}>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Campanha: Todas</SelectItem>
+            <SelectItem value="conversao">Campanha: Conversão</SelectItem>
+            <SelectItem value="mql">Campanha: MQL</SelectItem>
+          </SelectContent>
+        </Select>
+
         <Button variant="outline" size="sm" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
           Filtros {showAdvancedFilters ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
         </Button>
