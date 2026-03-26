@@ -1129,6 +1129,9 @@ Deno.serve(async (req: Request) => {
       let spendMapped = 0;
       let spendTotal = 0;
       for (const s of (spendData || [])) {
+        // Campaign type filter for spend
+        if (campaignType === "mql" && !isMqlCampaign(s.campaign_name)) continue;
+        if (campaignType === "lead" && isMqlCampaign(s.campaign_name)) continue;
         const amount = Number(s.spend) || 0;
         spendTotal += amount;
         const rawKey = s.utm_content || s.ad_name;
