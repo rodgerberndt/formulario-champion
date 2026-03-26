@@ -492,15 +492,22 @@ Deno.serve(async (req) => {
       await updateLeadKommoStatus(supabase, leadDbId, 'success', contactId, kommoLeadId);
     }
 
-    // ── STEP 4: Fire Meta CAPI events (CompleteRegistration + tier) ──
+    // ── STEP 4: Fire Meta CAPI events (CompleteRegistration + tier + MQL) ──
     if (leadDbId) {
       try {
+        console.log(`[kommo-webhook] STEP 4: Starting CAPI events for lead ${leadDbId}`);
         // Check dedup: only send if not already sent
-        const { data: leadRow } = await supabase
+        const { data: leadRow, error: leadFetchErr } = await supabase
           .from("leads")
           .select("capi_events_sent, tier, investimento_faixa")
           .eq("id", leadDbId)
           .maybeSingle();
+
+        if (leadFetchErr) {
+          console.error("[kommo-webhook] CAPI lead fetch error:", leadFetchErr);
+        }
+
+        console.log(`[kommo-webhook] CAPI lead data: tier=${leadRow?.tier}, investimento=${leadRow?.investimento_faixa}, capi_sent=${JSON.stringify(leadRow?.capi_events_sent)}`);
 
         const capiSent = (leadRow?.capi_events_sent as Record<string, boolean>) || {};
         const tier = leadRow?.tier || "Desqualificado";
@@ -508,6 +515,8 @@ Deno.serve(async (req) => {
         const webhookSecret = INTERNAL_WEBHOOK_SECRET || "";
         const serviceKey = SUPABASE_SERVICE_ROLE_KEY;
         const eventsToSend: string[] = [];
+
+        console.log(`[kommo-webhook] CAPI URL: ${capiUrl}, has webhook secret: ${!!webhookSecret}, has service key: ${!!serviceKey}`);
 
         // Send CompleteRegistration if not sent
         if (!capiSent["CompleteRegistration"]) {
@@ -522,9 +531,9 @@ Deno.serve(async (req) => {
               },
               body: JSON.stringify({ lead_id: leadDbId, event_name: "CompleteRegistration" }),
             });
-            const result = await res.json();
-            console.log(`[kommo-webhook] CAPI CompleteRegistration:`, JSON.stringify(result));
-            capiSent["CompleteRegistration"] = true;
+            const resultText = await res.text();
+            console.log(`[kommo-webhook] CAPI CompleteRegistration status=${res.status}:`, resultText);
+            if (res.ok) capiSent["CompleteRegistration"] = true;
           } catch (e) {
             console.error("[kommo-webhook] CAPI CompleteRegistration error:", e);
           }
@@ -544,9 +553,9 @@ Deno.serve(async (req) => {
               },
               body: JSON.stringify({ lead_id: leadDbId, event_name: tierEventName }),
             });
-            const result = await res.json();
-            console.log(`[kommo-webhook] CAPI ${tierEventName}:`, JSON.stringify(result));
-            capiSent[tierEventName] = true;
+            const resultText = await res.text();
+            console.log(`[kommo-webhook] CAPI ${tierEventName} status=${res.status}:`, resultText);
+            if (res.ok) capiSent[tierEventName] = true;
           } catch (e) {
             console.error(`[kommo-webhook] CAPI ${tierEventName} error:`, e);
           }
@@ -580,9 +589,9 @@ Deno.serve(async (req) => {
               },
               body: JSON.stringify({ lead_id: leadDbId, event_name: "MQL" }),
             });
-            const result = await res.json();
-            console.log(`[kommo-webhook] CAPI MQL:`, JSON.stringify(result));
-            capiSent["MQL"] = true;
+            const resultText = await res.text();
+            console.log(`[kommo-webhook] CAPI MQL status=${res.status}:`, resultText);
+            if (res.ok) capiSent["MQL"] = true;
           } catch (e) {
             console.error("[kommo-webhook] CAPI MQL error:", e);
           }
