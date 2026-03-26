@@ -51,6 +51,8 @@ interface SendEventParams {
   ipAddress?: string | null;
   userAgent?: string | null;
   eventSourceUrl?: string;
+  value?: number;
+  currency?: string;
 }
 
 async function sendConversionEvent(params: SendEventParams): Promise<{ success: boolean; error?: string; response?: unknown }> {
