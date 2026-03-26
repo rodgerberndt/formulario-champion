@@ -1088,8 +1088,12 @@ Deno.serve(async (req: Request) => {
       // Keys that should be merged into the unattributed/direct bucket
       const DIRECT_KEYS = new Set(["__sem_criativo__", "ad-name", "link-in-bio", "link_in_bio", "ad.name"]);
 
-      // Process leads
+      // Process leads (filter by campaign_type if specified)
       for (const lead of allLeads) {
+        // Campaign type filter
+        if (campaignType === "mql" && !isMqlCampaign(lead.utm_campaign)) continue;
+        if (campaignType === "lead" && isMqlCampaign(lead.utm_campaign)) continue;
+
         const rawKey = lead.utm_content;
         let ck: string;
         let label: string;
