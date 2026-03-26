@@ -1282,15 +1282,45 @@ Deno.serve(async (req: Request) => {
     // ──── POST /manual-sales ────
     if (path === "/manual-sales" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
       const params = Object.fromEntries(url.searchParams);
+      const leadId = params.lead_id || null;
+      const revenue = parseFloat(params.revenue);
       const { data, error } = await supabase.from("manual_sales").insert([{
         sale_date: params.sale_date,
-        revenue: parseFloat(params.revenue),
+        revenue,
+        lead_id: leadId,
         creative_key: params.creative_key || null,
         utm_content: params.utm_content || null,
         notes: params.notes || null,
       }]).select().maybeSingle();
 
       if (error) throw error;
+
+      // Fire Purchase event to Meta CAPI if we have a linked lead
+      if (leadId) {
+        try {
+          const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+          const internalSecret = Deno.env.get("INTERNAL_WEBHOOK_SECRET");
+          const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+          await fetch(`${supabaseUrl}/functions/v1/meta-capi`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-webhook-secret": internalSecret || "",
+              "Authorization": `Bearer ${serviceKey}`,
+            },
+            body: JSON.stringify({
+              lead_id: leadId,
+              event_name: "Purchase",
+              value: revenue,
+              currency: "BRL",
+            }),
+          });
+          console.log(`Purchase CAPI event fired for lead ${leadId}, revenue ${revenue}`);
+        } catch (capiErr) {
+          console.error("Failed to fire Purchase CAPI:", capiErr);
+        }
+      }
+
       return new Response(JSON.stringify(data), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
