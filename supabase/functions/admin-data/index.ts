@@ -1427,6 +1427,106 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ──── POST /capi-retroactive-meetings ────
+    if (path === "/capi-retroactive-meetings" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
+      const { data: allMeetings, error: meetErr } = await supabase
+        .from("meetings")
+        .select("id, lead_id, notes")
+        .not("lead_id", "is", null);
+      if (meetErr) throw meetErr;
+
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const internalSecret = Deno.env.get("INTERNAL_WEBHOOK_SECRET");
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+      let sent = 0, failed = 0;
+      const errors: string[] = [];
+
+      for (const m of (allMeetings || [])) {
+        try {
+          const resp = await fetch(`${supabaseUrl}/functions/v1/meta-capi`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-webhook-secret": internalSecret || "",
+              "Authorization": `Bearer ${serviceKey}`,
+            },
+            body: JSON.stringify({ lead_id: m.lead_id, event_name: "Meeting" }),
+          });
+          if (resp.ok) {
+            sent++;
+            // Track dedup
+            const { data: lead } = await supabase.from("leads").select("capi_events_sent").eq("id", m.lead_id).maybeSingle();
+            const s = (lead?.capi_events_sent as Record<string, boolean>) || {};
+            s["Meeting"] = true;
+            await supabase.from("leads").update({ capi_events_sent: s }).eq("id", m.lead_id);
+          } else {
+            failed++;
+            errors.push(`Meeting ${m.id}: ${resp.status}`);
+          }
+        } catch (e) {
+          failed++;
+          errors.push(`Meeting ${m.id}: ${e instanceof Error ? e.message : String(e)}`);
+        }
+      }
+
+      return new Response(
+        JSON.stringify({ total: (allMeetings || []).length, sent, failed, errors: errors.slice(0, 10) }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ──── POST /capi-retroactive-tiers ────
+    if (path === "/capi-retroactive-tiers" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
+      const { data: allLeads, error: leadsErr } = await supabase
+        .from("leads")
+        .select("id, tier, capi_events_sent");
+      if (leadsErr) throw leadsErr;
+
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const internalSecret = Deno.env.get("INTERNAL_WEBHOOK_SECRET");
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+      let sent = 0, skipped = 0, failed = 0;
+      const errors: string[] = [];
+
+      for (const lead of (allLeads || [])) {
+        const tier = lead.tier || "Desqualificado";
+        if (tier === "Desqualificado") { skipped++; continue; }
+        const eventName = `Lead_${tier.replace("+", "Plus")}`;
+        const capiSent = (lead.capi_events_sent as Record<string, boolean>) || {};
+        if (capiSent[eventName]) { skipped++; continue; }
+
+        try {
+          const resp = await fetch(`${supabaseUrl}/functions/v1/meta-capi`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-webhook-secret": internalSecret || "",
+              "Authorization": `Bearer ${serviceKey}`,
+            },
+            body: JSON.stringify({ lead_id: lead.id, event_name: eventName }),
+          });
+          if (resp.ok) {
+            sent++;
+            capiSent[eventName] = true;
+            await supabase.from("leads").update({ capi_events_sent: capiSent }).eq("id", lead.id);
+          } else {
+            failed++;
+            errors.push(`Lead ${lead.id} (${eventName}): ${resp.status}`);
+          }
+        } catch (e) {
+          failed++;
+          errors.push(`Lead ${lead.id}: ${e instanceof Error ? e.message : String(e)}`);
+        }
+      }
+
+      return new Response(
+        JSON.stringify({ total: (allLeads || []).length, sent, skipped, failed, errors: errors.slice(0, 10) }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // ──── POST /capi-retroactive-purchases ────
     if (path === "/capi-retroactive-purchases" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
       // Fetch all manual_sales that have a lead_id
