@@ -478,6 +478,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         creative_key: ck,
         utm_content: lead.utm_content || "",
         notes: `${lead.nome_completo}${meetingForm.notes ? ` — ${meetingForm.notes}` : ""}`,
+        lead_id: meetingSelectedLeadId,
       });
       toast({ title: "Reunião registrada!" });
       setMeetingForm({ creative_key: "", notes: "" });
