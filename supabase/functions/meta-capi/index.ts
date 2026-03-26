@@ -51,6 +51,8 @@ interface SendEventParams {
   ipAddress?: string | null;
   userAgent?: string | null;
   eventSourceUrl?: string;
+  value?: number;
+  currency?: string;
 }
 
 async function sendConversionEvent(params: SendEventParams): Promise<{ success: boolean; error?: string; response?: unknown }> {
@@ -108,6 +110,7 @@ async function sendConversionEvent(params: SendEventParams): Promise<{ success: 
         user_data: userData,
         custom_data: {
           lead_id: params.leadId,
+          ...(params.value != null && { value: params.value, currency: params.currency || "BRL" }),
         },
       },
     ],
@@ -155,7 +158,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { lead_id, event_name } = await req.json();
+    const { lead_id, event_name, value, currency } = await req.json();
 
     if (!lead_id) {
       return new Response(
@@ -207,6 +210,8 @@ Deno.serve(async (req: Request) => {
       fbclid,
       ipAddress,
       userAgent,
+      value: value != null ? Number(value) : undefined,
+      currency: currency || undefined,
     });
 
     return new Response(

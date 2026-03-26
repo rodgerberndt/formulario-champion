@@ -1282,15 +1282,45 @@ Deno.serve(async (req: Request) => {
     // ──── POST /manual-sales ────
     if (path === "/manual-sales" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
       const params = Object.fromEntries(url.searchParams);
+      const leadId = params.lead_id || null;
+      const revenue = parseFloat(params.revenue);
       const { data, error } = await supabase.from("manual_sales").insert([{
         sale_date: params.sale_date,
-        revenue: parseFloat(params.revenue),
+        revenue,
+        lead_id: leadId,
         creative_key: params.creative_key || null,
         utm_content: params.utm_content || null,
         notes: params.notes || null,
       }]).select().maybeSingle();
 
       if (error) throw error;
+
+      // Fire Purchase event to Meta CAPI if we have a linked lead
+      if (leadId) {
+        try {
+          const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+          const internalSecret = Deno.env.get("INTERNAL_WEBHOOK_SECRET");
+          const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+          await fetch(`${supabaseUrl}/functions/v1/meta-capi`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-webhook-secret": internalSecret || "",
+              "Authorization": `Bearer ${serviceKey}`,
+            },
+            body: JSON.stringify({
+              lead_id: leadId,
+              event_name: "Purchase",
+              value: revenue,
+              currency: "BRL",
+            }),
+          });
+          console.log(`Purchase CAPI event fired for lead ${leadId}, revenue ${revenue}`);
+        } catch (capiErr) {
+          console.error("Failed to fire Purchase CAPI:", capiErr);
+        }
+      }
+
       return new Response(JSON.stringify(data), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -1347,6 +1377,58 @@ Deno.serve(async (req: Request) => {
       const { error } = await supabase.from("meetings").delete().eq("id", meetingId);
       if (error) throw error;
       return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // ──── POST /capi-retroactive-purchases ────
+    if (path === "/capi-retroactive-purchases" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
+      // Fetch all manual_sales that have a lead_id
+      const { data: sales, error: salesErr } = await supabase
+        .from("manual_sales")
+        .select("id, lead_id, revenue")
+        .not("lead_id", "is", null);
+      if (salesErr) throw salesErr;
+
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const internalSecret = Deno.env.get("INTERNAL_WEBHOOK_SECRET");
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+      let sent = 0;
+      let failed = 0;
+      const errors: string[] = [];
+
+      for (const sale of (sales || [])) {
+        try {
+          const resp = await fetch(`${supabaseUrl}/functions/v1/meta-capi`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-webhook-secret": internalSecret || "",
+              "Authorization": `Bearer ${serviceKey}`,
+            },
+            body: JSON.stringify({
+              lead_id: sale.lead_id,
+              event_name: "Purchase",
+              value: Number(sale.revenue),
+              currency: "BRL",
+            }),
+          });
+          if (resp.ok) {
+            sent++;
+          } else {
+            failed++;
+            const body = await resp.text();
+            errors.push(`Sale ${sale.id}: ${resp.status} - ${body}`);
+          }
+        } catch (e) {
+          failed++;
+          errors.push(`Sale ${sale.id}: ${e instanceof Error ? e.message : String(e)}`);
+        }
+      }
+
+      return new Response(
+        JSON.stringify({ total: (sales || []).length, sent, failed, errors: errors.slice(0, 10) }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     return new Response(
