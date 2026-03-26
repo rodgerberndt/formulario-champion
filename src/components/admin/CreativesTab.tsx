@@ -568,8 +568,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   };
 
   // Sort & filter creatives
-  const isMqlCreative = (key: string) => key.toLowerCase().endsWith("mql") || key.toLowerCase().endsWith("-mql") || key.toLowerCase().includes("_mql");
-
   const creatives = (data?.creatives || [])
     .filter(c => {
       if (filterOnlyActive && !c.is_active) return false;
@@ -577,8 +575,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       if (filterOnlyWithLeads && c.leads_count <= 0) return false;
       if (filterOnlyWithMql && c.mql_count <= 0) return false;
       if (filterOnlyWithSales && c.sales_count <= 0) return false;
-      if (campaignTypeFilter === "mql" && !isMqlCreative(c.creative_key)) return false;
-      if (campaignTypeFilter === "conversao" && isMqlCreative(c.creative_key)) return false;
       return true;
     })
     .sort((a, b) => {
