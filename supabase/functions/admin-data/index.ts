@@ -1379,6 +1379,58 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ──── POST /capi-retroactive-purchases ────
+    if (path === "/capi-retroactive-purchases" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
+      // Fetch all manual_sales that have a lead_id
+      const { data: sales, error: salesErr } = await supabase
+        .from("manual_sales")
+        .select("id, lead_id, revenue")
+        .not("lead_id", "is", null);
+      if (salesErr) throw salesErr;
+
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const internalSecret = Deno.env.get("INTERNAL_WEBHOOK_SECRET");
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+      let sent = 0;
+      let failed = 0;
+      const errors: string[] = [];
+
+      for (const sale of (sales || [])) {
+        try {
+          const resp = await fetch(`${supabaseUrl}/functions/v1/meta-capi`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-webhook-secret": internalSecret || "",
+              "Authorization": `Bearer ${serviceKey}`,
+            },
+            body: JSON.stringify({
+              lead_id: sale.lead_id,
+              event_name: "Purchase",
+              value: Number(sale.revenue),
+              currency: "BRL",
+            }),
+          });
+          if (resp.ok) {
+            sent++;
+          } else {
+            failed++;
+            const body = await resp.text();
+            errors.push(`Sale ${sale.id}: ${resp.status} - ${body}`);
+          }
+        } catch (e) {
+          failed++;
+          errors.push(`Sale ${sale.id}: ${e instanceof Error ? e.message : String(e)}`);
+        }
+      }
+
+      return new Response(
+        JSON.stringify({ total: (sales || []).length, sent, failed, errors: errors.slice(0, 10) }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: "Rota não encontrada" }),
       { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
