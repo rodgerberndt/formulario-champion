@@ -930,6 +930,13 @@ Deno.serve(async (req: Request) => {
       const fromDate = url.searchParams.get("from_date") || (from && !from.includes("T") ? from : null);
       const toDate = url.searchParams.get("to_date") || (to && !to.includes("T") ? to : null);
       const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
+      const campaignType = url.searchParams.get("campaign_type"); // "mql" | "lead" | null (all)
+
+      // Helper to check if a campaign name is an MQL campaign
+      function isMqlCampaign(campaignName: string | null): boolean {
+        if (!campaignName) return false;
+        return campaignName.toLowerCase().includes('obj: "mql"') || campaignName.toLowerCase().includes("obj: "mql"");
+      }
 
       // Helper to normalize creative key
       function normalizeKey(raw: string): string {
