@@ -686,6 +686,23 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         </div>
       </div>
 
+      {/* CAPI Retroactive Actions */}
+      <div className="flex flex-wrap gap-2 mt-2">
+        <span className="text-xs text-muted-foreground self-center mr-1">CAPI Retroativo:</span>
+        <Button variant="outline" size="sm" onClick={() => handleCapiRetroactive("tiers")} disabled={!!sendingCapiRetro}>
+          {sendingCapiRetro === "tiers" ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+          Tiers
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => handleCapiRetroactive("meetings")} disabled={!!sendingCapiRetro}>
+          {sendingCapiRetro === "meetings" ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+          Reuniões
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => handleCapiRetroactive("purchases")} disabled={!!sendingCapiRetro}>
+          {sendingCapiRetro === "purchases" ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+          Compras
+        </Button>
+      </div>
+
       {/* Advanced filters */}
       {showAdvancedFilters && (
         <Card>
