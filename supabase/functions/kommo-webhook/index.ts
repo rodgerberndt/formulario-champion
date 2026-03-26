@@ -492,15 +492,22 @@ Deno.serve(async (req) => {
       await updateLeadKommoStatus(supabase, leadDbId, 'success', contactId, kommoLeadId);
     }
 
-    // ── STEP 4: Fire Meta CAPI events (CompleteRegistration + tier) ──
+    // ── STEP 4: Fire Meta CAPI events (CompleteRegistration + tier + MQL) ──
     if (leadDbId) {
       try {
+        console.log(`[kommo-webhook] STEP 4: Starting CAPI events for lead ${leadDbId}`);
         // Check dedup: only send if not already sent
-        const { data: leadRow } = await supabase
+        const { data: leadRow, error: leadFetchErr } = await supabase
           .from("leads")
           .select("capi_events_sent, tier, investimento_faixa")
           .eq("id", leadDbId)
           .maybeSingle();
+
+        if (leadFetchErr) {
+          console.error("[kommo-webhook] CAPI lead fetch error:", leadFetchErr);
+        }
+
+        console.log(`[kommo-webhook] CAPI lead data: tier=${leadRow?.tier}, investimento=${leadRow?.investimento_faixa}, capi_sent=${JSON.stringify(leadRow?.capi_events_sent)}`);
 
         const capiSent = (leadRow?.capi_events_sent as Record<string, boolean>) || {};
         const tier = leadRow?.tier || "Desqualificado";
@@ -508,6 +515,8 @@ Deno.serve(async (req) => {
         const webhookSecret = INTERNAL_WEBHOOK_SECRET || "";
         const serviceKey = SUPABASE_SERVICE_ROLE_KEY;
         const eventsToSend: string[] = [];
+
+        console.log(`[kommo-webhook] CAPI URL: ${capiUrl}, has webhook secret: ${!!webhookSecret}, has service key: ${!!serviceKey}`);
 
         // Send CompleteRegistration if not sent
         if (!capiSent["CompleteRegistration"]) {
