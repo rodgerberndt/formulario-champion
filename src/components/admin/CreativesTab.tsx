@@ -307,6 +307,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [filterOnlyWithMql, setFilterOnlyWithMql] = useState(false);
   const [filterOnlyWithSales, setFilterOnlyWithSales] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [campaignTypeFilter, setCampaignTypeFilter] = useState<"all" | "conversao" | "mql">("all");
 
   // Manual sales form
   const [showAddSale, setShowAddSale] = useState(false);
@@ -564,6 +565,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   };
 
   // Sort & filter creatives
+  const isMqlCreative = (key: string) => key.toLowerCase().endsWith("mql") || key.toLowerCase().endsWith("-mql") || key.toLowerCase().includes("_mql");
+
   const creatives = (data?.creatives || [])
     .filter(c => {
       if (filterOnlyActive && !c.is_active) return false;
@@ -571,6 +574,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       if (filterOnlyWithLeads && c.leads_count <= 0) return false;
       if (filterOnlyWithMql && c.mql_count <= 0) return false;
       if (filterOnlyWithSales && c.sales_count <= 0) return false;
+      if (campaignTypeFilter === "mql" && !isMqlCreative(c.creative_key)) return false;
+      if (campaignTypeFilter === "conversao" && isMqlCreative(c.creative_key)) return false;
       return true;
     })
     .sort((a, b) => {
@@ -626,6 +631,17 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           <SelectContent>
             <SelectItem value="first">Atribuição: First Touch</SelectItem>
             <SelectItem value="last">Atribuição: Last Touch</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={campaignTypeFilter} onValueChange={(v) => setCampaignTypeFilter(v as "all" | "conversao" | "mql")}>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Campanha: Todas</SelectItem>
+            <SelectItem value="conversao">Campanha: Conversão</SelectItem>
+            <SelectItem value="mql">Campanha: MQL</SelectItem>
           </SelectContent>
         </Select>
 
