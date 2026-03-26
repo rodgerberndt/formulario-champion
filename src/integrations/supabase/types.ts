@@ -470,6 +470,7 @@ export type Database = {
           created_at: string
           creative_key: string | null
           id: string
+          lead_id: string | null
           notes: string | null
           utm_content: string | null
         }
@@ -477,6 +478,7 @@ export type Database = {
           created_at?: string
           creative_key?: string | null
           id?: string
+          lead_id?: string | null
           notes?: string | null
           utm_content?: string | null
         }
@@ -484,10 +486,19 @@ export type Database = {
           created_at?: string
           creative_key?: string | null
           id?: string
+          lead_id?: string | null
           notes?: string | null
           utm_content?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "meetings_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       meta_ads_cache: {
         Row: {
