@@ -307,6 +307,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [filterOnlyWithMql, setFilterOnlyWithMql] = useState(false);
   const [filterOnlyWithSales, setFilterOnlyWithSales] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [campaignTypeFilter, setCampaignTypeFilter] = useState<"all" | "conversao" | "mql">("all");
 
   // Manual sales form
   const [showAddSale, setShowAddSale] = useState(false);
