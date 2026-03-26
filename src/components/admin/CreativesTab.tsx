@@ -568,7 +568,24 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     }
   };
 
-  // Sort & filter creatives
+  const [sendingCapiRetro, setSendingCapiRetro] = useState<string | null>(null);
+
+  const handleCapiRetroactive = async (type: "meetings" | "tiers" | "purchases") => {
+    setSendingCapiRetro(type);
+    try {
+      const result = await fetchAdminData(`/capi-retroactive-${type}`, { _method: "POST" });
+      toast({
+        title: `CAPI ${type} retroativo concluído`,
+        description: `Enviados: ${result.sent}, Falhas: ${result.failed}${result.skipped != null ? `, Ignorados: ${result.skipped}` : ""} (Total: ${result.total})`,
+      });
+    } catch {
+      toast({ title: `Erro ao enviar CAPI ${type}`, variant: "destructive" });
+    } finally {
+      setSendingCapiRetro(null);
+    }
+  };
+
+
   const creatives = (data?.creatives || [])
     .filter(c => {
       if (filterOnlyActive && !c.is_active) return false;
