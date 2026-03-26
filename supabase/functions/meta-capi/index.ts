@@ -210,6 +210,8 @@ Deno.serve(async (req: Request) => {
       fbclid,
       ipAddress,
       userAgent,
+      value: value != null ? Number(value) : undefined,
+      currency: currency || undefined,
     });
 
     return new Response(
