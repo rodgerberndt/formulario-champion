@@ -1,0 +1,1 @@
+ALTER TABLE public.meetings ADD COLUMN lead_id uuid REFERENCES public.leads(id) ON DELETE SET NULL;

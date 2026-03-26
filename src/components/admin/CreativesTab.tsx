@@ -478,6 +478,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         creative_key: ck,
         utm_content: lead.utm_content || "",
         notes: `${lead.nome_completo}${meetingForm.notes ? ` — ${meetingForm.notes}` : ""}`,
+        lead_id: meetingSelectedLeadId,
       });
       toast({ title: "Reunião registrada!" });
       setMeetingForm({ creative_key: "", notes: "" });
@@ -567,7 +568,24 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     }
   };
 
-  // Sort & filter creatives
+  const [sendingCapiRetro, setSendingCapiRetro] = useState<string | null>(null);
+
+  const handleCapiRetroactive = async (type: "meetings" | "tiers" | "purchases") => {
+    setSendingCapiRetro(type);
+    try {
+      const result = await fetchAdminData(`/capi-retroactive-${type}`, { _method: "POST" });
+      toast({
+        title: `CAPI ${type} retroativo concluído`,
+        description: `Enviados: ${result.sent}, Falhas: ${result.failed}${result.skipped != null ? `, Ignorados: ${result.skipped}` : ""} (Total: ${result.total})`,
+      });
+    } catch {
+      toast({ title: `Erro ao enviar CAPI ${type}`, variant: "destructive" });
+    } finally {
+      setSendingCapiRetro(null);
+    }
+  };
+
+
   const creatives = (data?.creatives || [])
     .filter(c => {
       if (filterOnlyActive && !c.is_active) return false;
@@ -666,6 +684,23 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Atualizar"}
           </Button>
         </div>
+      </div>
+
+      {/* CAPI Retroactive Actions */}
+      <div className="flex flex-wrap gap-2 mt-2">
+        <span className="text-xs text-muted-foreground self-center mr-1">CAPI Retroativo:</span>
+        <Button variant="outline" size="sm" onClick={() => handleCapiRetroactive("tiers")} disabled={!!sendingCapiRetro}>
+          {sendingCapiRetro === "tiers" ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+          Tiers
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => handleCapiRetroactive("meetings")} disabled={!!sendingCapiRetro}>
+          {sendingCapiRetro === "meetings" ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+          Reuniões
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => handleCapiRetroactive("purchases")} disabled={!!sendingCapiRetro}>
+          {sendingCapiRetro === "purchases" ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+          Compras
+        </Button>
       </div>
 
       {/* Advanced filters */}
