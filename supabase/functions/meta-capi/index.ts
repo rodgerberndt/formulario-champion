@@ -110,6 +110,7 @@ async function sendConversionEvent(params: SendEventParams): Promise<{ success: 
         user_data: userData,
         custom_data: {
           lead_id: params.leadId,
+          ...(params.value != null && { value: params.value, currency: params.currency || "BRL" }),
         },
       },
     ],
