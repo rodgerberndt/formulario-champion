@@ -589,9 +589,9 @@ Deno.serve(async (req) => {
               },
               body: JSON.stringify({ lead_id: leadDbId, event_name: "MQL" }),
             });
-            const result = await res.json();
-            console.log(`[kommo-webhook] CAPI MQL:`, JSON.stringify(result));
-            capiSent["MQL"] = true;
+            const resultText = await res.text();
+            console.log(`[kommo-webhook] CAPI MQL status=${res.status}:`, resultText);
+            if (res.ok) capiSent["MQL"] = true;
           } catch (e) {
             console.error("[kommo-webhook] CAPI MQL error:", e);
           }
