@@ -552,6 +552,42 @@ Deno.serve(async (req) => {
           }
         }
 
+        // Send MQL event for qualified leads (faturamento >= R$10k)
+        // MQL faixas: "De R$ 10 mil" em diante, or legacy "R$ 8k – 20k" em diante
+        const investimentoFaixa = leadRow?.investimento_faixa || "";
+        const MQL_FAIXAS = [
+          "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
+          "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil",
+          "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
+          "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil",
+          "De R$ 300 mil a R$ 500 mil", "De R$ 500 mil a R$ 750 mil",
+          "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
+          "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões",
+          "De R$ 5 milhões a R$ 10 milhões", "Acima de R$ 10 milhões",
+          // Legacy
+          "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k",
+        ];
+        const isMql = MQL_FAIXAS.includes(investimentoFaixa);
+        if (!capiSent["MQL"] && isMql) {
+          eventsToSend.push("MQL");
+          try {
+            const res = await fetch(capiUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-webhook-secret": webhookSecret,
+                "Authorization": `Bearer ${serviceKey}`,
+              },
+              body: JSON.stringify({ lead_id: leadDbId, event_name: "MQL" }),
+            });
+            const result = await res.json();
+            console.log(`[kommo-webhook] CAPI MQL:`, JSON.stringify(result));
+            capiSent["MQL"] = true;
+          } catch (e) {
+            console.error("[kommo-webhook] CAPI MQL error:", e);
+          }
+        }
+
         // Update dedup tracking
         if (eventsToSend.length > 0) {
           await supabase
