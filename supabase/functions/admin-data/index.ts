@@ -935,7 +935,8 @@ Deno.serve(async (req: Request) => {
       // Helper to check if a campaign name is an MQL campaign
       function isMqlCampaign(campaignName: string | null): boolean {
         if (!campaignName) return false;
-        return campaignName.toLowerCase().includes('obj: "mql"') || campaignName.toLowerCase().includes("obj: "mql"");
+        const lower = campaignName.toLowerCase();
+        return lower.includes('obj: "mql"') || lower.includes('obj: \u201cmql\u201d') || lower.includes('"mql"');
       }
 
       // Helper to normalize creative key
