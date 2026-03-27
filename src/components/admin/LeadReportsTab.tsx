@@ -1235,7 +1235,8 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                 <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
                   <p className="text-[10px] text-primary uppercase tracking-wider mb-2 flex items-center gap-1"><Brain className="w-3 h-3" /> Leitura Estratégica</p>
                   <div className="space-y-1 text-sm">
-                    <p>• <strong>Dor principal:</strong> {normalizeDor(selectedLead.dor_desejo)}</p>
+                    <p>• <strong>Categoria da dor:</strong> {classifyDor(selectedLead.dor_desejo)}</p>
+                    <p>• <strong>Dor original:</strong> {normalizeDor(selectedLead.dor_desejo)}</p>
                     {icps.length > 0 && (
                       <p>• <strong>ICP mais próximo:</strong> {
                         icps.find(ic => ic.mercado === normalizeMercado(selectedLead.mercado))?.name || icps[0].name
