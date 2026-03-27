@@ -100,8 +100,8 @@ async function sendConversionEvent(params: SendEventParams): Promise<{ success: 
   // External ID for deduplication
   userData.external_id = [await hashValue(params.leadId)];
 
-  // Use /obrigadomql URL for MQL events so Meta custom conversion URL rule matches
-  const defaultUrl = "https://formulariochampion.lovable.app";
+  // Use the actual production domain for event_source_url
+  const defaultUrl = "https://championadstudio.com";
   let eventSourceUrl = params.eventSourceUrl || defaultUrl;
   if (params.eventName === "MQL" && !params.eventSourceUrl) {
     eventSourceUrl = `${defaultUrl}/obrigadomql`;
