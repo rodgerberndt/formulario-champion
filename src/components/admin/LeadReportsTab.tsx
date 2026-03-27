@@ -479,7 +479,7 @@ function generateCreativeSuggestions(leads: Lead[], mqls: Lead[]): string[] {
 
   const crossMap: Record<string, number> = {};
   mqls.forEach(l => {
-    const k = `${normalizeMercado(l.mercado)} + ${normalizeDor(l.dor_desejo)}`;
+    const k = `${normalizeMercado(l.mercado)} + ${classifyDor(l.dor_desejo)}`;
     crossMap[k] = (crossMap[k] || 0) + 1;
   });
   const topCross = Object.entries(crossMap).sort(([, a], [, b]) => b - a)[0];
