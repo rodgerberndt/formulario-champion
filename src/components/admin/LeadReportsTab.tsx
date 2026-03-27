@@ -455,7 +455,7 @@ function generateInsights(leads: Lead[], mqls: Lead[]): string[] {
 function generateCreativeSuggestions(leads: Lead[], mqls: Lead[]): string[] {
   const suggestions: string[] = [];
   const mercadoRank = buildRanking(leads, mqls, l => normalizeMercado(l.mercado));
-  const dorRank = buildRanking(leads, mqls, l => normalizeDor(l.dor_desejo));
+  const dorRank = buildRanking(leads, mqls, l => classifyDor(l.dor_desejo));
   const estRank = buildRanking(leads, mqls, l => l.estagio_negocio || "Não informado");
 
   const topMercado = mercadoRank[0];
