@@ -21,6 +21,7 @@ function AppInitializer() {
 // Lazy load pages for performance
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Obrigado = lazy(() => import("./pages/Obrigado"));
+const ObrigadoMql = lazy(() => import("./pages/ObrigadoMql"));
 const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
 
 const queryClient = new QueryClient();
@@ -61,6 +62,14 @@ const App = () => (
                 element={
                   <Suspense fallback={<PageLoader />}>
                     <Obrigado />
+                  </Suspense>
+                } 
+              />
+              <Route 
+                path="/obrigadomql" 
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <ObrigadoMql />
                   </Suspense>
                 } 
               />
