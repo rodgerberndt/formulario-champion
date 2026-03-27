@@ -2720,6 +2720,13 @@ export default function AdminAnalytics() {
               </Suspense>
             </TabsContent>
 
+            {/* Relatórios Lead Tab */}
+            <TabsContent value="reports">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <LeadReportsTab leads={leads} loading={leadsLoading} />
+              </Suspense>
+            </TabsContent>
+
             {/* Kommo Tab */}
             <TabsContent value="kommo">
               <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
