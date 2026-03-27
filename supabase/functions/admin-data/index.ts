@@ -146,6 +146,15 @@ Deno.serve(async (req: Request) => {
           });
           const capiResult = await capiRes.json();
           console.log("Meta CAPI MQL result:", JSON.stringify(capiResult));
+
+          // Update capi_events_sent to track that MQL was sent
+          if (capiRes.ok && capiResult.success) {
+            const currentCapi = data?.capi_events_sent || {};
+            await supabase
+              .from("leads")
+              .update({ capi_events_sent: { ...currentCapi, MQL: true } })
+              .eq("id", leadId);
+          }
         } catch (capiErr) {
           console.error("Error calling meta-capi:", capiErr);
         }
