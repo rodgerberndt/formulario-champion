@@ -112,6 +112,10 @@ async function writeLog(supabase: ReturnType<typeof createClient>, entry: LogEnt
   }
 }
 
+async function sleep(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function updateLeadKommoStatus(
   supabase: ReturnType<typeof createClient>,
   leadDbId: string,
@@ -128,7 +132,56 @@ async function updateLeadKommoStatus(
   if (retryCount !== undefined) update.kommo_retry_count = retryCount;
   if (status === 'success') update.kommo_synced_at = new Date().toISOString();
 
-  await supabase.from('leads').update(update).eq('id', leadDbId);
+  for (let attempt = 1; attempt <= 8; attempt++) {
+    const { data, error: updateError } = await supabase
+      .from('leads')
+      .update(update)
+      .eq('id', leadDbId)
+      .select('id')
+      .maybeSingle();
+
+    if (updateError) {
+      console.warn(`[kommo-webhook] Lead status update failed on attempt ${attempt}:`, updateError);
+    }
+
+    if (data?.id) {
+      return;
+    }
+
+    await sleep(attempt * 250);
+  }
+
+  console.warn(`[kommo-webhook] Could not update lead ${leadDbId} after retries`);
+}
+
+async function waitForLeadRow(
+  supabase: ReturnType<typeof createClient>,
+  leadDbId: string,
+): Promise<{ capi_events_sent: Record<string, boolean> | null; tier: string | null; investimento_faixa: string | null } | null> {
+  for (let attempt = 1; attempt <= 8; attempt++) {
+    const { data, error } = await supabase
+      .from('leads')
+      .select('capi_events_sent, tier, investimento_faixa')
+      .eq('id', leadDbId)
+      .maybeSingle();
+
+    if (error) {
+      console.warn(`[kommo-webhook] Lead fetch failed on attempt ${attempt}:`, error);
+    }
+
+    if (data) {
+      return {
+        capi_events_sent: (data.capi_events_sent as Record<string, boolean> | null) || {},
+        tier: data.tier,
+        investimento_faixa: data.investimento_faixa,
+      };
+    }
+
+    await sleep(attempt * 250);
+  }
+
+  console.warn(`[kommo-webhook] Lead ${leadDbId} not visible after retries`);
+  return null;
 }
 
 // ── Kommo API ────────────────────────────────────────
