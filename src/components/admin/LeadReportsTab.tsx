@@ -1142,7 +1142,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                         <TableCell className="text-xs">{normalizeMercado(lead.mercado)}</TableCell>
                         <TableCell className="text-xs max-w-[100px] truncate">{lead.estagio_negocio || "—"}</TableCell>
                         <TableCell className="text-xs max-w-[100px] truncate">{lead.investimento_faixa || "—"}</TableCell>
-                        <TableCell className="text-xs max-w-[120px] truncate" title={lead.dor_desejo}>{lead.dor_desejo || "—"}</TableCell>
+                        <TableCell className="text-xs max-w-[120px] truncate" title={lead.dor_desejo}>{classifyDor(lead.dor_desejo)}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className={`text-[10px] ${getTierFromFaturamento(lead.investimento_faixa) === "Enterprise+" || getTierFromFaturamento(lead.investimento_faixa) === "Enterprise" ? "border-secondary/50 text-secondary" : ""}`}>
                             {getTierFromFaturamento(lead.investimento_faixa)}
