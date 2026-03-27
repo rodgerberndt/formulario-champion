@@ -383,7 +383,7 @@ function detectICPs(mqls: Lead[]): ICProfile[] {
       const [mercado, estagio, faturamento] = key.split("|||");
       const dorCount: Record<string, number> = {};
       arr.forEach(l => {
-        const d = normalizeDor(l.dor_desejo);
+        const d = classifyDor(l.dor_desejo);
         if (d !== "Não informado") dorCount[d] = (dorCount[d] || 0) + 1;
       });
       const topDores = Object.entries(dorCount).sort(([, a], [, b]) => b - a).slice(0, 3).map(([d]) => d);
