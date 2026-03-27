@@ -65,6 +65,14 @@ const App = () => (
                   </Suspense>
                 } 
               />
+              <Route 
+                path="/obrigadomql" 
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <ObrigadoMql />
+                  </Suspense>
+                } 
+              />
               <Route
                 path={`/${ADMIN_ANALYTICS_SLUG}`}
                 element={
