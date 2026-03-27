@@ -52,6 +52,7 @@ import { ptBR } from "date-fns/locale";
 const KommoLogsPanel = lazy(() => import("@/components/admin/KommoLogsPanel"));
 const FunnelMapTab = lazy(() => import("@/components/admin/FunnelMapTab"));
 const CreativesTab = lazy(() => import("@/components/admin/CreativesTab"));
+const LeadReportsTab = lazy(() => import("@/components/admin/LeadReportsTab"));
 import {
   Dialog,
   DialogContent,
