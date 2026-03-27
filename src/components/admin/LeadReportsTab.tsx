@@ -532,7 +532,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
   const uniqueEstagios = useMemo(() => [...new Set(leads.map(l => l.estagio_negocio || "Não informado"))].filter(Boolean).sort(), [leads]);
 
   const mercadoRank = useMemo(() => buildRanking(filtered, mqls, l => normalizeMercado(l.mercado)), [filtered, mqls]);
-  const dorRank = useMemo(() => buildRanking(filtered, mqls, l => normalizeDor(l.dor_desejo)), [filtered, mqls]);
+  const dorRank = useMemo(() => buildRanking(filtered, mqls, l => classifyDor(l.dor_desejo)), [filtered, mqls]);
   const fatRank = useMemo(() => buildRanking(filtered, mqls, l => l.investimento_faixa || "Não informado"), [filtered, mqls]);
   const estRank = useMemo(() => buildRanking(filtered, mqls, l => l.estagio_negocio || "Não informado"), [filtered, mqls]);
   const srcRank = useMemo(() => buildRanking(filtered, mqls, l => l.utm_source || "Direto"), [filtered, mqls]);
