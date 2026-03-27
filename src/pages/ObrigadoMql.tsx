@@ -78,6 +78,14 @@ export default function ObrigadoMql() {
   const [formData, setFormData] = useState<QuizFormData | null>(null);
   const conversionEventFired = useRef(false);
 
+  // Fire a PageView so Meta sees the /obrigadomql URL for the custom conversion rule
+  useEffect(() => {
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'PageView');
+      console.log('Facebook Pixel: PageView fired on /obrigadomql');
+    }
+  }, []);
+
   useEffect(() => {
     if (formData && !conversionEventFired.current) {
       if (typeof window.fbq === 'function') {
