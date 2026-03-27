@@ -551,7 +551,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
     const matrix: Record<string, Record<string, number>> = {};
     mqls.forEach(l => {
       const m = normalizeMercado(l.mercado);
-      const d = normalizeDor(l.dor_desejo);
+      const d = classifyDor(l.dor_desejo);
       if (d === "Não informado") return;
       if (!matrix[m]) matrix[m] = {};
       matrix[m][d] = (matrix[m][d] || 0) + 1;
