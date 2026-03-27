@@ -121,6 +121,180 @@ function isMql(lead: Lead): boolean {
   return MQL_FATURAMENTO.includes(lead.investimento_faixa || "");
 }
 
+// ── Semantic pain classifier ──────────────────────────────────────
+// Groups free-text pain/desire answers into meaningful categories
+// by detecting keywords, synonyms and intent patterns.
+
+interface PainCategory {
+  label: string;
+  patterns: RegExp[];
+}
+
+const PAIN_CATEGORIES: PainCategory[] = [
+  {
+    label: "Delegar / Ganhar tempo",
+    patterns: [
+      /deleg/i, /ganhar (mais )?tempo/i, /falta de tempo/i, /sem tempo/i,
+      /sobrecarregad/i, /braço/i, /n[aã]o consig(o|ue) fazer tudo/i,
+      /equipe.*criat/i, /ter.*algu[eé]m/i, /profissional.*que/i,
+      /parar de.*faz/i, /tirar.*d[eao]s? (minhas?|meu)/i,
+      /n[aã]o (d[aá]|tenho) (conta|tempo)/i, /opera(r|ção).*sozin/i,
+      /quero.*focar/i, /liber(ar|dade)/i, /sair do operacional/i,
+      /ter mais tempo/i, /terceiriz/i,
+    ],
+  },
+  {
+    label: "Escalar operação",
+    patterns: [
+      /escal(ar|a)/i, /crescer/i, /crescimento/i, /aumentar.*faturamento/i,
+      /próximo.*nível/i, /pr[oó]ximo.*patamar/i, /expandir/i,
+      /faturar.*mais/i, /dobrar/i, /triplicar/i, /ir.*pra.*frente/i,
+      /alavanc/i, /destravar/i, /estagna/i, /preso.*mesmo/i, /platô/i,
+    ],
+  },
+  {
+    label: "Qualidade dos leads / Leads ruins",
+    patterns: [
+      /qualidade.*lead/i, /lead.*ruim/i, /lead.*frio/i, /lead.*desqualificad/i,
+      /gerar.*lead.*melhor/i, /qualifica(r|ção).*lead/i, /perfil.*lead/i,
+      /lead.*n[aã]o.*compra/i, /n[aã]o.*converte/i, /muito.*lead.*pouc/i,
+      /volume.*sem.*qualidade/i, /lead.*lixo/i, /lead.*barato/i,
+    ],
+  },
+  {
+    label: "Criativos que convertem",
+    patterns: [
+      /criat(ivo|iva)/i, /an[uú]ncio/i, /ad(s)?\b/i, /arte.*converte/i,
+      /v[ií]deo.*vend/i, /hook/i, /gancho/i, /thumb/i, /thumbnail/i,
+      /visual.*convert/i, /imagem.*perform/i, /creative/i,
+      /testar.*mais.*oferta/i, /testar.*criat/i, /variar.*criat/i,
+      /n[aã]o.*sab(e|o).*o que.*post/i, /conteúdo.*convert/i,
+    ],
+  },
+  {
+    label: "Copy / Comunicação / Oferta",
+    patterns: [
+      /copy/i, /comunica(ção|r)/i, /mensagem/i, /texto.*vend/i,
+      /headline/i, /promessa/i, /proposta.*valor/i, /oferta/i,
+      /argumento/i, /script/i, /ângulo/i, /abordagem/i,
+      /n[aã]o.*sab(e|o).*o que.*fal(ar|o)/i, /posicionamento/i,
+    ],
+  },
+  {
+    label: "Custo alto de aquisição / CAC",
+    patterns: [
+      /cac/i, /cpa/i, /custo.*aquisi/i, /custo.*por.*lead/i,
+      /gastando.*muito/i, /caro.*demais/i, /custo.*alto/i,
+      /investimento.*alto.*sem/i, /pagando.*caro/i, /gastar.*menos/i,
+      /reduzir.*custo/i, /diminuir.*gasto/i, /otimizar.*custo/i,
+    ],
+  },
+  {
+    label: "ROI / Retorno / Lucro",
+    patterns: [
+      /\broi\b/i, /\broas\b/i, /retorno/i, /lucr(o|atividade)/i,
+      /rentabilidade/i, /margem/i, /n[aã]o.*t(em|á).*lucr/i,
+      /ganh(ar|o).*mais.*dinheiro/i, /resultado.*financ/i,
+      /faturar.*com.*lucro/i, /ter.*lucro/i,
+    ],
+  },
+  {
+    label: "Vendas / Fechamento / Comercial",
+    patterns: [
+      /vend(a|er|as)/i, /comercial/i, /closer/i, /fechamento/i,
+      /fechar.*mais/i, /taxa.*convers[aã]o/i, /converter.*lead/i,
+      /transform(ar|o).*lead.*em.*client/i, /n[aã]o.*consig(o|ue).*vend/i,
+      /processo.*de.*vend/i, /script.*vend/i,
+    ],
+  },
+  {
+    label: "Funil / Estratégia de conversão",
+    patterns: [
+      /funil/i, /estrat[eé]g/i, /etapa/i, /jornada/i,
+      /p[aá]gina.*convers/i, /landing.*page/i, /lp\b/i,
+      /quiz.*converte/i, /webinar/i, /lançamento/i,
+      /método/i, /playbook/i, /framework/i,
+    ],
+  },
+  {
+    label: "Tráfego pago / Mídia",
+    patterns: [
+      /tr[aá]fego/i, /m[ií]dia.*paga/i, /facebook.*ads/i, /meta.*ads/i,
+      /google.*ads/i, /campanha.*paga/i, /gestor.*tr[aá]fego/i,
+      /pixel/i, /segmenta(ção|r)/i, /p[uú]blico/i, /audiência/i,
+      /investir.*em.*tr[aá]fego/i, /come[çc]ar.*tr[aá]fego/i,
+    ],
+  },
+  {
+    label: "Previsibilidade / Consistência",
+    patterns: [
+      /previs/i, /consist[eê]n/i, /inst[aá]vel/i, /irregular/i,
+      /altos.*e.*baixos/i, /montanha.*russa/i, /depend(e|o).*da.*sorte/i,
+      /recorr[eê]n/i, /est[aá]vel/i, /constante/i,
+      /um.*m[eê]s.*bom.*outro/i, /depende.*do.*mês/i,
+    ],
+  },
+  {
+    label: "Equipe / Time / Contratação",
+    patterns: [
+      /equipe/i, /\btime\b/i, /contrat(ar|ação)/i, /funcion[aá]rio/i,
+      /colaborador/i, /gestor/i, /designer/i, /editor/i,
+      /montar.*equipe/i, /encontrar.*profissional/i,
+      /n[aã]o.*acho.*gente/i, /boa.*equipe/i,
+    ],
+  },
+  {
+    label: "Marca / Autoridade / Posicionamento",
+    patterns: [
+      /marca/i, /branding/i, /autoridade/i, /reconhecimento/i,
+      /ser.*refer[eê]ncia/i, /destac(ar|o).*no.*mercado/i,
+      /diferencia(r|ção)/i, /identidade/i, /presença/i,
+    ],
+  },
+  {
+    label: "Organização / Processo / Gestão",
+    patterns: [
+      /organiza(r|ção)/i, /processo/i, /gest[aã]o/i, /sistema/i,
+      /bagun[çc]/i, /ca[oó]tic/i, /estrutur/i, /padroniz/i,
+      /indicador/i, /m[eé]trica/i, /dashboard/i, /controle/i,
+    ],
+  },
+  {
+    label: "Validar produto / Encontrar nicho",
+    patterns: [
+      /valid(ar|ação)/i, /encontr(ar|o).*nicho/i, /test(ar|e).*produto/i,
+      /qual.*nicho/i, /escolher.*mercado/i, /nicho.*certo/i,
+      /ideia.*que.*funciona/i, /viabilidade/i, /product.*market/i,
+      /come[çc](ar|o)/i, /iniciar/i, /do.*zero/i,
+    ],
+  },
+  {
+    label: "Diversificar canais / Orgânico",
+    patterns: [
+      /diversific/i, /canal.*novo/i, /org[aâ]nic/i, /youtube/i,
+      /tiktok/i, /instagram.*org/i, /conte[uú]do/i,
+      /n[aã]o.*depender.*s[oó].*de/i, /depend[eê]ncia.*de.*um.*canal/i,
+    ],
+  },
+];
+
+function classifyDor(dor: string): string {
+  if (!dor || !dor.trim()) return "Não informado";
+  const text = dor.toLowerCase().trim();
+
+  // Test each category — pick the first match (categories ordered by priority)
+  for (const cat of PAIN_CATEGORIES) {
+    if (cat.patterns.some(p => p.test(text))) {
+      return cat.label;
+    }
+  }
+
+  // Fallback: return a cleaned short version of the original text
+  const trimmed = dor.trim();
+  return trimmed.length > 60 ? trimmed.slice(0, 60) + "…" : trimmed;
+}
+
+// Keep the raw version for display in detail views
 function normalizeDor(dor: string): string {
   if (!dor) return "Não informado";
   const trimmed = dor.trim();
@@ -209,7 +383,7 @@ function detectICPs(mqls: Lead[]): ICProfile[] {
       const [mercado, estagio, faturamento] = key.split("|||");
       const dorCount: Record<string, number> = {};
       arr.forEach(l => {
-        const d = normalizeDor(l.dor_desejo);
+        const d = classifyDor(l.dor_desejo);
         if (d !== "Não informado") dorCount[d] = (dorCount[d] || 0) + 1;
       });
       const topDores = Object.entries(dorCount).sort(([, a], [, b]) => b - a).slice(0, 3).map(([d]) => d);
@@ -242,7 +416,7 @@ function generateInsights(leads: Lead[], mqls: Lead[]): string[] {
     insights.push(`O mercado que mais gera MQL no período é "${mercadoRank[0].label}" com ${mercadoRank[0].mqls} MQL(s) (${mercadoRank[0].mqlRate} de taxa).`);
   }
 
-  const dorRank = buildRanking(leads, mqls, l => normalizeDor(l.dor_desejo));
+  const dorRank = buildRanking(leads, mqls, l => classifyDor(l.dor_desejo));
   const topDorMql = dorRank.find(d => d.label !== "Não informado" && d.mqls > 0);
   if (topDorMql) {
     insights.push(`A dor dominante entre MQLs é: "${topDorMql.label}" (${topDorMql.pctOfMql} dos MQLs).`);
@@ -281,7 +455,7 @@ function generateInsights(leads: Lead[], mqls: Lead[]): string[] {
 function generateCreativeSuggestions(leads: Lead[], mqls: Lead[]): string[] {
   const suggestions: string[] = [];
   const mercadoRank = buildRanking(leads, mqls, l => normalizeMercado(l.mercado));
-  const dorRank = buildRanking(leads, mqls, l => normalizeDor(l.dor_desejo));
+  const dorRank = buildRanking(leads, mqls, l => classifyDor(l.dor_desejo));
   const estRank = buildRanking(leads, mqls, l => l.estagio_negocio || "Não informado");
 
   const topMercado = mercadoRank[0];
@@ -305,7 +479,7 @@ function generateCreativeSuggestions(leads: Lead[], mqls: Lead[]): string[] {
 
   const crossMap: Record<string, number> = {};
   mqls.forEach(l => {
-    const k = `${normalizeMercado(l.mercado)} + ${normalizeDor(l.dor_desejo)}`;
+    const k = `${normalizeMercado(l.mercado)} + ${classifyDor(l.dor_desejo)}`;
     crossMap[k] = (crossMap[k] || 0) + 1;
   });
   const topCross = Object.entries(crossMap).sort(([, a], [, b]) => b - a)[0];
@@ -358,7 +532,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
   const uniqueEstagios = useMemo(() => [...new Set(leads.map(l => l.estagio_negocio || "Não informado"))].filter(Boolean).sort(), [leads]);
 
   const mercadoRank = useMemo(() => buildRanking(filtered, mqls, l => normalizeMercado(l.mercado)), [filtered, mqls]);
-  const dorRank = useMemo(() => buildRanking(filtered, mqls, l => normalizeDor(l.dor_desejo)), [filtered, mqls]);
+  const dorRank = useMemo(() => buildRanking(filtered, mqls, l => classifyDor(l.dor_desejo)), [filtered, mqls]);
   const fatRank = useMemo(() => buildRanking(filtered, mqls, l => l.investimento_faixa || "Não informado"), [filtered, mqls]);
   const estRank = useMemo(() => buildRanking(filtered, mqls, l => l.estagio_negocio || "Não informado"), [filtered, mqls]);
   const srcRank = useMemo(() => buildRanking(filtered, mqls, l => l.utm_source || "Direto"), [filtered, mqls]);
@@ -377,7 +551,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
     const matrix: Record<string, Record<string, number>> = {};
     mqls.forEach(l => {
       const m = normalizeMercado(l.mercado);
-      const d = normalizeDor(l.dor_desejo);
+      const d = classifyDor(l.dor_desejo);
       if (d === "Não informado") return;
       if (!matrix[m]) matrix[m] = {};
       matrix[m][d] = (matrix[m][d] || 0) + 1;
@@ -968,7 +1142,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                         <TableCell className="text-xs">{normalizeMercado(lead.mercado)}</TableCell>
                         <TableCell className="text-xs max-w-[100px] truncate">{lead.estagio_negocio || "—"}</TableCell>
                         <TableCell className="text-xs max-w-[100px] truncate">{lead.investimento_faixa || "—"}</TableCell>
-                        <TableCell className="text-xs max-w-[120px] truncate" title={lead.dor_desejo}>{lead.dor_desejo || "—"}</TableCell>
+                        <TableCell className="text-xs max-w-[120px] truncate" title={lead.dor_desejo}>{classifyDor(lead.dor_desejo)}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className={`text-[10px] ${getTierFromFaturamento(lead.investimento_faixa) === "Enterprise+" || getTierFromFaturamento(lead.investimento_faixa) === "Enterprise" ? "border-secondary/50 text-secondary" : ""}`}>
                             {getTierFromFaturamento(lead.investimento_faixa)}
@@ -1061,7 +1235,8 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                 <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
                   <p className="text-[10px] text-primary uppercase tracking-wider mb-2 flex items-center gap-1"><Brain className="w-3 h-3" /> Leitura Estratégica</p>
                   <div className="space-y-1 text-sm">
-                    <p>• <strong>Dor principal:</strong> {normalizeDor(selectedLead.dor_desejo)}</p>
+                    <p>• <strong>Categoria da dor:</strong> {classifyDor(selectedLead.dor_desejo)}</p>
+                    <p>• <strong>Dor original:</strong> {normalizeDor(selectedLead.dor_desejo)}</p>
                     {icps.length > 0 && (
                       <p>• <strong>ICP mais próximo:</strong> {
                         icps.find(ic => ic.mercado === normalizeMercado(selectedLead.mercado))?.name || icps[0].name
