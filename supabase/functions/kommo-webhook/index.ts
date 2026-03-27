@@ -737,25 +737,13 @@ Deno.serve(async (req) => {
         console.log(
           `[kommo-webhook] STEP 4: Starting CAPI events for lead ${leadDbId}`,
         );
-        // Check dedup: only send if not already sent
-        const { data: leadRow, error: leadFetchErr } = await supabase
-          .from("leads")
-          .select("capi_events_sent, tier, investimento_faixa")
-          .eq("id", leadDbId)
-          .maybeSingle();
-
-        if (leadFetchErr) {
-          console.error("[kommo-webhook] CAPI lead fetch error:", leadFetchErr);
-        }
+        const leadRow = await waitForLeadRow(supabase, leadDbId);
 
         console.log(
-          `[kommo-webhook] CAPI lead data: tier=${leadRow?.tier}, investimento=${leadRow?.investimento_faixa}, capi_sent=${
-            JSON.stringify(leadRow?.capi_events_sent)
-          }`,
+          `[kommo-webhook] CAPI lead data: tier=${leadRow?.tier}, investimento=${leadRow?.investimento_faixa}, capi_sent=${JSON.stringify(leadRow?.capi_events_sent)}`,
         );
 
-        const capiSent =
-          (leadRow?.capi_events_sent as Record<string, boolean>) || {};
+        const capiSent = leadRow?.capi_events_sent || {};
         const tier = leadRow?.tier || "Desqualificado";
         const capiUrl = `${SUPABASE_URL}/functions/v1/meta-capi`;
         const webhookSecret = INTERNAL_WEBHOOK_SECRET || "";
