@@ -416,7 +416,7 @@ function generateInsights(leads: Lead[], mqls: Lead[]): string[] {
     insights.push(`O mercado que mais gera MQL no período é "${mercadoRank[0].label}" com ${mercadoRank[0].mqls} MQL(s) (${mercadoRank[0].mqlRate} de taxa).`);
   }
 
-  const dorRank = buildRanking(leads, mqls, l => normalizeDor(l.dor_desejo));
+  const dorRank = buildRanking(leads, mqls, l => classifyDor(l.dor_desejo));
   const topDorMql = dorRank.find(d => d.label !== "Não informado" && d.mqls > 0);
   if (topDorMql) {
     insights.push(`A dor dominante entre MQLs é: "${topDorMql.label}" (${topDorMql.pctOfMql} dos MQLs).`);
