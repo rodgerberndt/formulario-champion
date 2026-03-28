@@ -99,8 +99,7 @@ async function updateSessionDirect(sessionId: string, data: Record<string, unkno
         localStorage.removeItem(SESSION_KEY);
       }
     } else if (!result || result.length === 0) {
-      console.warn("Session not found in DB (0 rows updated), clearing stale session ID");
-      localStorage.removeItem(SESSION_KEY);
+      console.warn("Session update returned 0 rows for:", sessionId);
     }
   } catch (error) {
     console.error("Error updating session:", error);
