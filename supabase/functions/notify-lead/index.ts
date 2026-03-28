@@ -269,7 +269,7 @@ async function sendWahaAutoMessage(
   leadWhatsapp: string,
   leadName: string
 ): Promise<{ success: boolean; error?: string }> {
-  if (!WAHA_API_URL || !WAHA_API_KEY) {
+  if (!WAHA_API_URL) {
     console.log('WAHA not configured, skipping auto-message to lead');
     return { success: false, error: 'WAHA not configured' };
   }
