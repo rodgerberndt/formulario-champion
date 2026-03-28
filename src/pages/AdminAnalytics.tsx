@@ -1860,6 +1860,16 @@ export default function AdminAnalytics() {
                                       ⚠️ IP duplicado
                                     </Badge>
                                   )}
+                                  {lead.attribution_source === "bio_recovery" && (
+                                    <Badge variant="outline" className="border-purple-500 text-purple-400 bg-purple-500/10 w-fit text-xs">
+                                      🔄 Bio
+                                    </Badge>
+                                  )}
+                                  {lead.attribution_source === "organic" && (
+                                    <Badge variant="outline" className="border-gray-500 text-gray-400 bg-gray-500/10 w-fit text-xs">
+                                      🌱 Orgânico
+                                    </Badge>
+                                  )}
                                 </div>
                               </td>
                               <td className="p-2">
