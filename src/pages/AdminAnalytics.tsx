@@ -173,6 +173,7 @@ interface Lead {
   sdr_override: string | null;
   decisor: boolean | null;
   raw_answers_json: Record<string, unknown> | null;
+  attribution_source: string | null;
 }
 
 export default function AdminAnalytics() {
