@@ -388,13 +388,28 @@ Deno.serve(async (req: Request) => {
     // Look up the lead's investimento_faixa to determine SDR
     let leadInvestimentoFaixa: string | null = null;
     if (session.lead_whatsapp || session.lead_name) {
-      const { data: leadRow } = await supabase
-        .from('leads')
-        .select('investimento_faixa')
-        .or(`whatsapp.eq.${session.lead_whatsapp},nome_completo.eq.${session.lead_name}`)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+      // Try whatsapp first, then nome_completo — avoid .or() with special chars
+      let leadRow = null;
+      if (session.lead_whatsapp) {
+        const { data } = await supabase
+          .from('leads')
+          .select('investimento_faixa')
+          .eq('whatsapp', session.lead_whatsapp)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+        leadRow = data;
+      }
+      if (!leadRow && session.lead_name) {
+        const { data } = await supabase
+          .from('leads')
+          .select('investimento_faixa')
+          .eq('nome_completo', session.lead_name)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+        leadRow = data;
+      }
       if (leadRow) {
         leadInvestimentoFaixa = leadRow.investimento_faixa;
       }
