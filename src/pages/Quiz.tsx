@@ -21,7 +21,7 @@ import {
   INVESTIMENTO_OPTIONS } from
 "@/lib/leadScoring";
 import { useTracking } from "@/hooks/useTracking";
-import { useUtmCapture, getUtmForDb } from "@/hooks/useUtmCapture";
+import { useUtmCapture, getUtmForDb, getAttributionSource } from "@/hooks/useUtmCapture";
 
 const env = import.meta.env as Record<string, string | undefined>;
 const externalSupabaseUrl = env.SUPABASE_URL ?? env.VITE_SUPABASE_URL;
