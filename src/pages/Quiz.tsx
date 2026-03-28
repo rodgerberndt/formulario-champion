@@ -633,6 +633,7 @@ export default function Quiz() {
               Qual é o seu e-mail?
             </label>
             <Input
+              id="campo_email"
               className={inputClasses}
               placeholder="seu@email.com"
               type="email"
