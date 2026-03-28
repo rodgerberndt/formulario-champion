@@ -1158,10 +1158,23 @@ Deno.serve(async (req: Request) => {
         }
       }
 
-      // Process sales
+      // Build a lead lookup map for resolving creative from lead_id
+      const leadUtmMap = new Map<string, string>();
+      for (const lead of allLeads) {
+        if (lead.utm_content && lead.utm_content !== '{{ad.name}}') {
+          leadUtmMap.set(lead.id, lead.utm_content);
+        }
+      }
+
+      // Process sales - resolve creative from linked lead if needed
       let salesWithoutCreative = 0;
       for (const sale of (salesData || [])) {
-        const rawKey = sale.creative_key || sale.utm_content;
+        let rawKey = sale.creative_key || sale.utm_content;
+        // If no creative but has lead_id, try to get it from the lead
+        if ((!rawKey || rawKey === '{{ad.name}}' || DIRECT_KEYS.has(normalizeKey(rawKey) || "")) && sale.lead_id) {
+          const leadCreative = leadUtmMap.get(sale.lead_id);
+          if (leadCreative) rawKey = leadCreative;
+        }
         let ck: string;
         let label: string;
         const normalized = rawKey ? normalizeKey(rawKey) : "";
@@ -1178,10 +1191,15 @@ Deno.serve(async (req: Request) => {
         agg.revenue += Number(sale.revenue) || 0;
       }
 
-      // Process meetings
+      // Process meetings - resolve creative from linked lead if needed
       let totalMeetingsCount = 0;
       for (const meeting of (meetingsData || [])) {
-        const rawKey = meeting.creative_key || meeting.utm_content;
+        let rawKey = meeting.creative_key || meeting.utm_content;
+        // If no creative but has lead_id, try to get it from the lead
+        if ((!rawKey || rawKey === '{{ad.name}}' || DIRECT_KEYS.has(normalizeKey(rawKey) || "")) && meeting.lead_id) {
+          const leadCreative = leadUtmMap.get(meeting.lead_id);
+          if (leadCreative) rawKey = leadCreative;
+        }
         let ck: string;
         let label: string;
         const normalized = rawKey ? normalizeKey(rawKey) : "";
