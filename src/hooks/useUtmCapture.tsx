@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { getStoredAttribution } from "@/hooks/useAttribution";
 
 const UTM_STORAGE_KEY = "champion_utm";
-const BIO_RECOVERY_WINDOW_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+const BIO_RECOVERY_WINDOW_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 export interface UtmData {
   utm_source: string;
