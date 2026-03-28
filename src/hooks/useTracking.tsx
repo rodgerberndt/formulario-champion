@@ -42,19 +42,25 @@ function getDeviceType(): string {
   return "desktop";
 }
 
+function sanitizeParam(val: string | null): string | null {
+  if (!val) return null;
+  if (/\{\{.*\}\}/.test(val)) return null;
+  return val;
+}
+
 function getUTMParams(): Record<string, string | null> {
   const params = new URLSearchParams(window.location.search);
   return {
-    utm_source: params.get("utm_source"),
-    utm_medium: params.get("utm_medium"),
-    utm_campaign: params.get("utm_campaign"),
-    utm_content: params.get("utm_content"),
-    utm_term: params.get("utm_term"),
+    utm_source: sanitizeParam(params.get("utm_source")),
+    utm_medium: sanitizeParam(params.get("utm_medium")),
+    utm_campaign: sanitizeParam(params.get("utm_campaign")),
+    utm_content: sanitizeParam(params.get("utm_content")),
+    utm_term: sanitizeParam(params.get("utm_term")),
     // Click IDs
-    fbclid: params.get("fbclid"),
-    gclid: params.get("gclid"),
-    ttclid: params.get("ttclid"),
-    // Meta Ads IDs
+    fbclid: sanitizeParam(params.get("fbclid")),
+    gclid: sanitizeParam(params.get("gclid")),
+    ttclid: sanitizeParam(params.get("ttclid")),
+    // Meta Ads IDs (numeric IDs, keep as-is)
     campaign_id: params.get("campaign_id"),
     adset_id: params.get("adset_id"),
     ad_id: params.get("ad_id"),
