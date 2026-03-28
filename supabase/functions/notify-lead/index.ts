@@ -421,7 +421,24 @@ Deno.serve(async (req: Request) => {
       console.error('WhatsApp send failed:', msg);
     }
 
-    // Update session with results
+    // 3. Send auto-message to MQL lead via WAHA (only if SDR is Rodger = MQL)
+    let wahaSuccess = false;
+    if (sdr.name === 'Rodger' && session.lead_whatsapp && session.lead_name) {
+      try {
+        const wahaResult = await withRetry(() =>
+          sendWahaAutoMessage(session.lead_whatsapp, session.lead_name)
+        );
+        wahaSuccess = wahaResult.success;
+        if (!wahaSuccess && wahaResult.error) {
+          errors.push(`WAHA: ${wahaResult.error}`);
+        }
+        console.log(`[WAHA] Auto-message to MQL lead: ${wahaSuccess ? 'OK' : 'FAILED'}`);
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error);
+        errors.push(`WAHA: ${msg}`);
+        console.error('WAHA auto-message failed:', msg);
+      }
+    }
     const updatePayload: Record<string, unknown> = {};
     
     if (whatsappSuccess) {
