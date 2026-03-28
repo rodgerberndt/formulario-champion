@@ -331,6 +331,17 @@ export default function Quiz() {
         dor_desejo: currentData.dor_desejo
       });
 
+      // Capture IP for attribution matching
+      let clientIp: string | null = null;
+      try {
+        const ipRes = await supabase.functions.invoke('get-client-ip', {
+          body: { action: 'get_ip_only' }
+        });
+        clientIp = ipRes.data?.ip || null;
+      } catch (e) {
+        console.warn('Failed to get client IP:', e);
+      }
+
       const dbData = {
         nome_completo: currentData.nome_completo,
         whatsapp: currentData.whatsapp,
@@ -343,6 +354,7 @@ export default function Quiz() {
         tier: result.tier,
         raw_answers_json: JSON.parse(JSON.stringify(currentData)),
         attribution_source: getAttributionSource(),
+        ip_address: clientIp,
         ...getUtmPayload()
       };
 
