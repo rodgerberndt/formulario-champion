@@ -281,6 +281,7 @@ export type Database = {
         Row: {
           ad_id: string | null
           adset_id: string | null
+          attribution_source: string | null
           campaign_id: string | null
           capi_events_sent: Json | null
           created_at: string
@@ -329,6 +330,7 @@ export type Database = {
         Insert: {
           ad_id?: string | null
           adset_id?: string | null
+          attribution_source?: string | null
           campaign_id?: string | null
           capi_events_sent?: Json | null
           created_at?: string
@@ -377,6 +379,7 @@ export type Database = {
         Update: {
           ad_id?: string | null
           adset_id?: string | null
+          attribution_source?: string | null
           campaign_id?: string | null
           capi_events_sent?: Json | null
           created_at?: string
