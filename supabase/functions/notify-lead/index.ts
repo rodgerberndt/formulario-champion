@@ -23,6 +23,11 @@ const DARA_WHATSAPP_E164 = Deno.env.get('DARA_WHATSAPP_E164');
 const WHATSAPP_TEMPLATE_NAME = Deno.env.get('WHATSAPP_TEMPLATE_NAME');
 const WHATSAPP_TEMPLATE_LANG = Deno.env.get('WHATSAPP_TEMPLATE_LANG') || 'pt_BR';
 
+// WAHA (auto-message to MQL leads)
+const WAHA_API_URL = Deno.env.get('WAHA_API_URL');
+const WAHA_API_KEY = Deno.env.get('WAHA_API_KEY');
+const WAHA_PHONE_NUMBER_ID = Deno.env.get('WAHA_PHONE_NUMBER_ID') || 'default';
+
 // SDR routing: leads with faturamento >= R$10k go to Rodger, others to Dara
 const SDR_RODGER_FATURAMENTO = [
   "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
@@ -259,6 +264,50 @@ async function sendWhatsAppToSdr(lead: Record<string, unknown>, sessionId: strin
   }
 }
 
+// Send auto-message to MQL lead via WAHA
+async function sendWahaAutoMessage(
+  leadWhatsapp: string,
+  leadName: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!WAHA_API_URL || !WAHA_API_KEY) {
+    console.log('WAHA not configured, skipping auto-message to lead');
+    return { success: false, error: 'WAHA not configured' };
+  }
+
+  // Format phone: ensure it starts with country code, remove non-digits
+  let phone = leadWhatsapp.replace(/\D/g, '');
+  if (phone.startsWith('0')) phone = '55' + phone.substring(1);
+  if (!phone.startsWith('55')) phone = '55' + phone;
+
+  const message = `Opaa ${leadName}, tudo bem? Entrei em contato referente ao cadastro que você fez no nosso site, vim falar que bem em breve ja vamos entrar em contato com você!😄`;
+
+  const wahaUrl = `${WAHA_API_URL.replace(/\/$/, '')}/api/sendText`;
+
+  console.log(`[WAHA] Sending auto-message to MQL lead: ${phone}`);
+
+  const response = await fetch(wahaUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${WAHA_API_KEY}`,
+    },
+    body: JSON.stringify({
+      session: WAHA_PHONE_NUMBER_ID,
+      chatId: `${phone}@c.us`,
+      text: message,
+    }),
+  });
+
+  const responseText = await response.text();
+  console.log('[WAHA] Response:', response.status, responseText);
+
+  if (!response.ok) {
+    return { success: false, error: `WAHA error ${response.status}: ${responseText}` };
+  }
+
+  return { success: true };
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -372,7 +421,24 @@ Deno.serve(async (req: Request) => {
       console.error('WhatsApp send failed:', msg);
     }
 
-    // Update session with results
+    // 3. Send auto-message to MQL lead via WAHA (only if SDR is Rodger = MQL)
+    let wahaSuccess = false;
+    if (sdr.name === 'Rodger' && session.lead_whatsapp && session.lead_name) {
+      try {
+        const wahaResult = await withRetry(() =>
+          sendWahaAutoMessage(session.lead_whatsapp, session.lead_name)
+        );
+        wahaSuccess = wahaResult.success;
+        if (!wahaSuccess && wahaResult.error) {
+          errors.push(`WAHA: ${wahaResult.error}`);
+        }
+        console.log(`[WAHA] Auto-message to MQL lead: ${wahaSuccess ? 'OK' : 'FAILED'}`);
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error);
+        errors.push(`WAHA: ${msg}`);
+        console.error('WAHA auto-message failed:', msg);
+      }
+    }
     const updatePayload: Record<string, unknown> = {};
     
     if (whatsappSuccess) {
@@ -430,7 +496,7 @@ Deno.serve(async (req: Request) => {
       console.error('Web Push failed (non-critical):', msg);
     }
 
-    console.log('Notification complete - Kommo:', kommoSuccess, 'WhatsApp:', whatsappSuccess, 'WebPush:', webPushSuccess);
+    console.log('Notification complete - Kommo:', kommoSuccess, 'WhatsApp:', whatsappSuccess, 'WebPush:', webPushSuccess, 'WAHA:', wahaSuccess);
 
     return new Response(
       JSON.stringify({
@@ -438,6 +504,7 @@ Deno.serve(async (req: Request) => {
         kommo: kommoSuccess,
         whatsapp: whatsappSuccess,
         webPush: webPushSuccess,
+        wahaAutoMessage: wahaSuccess,
         messageId,
         errors: errors.length > 0 ? errors : undefined
       }),
