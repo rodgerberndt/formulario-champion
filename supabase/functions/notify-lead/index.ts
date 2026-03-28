@@ -496,7 +496,7 @@ Deno.serve(async (req: Request) => {
       console.error('Web Push failed (non-critical):', msg);
     }
 
-    console.log('Notification complete - Kommo:', kommoSuccess, 'WhatsApp:', whatsappSuccess, 'WebPush:', webPushSuccess);
+    console.log('Notification complete - Kommo:', kommoSuccess, 'WhatsApp:', whatsappSuccess, 'WebPush:', webPushSuccess, 'WAHA:', wahaSuccess);
 
     return new Response(
       JSON.stringify({
@@ -504,6 +504,7 @@ Deno.serve(async (req: Request) => {
         kommo: kommoSuccess,
         whatsapp: whatsappSuccess,
         webPush: webPushSuccess,
+        wahaAutoMessage: wahaSuccess,
         messageId,
         errors: errors.length > 0 ? errors : undefined
       }),
