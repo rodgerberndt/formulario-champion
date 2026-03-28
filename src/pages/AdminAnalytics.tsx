@@ -2038,13 +2038,16 @@ export default function AdminAnalytics() {
                                     {sdr}
                                   </Badge>
                                   {lead.is_duplicate_ip && (
-                                    <Badge variant="outline" className="border-orange-500 text-orange-500 bg-orange-500/10 text-[10px]">⚠️ Dup</Badge>
+                                    <Badge variant="outline" className="border-orange-500 text-orange-500 bg-orange-500/10 text-[10px] px-1.5 py-0">⚠️ Dup</Badge>
                                   )}
                                   {lead.attribution_source === "bio_recovery" && (
-                                    <Badge variant="outline" className="border-purple-500 text-purple-400 bg-purple-500/10 text-[10px]">🔄 Bio</Badge>
+                                    <Badge variant="outline" className="border-violet-400 text-violet-300 bg-violet-500/15 text-[10px] px-1.5 py-0">🔗 Bio</Badge>
                                   )}
                                   {lead.attribution_source === "organic" && (
-                                    <Badge variant="outline" className="border-gray-500 text-gray-400 bg-gray-500/10 text-[10px]">🌱 Org</Badge>
+                                    <Badge variant="outline" className="border-emerald-600 text-emerald-400 bg-emerald-500/10 text-[10px] px-1.5 py-0">🌿 Org</Badge>
+                                  )}
+                                  {lead.attribution_source === "direct_ad" && (
+                                    <Badge variant="outline" className="border-sky-600 text-sky-400 bg-sky-500/10 text-[10px] px-1.5 py-0">📢 Ad</Badge>
                                   )}
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-1">{lead.mercado}</p>
