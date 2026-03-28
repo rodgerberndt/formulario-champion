@@ -195,8 +195,19 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Also try to get user_agent and fbclid from lead_sessions
-    const { data: session } = await supabase
+    // Last-click attribution: get the MOST RECENT session with a valid fbclid
+    // This ensures MQL and other events are attributed to the latest ad click
+    const { data: lastClickSession } = await supabase
+      .from("lead_sessions")
+      .select("user_agent, fbclid, ip_address")
+      .eq("lead_whatsapp", lead.whatsapp)
+      .not("fbclid", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    // Fallback: get latest session for user_agent/ip even without fbclid
+    const { data: latestSession } = lastClickSession ? { data: lastClickSession } : await supabase
       .from("lead_sessions")
       .select("user_agent, fbclid, ip_address")
       .eq("lead_whatsapp", lead.whatsapp)
@@ -204,9 +215,10 @@ Deno.serve(async (req: Request) => {
       .limit(1)
       .maybeSingle();
 
-    const fbclid = lead.fbclid || session?.fbclid || null;
-    const ipAddress = lead.ip_address || session?.ip_address || null;
-    const userAgent = session?.user_agent || null;
+    // Last-click: session fbclid takes priority over lead's original fbclid
+    const fbclid = lastClickSession?.fbclid || latestSession?.fbclid || lead.fbclid || null;
+    const ipAddress = latestSession?.ip_address || lead.ip_address || null;
+    const userAgent = latestSession?.user_agent || null;
 
     const result = await sendConversionEvent({
       eventName,
