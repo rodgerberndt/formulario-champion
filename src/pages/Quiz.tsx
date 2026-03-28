@@ -21,7 +21,7 @@ import {
   INVESTIMENTO_OPTIONS } from
 "@/lib/leadScoring";
 import { useTracking } from "@/hooks/useTracking";
-import { useUtmCapture, getUtmForDb } from "@/hooks/useUtmCapture";
+import { useUtmCapture, getUtmForDb, getAttributionSource } from "@/hooks/useUtmCapture";
 
 const env = import.meta.env as Record<string, string | undefined>;
 const externalSupabaseUrl = env.SUPABASE_URL ?? env.VITE_SUPABASE_URL;
@@ -342,6 +342,7 @@ export default function Quiz() {
         score: result.score,
         tier: result.tier,
         raw_answers_json: JSON.parse(JSON.stringify(currentData)),
+        attribution_source: getAttributionSource(),
         ...getUtmPayload()
       };
 

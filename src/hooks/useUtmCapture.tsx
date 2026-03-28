@@ -1,7 +1,9 @@
 import { useEffect, useCallback, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import { getStoredAttribution } from "@/hooks/useAttribution";
 
 const UTM_STORAGE_KEY = "champion_utm";
+const BIO_RECOVERY_WINDOW_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
 
 export interface UtmData {
   utm_source: string;
@@ -74,6 +76,24 @@ function hasTrackingParams(data: Partial<UtmData>): boolean {
   return !!(data.utm_source || data.utm_campaign || data.fbclid || data.gclid || data.campaign_id || data.ad_id);
 }
 
+// Determine attribution source based on current session data
+export function getAttributionSource(): "direct_ad" | "bio_recovery" | "organic" {
+  const utm = getStoredUtm();
+  
+  // If session has real UTM params, it's a direct ad click
+  if (utm.utm_source !== "direct" && utm.utm_source !== "(not set)" && utm.utm_campaign !== "(not set)") {
+    return "direct_ad";
+  }
+  
+  // Check if we recovered from localStorage attribution
+  try {
+    const recoveryFlag = sessionStorage.getItem("champion_utm_recovered");
+    if (recoveryFlag === "true") return "bio_recovery";
+  } catch {}
+  
+  return "organic";
+}
+
 export function getStoredUtm(): UtmData {
   try {
     const stored = sessionStorage.getItem(UTM_STORAGE_KEY);
@@ -116,7 +136,7 @@ export function useUtmCapture() {
 
     const urlParams = parseQueryParams(window.location.search);
 
-    // Only save if we have tracking data in URL
+    // If we have tracking data in URL, save it directly
     if (hasTrackingParams(urlParams)) {
       const existingData = getStoredUtm();
 
@@ -138,6 +158,40 @@ export function useUtmCapture() {
 
       sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(newData));
       console.log("Tracking data captured:", newData);
+    } else {
+      // No UTMs in URL — try to recover from localStorage attribution (bio recovery)
+      const attribution = getStoredAttribution();
+      if (attribution && attribution.captured_at) {
+        const capturedAt = new Date(attribution.captured_at).getTime();
+        const now = Date.now();
+        const withinWindow = (now - capturedAt) < BIO_RECOVERY_WINDOW_MS;
+
+        const hasAttributionData = !!(
+          attribution.utm_source || attribution.utm_campaign || 
+          attribution.fbclid || attribution.campaign_id || attribution.ad_id
+        );
+
+        if (withinWindow && hasAttributionData) {
+          const recoveredData: UtmData = {
+            utm_source: attribution.utm_source || DEFAULT_UTM.utm_source,
+            utm_medium: attribution.utm_medium || DEFAULT_UTM.utm_medium,
+            utm_campaign: attribution.utm_campaign || DEFAULT_UTM.utm_campaign,
+            utm_content: attribution.utm_content || DEFAULT_UTM.utm_content,
+            utm_term: attribution.utm_term || DEFAULT_UTM.utm_term,
+            fbclid: attribution.fbclid || null,
+            gclid: attribution.gclid || null,
+            campaign_id: attribution.campaign_id || null,
+            adset_id: attribution.adset_id || null,
+            ad_id: attribution.ad_id || null,
+            placement: null,
+            site_source_name: null,
+          };
+
+          sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(recoveredData));
+          sessionStorage.setItem("champion_utm_recovered", "true");
+          console.log("🔄 Bio recovery: attribution recovered from localStorage", recoveredData);
+        }
+      }
     }
   }, []);
 
