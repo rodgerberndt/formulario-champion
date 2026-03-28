@@ -36,25 +36,32 @@ const DEFAULT_UTM: UtmData = {
   site_source_name: null,
 };
 
+// Strip Meta Ads unresolved placeholders like {{campaign.name}}
+function sanitizeParam(value: string | null): string | null {
+  if (!value) return null;
+  if (/\{\{.*\}\}/.test(value)) return null;
+  return value;
+}
+
 function parseQueryParams(search: string): Partial<UtmData> {
   const params = new URLSearchParams(search);
   const result: Partial<UtmData> = {};
 
-  // UTM parameters
-  const utm_source = params.get("utm_source");
-  const utm_medium = params.get("utm_medium");
-  const utm_campaign = params.get("utm_campaign");
-  const utm_content = params.get("utm_content");
-  const utm_term = params.get("utm_term");
-  const fbclid = params.get("fbclid");
-  const gclid = params.get("gclid");
+  // UTM parameters (sanitize placeholders)
+  const utm_source = sanitizeParam(params.get("utm_source"));
+  const utm_medium = sanitizeParam(params.get("utm_medium"));
+  const utm_campaign = sanitizeParam(params.get("utm_campaign"));
+  const utm_content = sanitizeParam(params.get("utm_content"));
+  const utm_term = sanitizeParam(params.get("utm_term"));
+  const fbclid = sanitizeParam(params.get("fbclid"));
+  const gclid = sanitizeParam(params.get("gclid"));
 
-  // Meta Ads parameters
+  // Meta Ads parameters (IDs are numeric, no need to sanitize)
   const campaign_id = params.get("campaign_id");
   const adset_id = params.get("adset_id");
   const ad_id = params.get("ad_id");
-  const placement = params.get("placement");
-  const site_source_name = params.get("site_source_name");
+  const placement = sanitizeParam(params.get("placement"));
+  const site_source_name = sanitizeParam(params.get("site_source_name"));
 
   if (utm_source) result.utm_source = utm_source;
   if (utm_medium) result.utm_medium = utm_medium;
