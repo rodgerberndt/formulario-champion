@@ -2106,24 +2106,52 @@ export default function AdminAnalytics() {
                           <div className="p-3 bg-background/50 rounded-lg">
                             <p className="text-muted-foreground text-[10px] uppercase mb-1">Campanha</p>
                             <p className="font-semibold text-purple-400 text-lg">
-                              {selectedLead.utm_campaign || selectedLead.campaign_id || "Tráfego Direto"}
+                              {(() => {
+                                const raw = selectedLead.utm_campaign;
+                                const isPlaceholder = raw && /\{\{.*\}\}/.test(raw);
+                                if (!isPlaceholder && raw) return raw;
+                                return selectedLead.campaign_id
+                                  ? `ID: ${selectedLead.campaign_id}`
+                                  : "Tráfego Direto";
+                              })()}
                             </p>
                           </div>
                           <div className="p-3 bg-background/50 rounded-lg">
                             <p className="text-muted-foreground text-[10px] uppercase mb-1">Anúncio</p>
                             <p className="font-semibold text-blue-400 text-lg">
-                              {selectedLead.utm_content || selectedLead.ad_id || "Não identificado"}
+                              {(() => {
+                                const raw = selectedLead.utm_content;
+                                const isPlaceholder = raw && /\{\{.*\}\}/.test(raw);
+                                if (!isPlaceholder && raw) return raw;
+                                return selectedLead.ad_id
+                                  ? `ID: ${selectedLead.ad_id}`
+                                  : "Não identificado";
+                              })()}
                             </p>
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-2 mt-3">
                           <div className="p-2 bg-background/30 rounded text-center">
                             <p className="text-muted-foreground text-[10px] uppercase">Fonte</p>
-                            <p className="font-medium text-sm">{selectedLead.utm_source || "direct"}</p>
+                            <p className="font-medium text-sm">
+                              {(() => {
+                                const raw = selectedLead.utm_source;
+                                const isPlaceholder = raw && /\{\{.*\}\}/.test(raw);
+                                if (!isPlaceholder && raw) return raw;
+                                return "direct";
+                              })()}
+                            </p>
                           </div>
                           <div className="p-2 bg-background/30 rounded text-center">
                             <p className="text-muted-foreground text-[10px] uppercase">Placement</p>
-                            <p className="font-medium text-sm">{selectedLead.placement || "-"}</p>
+                            <p className="font-medium text-sm">
+                              {(() => {
+                                const raw = selectedLead.placement;
+                                const isPlaceholder = raw && /\{\{.*\}\}/.test(raw);
+                                if (!isPlaceholder && raw) return raw;
+                                return "-";
+                              })()}
+                            </p>
                           </div>
                         </div>
                       </div>
