@@ -908,51 +908,54 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <span className="text-sm font-normal text-muted-foreground">({creatives.length})</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
+        <CardContent>
           {creatives.length === 0 ? (
             <p className="text-center text-muted-foreground py-10">
               Nenhum criativo encontrado no período. Verifique se os leads possuem utm_content preenchido.
             </p>
           ) : (
-            <Table>
+            <Table className="table-fixed w-full">
               <TableHeader>
-                <TableRow className="text-[11px]">
-                  <TableHead className="min-w-[140px]">Criativo</TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("spend")}>
-                    Spend <SortIcon field="spend" />
+                <TableRow className="text-[10px]">
+                  <TableHead className="w-[11%]">Criativo</TableHead>
+                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("spend")}>
+                    Spend<SortIcon field="spend" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("leads_count")}>
-                    Leads / CPL <SortIcon field="leads_count" />
+                  <TableHead className="text-right cursor-pointer w-[7%]" onClick={() => handleSort("leads_count")}>
+                    Leads/CPL<SortIcon field="leads_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("mql_count")}>
-                    MQL / CPMQL <SortIcon field="mql_count" />
+                  <TableHead className="text-right cursor-pointer w-[7%]" onClick={() => handleSort("mql_count")}>
+                    MQL/CPMQL<SortIcon field="mql_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("mql_rate")}>
-                    %MQL <SortIcon field="mql_rate" />
+                  <TableHead className="text-right cursor-pointer w-[5%]" onClick={() => handleSort("mql_rate")}>
+                    %MQL<SortIcon field="mql_rate" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_small")}>
-                    CPMQL - S <SortIcon field="cost_per_small" />
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("cost_per_small")}>
+                    CP-S<SortIcon field="cost_per_small" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_medium")}>
-                    CPMQL - M <SortIcon field="cost_per_medium" />
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("cost_per_medium")}>
+                    CP-M<SortIcon field="cost_per_medium" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_tier_large")}>
-                    CPMQL - L <SortIcon field="cost_per_tier_large" />
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("cost_per_tier_large")}>
+                    CP-L<SortIcon field="cost_per_tier_large" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_enterprise")}>
-                    CPMQL - E <SortIcon field="cost_per_enterprise" />
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("cost_per_enterprise")}>
+                    CP-E<SortIcon field="cost_per_enterprise" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_enterprise_plus")}>
-                    CPMQL - E+ <SortIcon field="cost_per_enterprise_plus" />
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("cost_per_enterprise_plus")}>
+                    CP-E+<SortIcon field="cost_per_enterprise_plus" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("meetings_count")}>
-                    Reuniões <SortIcon field="meetings_count" />
+                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("meetings_count")}>
+                    Reun.<SortIcon field="meetings_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("sales_count")}>
-                    Vendas / CAC <SortIcon field="sales_count" />
+                  <TableHead className="text-right cursor-pointer w-[7%]" onClick={() => handleSort("sales_count")}>
+                    Vendas/CAC<SortIcon field="sales_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("revenue")}>
-                    Receita / ROAS <SortIcon field="revenue" />
+                  <TableHead className="text-right cursor-pointer w-[7%]" onClick={() => handleSort("revenue")}>
+                    FPC<SortIcon field="revenue" />
+                  </TableHead>
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("roas")}>
+                    ROAS<SortIcon field="roas" />
                   </TableHead>
                 </TableRow>
               </TableHeader>
