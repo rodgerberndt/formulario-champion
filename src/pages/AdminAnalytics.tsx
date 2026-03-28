@@ -2035,6 +2035,12 @@ export default function AdminAnalytics() {
                                   {lead.is_duplicate_ip && (
                                     <Badge variant="outline" className="border-orange-500 text-orange-500 bg-orange-500/10 text-[10px]">⚠️ Dup</Badge>
                                   )}
+                                  {lead.attribution_source === "bio_recovery" && (
+                                    <Badge variant="outline" className="border-purple-500 text-purple-400 bg-purple-500/10 text-[10px]">🔄 Bio</Badge>
+                                  )}
+                                  {lead.attribution_source === "organic" && (
+                                    <Badge variant="outline" className="border-gray-500 text-gray-400 bg-gray-500/10 text-[10px]">🌱 Org</Badge>
+                                  )}
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-1">{lead.mercado}</p>
                                 {lead.investimento_faixa && (
