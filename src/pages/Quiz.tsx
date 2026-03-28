@@ -342,6 +342,7 @@ export default function Quiz() {
         score: result.score,
         tier: result.tier,
         raw_answers_json: JSON.parse(JSON.stringify(currentData)),
+        attribution_source: getAttributionSource(),
         ...getUtmPayload()
       };
 
