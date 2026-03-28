@@ -23,6 +23,11 @@ const DARA_WHATSAPP_E164 = Deno.env.get('DARA_WHATSAPP_E164');
 const WHATSAPP_TEMPLATE_NAME = Deno.env.get('WHATSAPP_TEMPLATE_NAME');
 const WHATSAPP_TEMPLATE_LANG = Deno.env.get('WHATSAPP_TEMPLATE_LANG') || 'pt_BR';
 
+// WAHA (auto-message to MQL leads)
+const WAHA_API_URL = Deno.env.get('WAHA_API_URL');
+const WAHA_API_KEY = Deno.env.get('WAHA_API_KEY');
+const WAHA_PHONE_NUMBER_ID = Deno.env.get('WAHA_PHONE_NUMBER_ID') || 'default';
+
 // SDR routing: leads with faturamento >= R$10k go to Rodger, others to Dara
 const SDR_RODGER_FATURAMENTO = [
   "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
