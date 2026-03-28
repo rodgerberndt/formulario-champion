@@ -264,6 +264,50 @@ async function sendWhatsAppToSdr(lead: Record<string, unknown>, sessionId: strin
   }
 }
 
+// Send auto-message to MQL lead via WAHA
+async function sendWahaAutoMessage(
+  leadWhatsapp: string,
+  leadName: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!WAHA_API_URL || !WAHA_API_KEY) {
+    console.log('WAHA not configured, skipping auto-message to lead');
+    return { success: false, error: 'WAHA not configured' };
+  }
+
+  // Format phone: ensure it starts with country code, remove non-digits
+  let phone = leadWhatsapp.replace(/\D/g, '');
+  if (phone.startsWith('0')) phone = '55' + phone.substring(1);
+  if (!phone.startsWith('55')) phone = '55' + phone;
+
+  const message = `Opaa ${leadName}, tudo bem? Entrei em contato referente ao cadastro que você fez no nosso site, vim falar que bem em breve ja vamos entrar em contato com você!😄`;
+
+  const wahaUrl = `${WAHA_API_URL.replace(/\/$/, '')}/api/sendText`;
+
+  console.log(`[WAHA] Sending auto-message to MQL lead: ${phone}`);
+
+  const response = await fetch(wahaUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${WAHA_API_KEY}`,
+    },
+    body: JSON.stringify({
+      session: WAHA_PHONE_NUMBER_ID,
+      chatId: `${phone}@c.us`,
+      text: message,
+    }),
+  });
+
+  const responseText = await response.text();
+  console.log('[WAHA] Response:', response.status, responseText);
+
+  if (!response.ok) {
+    return { success: false, error: `WAHA error ${response.status}: ${responseText}` };
+  }
+
+  return { success: true };
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
