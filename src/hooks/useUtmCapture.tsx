@@ -76,6 +76,24 @@ function hasTrackingParams(data: Partial<UtmData>): boolean {
   return !!(data.utm_source || data.utm_campaign || data.fbclid || data.gclid || data.campaign_id || data.ad_id);
 }
 
+// Determine attribution source based on current session data
+export function getAttributionSource(): "direct_ad" | "bio_recovery" | "organic" {
+  const utm = getStoredUtm();
+  
+  // If session has real UTM params, it's a direct ad click
+  if (utm.utm_source !== "direct" && utm.utm_source !== "(not set)" && utm.utm_campaign !== "(not set)") {
+    return "direct_ad";
+  }
+  
+  // Check if we recovered from localStorage attribution
+  try {
+    const recoveryFlag = sessionStorage.getItem("champion_utm_recovered");
+    if (recoveryFlag === "true") return "bio_recovery";
+  } catch {}
+  
+  return "organic";
+}
+
 export function getStoredUtm(): UtmData {
   try {
     const stored = sessionStorage.getItem(UTM_STORAGE_KEY);
