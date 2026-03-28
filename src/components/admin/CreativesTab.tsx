@@ -908,51 +908,54 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <span className="text-sm font-normal text-muted-foreground">({creatives.length})</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
+        <CardContent>
           {creatives.length === 0 ? (
             <p className="text-center text-muted-foreground py-10">
               Nenhum criativo encontrado no período. Verifique se os leads possuem utm_content preenchido.
             </p>
           ) : (
-            <Table>
+            <Table className="table-fixed w-full">
               <TableHeader>
-                <TableRow className="text-[11px]">
-                  <TableHead className="min-w-[140px]">Criativo</TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("spend")}>
-                    Spend <SortIcon field="spend" />
+                <TableRow className="text-[10px]">
+                  <TableHead className="w-[11%]">Criativo</TableHead>
+                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("spend")}>
+                    Spend<SortIcon field="spend" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("leads_count")}>
-                    Leads / CPL <SortIcon field="leads_count" />
+                  <TableHead className="text-right cursor-pointer w-[7%]" onClick={() => handleSort("leads_count")}>
+                    Leads/CPL<SortIcon field="leads_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("mql_count")}>
-                    MQL / CPMQL <SortIcon field="mql_count" />
+                  <TableHead className="text-right cursor-pointer w-[7%]" onClick={() => handleSort("mql_count")}>
+                    MQL/CPMQL<SortIcon field="mql_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("mql_rate")}>
-                    %MQL <SortIcon field="mql_rate" />
+                  <TableHead className="text-right cursor-pointer w-[5%]" onClick={() => handleSort("mql_rate")}>
+                    %MQL<SortIcon field="mql_rate" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_small")}>
-                    CPMQL - S <SortIcon field="cost_per_small" />
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("cost_per_small")}>
+                    CP-S<SortIcon field="cost_per_small" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_medium")}>
-                    CPMQL - M <SortIcon field="cost_per_medium" />
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("cost_per_medium")}>
+                    CP-M<SortIcon field="cost_per_medium" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_tier_large")}>
-                    CPMQL - L <SortIcon field="cost_per_tier_large" />
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("cost_per_tier_large")}>
+                    CP-L<SortIcon field="cost_per_tier_large" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_enterprise")}>
-                    CPMQL - E <SortIcon field="cost_per_enterprise" />
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("cost_per_enterprise")}>
+                    CP-E<SortIcon field="cost_per_enterprise" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("cost_per_enterprise_plus")}>
-                    CPMQL - E+ <SortIcon field="cost_per_enterprise_plus" />
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("cost_per_enterprise_plus")}>
+                    CP-E+<SortIcon field="cost_per_enterprise_plus" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("meetings_count")}>
-                    Reuniões <SortIcon field="meetings_count" />
+                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("meetings_count")}>
+                    Reun.<SortIcon field="meetings_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("sales_count")}>
-                    Vendas / CAC <SortIcon field="sales_count" />
+                  <TableHead className="text-right cursor-pointer w-[7%]" onClick={() => handleSort("sales_count")}>
+                    Vendas/CAC<SortIcon field="sales_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer whitespace-nowrap" onClick={() => handleSort("revenue")}>
-                    Receita / ROAS <SortIcon field="revenue" />
+                  <TableHead className="text-right cursor-pointer w-[7%]" onClick={() => handleSort("revenue")}>
+                    FPC<SortIcon field="revenue" />
+                  </TableHead>
+                  <TableHead className="text-right cursor-pointer w-[5.5%]" onClick={() => handleSort("roas")}>
+                    ROAS<SortIcon field="roas" />
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -969,65 +972,67 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       className={`cursor-pointer hover:bg-muted/50 ${isBestMql ? "bg-green-500/5" : ""} ${isBestRevenue ? "bg-emerald-500/5" : ""}`}
                       onClick={() => setDrillCreative(c)}
                     >
-                      <TableCell className="py-2">
-                        <div className="flex items-center gap-1.5">
-                          <Circle className={`w-2.5 h-2.5 flex-shrink-0 ${c.is_active ? "fill-green-500 text-green-500" : "fill-muted-foreground/30 text-muted-foreground/30"}`} />
+                      <TableCell className="py-1.5">
+                        <div className="flex items-center gap-1">
+                          <Circle className={`w-2 h-2 flex-shrink-0 ${c.is_active ? "fill-green-500 text-green-500" : "fill-muted-foreground/30 text-muted-foreground/30"}`} />
                           {i < 3 && c.mql_count > 0 && (
-                            <Star className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+                            <Star className="w-2.5 h-2.5 text-yellow-400 flex-shrink-0" />
                           )}
-                          <div>
-                            <p className="font-medium truncate max-w-[120px] text-[11px]">{c.creative_label}</p>
-                            <code className="text-[9px] text-muted-foreground">{c.creative_key}</code>
+                          <div className="min-w-0">
+                            <p className="font-medium truncate text-[10px]">{c.creative_label}</p>
+                            <code className="text-[8px] text-muted-foreground truncate block">{c.creative_key}</code>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-right text-[11px] py-2">{formatCurrency(c.spend)}</TableCell>
-                      <TableCell className="text-right text-[11px] py-2">
+                      <TableCell className="text-right text-[10px] py-1.5">{formatCurrency(c.spend)}</TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5">
                         <div className="font-semibold">{c.leads_count}</div>
-                        <div className="text-muted-foreground text-[10px]">{formatCurrency(cpl)}</div>
+                        <div className="text-muted-foreground text-[9px]">{formatCurrency(cpl)}</div>
                       </TableCell>
-                      <TableCell className={`text-right text-[11px] py-2 ${isBestCpmql2 ? "text-green-400" : ""}`}>
+                      <TableCell className={`text-right text-[10px] py-1.5 ${isBestCpmql2 ? "text-green-400" : ""}`}>
                         <div className="font-semibold text-green-400">{c.mql_count}</div>
-                        <div className={`text-[10px] ${isBestCpmql2 ? "font-bold text-green-400" : "text-muted-foreground"}`}>{formatCurrency(c.cost_per_mql)}</div>
+                        <div className={`text-[9px] ${isBestCpmql2 ? "font-bold text-green-400" : "text-muted-foreground"}`}>{formatCurrency(c.cost_per_mql)}</div>
                       </TableCell>
-                      <TableCell className="text-right text-[11px] py-2">{formatPercent(c.mql_rate)}</TableCell>
-                      <TableCell className="text-right text-[11px] py-2">
+                      <TableCell className="text-right text-[10px] py-1.5">{formatPercent(c.mql_rate)}</TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5">
                         {c.tier_small_count > 0 ? (
-                          <><div className="font-semibold">{c.tier_small_count}</div><div className="text-muted-foreground text-[10px]">{formatCurrency(c.cost_per_small)}</div></>
+                          <><div className="font-semibold">{c.tier_small_count}</div><div className="text-muted-foreground text-[9px]">{formatCurrency(c.cost_per_small)}</div></>
                         ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] py-2 text-blue-400">
+                      <TableCell className="text-right text-[10px] py-1.5 text-blue-400">
                         {c.tier_medium_count > 0 ? (
-                          <><div className="font-semibold">{c.tier_medium_count}</div><div className="text-[10px]">{formatCurrency(c.cost_per_medium)}</div></>
+                          <><div className="font-semibold">{c.tier_medium_count}</div><div className="text-[9px]">{formatCurrency(c.cost_per_medium)}</div></>
                         ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] py-2 text-amber-400">
+                      <TableCell className="text-right text-[10px] py-1.5 text-amber-400">
                         {c.tier_large_count > 0 ? (
-                          <><div className="font-semibold">{c.tier_large_count}</div><div className="text-[10px]">{formatCurrency(c.cost_per_tier_large)}</div></>
+                          <><div className="font-semibold">{c.tier_large_count}</div><div className="text-[9px]">{formatCurrency(c.cost_per_tier_large)}</div></>
                         ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] py-2 text-purple-400">
+                      <TableCell className="text-right text-[10px] py-1.5 text-purple-400">
                         {c.tier_enterprise_count > 0 ? (
-                          <><div className="font-semibold">{c.tier_enterprise_count}</div><div className="text-[10px]">{formatCurrency(c.cost_per_enterprise)}</div></>
+                          <><div className="font-semibold">{c.tier_enterprise_count}</div><div className="text-[9px]">{formatCurrency(c.cost_per_enterprise)}</div></>
                         ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] py-2 text-pink-400">
+                      <TableCell className="text-right text-[10px] py-1.5 text-pink-400">
                         {c.tier_enterprise_plus_count > 0 ? (
-                          <><div className="font-semibold">{c.tier_enterprise_plus_count}</div><div className="text-[10px]">{formatCurrency(c.cost_per_enterprise_plus)}</div></>
+                          <><div className="font-semibold">{c.tier_enterprise_plus_count}</div><div className="text-[9px]">{formatCurrency(c.cost_per_enterprise_plus)}</div></>
                         ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] py-2 text-orange-400">
+                      <TableCell className="text-right text-[10px] py-1.5 text-orange-400">
                         {c.meetings_count > 0 ? (
-                          <><div className="font-semibold">{c.meetings_count}</div><div className="text-[10px]">{formatCurrency(c.cost_per_meeting)}</div></>
+                          <><div className="font-semibold">{c.meetings_count}</div><div className="text-[9px]">{formatCurrency(c.cost_per_meeting)}</div></>
                         ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] py-2">
+                      <TableCell className="text-right text-[10px] py-1.5">
                         <div className="font-semibold">{c.sales_count}</div>
-                        {c.cac !== null && <div className="text-muted-foreground text-[10px]">{formatCurrency(c.cac)}</div>}
+                        {c.cac !== null && <div className="text-muted-foreground text-[9px]">{formatCurrency(c.cac)}</div>}
                       </TableCell>
-                      <TableCell className="text-right text-[11px] py-2">
+                      <TableCell className="text-right text-[10px] py-1.5">
                         <div className="font-semibold">{formatCurrency(c.revenue)}</div>
-                        {c.roas !== null && <div className="text-muted-foreground text-[10px]">{c.roas.toFixed(1)}x</div>}
+                      </TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5 font-bold">
+                        {c.roas !== null ? <span className={c.roas >= 1 ? "text-emerald-400" : "text-red-400"}>{c.roas.toFixed(1)}x</span> : "—"}
                       </TableCell>
                     </TableRow>
                   );
