@@ -67,7 +67,10 @@ async function sendConversionEvent(params: SendEventParams): Promise<{ success: 
   const userData: Record<string, unknown> = {};
 
   if (params.fbclid) {
-    userData.fbc = `fb.1.${Date.now()}.${params.fbclid}`;
+    // Use the click timestamp (session created_at) for fbc, not current time
+    // This helps Meta match the event to the original ad click for campaign attribution
+    const clickTs = params.fbcClickTime || Date.now();
+    userData.fbc = `fb.1.${clickTs}.${params.fbclid}`;
   }
 
   if (params.leadPhone) {
