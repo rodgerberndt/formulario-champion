@@ -1441,7 +1441,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <DialogTitle>Registrar Reunião</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <MeetingLeadSearch
+            <LeadSearchPicker
               leads={leadsList}
               loading={leadsLoading}
               selectedId={meetingSelectedLeadId}
