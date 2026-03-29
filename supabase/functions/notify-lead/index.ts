@@ -286,9 +286,6 @@ async function sendWahaAutoMessage(
   console.log(`[WAHA] Sending auto-message to MQL lead: ${phone}`);
 
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (WAHA_API_KEY) {
-    headers['Authorization'] = `Bearer ${WAHA_API_KEY}`;
-  }
 
   const response = await fetch(wahaUrl, {
     method: 'POST',
