@@ -731,58 +731,34 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         </Card>
       )}
 
-      {/* Summary Cards */}
-      {totals && (
+      {/* Summary Cards - Funnel Order */}
+      {totals && (() => {
+        const scheduleRate = totals.mql > 0 ? (totals.meetings / totals.mql) * 100 : null;
+        const callConversion = totals.meetings > 0 ? (totals.sales / totals.meetings) * 100 : null;
+        return (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {/* 1. Gastos */}
           <Card>
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">Total Spend</p>
               <p className="text-xl font-bold">{formatCurrency(totals.spend)}</p>
             </CardContent>
           </Card>
+          {/* 2. Leads */}
           <Card>
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">Total Leads</p>
               <p className="text-xl font-bold">{formatNumber(totals.leads)}</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total MQL</p>
-              <p className="text-xl font-bold text-green-400">{formatNumber(totals.mql)}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total Vendas</p>
-              <p className="text-xl font-bold text-blue-400">{formatNumber(totals.sales)}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total Receita</p>
-              <p className="text-xl font-bold text-emerald-400">{formatCurrency(totals.revenue)}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total Reuniões</p>
-              <p className="text-xl font-bold text-orange-400">{formatNumber(totals.meetings)}</p>
-              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_meeting)}</p>
-            </CardContent>
-          </Card>
+          {/* 3. CPL */}
           <Card>
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">CPL</p>
               <p className="text-lg font-bold">{formatCurrency(totals.cpl)}</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">CPMQL</p>
-              <p className="text-lg font-bold">{formatCurrency(totals.cpmql)}</p>
-            </CardContent>
-          </Card>
+          {/* 4. Small */}
           <Card>
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">Small</p>
@@ -790,6 +766,21 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_small)}</p>
             </CardContent>
           </Card>
+          {/* 5. MQL */}
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Total MQL</p>
+              <p className="text-xl font-bold text-green-400">{formatNumber(totals.mql)}</p>
+            </CardContent>
+          </Card>
+          {/* 6. CPMQL */}
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">CPMQL</p>
+              <p className="text-lg font-bold">{formatCurrency(totals.cpmql)}</p>
+            </CardContent>
+          </Card>
+          {/* 7. Medium */}
           <Card>
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">Medium</p>
@@ -797,6 +788,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_medium)}</p>
             </CardContent>
           </Card>
+          {/* 8. Large */}
           <Card>
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">Large</p>
@@ -804,6 +796,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_large)}</p>
             </CardContent>
           </Card>
+          {/* 9. Enterprise */}
           <Card>
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">Enterprise</p>
@@ -811,6 +804,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_enterprise)}</p>
             </CardContent>
           </Card>
+          {/* 10. Enterprise+ */}
           <Card>
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">Enterprise+</p>
@@ -818,12 +812,52 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_enterprise_plus)}</p>
             </CardContent>
           </Card>
+          {/* 11. Taxa de Agendamento (MQL → Reuniões) */}
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Taxa Agendamento</p>
+              <p className="text-xl font-bold text-yellow-400">{scheduleRate !== null ? `${scheduleRate.toFixed(1)}%` : "—"}</p>
+              <p className="text-xs text-muted-foreground">MQL → Reuniões</p>
+            </CardContent>
+          </Card>
+          {/* 12. Reuniões */}
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Total Reuniões</p>
+              <p className="text-xl font-bold text-orange-400">{formatNumber(totals.meetings)}</p>
+              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_meeting)}</p>
+            </CardContent>
+          </Card>
+          {/* 13. Conversão Call (Reuniões → Vendas) */}
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Conversão Call</p>
+              <p className="text-xl font-bold text-cyan-400">{callConversion !== null ? `${callConversion.toFixed(1)}%` : "—"}</p>
+              <p className="text-xs text-muted-foreground">Reuniões → Vendas</p>
+            </CardContent>
+          </Card>
+          {/* 14. Vendas */}
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Total Vendas</p>
+              <p className="text-xl font-bold text-blue-400">{formatNumber(totals.sales)}</p>
+            </CardContent>
+          </Card>
+          {/* 15. Receita */}
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Total Receita</p>
+              <p className="text-xl font-bold text-emerald-400">{formatCurrency(totals.revenue)}</p>
+            </CardContent>
+          </Card>
+          {/* 16. CAC */}
           <Card>
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">CAC</p>
               <p className="text-lg font-bold">{formatCurrency(totals.cac)}</p>
             </CardContent>
           </Card>
+          {/* 17. ROAS */}
           <Card>
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">ROAS</p>
@@ -831,7 +865,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             </CardContent>
           </Card>
         </div>
-      )}
+        );
+      })()}
 
       {/* Ranking Cards */}
       {creatives.length > 0 && (

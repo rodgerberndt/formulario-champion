@@ -48,6 +48,7 @@ interface SendEventParams {
   leadPhone?: string;
   leadEmail?: string;
   fbclid?: string | null;
+  fbcClickTime?: number | null; // Unix ms timestamp of the ad click (session created_at)
   ipAddress?: string | null;
   userAgent?: string | null;
   eventSourceUrl?: string;
@@ -66,7 +67,10 @@ async function sendConversionEvent(params: SendEventParams): Promise<{ success: 
   const userData: Record<string, unknown> = {};
 
   if (params.fbclid) {
-    userData.fbc = `fb.1.${Date.now()}.${params.fbclid}`;
+    // Use the click timestamp (session created_at) for fbc, not current time
+    // This helps Meta match the event to the original ad click for campaign attribution
+    const clickTs = params.fbcClickTime || Date.now();
+    userData.fbc = `fb.1.${clickTs}.${params.fbclid}`;
   }
 
   if (params.leadPhone) {
@@ -199,7 +203,7 @@ Deno.serve(async (req: Request) => {
     // This ensures MQL and other events are attributed to the latest ad click
     const { data: lastClickSession } = await supabase
       .from("lead_sessions")
-      .select("user_agent, fbclid, ip_address")
+      .select("user_agent, fbclid, ip_address, created_at")
       .eq("lead_whatsapp", lead.whatsapp)
       .not("fbclid", "is", null)
       .order("created_at", { ascending: false })
@@ -209,7 +213,7 @@ Deno.serve(async (req: Request) => {
     // Fallback: get latest session for user_agent/ip even without fbclid
     const { data: latestSession } = lastClickSession ? { data: lastClickSession } : await supabase
       .from("lead_sessions")
-      .select("user_agent, fbclid, ip_address")
+      .select("user_agent, fbclid, ip_address, created_at")
       .eq("lead_whatsapp", lead.whatsapp)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -217,6 +221,9 @@ Deno.serve(async (req: Request) => {
 
     // Last-click: session fbclid takes priority over lead's original fbclid
     const fbclid = lastClickSession?.fbclid || latestSession?.fbclid || lead.fbclid || null;
+    // Use the session creation time as the click timestamp for fbc parameter
+    const sessionWithFbclid = lastClickSession || latestSession;
+    const fbcClickTime = sessionWithFbclid?.created_at ? new Date(sessionWithFbclid.created_at).getTime() : null;
     const ipAddress = latestSession?.ip_address || lead.ip_address || null;
     const userAgent = latestSession?.user_agent || null;
 
@@ -227,6 +234,7 @@ Deno.serve(async (req: Request) => {
       leadPhone: lead.whatsapp,
       leadEmail: lead.email || undefined,
       fbclid,
+      fbcClickTime,
       ipAddress,
       userAgent,
       value: value != null ? Number(value) : undefined,

@@ -50,7 +50,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const KommoLogsPanel = lazy(() => import("@/components/admin/KommoLogsPanel"));
-const FunnelMapTab = lazy(() => import("@/components/admin/FunnelMapTab"));
+
 const CreativesTab = lazy(() => import("@/components/admin/CreativesTab"));
 const LeadReportsTab = lazy(() => import("@/components/admin/LeadReportsTab"));
 import {
@@ -1593,16 +1593,10 @@ export default function AdminAnalytics() {
                   )}
                 </TabsTrigger>
                 <TabsTrigger 
-                  value="funnel" 
-                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
-                >
-                  Funil
-                </TabsTrigger>
-                <TabsTrigger 
                   value="creatives" 
                   className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
                 >
-                  Criativos
+                  Métricas Criativos
                 </TabsTrigger>
                 <TabsTrigger 
                   value="reports" 
@@ -2517,11 +2511,6 @@ export default function AdminAnalytics() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="funnel">
-              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
-                <FunnelMapTab metrics={metrics} leads={leads} loading={!metrics} startDateOnly={startDateOnly} endDateOnly={endDateOnly} />
-              </Suspense>
-            </TabsContent>
 
             {/* Campaigns Tab */}
             <TabsContent value="campaigns">
