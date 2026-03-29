@@ -213,7 +213,7 @@ Deno.serve(async (req: Request) => {
     // Fallback: get latest session for user_agent/ip even without fbclid
     const { data: latestSession } = lastClickSession ? { data: lastClickSession } : await supabase
       .from("lead_sessions")
-      .select("user_agent, fbclid, ip_address")
+      .select("user_agent, fbclid, ip_address, created_at")
       .eq("lead_whatsapp", lead.whatsapp)
       .order("created_at", { ascending: false })
       .limit(1)
