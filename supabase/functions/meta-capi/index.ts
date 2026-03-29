@@ -48,6 +48,7 @@ interface SendEventParams {
   leadPhone?: string;
   leadEmail?: string;
   fbclid?: string | null;
+  fbcClickTime?: number | null; // Unix ms timestamp of the ad click (session created_at)
   ipAddress?: string | null;
   userAgent?: string | null;
   eventSourceUrl?: string;
