@@ -221,6 +221,9 @@ Deno.serve(async (req: Request) => {
 
     // Last-click: session fbclid takes priority over lead's original fbclid
     const fbclid = lastClickSession?.fbclid || latestSession?.fbclid || lead.fbclid || null;
+    // Use the session creation time as the click timestamp for fbc parameter
+    const sessionWithFbclid = lastClickSession || latestSession;
+    const fbcClickTime = sessionWithFbclid?.created_at ? new Date(sessionWithFbclid.created_at).getTime() : null;
     const ipAddress = latestSession?.ip_address || lead.ip_address || null;
     const userAgent = latestSession?.user_agent || null;
 
