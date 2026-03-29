@@ -205,11 +205,12 @@ const MQL_FAT_MIN_FAIXAS = [
   "Acima de R$ 10 milhões",
 ];
 
-function MeetingLeadSearch({ leads, loading, selectedId, onSelect }: {
+function LeadSearchPicker({ leads, loading, selectedId, onSelect, label = "Lead *" }: {
   leads: LeadOption[];
   loading: boolean;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
+  label?: string;
 }) {
   const [open, setOpen] = useState(false);
   const selected = selectedId ? leads.find(l => l.id === selectedId) : null;
@@ -217,7 +218,7 @@ function MeetingLeadSearch({ leads, loading, selectedId, onSelect }: {
   if (loading) {
     return (
       <div>
-        <label className="text-sm text-muted-foreground">Lead *</label>
+        <label className="text-sm text-muted-foreground">{label}</label>
         <div className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
           <Loader2 className="w-4 h-4 animate-spin" /> Carregando leads...
         </div>
@@ -227,7 +228,7 @@ function MeetingLeadSearch({ leads, loading, selectedId, onSelect }: {
 
   return (
     <div>
-      <label className="text-sm text-muted-foreground">Lead *</label>
+      <label className="text-sm text-muted-foreground">{label}</label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between font-normal">
