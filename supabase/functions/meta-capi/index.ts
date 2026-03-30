@@ -207,7 +207,7 @@ Deno.serve(async (req: Request) => {
     // This ensures MQL and other events are attributed to the latest ad click
     const { data: lastClickSession } = await supabase
       .from("lead_sessions")
-      .select("user_agent, fbclid, ip_address, created_at")
+      .select("user_agent, fbclid, fbp, ip_address, created_at")
       .eq("lead_whatsapp", lead.whatsapp)
       .not("fbclid", "is", null)
       .order("created_at", { ascending: false })
