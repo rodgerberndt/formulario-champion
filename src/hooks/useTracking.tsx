@@ -48,6 +48,11 @@ function sanitizeParam(val: string | null): string | null {
   return val;
 }
 
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 function getUTMParams(): Record<string, string | null> {
   const params = new URLSearchParams(window.location.search);
   return {
