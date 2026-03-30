@@ -175,6 +175,7 @@ export type Database = {
           device_type: string | null
           entered_quiz_page: boolean
           fbclid: string | null
+          fbp: string | null
           first_page: string | null
           gclid: string | null
           id: string
@@ -212,6 +213,7 @@ export type Database = {
           device_type?: string | null
           entered_quiz_page?: boolean
           fbclid?: string | null
+          fbp?: string | null
           first_page?: string | null
           gclid?: string | null
           id?: string
@@ -249,6 +251,7 @@ export type Database = {
           device_type?: string | null
           entered_quiz_page?: boolean
           fbclid?: string | null
+          fbp?: string | null
           first_page?: string | null
           gclid?: string | null
           id?: string

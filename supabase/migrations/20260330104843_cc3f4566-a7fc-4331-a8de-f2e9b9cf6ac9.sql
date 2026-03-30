@@ -1,0 +1,1 @@
+ALTER TABLE lead_sessions ADD COLUMN IF NOT EXISTS fbp text;

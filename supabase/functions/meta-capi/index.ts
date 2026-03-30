@@ -48,6 +48,7 @@ interface SendEventParams {
   leadPhone?: string;
   leadEmail?: string;
   fbclid?: string | null;
+  fbp?: string | null;
   fbcClickTime?: number | null; // Unix ms timestamp of the ad click (session created_at)
   ipAddress?: string | null;
   userAgent?: string | null;
@@ -67,10 +68,13 @@ async function sendConversionEvent(params: SendEventParams): Promise<{ success: 
   const userData: Record<string, unknown> = {};
 
   if (params.fbclid) {
-    // Use the click timestamp (session created_at) for fbc, not current time
-    // This helps Meta match the event to the original ad click for campaign attribution
     const clickTs = params.fbcClickTime || Date.now();
     userData.fbc = `fb.1.${clickTs}.${params.fbclid}`;
+  }
+
+  // fbp (Facebook browser ID) - critical for matching events to users
+  if (params.fbp) {
+    userData.fbp = params.fbp;
   }
 
   if (params.leadPhone) {
@@ -203,7 +207,7 @@ Deno.serve(async (req: Request) => {
     // This ensures MQL and other events are attributed to the latest ad click
     const { data: lastClickSession } = await supabase
       .from("lead_sessions")
-      .select("user_agent, fbclid, ip_address, created_at")
+      .select("user_agent, fbclid, fbp, ip_address, created_at")
       .eq("lead_whatsapp", lead.whatsapp)
       .not("fbclid", "is", null)
       .order("created_at", { ascending: false })
@@ -213,7 +217,7 @@ Deno.serve(async (req: Request) => {
     // Fallback: get latest session for user_agent/ip even without fbclid
     const { data: latestSession } = lastClickSession ? { data: lastClickSession } : await supabase
       .from("lead_sessions")
-      .select("user_agent, fbclid, ip_address, created_at")
+      .select("user_agent, fbclid, fbp, ip_address, created_at")
       .eq("lead_whatsapp", lead.whatsapp)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -226,6 +230,7 @@ Deno.serve(async (req: Request) => {
     const fbcClickTime = sessionWithFbclid?.created_at ? new Date(sessionWithFbclid.created_at).getTime() : null;
     const ipAddress = latestSession?.ip_address || lead.ip_address || null;
     const userAgent = latestSession?.user_agent || null;
+    const fbp = lastClickSession?.fbp || latestSession?.fbp || null;
 
     const result = await sendConversionEvent({
       eventName,
@@ -234,6 +239,7 @@ Deno.serve(async (req: Request) => {
       leadPhone: lead.whatsapp,
       leadEmail: lead.email || undefined,
       fbclid,
+      fbp,
       fbcClickTime,
       ipAddress,
       userAgent,
