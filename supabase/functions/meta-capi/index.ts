@@ -239,6 +239,7 @@ Deno.serve(async (req: Request) => {
       leadPhone: lead.whatsapp,
       leadEmail: lead.email || undefined,
       fbclid,
+      fbp,
       fbcClickTime,
       ipAddress,
       userAgent,
