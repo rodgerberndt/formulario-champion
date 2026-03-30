@@ -230,6 +230,7 @@ Deno.serve(async (req: Request) => {
     const fbcClickTime = sessionWithFbclid?.created_at ? new Date(sessionWithFbclid.created_at).getTime() : null;
     const ipAddress = latestSession?.ip_address || lead.ip_address || null;
     const userAgent = latestSession?.user_agent || null;
+    const fbp = lastClickSession?.fbp || latestSession?.fbp || null;
 
     const result = await sendConversionEvent({
       eventName,
