@@ -165,6 +165,8 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
             // Device info
             device_type: getDeviceType(),
             user_agent: navigator.userAgent,
+            // Facebook browser params for CAPI matching
+            fbp: getCookie('_fbp') || null,
           }),
         });
         
