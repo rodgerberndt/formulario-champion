@@ -78,7 +78,7 @@ export default function ObrigadoMql() {
   const [formData, setFormData] = useState<QuizFormData | null>(null);
   const conversionEventFired = useRef(false);
 
-  // Fire a PageView so Meta sees the /obrigadomql URL for the custom conversion rule
+  // Fire PageView + MQL custom event so Meta sees conversions from this URL
   useEffect(() => {
     if (typeof window.fbq === 'function') {
       window.fbq('track', 'PageView');
@@ -89,8 +89,17 @@ export default function ObrigadoMql() {
   useEffect(() => {
     if (formData && !conversionEventFired.current) {
       if (typeof window.fbq === 'function') {
+        // Fire CompleteRegistration (standard event)
         window.fbq('track', 'CompleteRegistration');
         console.log('Facebook Pixel: CompleteRegistration event fired (MQL)');
+
+        // Fire MQL as custom event — this is the main conversion for campaign optimization
+        window.fbq('trackCustom', 'MQL', {
+          content_name: 'MQL Lead',
+          investimento_faixa: formData.investimento_faixa || 'unknown',
+        });
+        console.log('Facebook Pixel: MQL custom event fired on /obrigadomql');
+
         conversionEventFired.current = true;
       }
     }
