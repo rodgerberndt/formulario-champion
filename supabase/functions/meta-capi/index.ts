@@ -116,10 +116,14 @@ async function sendConversionEvent(params: SendEventParams): Promise<{ success: 
     eventSourceUrl = `${defaultUrl}/obrigadomql`;
   }
 
+  // Generate event_id for deduplication
+  const eventId = params.eventId || `${params.leadId}_${params.eventName}_${eventTime}`;
+
   const eventData = {
     data: [
       {
         event_name: params.eventName,
+        event_id: eventId,
         event_time: eventTime,
         event_source_url: eventSourceUrl,
         action_source: "website",
