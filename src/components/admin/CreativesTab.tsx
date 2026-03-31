@@ -571,7 +571,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   const [sendingCapiRetro, setSendingCapiRetro] = useState<string | null>(null);
 
-  const handleCapiRetroactive = async (type: "meetings" | "tiers" | "purchases") => {
+  const handleCapiRetroactive = async (type: "meetings" | "tiers" | "purchases" | "mqls") => {
     setSendingCapiRetro(type);
     try {
       const result = await fetchAdminData(`/capi-retroactive-${type}`, { _method: "POST" });
