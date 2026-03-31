@@ -305,6 +305,9 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
   }) => {
     const sessionId = await getOrCreateSessionId();
     
+    // Capture fbp one last time before submit (pixel should have set it by now)
+    const fbpVal = getCookie('_fbp');
+    
     await trackEvent("submit");
     await updateSession({
       completed: true,
@@ -313,6 +316,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
       lead_instagram: leadData.instagram,
       lead_market: leadData.market,
       lead_stage: leadData.stage,
+      ...(fbpVal ? { fbp: fbpVal } : {}),
     });
     
     // Trigger server-side notification (Kommo + WhatsApp)

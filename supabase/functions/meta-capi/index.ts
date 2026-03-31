@@ -49,12 +49,13 @@ interface SendEventParams {
   leadEmail?: string;
   fbclid?: string | null;
   fbp?: string | null;
-  fbcClickTime?: number | null; // Unix ms timestamp of the ad click (session created_at)
+  fbcClickTime?: number | null;
   ipAddress?: string | null;
   userAgent?: string | null;
   eventSourceUrl?: string;
   value?: number;
   currency?: string;
+  eventId?: string; // For deduplication between browser/server
 }
 
 async function sendConversionEvent(params: SendEventParams): Promise<{ success: boolean; error?: string; response?: unknown }> {
