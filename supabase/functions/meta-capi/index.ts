@@ -49,12 +49,13 @@ interface SendEventParams {
   leadEmail?: string;
   fbclid?: string | null;
   fbp?: string | null;
-  fbcClickTime?: number | null; // Unix ms timestamp of the ad click (session created_at)
+  fbcClickTime?: number | null;
   ipAddress?: string | null;
   userAgent?: string | null;
   eventSourceUrl?: string;
   value?: number;
   currency?: string;
+  eventId?: string; // For deduplication between browser/server
 }
 
 async function sendConversionEvent(params: SendEventParams): Promise<{ success: boolean; error?: string; response?: unknown }> {
@@ -115,10 +116,14 @@ async function sendConversionEvent(params: SendEventParams): Promise<{ success: 
     eventSourceUrl = `${defaultUrl}/obrigadomql`;
   }
 
+  // Generate event_id for deduplication
+  const eventId = params.eventId || `${params.leadId}_${params.eventName}_${eventTime}`;
+
   const eventData = {
     data: [
       {
         event_name: params.eventName,
+        event_id: eventId,
         event_time: eventTime,
         event_source_url: eventSourceUrl,
         action_source: "website",

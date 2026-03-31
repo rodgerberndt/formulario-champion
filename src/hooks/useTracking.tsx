@@ -193,6 +193,23 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
           } catch (ipError) {
             console.error("Error capturing IP:", ipError);
           }
+
+          // Retry fbp capture after Meta Pixel has time to set the cookie
+          const retryFbp = (attempt: number) => {
+            if (attempt > 5) return;
+            setTimeout(() => {
+              const fbpVal = getCookie('_fbp');
+              if (fbpVal) {
+                console.log("fbp captured on retry", attempt, fbpVal);
+                updateSessionDirect(sessionId!, { fbp: fbpVal });
+              } else if (attempt < 5) {
+                retryFbp(attempt + 1);
+              }
+            }, attempt * 1500); // 1.5s, 3s, 4.5s, 6s, 7.5s
+          };
+          if (!getCookie('_fbp')) {
+            retryFbp(1);
+          }
         }
       } catch (error) {
         console.error("Error creating session:", error);
@@ -288,6 +305,9 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
   }) => {
     const sessionId = await getOrCreateSessionId();
     
+    // Capture fbp one last time before submit (pixel should have set it by now)
+    const fbpVal = getCookie('_fbp');
+    
     await trackEvent("submit");
     await updateSession({
       completed: true,
@@ -296,6 +316,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
       lead_instagram: leadData.instagram,
       lead_market: leadData.market,
       lead_stage: leadData.stage,
+      ...(fbpVal ? { fbp: fbpVal } : {}),
     });
     
     // Trigger server-side notification (Kommo + WhatsApp)
