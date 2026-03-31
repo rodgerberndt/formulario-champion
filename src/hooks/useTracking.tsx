@@ -193,6 +193,23 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
           } catch (ipError) {
             console.error("Error capturing IP:", ipError);
           }
+
+          // Retry fbp capture after Meta Pixel has time to set the cookie
+          const retryFbp = (attempt: number) => {
+            if (attempt > 5) return;
+            setTimeout(() => {
+              const fbpVal = getCookie('_fbp');
+              if (fbpVal) {
+                console.log("fbp captured on retry", attempt, fbpVal);
+                updateSessionDirect(sessionId!, { fbp: fbpVal });
+              } else if (attempt < 5) {
+                retryFbp(attempt + 1);
+              }
+            }, attempt * 1500); // 1.5s, 3s, 4.5s, 6s, 7.5s
+          };
+          if (!getCookie('_fbp')) {
+            retryFbp(1);
+          }
         }
       } catch (error) {
         console.error("Error creating session:", error);
