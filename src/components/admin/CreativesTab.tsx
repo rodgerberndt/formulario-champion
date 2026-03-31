@@ -571,7 +571,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   const [sendingCapiRetro, setSendingCapiRetro] = useState<string | null>(null);
 
-  const handleCapiRetroactive = async (type: "meetings" | "tiers" | "purchases") => {
+  const handleCapiRetroactive = async (type: "meetings" | "tiers" | "purchases" | "mqls") => {
     setSendingCapiRetro(type);
     try {
       const result = await fetchAdminData(`/capi-retroactive-${type}`, { _method: "POST" });
@@ -701,6 +701,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         <Button variant="outline" size="sm" onClick={() => handleCapiRetroactive("purchases")} disabled={!!sendingCapiRetro}>
           {sendingCapiRetro === "purchases" ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
           Compras
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => handleCapiRetroactive("mqls")} disabled={!!sendingCapiRetro} className="border-blue-500 text-blue-600">
+          {sendingCapiRetro === "mqls" ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+          MQLs
         </Button>
       </div>
 

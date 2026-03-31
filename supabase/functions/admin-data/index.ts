@@ -1606,6 +1606,67 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // ──── POST /capi-retroactive-mqls ────
+    if (path === "/capi-retroactive-mqls" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
+      const SDR_RODGER_FAIXAS_RETRO = [
+        "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+        "De R$ 50 mil a R$ 100 mil", "Mais de R$ 100 mil",
+        "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k",
+      ];
+
+      const { data: allLeads, error: leadsErr } = await supabase
+        .from("leads")
+        .select("id, sdr_override, investimento_faixa, capi_events_sent")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (leadsErr) throw leadsErr;
+
+      const mqls = (allLeads || []).filter(l =>
+        l.sdr_override === "Rodger" || SDR_RODGER_FAIXAS_RETRO.includes(l.investimento_faixa || "")
+      );
+
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const internalSecret = Deno.env.get("INTERNAL_WEBHOOK_SECRET");
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+      let sent = 0, skipped = 0, failed = 0;
+      const errors: string[] = [];
+
+      for (const lead of mqls) {
+        const capiSent = (lead.capi_events_sent as Record<string, boolean>) || {};
+        if (capiSent["MQL"]) { skipped++; continue; }
+
+        try {
+          const resp = await fetch(`${supabaseUrl}/functions/v1/meta-capi`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-webhook-secret": internalSecret || "",
+              "Authorization": `Bearer ${serviceKey}`,
+            },
+            body: JSON.stringify({ lead_id: lead.id, event_name: "MQL" }),
+          });
+          if (resp.ok) {
+            sent++;
+            capiSent["MQL"] = true;
+            await supabase.from("leads").update({ capi_events_sent: capiSent }).eq("id", lead.id);
+          } else {
+            failed++;
+            const body = await resp.text();
+            errors.push(`Lead ${lead.id}: ${resp.status} - ${body}`);
+          }
+        } catch (e) {
+          failed++;
+          errors.push(`Lead ${lead.id}: ${e instanceof Error ? e.message : String(e)}`);
+        }
+      }
+
+      return new Response(
+        JSON.stringify({ total: mqls.length, sent, skipped, failed, errors: errors.slice(0, 10) }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: "Rota não encontrada" }),
       { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
