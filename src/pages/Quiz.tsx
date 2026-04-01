@@ -358,9 +358,20 @@ export default function Quiz() {
         ...getUtmPayload()
       };
 
-      const { error } = await supabase.from("leads").insert([dbData]);
+      const { data: insertedLead, error } = await supabase.from("leads").insert([dbData]).select('id').single();
 
       if (error) throw error;
+
+      // Fire CAPI events (CompleteRegistration, Tier, MQL) in background
+      if (insertedLead?.id) {
+        supabase.functions.invoke('fire-capi-events', {
+          body: { lead_db_id: insertedLead.id },
+        }).then(res => {
+          console.log('[CAPI] fire-capi-events response:', res.data);
+        }).catch(err => {
+          console.warn('[CAPI] fire-capi-events failed:', err);
+        });
+      }
 
       // Insert into quiz_leads on external Supabase (blocking before redirect)
       const utmData = getUtmPayload();

@@ -81,9 +81,16 @@ export function LeadForm() {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("leads").insert([formData]);
+      const { data: insertedLead, error } = await supabase.from("leads").insert([formData]).select('id').single();
 
       if (error) throw error;
+
+      // Fire CAPI events in background
+      if (insertedLead?.id) {
+        supabase.functions.invoke('fire-capi-events', {
+          body: { lead_db_id: insertedLead.id },
+        }).catch(err => console.warn('[CAPI] fire-capi-events failed:', err));
+      }
 
       setSubmitted(true);
       toast({
