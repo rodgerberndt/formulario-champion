@@ -152,7 +152,7 @@ Deno.serve(async (req) => {
             "x-webhook-secret": INTERNAL_WEBHOOK_SECRET,
             "Authorization": `Bearer ${serviceKey}`,
           },
-          body: JSON.stringify({ lead_id: lead_db_id, event_name: "MQL" }),
+          body: JSON.stringify({ lead_id: lead_db_id, event_name: "MQL", event_id: sharedEventIds["MQL"] || undefined }),
         });
         const txt = await res.text();
         console.log(`[fire-capi-events] MQL status=${res.status}: ${txt}`);
