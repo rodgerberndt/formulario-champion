@@ -763,12 +763,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-lg font-bold">{formatCurrency(totals.cpl)}</p>
             </CardContent>
           </Card>
-          {/* 4. Small */}
+          {/* 4. % MQL */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Small</p>
-              <p className="text-xl font-bold">{formatNumber(totals.tier_small)}</p>
-              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_small)}</p>
+              <p className="text-xs text-muted-foreground uppercase">% MQL</p>
+              <p className="text-xl font-bold text-green-300">{totals.leads > 0 ? `${((totals.mql / totals.leads) * 100).toFixed(1)}%` : "—"}</p>
+              <p className="text-xs text-muted-foreground">Leads → MQL</p>
             </CardContent>
           </Card>
           {/* 5. MQL */}
@@ -785,7 +785,15 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-lg font-bold">{formatCurrency(totals.cpmql)}</p>
             </CardContent>
           </Card>
-          {/* 7. Medium */}
+          {/* 7. Small */}
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Small</p>
+              <p className="text-xl font-bold">{formatNumber(totals.tier_small)}</p>
+              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_small)}</p>
+            </CardContent>
+          </Card>
+          {/* 8. Medium */}
           <Card>
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">Medium</p>
