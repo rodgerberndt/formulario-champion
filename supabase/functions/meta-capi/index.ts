@@ -250,6 +250,7 @@ Deno.serve(async (req: Request) => {
       userAgent,
       value: value != null ? Number(value) : undefined,
       currency: currency || undefined,
+      eventId: event_id || undefined,
     });
 
     return new Response(
