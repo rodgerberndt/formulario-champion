@@ -178,7 +178,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { lead_id, event_name, value, currency } = await req.json();
+    const { lead_id, event_name, value, currency, event_id } = await req.json();
 
     if (!lead_id) {
       return new Response(
