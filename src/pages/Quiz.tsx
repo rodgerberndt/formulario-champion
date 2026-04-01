@@ -362,10 +362,24 @@ export default function Quiz() {
 
       if (error) throw error;
 
+      // Generate shared event_ids for browser↔CAPI deduplication
+      const eventTimestamp = Math.floor(Date.now() / 1000);
+      const eventIds: Record<string, string> = {
+        CompleteRegistration: `${insertedLead?.id}_CompleteRegistration_${eventTimestamp}`,
+        MQL: `${insertedLead?.id}_MQL_${eventTimestamp}`,
+      };
+
+      // Save event_ids + lead_id for thank-you pages to use in browser pixel
+      localStorage.setItem('champion_event_ids', JSON.stringify({
+        lead_id: insertedLead?.id,
+        event_ids: eventIds,
+        timestamp: eventTimestamp,
+      }));
+
       // Fire CAPI events (CompleteRegistration, Tier, MQL) in background
       if (insertedLead?.id) {
         supabase.functions.invoke('fire-capi-events', {
-          body: { lead_db_id: insertedLead.id },
+          body: { lead_db_id: insertedLead.id, event_ids: eventIds },
         }).then(res => {
           console.log('[CAPI] fire-capi-events response:', res.data);
         }).catch(err => {

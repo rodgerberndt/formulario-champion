@@ -81,12 +81,22 @@ export default function Obrigado() {
   const [formData, setFormData] = useState<QuizFormData | null>(null);
   const conversionEventFired = useRef(false);
 
-  // Fire CompleteRegistration conversion event when page loads with valid data
+  // Fire CompleteRegistration with shared event_id for CAPI deduplication
   useEffect(() => {
     if (formData && !conversionEventFired.current) {
       if (typeof window.fbq === 'function') {
-        window.fbq('track', 'CompleteRegistration');
-        console.log('Facebook Pixel: CompleteRegistration event fired');
+        // Read shared event_id generated during quiz submit
+        let eventID: string | undefined;
+        try {
+          const stored = localStorage.getItem('champion_event_ids');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            eventID = parsed.event_ids?.CompleteRegistration;
+          }
+        } catch { /* ignore */ }
+
+        window.fbq('track', 'CompleteRegistration', {}, { eventID });
+        console.log('Facebook Pixel: CompleteRegistration event fired with eventID:', eventID);
         conversionEventFired.current = true;
       }
     }

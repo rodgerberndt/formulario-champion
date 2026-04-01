@@ -89,16 +89,28 @@ export default function ObrigadoMql() {
   useEffect(() => {
     if (formData && !conversionEventFired.current) {
       if (typeof window.fbq === 'function') {
-        // Fire CompleteRegistration (standard event)
-        window.fbq('track', 'CompleteRegistration');
-        console.log('Facebook Pixel: CompleteRegistration event fired (MQL)');
+        // Read shared event_ids for CAPI deduplication
+        let crEventID: string | undefined;
+        let mqlEventID: string | undefined;
+        try {
+          const stored = localStorage.getItem('champion_event_ids');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            crEventID = parsed.event_ids?.CompleteRegistration;
+            mqlEventID = parsed.event_ids?.MQL;
+          }
+        } catch { /* ignore */ }
 
-        // Fire MQL as custom event — this is the main conversion for campaign optimization
+        // Fire CompleteRegistration with matching event_id
+        window.fbq('track', 'CompleteRegistration', {}, { eventID: crEventID });
+        console.log('Facebook Pixel: CompleteRegistration fired with eventID:', crEventID);
+
+        // Fire MQL with matching event_id
         window.fbq('trackCustom', 'MQL', {
           content_name: 'MQL Lead',
           investimento_faixa: formData.investimento_faixa || 'unknown',
-        });
-        console.log('Facebook Pixel: MQL custom event fired on /obrigadomql');
+        }, { eventID: mqlEventID });
+        console.log('Facebook Pixel: MQL fired with eventID:', mqlEventID);
 
         conversionEventFired.current = true;
       }
