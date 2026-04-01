@@ -402,15 +402,6 @@ export default function Quiz() {
 
       console.log("QUIZ_LEADS_INSERT_SUCCESS", quizLeadInsertData);
 
-      // Send to Kommo in background
-      supabase.functions.invoke('kommo-webhook', {
-        body: dbData
-      }).then((res) => {
-        console.log('Kommo sync triggered:', res);
-      }).catch((err) => {
-        console.error('Kommo sync error:', err);
-      });
-
       // Send to n8n webhook via edge function
       const utmPayload = getUtmPayload();
       const n8nBody = {
