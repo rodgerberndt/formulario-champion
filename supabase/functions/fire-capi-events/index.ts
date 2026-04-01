@@ -68,13 +68,16 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { lead_db_id } = await req.json();
+    const { lead_db_id, event_ids } = await req.json();
     if (!lead_db_id) {
       return new Response(JSON.stringify({ error: "lead_db_id required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Shared event_ids from browser for deduplication
+    const sharedEventIds: Record<string, string> = event_ids || {};
 
     console.log(`[fire-capi-events] Processing lead: ${lead_db_id}`);
 
