@@ -358,9 +358,13 @@ export default function Quiz() {
         ...getUtmPayload()
       };
 
-      const { data: insertedLead, error } = await supabase.from("leads").insert([dbData]).select('id').single();
+      // Generate ID client-side to avoid needing SELECT RLS policy
+      const leadId = crypto.randomUUID();
+      const { error } = await supabase.from("leads").insert([{ id: leadId, ...dbData }]);
 
       if (error) throw error;
+
+      const insertedLead = { id: leadId };
 
       // Generate shared event_ids for browser↔CAPI deduplication
       const eventTimestamp = Math.floor(Date.now() / 1000);
