@@ -76,17 +76,6 @@ export function LeadForm() {
     }
   };
 
-  const sendToKommo = async (leadData: FormData) => {
-    try {
-      const response = await supabase.functions.invoke('kommo-webhook', {
-        body: leadData
-      });
-      console.log('Kommo response:', response);
-    } catch (error) {
-      console.error('Error sending to Kommo:', error);
-    }
-  };
-
   const handleSubmit = async () => {
     if (!canProceed()) return;
 
@@ -95,9 +84,6 @@ export function LeadForm() {
       const { error } = await supabase.from("leads").insert([formData]);
 
       if (error) throw error;
-
-      // Send to Kommo in background
-      sendToKommo(formData);
 
       setSubmitted(true);
       toast({
