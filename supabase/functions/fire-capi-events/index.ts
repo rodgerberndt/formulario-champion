@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
             "x-webhook-secret": INTERNAL_WEBHOOK_SECRET,
             "Authorization": `Bearer ${serviceKey}`,
           },
-          body: JSON.stringify({ lead_id: lead_db_id, event_name: "CompleteRegistration" }),
+          body: JSON.stringify({ lead_id: lead_db_id, event_name: "CompleteRegistration", event_id: sharedEventIds["CompleteRegistration"] || undefined }),
         });
         const txt = await res.text();
         console.log(`[fire-capi-events] CompleteRegistration status=${res.status}: ${txt}`);
