@@ -249,7 +249,7 @@ export function LeadForm() {
         return (
           <div className="space-y-4 animate-slide-up">
             <label className="block text-lg font-medium text-foreground">
-              Qual a maior dor / desejo você busca solucionar com a gente?
+              Em poucas palavras, descreva exatamente sua maior dor hoje na sua operação
             </label>
             <Textarea
               className="champion-input w-full text-lg min-h-[150px] resize-none"

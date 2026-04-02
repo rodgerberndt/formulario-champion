@@ -454,7 +454,7 @@ Fico no aguardo.`;
               O que você mais está buscando resolver hoje?
             </label>
             <p className="text-xs text-muted-foreground mb-4">
-              Descreva muito bem a sua dor ou desejo.
+              Em poucas palavras, descreva exatamente sua maior dor hoje na sua operação
             </p>
             <Textarea
               className="champion-input w-full text-sm min-h-[120px] resize-none"

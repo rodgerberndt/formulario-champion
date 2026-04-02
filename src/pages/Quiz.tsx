@@ -743,7 +743,7 @@ export default function Quiz() {
             </div>
 
             <label className="block text-base sm:text-lg font-medium text-foreground">
-              O que você mais busca resolver na sua operação hoje?
+              Em poucas palavras, descreva exatamente sua maior dor hoje na sua operação
             </label>
 
             <Textarea
