@@ -4,8 +4,8 @@ import { QuizResultDara } from "./QuizResultDara";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-const WHATSAPP_NUMBER = "55XXXXXXXXXXX";
-const SUPPORT_WHATSAPP_NUMBER = "55XXXXXXXXXXX";
+const WHATSAPP_NUMBER = "5548996378499";
+const SUPPORT_WHATSAPP_NUMBER = "5548996560104";
 const SUBMISSION_TS_KEY = "champion_submit_ts";
 interface QuizResultProps {
   nome: string;
