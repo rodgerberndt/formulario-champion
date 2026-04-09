@@ -108,17 +108,27 @@ Deno.serve(async (req: Request) => {
       const leadId = leadUpdateMatch[1];
       const body = await req.json();
 
-      // Check if sdr_override is being set to "Rodger" (MQL trigger)
-      const isSettingMQL = body.sdr_override === "Rodger";
+      // Check if sdr_override is being set to "Rodger" for a true MQL faixa only
+      const leadForMqlCheck = await supabase
+        .from("leads")
+        .select("sdr_override, investimento_faixa")
+        .eq("id", leadId)
+        .maybeSingle();
+      const currentLead = leadForMqlCheck.data;
+      const mqlFaixas = [
+        "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+        "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
+        "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
+        "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
+        "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
+        "Acima de R$ 10 milhões", "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k",
+      ];
+      const nextInvestimentoFaixa = body.investimento_faixa ?? currentLead?.investimento_faixa;
+      const isSettingMQL = body.sdr_override === "Rodger" && mqlFaixas.includes(nextInvestimentoFaixa || "");
 
       // Fetch current lead to check previous sdr_override
       let wasMQL = false;
       if (isSettingMQL) {
-        const { data: currentLead } = await supabase
-          .from("leads")
-          .select("sdr_override")
-          .eq("id", leadId)
-          .maybeSingle();
         wasMQL = currentLead?.sdr_override === "Rodger";
       }
       
@@ -965,7 +975,6 @@ Deno.serve(async (req: Request) => {
         "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k",
       ];
       function isMql(_estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
-        if (sdrOverride === "Rodger") return true;
         if (sdrOverride === "Dara") return false;
         return investimento ? SDR_RODGER_FAIXAS.includes(investimento) : false;
       }

@@ -197,7 +197,7 @@ function formatNumber(value: number): string {
 }
 
 const MQL_FAT_MIN_FAIXAS = [
-  "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+  "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
   "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
   "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
   "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
@@ -278,7 +278,6 @@ function LeadSearchPicker({ leads, loading, selectedId, onSelect, label = "Lead 
 }
 
 function isLeadMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
-  if (sdrOverride === "Rodger") return true;
   if (sdrOverride === "Dara") return false;
   const faturaEnough = investimento ? MQL_FAT_MIN_FAIXAS.includes(investimento) : false;
   return faturaEnough;

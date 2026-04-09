@@ -479,7 +479,8 @@ export default function Quiz() {
         whatsapp: currentData.whatsapp,
         instagram: currentData.instagram,
         market: currentData.mercado,
-        stage: currentData.mercado
+        stage: currentData.mercado,
+        investimentoFaixa: currentData.investimento_faixa,
       });
 
       localStorage.removeItem(STORAGE_KEY);
