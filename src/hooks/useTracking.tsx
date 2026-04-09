@@ -24,6 +24,7 @@ interface TrackingContextType {
     instagram: string;
     market: string;
     stage: string;
+    investimentoFaixa?: string;
   }) => Promise<void>;
   updateSession: (data: Record<string, unknown>) => Promise<void>;
 }
@@ -302,6 +303,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     instagram: string;
     market: string;
     stage: string;
+    investimentoFaixa?: string;
   }) => {
     const sessionId = await getOrCreateSessionId();
     
@@ -330,7 +332,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
           'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ sessionId }),
+        body: JSON.stringify({ sessionId, investimento_faixa: leadData.investimentoFaixa }),
       }).then(async (res) => {
         if (res.ok) {
           console.log('Notification triggered successfully');
