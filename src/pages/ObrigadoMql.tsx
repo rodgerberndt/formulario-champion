@@ -73,12 +73,34 @@ function PageBackground() {
   );
 }
 
+// Faixas that qualify as MQL for Pixel/CAPI (>= R$ 10k)
+const MQL_PIXEL_FAIXAS = [
+  "De R$ 10 mil a R$ 20 mil",
+  "De R$ 20 mil a R$ 30 mil",
+  "De R$ 30 mil a R$ 50 mil",
+  "De R$ 50 mil a R$ 75 mil",
+  "De R$ 75 mil a R$ 100 mil",
+  "De R$ 100 mil a R$ 150 mil",
+  "De R$ 150 mil a R$ 200 mil",
+  "De R$ 200 mil a R$ 300 mil",
+  "De R$ 300 mil a R$ 500 mil",
+  "De R$ 500 mil a R$ 750 mil",
+  "De R$ 750 mil a R$ 1 milhão",
+  "De R$ 1 milhão a R$ 2 milhões",
+  "De R$ 2 milhões a R$ 3 milhões",
+  "De R$ 3 milhões a R$ 5 milhões",
+  "De R$ 5 milhões a R$ 10 milhões",
+  "Acima de R$ 10 milhões",
+  "R$ 20k – 50k",
+  "R$ 50k – 100k",
+];
+
 export default function ObrigadoMql() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<QuizFormData | null>(null);
   const conversionEventFired = useRef(false);
 
-  // Fire PageView + MQL custom event so Meta sees conversions from this URL
+  // Fire PageView so Meta sees conversions from this URL
   useEffect(() => {
     if (typeof window.fbq === 'function') {
       window.fbq('track', 'PageView');
@@ -105,12 +127,17 @@ export default function ObrigadoMql() {
         window.fbq('track', 'CompleteRegistration', {}, { eventID: crEventID });
         console.log('Facebook Pixel: CompleteRegistration fired with eventID:', crEventID);
 
-        // Fire MQL with matching event_id
-        window.fbq('trackCustom', 'MQL', {
-          content_name: 'MQL Lead',
-          investimento_faixa: formData.investimento_faixa || 'unknown',
-        }, { eventID: mqlEventID });
-        console.log('Facebook Pixel: MQL fired with eventID:', mqlEventID);
+        // Only fire MQL for leads with faturamento >= R$ 10k
+        const isMqlEligible = formData.investimento_faixa && MQL_PIXEL_FAIXAS.includes(formData.investimento_faixa);
+        if (isMqlEligible) {
+          window.fbq('trackCustom', 'MQL', {
+            content_name: 'MQL Lead',
+            investimento_faixa: formData.investimento_faixa || 'unknown',
+          }, { eventID: mqlEventID });
+          console.log('Facebook Pixel: MQL fired with eventID:', mqlEventID);
+        } else {
+          console.log('Facebook Pixel: MQL NOT fired - faixa not eligible:', formData.investimento_faixa);
+        }
 
         conversionEventFired.current = true;
       }
