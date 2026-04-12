@@ -308,6 +308,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [filterOnlyWithSales, setFilterOnlyWithSales] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [campaignTypeFilter, setCampaignTypeFilter] = useState<"all" | "conversao" | "mql">("all");
+  const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+  const [campaignFilterOpen, setCampaignFilterOpen] = useState(false);
 
   // Manual sales form
   const [showAddSale, setShowAddSale] = useState(false);
@@ -586,6 +588,19 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   };
 
 
+  // Extract unique campaign names for filter
+  const allCampaignNames = useMemo(() => {
+    const names = new Set<string>();
+    (data?.creatives || []).forEach(c => c.campaigns.forEach(camp => names.add(camp)));
+    return Array.from(names).sort();
+  }, [data]);
+
+  const toggleCampaign = (camp: string) => {
+    setSelectedCampaigns(prev =>
+      prev.includes(camp) ? prev.filter(c => c !== camp) : [...prev, camp]
+    );
+  };
+
   const creatives = (data?.creatives || [])
     .filter(c => {
       if (filterOnlyActive && !c.is_active) return false;
@@ -593,6 +608,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       if (filterOnlyWithLeads && c.leads_count <= 0) return false;
       if (filterOnlyWithMql && c.mql_count <= 0) return false;
       if (filterOnlyWithSales && c.sales_count <= 0) return false;
+      if (selectedCampaigns.length > 0 && !c.campaigns.some(camp => selectedCampaigns.includes(camp))) return false;
       return true;
     })
     .sort((a, b) => {
@@ -665,6 +681,45 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         <Button variant="outline" size="sm" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
           Filtros {showAdvancedFilters ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
         </Button>
+
+        {/* Campaign name filter */}
+        {allCampaignNames.length > 0 && (
+          <Popover open={campaignFilterOpen} onOpenChange={setCampaignFilterOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="min-w-[160px] justify-between font-normal">
+                {selectedCampaigns.length > 0 ? (
+                  <span className="truncate">{selectedCampaigns.length} campanha{selectedCampaigns.length > 1 ? "s" : ""}</span>
+                ) : (
+                  <span className="text-muted-foreground">Filtrar campanhas</span>
+                )}
+                <ChevronDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-72 p-0" align="start">
+              <Command>
+                <CommandInput placeholder="Buscar campanha..." />
+                <CommandList>
+                  <CommandEmpty>Nenhuma campanha encontrada.</CommandEmpty>
+                  <CommandGroup>
+                    {allCampaignNames.map(camp => (
+                      <CommandItem key={camp} value={camp} onSelect={() => toggleCampaign(camp)}>
+                        <Check className={`mr-2 h-4 w-4 ${selectedCampaigns.includes(camp) ? "opacity-100" : "opacity-0"}`} />
+                        <span className="truncate text-xs">{camp}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+              {selectedCampaigns.length > 0 && (
+                <div className="border-t p-2">
+                  <Button variant="ghost" size="sm" className="w-full text-xs h-7" onClick={() => setSelectedCampaigns([])}>
+                    <X className="w-3 h-3 mr-1" /> Limpar filtro
+                  </Button>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
+        )}
 
         <div className="ml-auto flex gap-2">
           <Button variant="default" size="sm" onClick={handleMetaSync} disabled={syncing}>
@@ -964,7 +1019,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow className="text-[10px]">
-                  <TableHead className="w-[11%]">Criativo</TableHead>
+                  <TableHead className="w-[14%]">Campanha / Criativo</TableHead>
                   <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("spend")}>
                     Spend<SortIcon field="spend" />
                   </TableHead>
@@ -1026,6 +1081,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                             <Star className="w-2.5 h-2.5 text-yellow-400 flex-shrink-0" />
                           )}
                           <div className="min-w-0">
+                            {c.campaigns.length > 0 && (
+                              <p className="text-[8px] text-muted-foreground truncate" title={c.campaigns.join(", ")}>
+                                {c.campaigns.join(", ")}
+                              </p>
+                            )}
                             <p className="font-medium truncate text-[10px]">{c.creative_label}</p>
                             <code className="text-[8px] text-muted-foreground truncate block">{c.creative_key}</code>
                           </div>
