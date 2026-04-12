@@ -1508,6 +1508,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             )}
 
             <div>
+              <label className="text-sm text-muted-foreground">Tipo de Venda *</label>
+              <Select value={saleForm.sale_type} onValueChange={(v) => setSaleForm(p => ({ ...p, sale_type: v as "sprint" | "assessoria" }))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sprint">Sprint</SelectItem>
+                  <SelectItem value="assessoria">Assessoria</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <label className="text-sm text-muted-foreground">Data da Venda *</label>
               <Input type="date" value={saleForm.sale_date} onChange={e => setSaleForm(p => ({ ...p, sale_date: e.target.value }))} />
             </div>
