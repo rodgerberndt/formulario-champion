@@ -84,8 +84,12 @@ interface CreativeData {
   cost_per_enterprise: number | null;
   cost_per_enterprise_plus: number | null;
   sales_count: number;
+  sales_sprint_count: number;
+  sales_assessoria_count: number;
   cac: number | null;
   revenue: number;
+  revenue_sprint: number;
+  revenue_assessoria: number;
   roas: number | null;
   last_activity: string | null;
   leads_by_stage: Record<string, number>;
