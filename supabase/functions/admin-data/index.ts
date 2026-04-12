@@ -1205,7 +1205,16 @@ Deno.serve(async (req: Request) => {
         }
         const agg = getOrCreate(ck, label, "utm_content");
         agg.sales_count++;
-        agg.revenue += Number(sale.revenue) || 0;
+        const saleRevenue = Number(sale.revenue) || 0;
+        agg.revenue += saleRevenue;
+        const saleType = sale.sale_type || "sprint";
+        if (saleType === "assessoria") {
+          agg.sales_assessoria_count++;
+          agg.revenue_assessoria += saleRevenue;
+        } else {
+          agg.sales_sprint_count++;
+          agg.revenue_sprint += saleRevenue;
+        }
       }
 
       // Process meetings - resolve creative from linked lead if needed
