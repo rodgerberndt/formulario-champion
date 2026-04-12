@@ -528,7 +528,38 @@ Deno.serve(async (req: Request) => {
       console.error('Web Push failed (non-critical):', msg);
     }
 
-    console.log('Notification complete - Kommo:', kommoSuccess, 'WhatsApp:', whatsappSuccess, 'WebPush:', webPushSuccess, 'WAHA:', wahaSuccess);
+    // 4. Send OneSignal push notification (non-blocking)
+    let oneSignalSuccess = false;
+    try {
+      const oneSignalApiKey = Deno.env.get('ONESIGNAL_REST_API_KEY');
+      if (oneSignalApiKey) {
+        const leadName = session.lead_name || 'Desconhecido';
+        const osResponse = await fetch('https://api.onesignal.com/notifications', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Key ${oneSignalApiKey}`,
+          },
+          body: JSON.stringify({
+            app_id: '2ba7eef1-4bc9-47dd-83fc-745bb1548799',
+            included_segments: ['All'],
+            headings: { en: '🚀Novo Lead!' },
+            contents: { en: `Nome: ${leadName} - Tier: ${leadTier} SDR: ${sdr.name}` },
+            url: `/${ADMIN_ROUTE_SLUG}?highlight=${targetId}`,
+          }),
+        });
+        const osResult = await osResponse.json();
+        oneSignalSuccess = osResponse.ok;
+        console.log('OneSignal result:', JSON.stringify(osResult));
+      } else {
+        console.log('ONESIGNAL_REST_API_KEY not configured, skipping');
+      }
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error('OneSignal push failed (non-critical):', msg);
+    }
+
+    console.log('Notification complete - Kommo:', kommoSuccess, 'WhatsApp:', whatsappSuccess, 'WebPush:', webPushSuccess, 'OneSignal:', oneSignalSuccess, 'WAHA:', wahaSuccess);
 
     return new Response(
       JSON.stringify({
