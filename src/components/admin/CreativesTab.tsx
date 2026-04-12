@@ -84,8 +84,12 @@ interface CreativeData {
   cost_per_enterprise: number | null;
   cost_per_enterprise_plus: number | null;
   sales_count: number;
+  sales_sprint_count: number;
+  sales_assessoria_count: number;
   cac: number | null;
   revenue: number;
+  revenue_sprint: number;
+  revenue_assessoria: number;
   roas: number | null;
   last_activity: string | null;
   leads_by_stage: Record<string, number>;
@@ -107,7 +111,11 @@ interface CreativesResponse {
     tier_enterprise: number;
     tier_enterprise_plus: number;
     sales: number;
+    sales_sprint: number;
+    sales_assessoria: number;
     revenue: number;
+    revenue_sprint: number;
+    revenue_assessoria: number;
     meetings: number;
     cpl: number | null;
     cpmql: number | null;
@@ -138,6 +146,7 @@ interface ManualSale {
   creative_key: string | null;
   utm_content: string | null;
   notes: string | null;
+  sale_type: string;
 }
 
 interface Meeting {
@@ -313,7 +322,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Manual sales form
   const [showAddSale, setShowAddSale] = useState(false);
-  const [saleForm, setSaleForm] = useState({ sale_date: "", revenue: "", creative_key: "", notes: "" });
+  const [saleForm, setSaleForm] = useState({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint" as "sprint" | "assessoria" });
   const [savingSale, setSavingSale] = useState(false);
 
   // Ad spend form
@@ -453,9 +462,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         utm_content: lead.utm_content || "",
         notes: `${lead.nome_completo}${saleForm.notes ? ` — ${saleForm.notes}` : ""}`,
         lead_id: lead.id,
+        sale_type: saleForm.sale_type,
       });
       toast({ title: "Venda registrada!" });
-      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "" });
+      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint" });
       setSelectedLeadId(null);
       setShowAddSale(false);
       loadData();
@@ -903,18 +913,46 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-xs text-muted-foreground">Reuniões → Vendas</p>
             </CardContent>
           </Card>
-          {/* 14. Vendas */}
+          {/* 14. Vendas Geral */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total Vendas</p>
+              <p className="text-xs text-muted-foreground uppercase">Vendas Geral</p>
               <p className="text-xl font-bold text-blue-400">{formatNumber(totals.sales)}</p>
             </CardContent>
           </Card>
-          {/* 15. Receita */}
+          {/* 14b. Vendas Sprint */}
+          <Card className="border-violet-500/30">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Vendas Sprint</p>
+              <p className="text-xl font-bold text-violet-400">{formatNumber(totals.sales_sprint || 0)}</p>
+            </CardContent>
+          </Card>
+          {/* 14c. Vendas Assessoria */}
+          <Card className="border-teal-500/30">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Vendas Assessoria</p>
+              <p className="text-xl font-bold text-teal-400">{formatNumber(totals.sales_assessoria || 0)}</p>
+            </CardContent>
+          </Card>
+          {/* 15. Faturamento Geral */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total Receita</p>
+              <p className="text-xs text-muted-foreground uppercase">Fat. Geral</p>
               <p className="text-xl font-bold text-emerald-400">{formatCurrency(totals.revenue)}</p>
+            </CardContent>
+          </Card>
+          {/* 15b. Faturamento Sprint */}
+          <Card className="border-violet-500/30">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Fat. Sprint</p>
+              <p className="text-xl font-bold text-violet-400">{formatCurrency(totals.revenue_sprint || 0)}</p>
+            </CardContent>
+          </Card>
+          {/* 15c. Faturamento Assessoria */}
+          <Card className="border-teal-500/30">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Fat. Assessoria</p>
+              <p className="text-xl font-bold text-teal-400">{formatCurrency(totals.revenue_assessoria || 0)}</p>
             </CardContent>
           </Card>
           {/* 16. CAC */}
@@ -1132,11 +1170,39 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">
-                        <div className="font-semibold">{c.sales_count}</div>
-                        {c.cac !== null && <div className="text-muted-foreground text-[9px]">{formatCurrency(c.cac)}</div>}
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className="text-right w-full hover:underline">
+                              <div className="font-semibold">{c.sales_count}</div>
+                              {c.cac !== null && <div className="text-muted-foreground text-[9px]">{formatCurrency(c.cac)}</div>}
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-48 p-3" align="end">
+                            <p className="text-xs font-semibold mb-2">Vendas por Tipo</p>
+                            <div className="space-y-1 text-xs">
+                              <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{c.sales_count}</span></div>
+                              <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{c.sales_sprint_count || 0}</span></div>
+                              <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{c.sales_assessoria_count || 0}</span></div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">
-                        <div className="font-semibold">{formatCurrency(c.revenue)}</div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className="text-right w-full hover:underline">
+                              <div className="font-semibold">{formatCurrency(c.revenue)}</div>
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-52 p-3" align="end">
+                            <p className="text-xs font-semibold mb-2">Faturamento por Tipo</p>
+                            <div className="space-y-1 text-xs">
+                              <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{formatCurrency(c.revenue)}</span></div>
+                              <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{formatCurrency(c.revenue_sprint || 0)}</span></div>
+                              <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{formatCurrency(c.revenue_assessoria || 0)}</span></div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5 font-bold">
                         {c.roas !== null ? <span className={c.roas >= 1 ? "text-emerald-400" : "text-red-400"}>{c.roas.toFixed(1)}x</span> : "—"}
@@ -1232,6 +1298,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 <TableHeader>
                   <TableRow>
                     <TableHead>Data</TableHead>
+                    <TableHead>Tipo</TableHead>
                     <TableHead className="text-right">Receita</TableHead>
                     <TableHead>Criativo</TableHead>
                     <TableHead>Notas</TableHead>
@@ -1242,6 +1309,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   {salesList.map((sale) => (
                     <TableRow key={sale.id}>
                       <TableCell>{format(new Date(sale.sale_date + "T12:00:00"), "dd/MM/yyyy", { locale: ptBR })}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={`text-[10px] ${sale.sale_type === "assessoria" ? "border-teal-500/50 text-teal-400" : "border-violet-500/50 text-violet-400"}`}>
+                          {sale.sale_type === "assessoria" ? "Assessoria" : "Sprint"}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="text-right font-semibold">{formatCurrency(sale.revenue)}</TableCell>
                       <TableCell>
                         {sale.utm_content || sale.creative_key ? (
@@ -1441,6 +1513,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               </div>
             )}
 
+            <div>
+              <label className="text-sm text-muted-foreground">Tipo de Venda *</label>
+              <Select value={saleForm.sale_type} onValueChange={(v) => setSaleForm(p => ({ ...p, sale_type: v as "sprint" | "assessoria" }))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sprint">Sprint</SelectItem>
+                  <SelectItem value="assessoria">Assessoria</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div>
               <label className="text-sm text-muted-foreground">Data da Venda *</label>
               <Input type="date" value={saleForm.sale_date} onChange={e => setSaleForm(p => ({ ...p, sale_date: e.target.value }))} />

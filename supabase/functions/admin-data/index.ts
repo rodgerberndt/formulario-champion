@@ -1041,7 +1041,11 @@ Deno.serve(async (req: Request) => {
         tier_enterprise_plus_count: number;
         spend: number;
         sales_count: number;
+        sales_sprint_count: number;
+        sales_assessoria_count: number;
         revenue: number;
+        revenue_sprint: number;
+        revenue_assessoria: number;
         meetings_count: number;
         last_activity: string | null;
         leads_by_stage: Record<string, number>;
@@ -1065,7 +1069,11 @@ Deno.serve(async (req: Request) => {
             tier_enterprise_plus_count: 0,
             spend: 0,
             sales_count: 0,
+            sales_sprint_count: 0,
+            sales_assessoria_count: 0,
             revenue: 0,
+            revenue_sprint: 0,
+            revenue_assessoria: 0,
             meetings_count: 0,
             last_activity: null,
             leads_by_stage: {},
@@ -1197,7 +1205,16 @@ Deno.serve(async (req: Request) => {
         }
         const agg = getOrCreate(ck, label, "utm_content");
         agg.sales_count++;
-        agg.revenue += Number(sale.revenue) || 0;
+        const saleRevenue = Number(sale.revenue) || 0;
+        agg.revenue += saleRevenue;
+        const saleType = sale.sale_type || "sprint";
+        if (saleType === "assessoria") {
+          agg.sales_assessoria_count++;
+          agg.revenue_assessoria += saleRevenue;
+        } else {
+          agg.sales_sprint_count++;
+          agg.revenue_sprint += saleRevenue;
+        }
       }
 
       // Process meetings - resolve creative from linked lead if needed
@@ -1265,7 +1282,11 @@ Deno.serve(async (req: Request) => {
       const totalTierEnterprise = creatives.reduce((s, c) => s + c.tier_enterprise_count, 0);
       const totalTierEnterprisePlus = creatives.reduce((s, c) => s + c.tier_enterprise_plus_count, 0);
       const totalSales = creatives.reduce((s, c) => s + c.sales_count, 0);
+      const totalSalesSprint = creatives.reduce((s, c) => s + c.sales_sprint_count, 0);
+      const totalSalesAssessoria = creatives.reduce((s, c) => s + c.sales_assessoria_count, 0);
       const totalRevenue = creatives.reduce((s, c) => s + c.revenue, 0);
+      const totalRevenueSprint = creatives.reduce((s, c) => s + c.revenue_sprint, 0);
+      const totalRevenueAssessoria = creatives.reduce((s, c) => s + c.revenue_assessoria, 0);
 
       return new Response(
         JSON.stringify({
@@ -1280,7 +1301,11 @@ Deno.serve(async (req: Request) => {
             tier_enterprise: totalTierEnterprise,
             tier_enterprise_plus: totalTierEnterprisePlus,
             sales: totalSales,
+            sales_sprint: totalSalesSprint,
+            sales_assessoria: totalSalesAssessoria,
             revenue: totalRevenue,
+            revenue_sprint: totalRevenueSprint,
+            revenue_assessoria: totalRevenueAssessoria,
             meetings: totalMeetingsCount,
             cpl: totalLeads > 0 ? totalSpend / totalLeads : null,
             cpmql: totalMql > 0 ? totalSpend / totalMql : null,
@@ -1342,6 +1367,7 @@ Deno.serve(async (req: Request) => {
         creative_key: params.creative_key || null,
         utm_content: params.utm_content || null,
         notes: params.notes || null,
+        sale_type: params.sale_type || "sprint",
       }]).select().maybeSingle();
 
       if (error) throw error;
