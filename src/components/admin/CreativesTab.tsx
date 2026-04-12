@@ -1019,7 +1019,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow className="text-[10px]">
-                  <TableHead className="w-[11%]">Criativo</TableHead>
+                  <TableHead className="w-[14%]">Campanha / Criativo</TableHead>
                   <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("spend")}>
                     Spend<SortIcon field="spend" />
                   </TableHead>
