@@ -1041,7 +1041,11 @@ Deno.serve(async (req: Request) => {
         tier_enterprise_plus_count: number;
         spend: number;
         sales_count: number;
+        sales_sprint_count: number;
+        sales_assessoria_count: number;
         revenue: number;
+        revenue_sprint: number;
+        revenue_assessoria: number;
         meetings_count: number;
         last_activity: string | null;
         leads_by_stage: Record<string, number>;
