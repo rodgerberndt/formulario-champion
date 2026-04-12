@@ -308,6 +308,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [filterOnlyWithSales, setFilterOnlyWithSales] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [campaignTypeFilter, setCampaignTypeFilter] = useState<"all" | "conversao" | "mql">("all");
+  const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+  const [campaignFilterOpen, setCampaignFilterOpen] = useState(false);
 
   // Manual sales form
   const [showAddSale, setShowAddSale] = useState(false);
