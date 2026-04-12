@@ -500,13 +500,9 @@ Deno.serve(async (req: Request) => {
     // 3. Send Web Push notification (non-blocking)
     let webPushSuccess = false;
     try {
-      const leadName = session.lead_name || 'Novo lead';
-      const leadStage = session.lead_stage || '-';
-      const leadWhatsapp = session.lead_whatsapp || '-';
-
       const pushPayload = {
-        title: 'Novo lead no Champion',
-        body: `${leadName} | ${leadStage} | ${leadWhatsapp}`,
+        title: '🚀 Novo Lead Caiu!',
+        body: `Tier: ${leadTier} | SDR: ${sdr.name}`,
         url: `/${ADMIN_ROUTE_SLUG}?highlight=${targetId}`,
       };
 
