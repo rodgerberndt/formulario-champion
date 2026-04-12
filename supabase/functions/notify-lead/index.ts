@@ -567,6 +567,7 @@ Deno.serve(async (req: Request) => {
         kommo: kommoSuccess,
         whatsapp: whatsappSuccess,
         webPush: webPushSuccess,
+        oneSignal: oneSignalSuccess,
         wahaAutoMessage: wahaSuccess,
         messageId,
         errors: errors.length > 0 ? errors : undefined
