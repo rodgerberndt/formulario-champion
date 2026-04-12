@@ -439,6 +439,7 @@ export type Database = {
           notes: string | null
           revenue: number
           sale_date: string
+          sale_type: string
           utm_content: string | null
         }
         Insert: {
@@ -449,6 +450,7 @@ export type Database = {
           notes?: string | null
           revenue?: number
           sale_date: string
+          sale_type?: string
           utm_content?: string | null
         }
         Update: {
@@ -459,6 +461,7 @@ export type Database = {
           notes?: string | null
           revenue?: number
           sale_date?: string
+          sale_type?: string
           utm_content?: string | null
         }
         Relationships: [
