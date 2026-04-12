@@ -1367,6 +1367,7 @@ Deno.serve(async (req: Request) => {
         creative_key: params.creative_key || null,
         utm_content: params.utm_content || null,
         notes: params.notes || null,
+        sale_type: params.sale_type || "sprint",
       }]).select().maybeSingle();
 
       if (error) throw error;
