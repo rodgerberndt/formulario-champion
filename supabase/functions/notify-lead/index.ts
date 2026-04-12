@@ -386,11 +386,11 @@ Deno.serve(async (req: Request) => {
     let leadInvestimentoFaixa: string | null = investimento_faixa || null;
     if (!leadInvestimentoFaixa && (session.lead_whatsapp || session.lead_name)) {
       // Try whatsapp first, then nome_completo — avoid .or() with special chars
-      let leadRow = null;
+      let leadRow: { investimento_faixa: string | null; tier: string | null } | null = null;
       if (session.lead_whatsapp) {
         const { data } = await supabase
           .from('leads')
-          .select('investimento_faixa')
+          .select('investimento_faixa, tier')
           .eq('whatsapp', session.lead_whatsapp)
           .order('created_at', { ascending: false })
           .limit(1)
@@ -400,7 +400,7 @@ Deno.serve(async (req: Request) => {
       if (!leadRow && session.lead_name) {
         const { data } = await supabase
           .from('leads')
-          .select('investimento_faixa')
+          .select('investimento_faixa, tier')
           .eq('nome_completo', session.lead_name)
           .order('created_at', { ascending: false })
           .limit(1)
