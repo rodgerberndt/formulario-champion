@@ -412,8 +412,9 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    const leadTier = leadRow?.tier || session.lead_stage || 'N/A';
     const sdr = getSdrForLead(leadInvestimentoFaixa);
-    console.log(`SDR assigned: ${sdr.name} (faturamento: ${leadInvestimentoFaixa || 'N/A'})`);
+    console.log(`SDR assigned: ${sdr.name} (faturamento: ${leadInvestimentoFaixa || 'N/A'}, tier: ${leadTier})`);
 
     // Kommo sync is now handled by DB trigger on leads table INSERT
     // (notify_kommo_on_lead_insert → kommo-webhook)
