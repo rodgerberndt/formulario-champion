@@ -1081,6 +1081,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                             <Star className="w-2.5 h-2.5 text-yellow-400 flex-shrink-0" />
                           )}
                           <div className="min-w-0">
+                            {c.campaigns.length > 0 && (
+                              <p className="text-[8px] text-muted-foreground truncate" title={c.campaigns.join(", ")}>
+                                {c.campaigns.join(", ")}
+                              </p>
+                            )}
                             <p className="font-medium truncate text-[10px]">{c.creative_label}</p>
                             <code className="text-[8px] text-muted-foreground truncate block">{c.creative_key}</code>
                           </div>
