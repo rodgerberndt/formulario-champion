@@ -442,8 +442,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const selectedMeetingLead = meetingSelectedLeadId ? leadsList.find(l => l.id === meetingSelectedLeadId) : null;
 
   const handleAddSale = async () => {
-    if (!saleForm.sale_date || !saleForm.revenue) {
-      toast({ title: "Preencha data e receita", variant: "destructive" });
+    if (!saleForm.revenue) {
+      toast({ title: "Preencha a receita", variant: "destructive" });
       return;
     }
     if (!selectedLeadId) {
@@ -454,9 +454,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     try {
       const lead = selectedSaleLead!;
       const ck = lead.utm_content ? normalizeCreativeKey(lead.utm_content) : "";
+      const today = new Date().toISOString().split("T")[0];
       await fetchAdminData("/manual-sales", {
         _method: "POST",
-        sale_date: saleForm.sale_date,
+        sale_date: today,
         revenue: saleForm.revenue,
         creative_key: ck,
         utm_content: lead.utm_content || "",
