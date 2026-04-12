@@ -1,7 +1,7 @@
 {
   "name": "Champion",
   "short_name": "Champion",
-  "start_url": "/",
+  "start_url": "/admin",
   "scope": "/",
   "display": "standalone",
   "id": "/",
