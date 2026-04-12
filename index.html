@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "2ba7eef1-4bc9-47dd-83fc-745bb1548799",
+        });
+      });
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://zjbmcxpbdofmlaphozep.supabase.co" crossorigin />
