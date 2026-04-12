@@ -1,40 +1,30 @@
 
 
-## Simplificar Classificacao de Tiers por Faturamento
+## Plan: Add Campaign Name to Creatives Tab + Campaign Filter
 
-### Problema Atual
-O sistema usa pontuacao acumulada (Mercado + Faturamento) para definir tiers, resultando na maioria dos leads como "Small" porque a soma raramente ultrapassa 5 pontos.
+### What changes
 
-### Nova Regra (direto pelo faturamento)
+The backend already returns a `campaigns: string[]` array per creative (from `utm_campaign` and `campaign_name` in ad_spend). We just need to surface it in the UI.
 
-| Tier | Faturamento Mensal |
-|------|-------------------|
-| Desqualificado | R$ 0/mes (nao vende ainda) |
-| Small | Ate R$ 5 mil |
-| Medium | De R$ 5 mil a R$ 30 mil |
-| Large | De R$ 30 mil a R$ 100 mil |
-| Enterprise | Acima de R$ 100 mil |
+### 1. Show campaign names alongside creative name in the table (CreativesTab.tsx)
 
-### Alteracoes
+In the "Criativo" column cell (around line 1022-1033), add the campaign names below the creative key. Format: show campaigns as small badges or comma-separated text under the creative label.
 
-**1. `src/lib/leadScoring.ts`**
-- Adicionar "Desqualificado" ao tipo `TierType`
-- Substituir a logica de pontos por mapeamento direto: cada faixa de faturamento mapeia para um tier
-- Remover `MERCADO_POINTS`, `ESTAGIO_POINTS`, `INVESTIMENTO_POINTS` e `getTierFromScore`
-- A funcao `calculateLeadScore` retornara o tier baseado apenas no valor de `investimento_faixa`
+Change the column header from "Criativo" to "Campanha / Criativo".
 
-Mapeamento:
-- "Nao vendo ainda (R$0/mes)" -> Desqualificado
-- "Ate R$ 5 mil" -> Small
-- "De R$ 5 mil a R$ 10 mil" ate "De R$ 20 mil a R$ 30 mil" -> Medium
-- "De R$ 30 mil a R$ 50 mil" ate "De R$ 75 mil a R$ 100 mil" -> Large
-- "De R$ 100 mil" em diante -> Enterprise
+### 2. Add a campaign name multi-select filter (CreativesTab.tsx)
 
-**2. `src/pages/AdminAnalytics.tsx`**
-- Atualizar `recalcLeadScore` para usar a mesma logica direta por faturamento
-- Adicionar "Desqualificado" ao `TIER_ORDER`
-- Adicionar cor para o badge "Desqualificado" (cinza)
+- Extract all unique campaign names from the loaded creatives data using `useMemo`.
+- Add a new filter: a searchable dropdown/combobox (using the existing `Command`/`Popover` pattern already in the file for `LeadSearchPicker`) that lets you select one or more campaign names.
+- New state: `selectedCampaigns: string[]`.
+- Apply the filter: only show creatives whose `campaigns` array includes at least one of the selected campaigns (or show all if none selected).
 
-**3. `src/components/landing/QuizSection.tsx`**
-- Nenhuma mudanca necessaria (ja usa `calculateLeadScore` que sera atualizado)
+### 3. Show campaign info in drill-down dialog
+
+When clicking a creative to see details, show the list of campaigns that creative appears in.
+
+### Files to edit
+- `src/components/admin/CreativesTab.tsx` -- UI changes only (filter + display)
+
+No backend changes needed -- data already available.
 
