@@ -386,11 +386,11 @@ Deno.serve(async (req: Request) => {
     let leadInvestimentoFaixa: string | null = investimento_faixa || null;
     if (!leadInvestimentoFaixa && (session.lead_whatsapp || session.lead_name)) {
       // Try whatsapp first, then nome_completo — avoid .or() with special chars
-      let leadRow = null;
+      let leadRow: { investimento_faixa: string | null; tier: string | null } | null = null;
       if (session.lead_whatsapp) {
         const { data } = await supabase
           .from('leads')
-          .select('investimento_faixa')
+          .select('investimento_faixa, tier')
           .eq('whatsapp', session.lead_whatsapp)
           .order('created_at', { ascending: false })
           .limit(1)
@@ -400,7 +400,7 @@ Deno.serve(async (req: Request) => {
       if (!leadRow && session.lead_name) {
         const { data } = await supabase
           .from('leads')
-          .select('investimento_faixa')
+          .select('investimento_faixa, tier')
           .eq('nome_completo', session.lead_name)
           .order('created_at', { ascending: false })
           .limit(1)
@@ -412,8 +412,9 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    const leadTier = leadRow?.tier || session.lead_stage || 'N/A';
     const sdr = getSdrForLead(leadInvestimentoFaixa);
-    console.log(`SDR assigned: ${sdr.name} (faturamento: ${leadInvestimentoFaixa || 'N/A'})`);
+    console.log(`SDR assigned: ${sdr.name} (faturamento: ${leadInvestimentoFaixa || 'N/A'}, tier: ${leadTier})`);
 
     // Kommo sync is now handled by DB trigger on leads table INSERT
     // (notify_kommo_on_lead_insert → kommo-webhook)
@@ -499,13 +500,9 @@ Deno.serve(async (req: Request) => {
     // 3. Send Web Push notification (non-blocking)
     let webPushSuccess = false;
     try {
-      const leadName = session.lead_name || 'Novo lead';
-      const leadStage = session.lead_stage || '-';
-      const leadWhatsapp = session.lead_whatsapp || '-';
-
       const pushPayload = {
-        title: 'Novo lead no Champion',
-        body: `${leadName} | ${leadStage} | ${leadWhatsapp}`,
+        title: '🚀 Novo Lead Caiu!',
+        body: `Tier: ${leadTier} | SDR: ${sdr.name}`,
         url: `/${ADMIN_ROUTE_SLUG}?highlight=${targetId}`,
       };
 
