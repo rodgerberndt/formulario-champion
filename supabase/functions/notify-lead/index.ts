@@ -384,6 +384,7 @@ Deno.serve(async (req: Request) => {
 
     // Look up the lead's investimento_faixa to determine SDR
     let leadInvestimentoFaixa: string | null = investimento_faixa || null;
+    let leadTierFromDb: string | null = null;
     if (!leadInvestimentoFaixa && (session.lead_whatsapp || session.lead_name)) {
       // Try whatsapp first, then nome_completo — avoid .or() with special chars
       let leadRow: { investimento_faixa: string | null; tier: string | null } | null = null;
@@ -409,10 +410,11 @@ Deno.serve(async (req: Request) => {
       }
       if (leadRow) {
         leadInvestimentoFaixa = leadRow.investimento_faixa;
+        leadTierFromDb = leadRow.tier;
       }
     }
 
-    const leadTier = leadRow?.tier || session.lead_stage || 'N/A';
+    const leadTier = leadTierFromDb || session.lead_stage || 'N/A';
     const sdr = getSdrForLead(leadInvestimentoFaixa);
     console.log(`SDR assigned: ${sdr.name} (faturamento: ${leadInvestimentoFaixa || 'N/A'}, tier: ${leadTier})`);
 
