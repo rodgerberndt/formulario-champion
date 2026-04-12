@@ -146,6 +146,7 @@ interface ManualSale {
   creative_key: string | null;
   utm_content: string | null;
   notes: string | null;
+  sale_type: string;
 }
 
 interface Meeting {
