@@ -1,6 +1,6 @@
 {
-  "name": "Champion",
-  "short_name": "Champion",
+  "name": "Champion Leads",
+  "short_name": "Champion Leads",
   "start_url": "/admin",
   "scope": "/",
   "display": "standalone",
