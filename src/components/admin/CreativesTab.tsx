@@ -111,7 +111,11 @@ interface CreativesResponse {
     tier_enterprise: number;
     tier_enterprise_plus: number;
     sales: number;
+    sales_sprint: number;
+    sales_assessoria: number;
     revenue: number;
+    revenue_sprint: number;
+    revenue_assessoria: number;
     meetings: number;
     cpl: number | null;
     cpmql: number | null;
