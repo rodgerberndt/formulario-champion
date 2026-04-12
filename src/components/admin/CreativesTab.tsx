@@ -682,6 +682,45 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           Filtros {showAdvancedFilters ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
         </Button>
 
+        {/* Campaign name filter */}
+        {allCampaignNames.length > 0 && (
+          <Popover open={campaignFilterOpen} onOpenChange={setCampaignFilterOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="min-w-[160px] justify-between font-normal">
+                {selectedCampaigns.length > 0 ? (
+                  <span className="truncate">{selectedCampaigns.length} campanha{selectedCampaigns.length > 1 ? "s" : ""}</span>
+                ) : (
+                  <span className="text-muted-foreground">Filtrar campanhas</span>
+                )}
+                <ChevronDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-72 p-0" align="start">
+              <Command>
+                <CommandInput placeholder="Buscar campanha..." />
+                <CommandList>
+                  <CommandEmpty>Nenhuma campanha encontrada.</CommandEmpty>
+                  <CommandGroup>
+                    {allCampaignNames.map(camp => (
+                      <CommandItem key={camp} value={camp} onSelect={() => toggleCampaign(camp)}>
+                        <Check className={`mr-2 h-4 w-4 ${selectedCampaigns.includes(camp) ? "opacity-100" : "opacity-0"}`} />
+                        <span className="truncate text-xs">{camp}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+              {selectedCampaigns.length > 0 && (
+                <div className="border-t p-2">
+                  <Button variant="ghost" size="sm" className="w-full text-xs h-7" onClick={() => setSelectedCampaigns([])}>
+                    <X className="w-3 h-3 mr-1" /> Limpar filtro
+                  </Button>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
+        )}
+
         <div className="ml-auto flex gap-2">
           <Button variant="default" size="sm" onClick={handleMetaSync} disabled={syncing}>
             {syncing ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <RefreshCw className="w-4 h-4 mr-1" />}
