@@ -1309,6 +1309,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   {salesList.map((sale) => (
                     <TableRow key={sale.id}>
                       <TableCell>{format(new Date(sale.sale_date + "T12:00:00"), "dd/MM/yyyy", { locale: ptBR })}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={`text-[10px] ${sale.sale_type === "assessoria" ? "border-teal-500/50 text-teal-400" : "border-violet-500/50 text-violet-400"}`}>
+                          {sale.sale_type === "assessoria" ? "Assessoria" : "Sprint"}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="text-right font-semibold">{formatCurrency(sale.revenue)}</TableCell>
                       <TableCell>
                         {sale.utm_content || sale.creative_key ? (
