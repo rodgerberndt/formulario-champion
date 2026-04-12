@@ -1170,11 +1170,39 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">
-                        <div className="font-semibold">{c.sales_count}</div>
-                        {c.cac !== null && <div className="text-muted-foreground text-[9px]">{formatCurrency(c.cac)}</div>}
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className="text-right w-full hover:underline">
+                              <div className="font-semibold">{c.sales_count}</div>
+                              {c.cac !== null && <div className="text-muted-foreground text-[9px]">{formatCurrency(c.cac)}</div>}
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-48 p-3" align="end">
+                            <p className="text-xs font-semibold mb-2">Vendas por Tipo</p>
+                            <div className="space-y-1 text-xs">
+                              <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{c.sales_count}</span></div>
+                              <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{c.sales_sprint_count || 0}</span></div>
+                              <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{c.sales_assessoria_count || 0}</span></div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">
-                        <div className="font-semibold">{formatCurrency(c.revenue)}</div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className="text-right w-full hover:underline">
+                              <div className="font-semibold">{formatCurrency(c.revenue)}</div>
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-52 p-3" align="end">
+                            <p className="text-xs font-semibold mb-2">Faturamento por Tipo</p>
+                            <div className="space-y-1 text-xs">
+                              <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{formatCurrency(c.revenue)}</span></div>
+                              <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{formatCurrency(c.revenue_sprint || 0)}</span></div>
+                              <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{formatCurrency(c.revenue_assessoria || 0)}</span></div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5 font-bold">
                         {c.roas !== null ? <span className={c.roas >= 1 ? "text-emerald-400" : "text-red-400"}>{c.roas.toFixed(1)}x</span> : "—"}
