@@ -588,6 +588,19 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   };
 
 
+  // Extract unique campaign names for filter
+  const allCampaignNames = useMemo(() => {
+    const names = new Set<string>();
+    (data?.creatives || []).forEach(c => c.campaigns.forEach(camp => names.add(camp)));
+    return Array.from(names).sort();
+  }, [data]);
+
+  const toggleCampaign = (camp: string) => {
+    setSelectedCampaigns(prev =>
+      prev.includes(camp) ? prev.filter(c => c !== camp) : [...prev, camp]
+    );
+  };
+
   const creatives = (data?.creatives || [])
     .filter(c => {
       if (filterOnlyActive && !c.is_active) return false;
@@ -595,6 +608,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       if (filterOnlyWithLeads && c.leads_count <= 0) return false;
       if (filterOnlyWithMql && c.mql_count <= 0) return false;
       if (filterOnlyWithSales && c.sales_count <= 0) return false;
+      if (selectedCampaigns.length > 0 && !c.campaigns.some(camp => selectedCampaigns.includes(camp))) return false;
       return true;
     })
     .sort((a, b) => {
