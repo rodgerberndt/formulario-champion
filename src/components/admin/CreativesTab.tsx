@@ -1298,6 +1298,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 <TableHeader>
                   <TableRow>
                     <TableHead>Data</TableHead>
+                    <TableHead>Tipo</TableHead>
                     <TableHead className="text-right">Receita</TableHead>
                     <TableHead>Criativo</TableHead>
                     <TableHead>Notas</TableHead>
