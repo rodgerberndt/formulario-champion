@@ -1485,7 +1485,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Registrar Venda Manual</DialogTitle>
+            <DialogTitle>Registrar Venda</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <LeadSearchPicker
@@ -1495,16 +1495,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               onSelect={setSelectedLeadId}
             />
 
-            {/* Auto-filled info */}
             {selectedSaleLead && (
               <div className="p-3 rounded-md bg-accent/20 space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Criativo:</span>
                   <span className="font-medium">{selectedSaleLead.utm_content || "Sem criativo (Direct)"}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Mercado:</span>
-                  <span>{selectedSaleLead.mercado}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Tier:</span>
@@ -1514,32 +1509,28 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             )}
 
             <div>
-              <label className="text-sm text-muted-foreground">Tipo de Venda *</label>
+              <label className="text-sm text-muted-foreground">Produto *</label>
               <Select value={saleForm.sale_type} onValueChange={(v) => setSaleForm(p => ({ ...p, sale_type: v as "sprint" | "assessoria" }))}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="sprint">Sprint</SelectItem>
-                  <SelectItem value="assessoria">Assessoria</SelectItem>
+                  <SelectItem value="assessoria">Assessoria Completa</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground">Data da Venda *</label>
-              <Input type="date" value={saleForm.sale_date} onChange={e => setSaleForm(p => ({ ...p, sale_date: e.target.value }))} />
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Receita (R$) *</label>
               <Input type="number" step="0.01" placeholder="5000.00" value={saleForm.revenue} onChange={e => setSaleForm(p => ({ ...p, revenue: e.target.value }))} />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground">Notas</label>
-              <Input placeholder="Observações adicionais" value={saleForm.notes} onChange={e => setSaleForm(p => ({ ...p, notes: e.target.value }))} />
+              <label className="text-sm text-muted-foreground">Observação</label>
+              <Input placeholder="Notas adicionais" value={saleForm.notes} onChange={e => setSaleForm(p => ({ ...p, notes: e.target.value }))} />
             </div>
             <Button onClick={handleAddSale} disabled={savingSale || !selectedLeadId} className="w-full">
               {savingSale ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              Salvar Venda
+              Registrar Venda
             </Button>
           </div>
         </DialogContent>
