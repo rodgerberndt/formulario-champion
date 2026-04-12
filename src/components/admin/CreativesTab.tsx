@@ -462,9 +462,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         utm_content: lead.utm_content || "",
         notes: `${lead.nome_completo}${saleForm.notes ? ` — ${saleForm.notes}` : ""}`,
         lead_id: lead.id,
+        sale_type: saleForm.sale_type,
       });
       toast({ title: "Venda registrada!" });
-      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "" });
+      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint" });
       setSelectedLeadId(null);
       setShowAddSale(false);
       loadData();
