@@ -601,6 +601,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     }
   };
 
+  const handleAddSpend = async () => {
     if (!spendForm.date || !spendForm.spend) {
       toast({ title: "Preencha data e gasto", variant: "destructive" });
       return;
