@@ -18,7 +18,7 @@ function playLeadSound() {
 /** Plays a Kiwify-style "ka-ching!" cash register sound for sales */
 function playSaleSound() {
   try {
-    const audio = new Audio("/cashregister.wav");
+    const audio = new Audio("/cashregister.mp3");
     audio.volume = 0.8;
     audio.play().catch((err) => console.warn("Could not play sale sound:", err));
   } catch (err) {
