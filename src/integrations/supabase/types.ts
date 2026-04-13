@@ -68,6 +68,57 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_reports: {
+        Row: {
+          created_at: string
+          id: string
+          ligacoes_realizadas: number
+          mood: string
+          mqls_chamados: number
+          mqls_responderam: number
+          notas: string | null
+          report_date: string
+          reunioes_agendadas: number
+          sdr_name: string
+          updated_at: string
+          valor_fechado: number
+          valor_pipeline: number
+          vendas_sprint: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ligacoes_realizadas?: number
+          mood?: string
+          mqls_chamados?: number
+          mqls_responderam?: number
+          notas?: string | null
+          report_date: string
+          reunioes_agendadas?: number
+          sdr_name: string
+          updated_at?: string
+          valor_fechado?: number
+          valor_pipeline?: number
+          vendas_sprint?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ligacoes_realizadas?: number
+          mood?: string
+          mqls_chamados?: number
+          mqls_responderam?: number
+          notas?: string | null
+          report_date?: string
+          reunioes_agendadas?: number
+          sdr_name?: string
+          updated_at?: string
+          valor_fechado?: number
+          valor_pipeline?: number
+          vendas_sprint?: number
+        }
+        Relationships: []
+      }
       kommo_webhook_logs: {
         Row: {
           contact_id: number | null
