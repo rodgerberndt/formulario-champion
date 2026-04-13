@@ -31,6 +31,7 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  Trash2,
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
