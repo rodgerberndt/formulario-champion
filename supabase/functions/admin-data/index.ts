@@ -1273,6 +1273,7 @@ Deno.serve(async (req: Request) => {
           roas,
           cost_per_meeting,
           meetings_count: c.meetings_count,
+          meetings_attended_count: c.meetings_attended_count,
           is_active,
           campaigns: Array.from(c.campaigns),
         };
@@ -1313,6 +1314,7 @@ Deno.serve(async (req: Request) => {
             revenue_sprint: totalRevenueSprint,
             revenue_assessoria: totalRevenueAssessoria,
             meetings: totalMeetingsCount,
+            meetings_attended: totalMeetingsAttendedCount,
             cpl: totalLeads > 0 ? totalSpend / totalLeads : null,
             cpmql: totalMql > 0 ? totalSpend / totalMql : null,
             cp_tier_small: totalTierSmall > 0 ? totalSpend / totalTierSmall : null,
