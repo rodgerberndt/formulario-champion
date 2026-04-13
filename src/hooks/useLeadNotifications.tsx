@@ -156,7 +156,7 @@ export function useLeadNotifications(
   const notifyNewSales = useCallback(
     (newSales: SaleRecord[]) => {
       if (newSales.length === 0) return;
-      playBigSaleSound();
+      playSaleSound();
 
       for (const sale of newSales) {
         const typeLabel = sale.sale_type === "assessoria" ? "Assessoria" : "Sprint";
