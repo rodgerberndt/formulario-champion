@@ -1614,6 +1614,12 @@ export default function AdminAnalytics() {
                 >
                   Relatórios Lead
                 </TabsTrigger>
+                <TabsTrigger 
+                  value="daily-reports" 
+                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  Relatórios
+                </TabsTrigger>
               </TabsList>
             </div>
 
@@ -2528,6 +2534,12 @@ export default function AdminAnalytics() {
               </Card>
             </TabsContent>
 
+            {/* Daily Reports Tab */}
+            <TabsContent value="daily-reports">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <DailyReportsTab />
+              </Suspense>
+            </TabsContent>
 
             {/* Campaigns Tab */}
             <TabsContent value="campaigns">
