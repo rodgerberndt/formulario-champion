@@ -1802,7 +1802,9 @@ Deno.serve(async (req: Request) => {
       let query = supabase.from("daily_reports").select("*");
       if (sdr) query = query.eq("sdr_name", sdr);
       if (month) {
-        query = query.gte("report_date", `${month}-01`).lte("report_date", `${month}-31`);
+        const [y, m] = month.split("-").map(Number);
+        const lastDay = new Date(y, m, 0).getDate(); // day 0 of next month = last day of current month
+        query = query.gte("report_date", `${month}-01`).lte("report_date", `${month}-${String(lastDay).padStart(2, "0")}`);
       }
       const { data, error: qErr } = await query.order("report_date", { ascending: false });
       if (qErr) return new Response(JSON.stringify({ error: qErr.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
