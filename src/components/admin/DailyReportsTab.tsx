@@ -27,6 +27,10 @@ import {
   SmilePlus,
   Angry,
   Loader2,
+  ClipboardList,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -204,6 +208,11 @@ export default function DailyReportsTab() {
   const getToken = () => sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
   const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
 
+  const [viewMode, setViewMode] = useState<"form" | "history">("form");
+  const [historyMonth, setHistoryMonth] = useState(new Date());
+  const [historyReports, setHistoryReports] = useState<DailyReport[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
   const fetchReport = useCallback(async (date: string, sdr: string) => {
     setLoading(true);
     try {
@@ -271,6 +280,42 @@ export default function DailyReportsTab() {
     }
   };
 
+  // History view
+  const fetchHistoryReports = useCallback(async (month: Date) => {
+    setHistoryLoading(true);
+    try {
+      const monthStr = format(month, "yyyy-MM");
+      const res = await fetch(
+        `${supabaseUrl}/functions/v1/admin-data/daily-reports?month=${monthStr}`,
+        { headers: { "x-admin-token": getToken() } }
+      );
+      if (res.ok) {
+        setHistoryReports(await res.json());
+      }
+    } catch { /* silent */ }
+    finally { setHistoryLoading(false); }
+  }, [supabaseUrl]);
+
+  const openHistory = () => {
+    setViewMode("history");
+    setHistoryMonth(new Date());
+    fetchHistoryReports(new Date());
+  };
+
+  const changeHistoryMonth = (delta: number) => {
+    const newMonth = new Date(historyMonth);
+    newMonth.setMonth(newMonth.getMonth() + delta);
+    setHistoryMonth(newMonth);
+    fetchHistoryReports(newMonth);
+  };
+
+  const groupedByDate = historyReports.reduce<Record<string, DailyReport[]>>((acc, r) => {
+    if (!acc[r.report_date]) acc[r.report_date] = [];
+    acc[r.report_date].push(r);
+    return acc;
+  }, {});
+  const sortedDates = Object.keys(groupedByDate).sort((a, b) => b.localeCompare(a));
+
   const handleCalendarOpen = () => {
     setCalendarOpen(true);
     fetchMonthReports(calendarMonth, selectedSdr);
@@ -292,6 +337,110 @@ export default function DailyReportsTab() {
   const updateField = (field: keyof DailyReport, value: any) => {
     setReport((prev) => ({ ...prev, [field]: value }));
   };
+
+  // History view render
+  if (viewMode === "history") {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <Button variant="ghost" className="gap-2" onClick={() => setViewMode("form")}>
+            <ArrowLeft className="h-4 w-4" />
+            Voltar ao formulário
+          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="icon" onClick={() => changeHistoryMonth(-1)}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm font-semibold min-w-[120px] text-center">
+              {format(historyMonth, "MMMM yyyy", { locale: ptBR })}
+            </span>
+            <Button variant="outline" size="icon" onClick={() => changeHistoryMonth(1)}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {historyLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : sortedDates.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            Nenhum relatório encontrado neste mês.
+          </div>
+        ) : (
+          sortedDates.map((date) => {
+            const reports = groupedByDate[date];
+            return (
+              <div key={date} className="space-y-3">
+                <h3 className="text-lg font-bold border-b border-border pb-2">
+                  📅 {format(new Date(date + "T12:00:00"), "EEEE, dd 'de' MMMM", { locale: ptBR })}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {reports.map((r, i) => {
+                    const moodInfo = MOODS.find((m) => m.value === r.mood) || MOODS[2];
+                    const MoodIcon = moodInfo.icon;
+                    return (
+                      <Card key={r.id || i} className="border border-border/50">
+                        <CardHeader className="pb-2">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-base">{r.sdr_name}</CardTitle>
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <MoodIcon className="h-4 w-4 text-primary" />
+                              <span className="text-xs">{moodInfo.label}</span>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-2 text-sm">
+                          <div className="grid grid-cols-2 gap-1">
+                            <div className="flex justify-between bg-muted/40 rounded px-2 py-1">
+                              <span className="text-muted-foreground">Ligações</span>
+                              <span className="font-semibold">{r.ligacoes_realizadas}</span>
+                            </div>
+                            <div className="flex justify-between bg-muted/40 rounded px-2 py-1">
+                              <span className="text-muted-foreground">Reuniões</span>
+                              <span className="font-semibold">{r.reunioes_agendadas}</span>
+                            </div>
+                            <div className="flex justify-between bg-muted/40 rounded px-2 py-1">
+                              <span className="text-muted-foreground">MQLs cham.</span>
+                              <span className="font-semibold">{r.mqls_chamados}</span>
+                            </div>
+                            <div className="flex justify-between bg-muted/40 rounded px-2 py-1">
+                              <span className="text-muted-foreground">MQLs resp.</span>
+                              <span className="font-semibold">{r.mqls_responderam}</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between bg-muted/40 rounded px-2 py-1">
+                            <span className="text-muted-foreground">Vendas Sprint</span>
+                            <span className="font-semibold">{r.vendas_sprint}</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-1">
+                            <div className="flex justify-between bg-muted/40 rounded px-2 py-1">
+                              <span className="text-muted-foreground">Pipeline</span>
+                              <span className="font-semibold">{formatCurrency(Number(r.valor_pipeline))}</span>
+                            </div>
+                            <div className="flex justify-between bg-muted/40 rounded px-2 py-1">
+                              <span className="text-muted-foreground">Fechado</span>
+                              <span className="font-semibold text-emerald-500">{formatCurrency(Number(r.valor_fechado))}</span>
+                            </div>
+                          </div>
+                          {r.notas && (
+                            <p className="text-xs text-muted-foreground bg-muted/30 rounded p-2 line-clamp-2">
+                              {r.notas}
+                            </p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -317,30 +466,10 @@ export default function DailyReportsTab() {
             </SelectContent>
           </Select>
 
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="gap-2" onClick={handleCalendarOpen}>
-                <CalendarIcon className="h-4 w-4" />
-                Ver Relatórios
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(d) => d && handleCalendarDayClick(d)}
-                locale={ptBR}
-                month={calendarMonth}
-                onMonthChange={(m) => {
-                  setCalendarMonth(m);
-                  fetchMonthReports(m, selectedSdr);
-                }}
-                modifiers={{ hasReport: (day) => reportDates.has(format(day, "yyyy-MM-dd")) }}
-                modifiersClassNames={{ hasReport: "bg-primary/20 font-bold text-primary" }}
-                className="pointer-events-auto"
-              />
-            </PopoverContent>
-          </Popover>
+          <Button variant="outline" className="gap-2" onClick={openHistory}>
+            <ClipboardList className="h-4 w-4" />
+            Ver Relatórios
+          </Button>
         </div>
       </div>
 
@@ -472,14 +601,6 @@ export default function DailyReportsTab() {
             Salvar Relatório
           </Button>
         </>
-      )}
-
-      {/* Draggable popup for viewing past reports */}
-      {popupReport && (
-        <DraggableReportPopup
-          report={popupReport}
-          onClose={() => setPopupReport(null)}
-        />
       )}
     </div>
   );
