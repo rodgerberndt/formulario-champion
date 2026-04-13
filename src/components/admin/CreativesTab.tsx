@@ -1622,7 +1622,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <label className="text-sm text-muted-foreground">Observação</label>
               <Input placeholder="Notas adicionais" value={saleForm.notes} onChange={e => setSaleForm(p => ({ ...p, notes: e.target.value }))} />
             </div>
-            <Button onClick={handleAddSale} disabled={savingSale || !selectedLeadId} className="w-full">
+            <Button onClick={handleAddSale} disabled={savingSale || !saleForm.revenue} className="w-full">
               {savingSale ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Registrar Venda
             </Button>
