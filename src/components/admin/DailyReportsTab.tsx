@@ -401,9 +401,19 @@ export default function DailyReportsTab() {
                         <CardHeader className="pb-2">
                           <div className="flex items-center justify-between">
                             <CardTitle className="text-base">{r.sdr_name}</CardTitle>
-                            <div className="flex items-center gap-1 text-muted-foreground">
-                              <MoodIcon className="h-4 w-4 text-primary" />
-                              <span className="text-xs">{moodInfo.label}</span>
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1 text-muted-foreground">
+                                <MoodIcon className="h-4 w-4 text-primary" />
+                                <span className="text-xs">{moodInfo.label}</span>
+                              </div>
+                              {r.id && (
+                                <button
+                                  onClick={() => handleDeleteReport(r.id!)}
+                                  className="p-1 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              )}
                             </div>
                           </div>
                         </CardHeader>
