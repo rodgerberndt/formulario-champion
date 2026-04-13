@@ -27,6 +27,10 @@ import {
   SmilePlus,
   Angry,
   Loader2,
+  ClipboardList,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
