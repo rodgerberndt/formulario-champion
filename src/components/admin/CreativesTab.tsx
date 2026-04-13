@@ -876,7 +876,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       {/* Summary Cards - Funnel Order */}
       {totals && (() => {
         const scheduleRate = totals.mql > 0 ? (totals.meetings / totals.mql) * 100 : null;
-        const callConversion = totals.meetings > 0 ? (totals.sales / totals.meetings) * 100 : null;
+        const callConversion = totals.meetings > 0 ? ((totals.sales_assessoria || 0) / totals.meetings) * 100 : null;
         return (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {/* 1. Gastos */}
@@ -991,7 +991,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground uppercase">Conversão Call</p>
               <p className="text-xl font-bold text-cyan-400">{callConversion !== null ? `${callConversion.toFixed(1)}%` : "—"}</p>
-              <p className="text-xs text-muted-foreground">Reuniões → Vendas</p>
+              <p className="text-xs text-muted-foreground">Reuniões → Assessoria</p>
             </CardContent>
           </Card>
           {/* 14. Vendas Geral */}
