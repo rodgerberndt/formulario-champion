@@ -340,6 +340,22 @@ export function useLeadNotifications(
   }, [notificationsEnabled]);
 
   // Test function: fires notifications for existing sales/meetings without creating anything
+  const sendWebPush = useCallback(async (title: string, body: string) => {
+    try {
+      const pushUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/web-push/send`;
+      await fetch(pushUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({ title, body }),
+      });
+    } catch (err) {
+      console.warn("[Push] Failed to send web push:", err);
+    }
+  }, []);
+
   const testNotifications = useCallback(async () => {
     const token = getToken();
     if (!token) return;
@@ -360,19 +376,36 @@ export function useLeadNotifications(
       const sales: SaleRecord[] = salesRes.ok ? await salesRes.json() : [];
       const meetings: MeetingRecord[] = meetingsRes.ok ? await meetingsRes.json() : [];
 
+      // Fire in-app notifications (sounds + toasts)
       if (sales.length > 0) notifyNewSales(sales.slice(0, 3));
       if (meetings.length > 0) {
         setTimeout(() => notifyNewMeetings(meetings.slice(0, 2)), 3000);
       }
 
+      // Fire real web push notifications
+      if (sales.length > 0) {
+        const sale = sales[0];
+        const typeLabel = sale.sale_type === "assessoria" ? "Assessoria" : "Sprint";
+        await sendWebPush(
+          `💰 Nova venda ${typeLabel}!`,
+          `Ticket: ${formatCurrency(sale.revenue)}${sale.notes ? ` — ${sale.notes}` : ""}`
+        );
+      }
+      if (meetings.length > 0) {
+        await sendWebPush(
+          "📅 Reunião agendada!",
+          meetings[0].notes || "Nova reunião registrada"
+        );
+      }
+
       toast({
         title: "🧪 Teste disparado",
-        description: `${sales.length} vendas e ${meetings.length} reuniões encontradas`,
+        description: `${sales.length} vendas e ${meetings.length} reuniões encontradas. Push enviado!`,
       });
     } catch (err) {
       console.error("Test notification error:", err);
     }
-  }, [getToken, notifyNewSales, notifyNewMeetings]);
+  }, [getToken, notifyNewSales, notifyNewMeetings, sendWebPush]);
 
   return {
     notificationsEnabled,
