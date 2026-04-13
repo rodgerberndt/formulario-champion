@@ -58,22 +58,9 @@ export function useServiceWorker() {
               newWorker.state === "installed" &&
               navigator.serviceWorker.controller
             ) {
+              // Silently apply update without showing a toast to users
               setUpdateAvailable(true);
-              toast({
-                title: "Atualização disponível",
-                description: "Clique para atualizar o app.",
-                action: (
-                  <button
-                    className="text-xs font-semibold text-primary hover:underline"
-                    onClick={() => {
-                      newWorker.postMessage({ type: "SKIP_WAITING" });
-                      window.location.reload();
-                    }}
-                  >
-                    Atualizar agora
-                  </button>
-                ),
-              });
+              newWorker.postMessage({ type: "SKIP_WAITING" });
             }
           });
         });
