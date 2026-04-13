@@ -38,26 +38,12 @@ function playSaleSound() {
   }
 }
 
-/** Plays a celebratory "ka-ching!" sound for sales */
+/** Plays a realistic cash-register "cha-ching!" sound for sales */
 function playBigSaleSound() {
   try {
-    const ctx = new AudioContext();
-    const now = ctx.currentTime;
-
-    // Triple ascending bell tones
-    [0, 0.12, 0.24].forEach((offset, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(1400 + i * 400, now + offset);
-      gain.gain.setValueAtTime(0.4, now + offset);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.4);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(now + offset);
-      osc.stop(now + offset + 0.4);
-    });
-
-    setTimeout(() => ctx.close(), 1500);
+    const audio = new Audio("/cashregister.wav");
+    audio.volume = 0.8;
+    audio.play().catch((err) => console.warn("Could not play sale sound:", err));
   } catch (err) {
     console.warn("Could not play big sale sound:", err);
   }
