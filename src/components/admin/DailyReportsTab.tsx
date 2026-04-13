@@ -280,6 +280,42 @@ export default function DailyReportsTab() {
     }
   };
 
+  // History view
+  const fetchHistoryReports = useCallback(async (month: Date) => {
+    setHistoryLoading(true);
+    try {
+      const monthStr = format(month, "yyyy-MM");
+      const res = await fetch(
+        `${supabaseUrl}/functions/v1/admin-data/daily-reports?month=${monthStr}`,
+        { headers: { "x-admin-token": getToken() } }
+      );
+      if (res.ok) {
+        setHistoryReports(await res.json());
+      }
+    } catch { /* silent */ }
+    finally { setHistoryLoading(false); }
+  }, [supabaseUrl]);
+
+  const openHistory = () => {
+    setViewMode("history");
+    setHistoryMonth(new Date());
+    fetchHistoryReports(new Date());
+  };
+
+  const changeHistoryMonth = (delta: number) => {
+    const newMonth = new Date(historyMonth);
+    newMonth.setMonth(newMonth.getMonth() + delta);
+    setHistoryMonth(newMonth);
+    fetchHistoryReports(newMonth);
+  };
+
+  const groupedByDate = historyReports.reduce<Record<string, DailyReport[]>>((acc, r) => {
+    if (!acc[r.report_date]) acc[r.report_date] = [];
+    acc[r.report_date].push(r);
+    return acc;
+  }, {});
+  const sortedDates = Object.keys(groupedByDate).sort((a, b) => b.localeCompare(a));
+
   const handleCalendarOpen = () => {
     setCalendarOpen(true);
     fetchMonthReports(calendarMonth, selectedSdr);
