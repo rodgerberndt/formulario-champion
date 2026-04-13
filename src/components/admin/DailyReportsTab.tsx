@@ -260,8 +260,9 @@ export default function DailyReportsTab() {
         }),
       });
       if (!res.ok) throw new Error("Save failed");
-      const saved = await res.json();
-      setReport(saved);
+      await res.json();
+      // Reset form to empty after successful save
+      setReport(emptyReport(format(selectedDate, "yyyy-MM-dd"), selectedSdr));
       toast({ title: "✅ Relatório salvo!" });
     } catch {
       toast({ title: "Erro ao salvar", variant: "destructive" });
@@ -320,7 +321,7 @@ export default function DailyReportsTab() {
             <PopoverTrigger asChild>
               <Button variant="outline" className="gap-2" onClick={handleCalendarOpen}>
                 <CalendarIcon className="h-4 w-4" />
-                {format(selectedDate, "dd/MM/yyyy")}
+                Ver Relatórios
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="end">
@@ -336,6 +337,7 @@ export default function DailyReportsTab() {
                 }}
                 modifiers={{ hasReport: (day) => reportDates.has(format(day, "yyyy-MM-dd")) }}
                 modifiersClassNames={{ hasReport: "bg-primary/20 font-bold text-primary" }}
+                className="pointer-events-auto"
               />
             </PopoverContent>
           </Popover>
