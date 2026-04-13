@@ -20,6 +20,7 @@ const WHATSAPP_ACCESS_TOKEN = Deno.env.get('WHATSAPP_ACCESS_TOKEN');
 const WHATSAPP_PHONE_NUMBER_ID = Deno.env.get('WHATSAPP_PHONE_NUMBER_ID');
 const RODGER_WHATSAPP_E164 = Deno.env.get('RODGER_WHATSAPP_E164');
 const DARA_WHATSAPP_E164 = Deno.env.get('DARA_WHATSAPP_E164');
+const CAIO_WHATSAPP_E164 = Deno.env.get('CAIO_WHATSAPP_E164');
 const WHATSAPP_TEMPLATE_NAME = Deno.env.get('WHATSAPP_TEMPLATE_NAME');
 const WHATSAPP_TEMPLATE_LANG = Deno.env.get('WHATSAPP_TEMPLATE_LANG') || 'pt_BR';
 
@@ -28,9 +29,13 @@ const WAHA_API_URL = Deno.env.get('WAHA_API_URL');
 const WAHA_API_KEY = Deno.env.get('WAHA_API_KEY');
 const WAHA_PHONE_NUMBER_ID = Deno.env.get('WAHA_PHONE_NUMBER_ID') || 'default';
 
-// SDR routing: leads with faturamento >= R$10k go to Rodger, others to Dara
+// SDR routing: Medium tier (5k-30k) → Caio, Large+ (30k+) → Rodger, rest → Dara
+const SDR_CAIO_FATURAMENTO = [
+  "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
+];
+
 const SDR_RODGER_FATURAMENTO = [
-  "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+  "De R$ 30 mil a R$ 50 mil",
   "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
   "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
   "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
@@ -39,10 +44,13 @@ const SDR_RODGER_FATURAMENTO = [
 ];
 
 function getSdrForLead(investimentoFaixa?: string | null): { name: string; phone: string } {
-  const isRodger = investimentoFaixa ? SDR_RODGER_FATURAMENTO.includes(investimentoFaixa) : false;
-  return isRodger
-    ? { name: "Rodger", phone: RODGER_WHATSAPP_E164 || "" }
-    : { name: "Dara", phone: DARA_WHATSAPP_E164 || "" };
+  if (investimentoFaixa && SDR_CAIO_FATURAMENTO.includes(investimentoFaixa)) {
+    return { name: "Caio", phone: CAIO_WHATSAPP_E164 || "" };
+  }
+  if (investimentoFaixa && SDR_RODGER_FATURAMENTO.includes(investimentoFaixa)) {
+    return { name: "Rodger", phone: RODGER_WHATSAPP_E164 || "" };
+  }
+  return { name: "Dara", phone: DARA_WHATSAPP_E164 || "" };
 }
 
 // URLs

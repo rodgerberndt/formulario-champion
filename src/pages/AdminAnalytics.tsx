@@ -343,9 +343,12 @@ export default function AdminAnalytics() {
     return { score, tier };
   };
 
-  // SDR assignment helper - uses override if set, otherwise based on faturamento only
-  const SDR_FAT_MIN = [
-    "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+  // SDR assignment helper - uses override if set, otherwise based on faturamento
+  const SDR_CAIO_FAT = [
+    "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
+  ];
+  const SDR_RODGER_FAT = [
+    "De R$ 30 mil a R$ 50 mil",
     "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
     "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
     "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
@@ -354,15 +357,17 @@ export default function AdminAnalytics() {
   ];
   const getLeadSdr = (lead: Lead): string => {
     if (lead.sdr_override) return lead.sdr_override;
-    const faturaEnough = lead.investimento_faixa ? SDR_FAT_MIN.includes(lead.investimento_faixa) : false;
-    if (faturaEnough) return "Rodger";
+    if (lead.investimento_faixa && SDR_CAIO_FAT.includes(lead.investimento_faixa)) return "Caio";
+    if (lead.investimento_faixa && SDR_RODGER_FAT.includes(lead.investimento_faixa)) return "Rodger";
     return "Dara";
   };
 
-  // Toggle SDR between Rodger and Dara
+  // Cycle SDR between Rodger, Caio and Dara
   const toggleSdr = async (lead: Lead) => {
     const currentSdr = getLeadSdr(lead);
-    const newSdr = currentSdr === "Rodger" ? "Dara" : "Rodger";
+    const sdrCycle = ["Rodger", "Caio", "Dara"];
+    const idx = sdrCycle.indexOf(currentSdr);
+    const newSdr = sdrCycle[(idx + 1) % sdrCycle.length];
     
     // Optimistic update
     setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, sdr_override: newSdr } : l));
@@ -674,6 +679,7 @@ export default function AdminAnalytics() {
     if (leadsSdrFilter !== "all") {
       const sdr = getLeadSdr(lead);
       if (leadsSdrFilter === "rodger" && sdr !== "Rodger") return false;
+      if (leadsSdrFilter === "caio" && sdr !== "Caio") return false;
       if (leadsSdrFilter === "dara" && sdr !== "Dara") return false;
     }
     
@@ -1692,6 +1698,7 @@ export default function AdminAnalytics() {
                   <SelectContent>
                     <SelectItem value="all">Todos SDRs</SelectItem>
                     <SelectItem value="rodger">Rodger</SelectItem>
+                    <SelectItem value="caio">Caio</SelectItem>
                     <SelectItem value="dara">Dara</SelectItem>
                   </SelectContent>
                 </Select>
@@ -1933,6 +1940,12 @@ export default function AdminAnalytics() {
                                       onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
                                     >Rodger</Badge>
                                   );
+                                  if (sdr === "Caio") return (
+                                    <Badge 
+                                      className="bg-green-500/20 text-green-400 border-green-500/30 cursor-pointer hover:bg-green-500/30 transition-colors"
+                                      onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
+                                    >Caio</Badge>
+                                  );
                                   if (sdr === "Dara") return (
                                     <Badge 
                                       className="bg-pink-500/20 text-pink-400 border-pink-500/30 cursor-pointer hover:bg-pink-500/30 transition-colors"
@@ -2029,7 +2042,7 @@ export default function AdminAnalytics() {
                                     {tierShortLabel(tier)}
                                   </Badge>
                                   <Badge 
-                                    className={`text-[10px] cursor-pointer ${sdr === "Rodger" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : "bg-pink-500/20 text-pink-400 border-pink-500/30"}`}
+                                    className={`text-[10px] cursor-pointer ${sdr === "Rodger" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : sdr === "Caio" ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-pink-500/20 text-pink-400 border-pink-500/30"}`}
                                     onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
                                   >
                                     {sdr}
