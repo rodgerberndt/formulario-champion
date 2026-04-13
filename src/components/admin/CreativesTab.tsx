@@ -88,6 +88,8 @@ interface CreativeData {
   sales_sprint_count: number;
   sales_assessoria_count: number;
   cac: number | null;
+  cac_sprint: number | null;
+  cac_assessoria: number | null;
   revenue: number;
   revenue_sprint: number;
   revenue_assessoria: number;
@@ -128,6 +130,8 @@ interface CreativesResponse {
     cp_tier_enterprise: number | null;
     cp_tier_enterprise_plus: number | null;
     cac: number | null;
+    cac_sprint: number | null;
+    cac_assessoria: number | null;
     roas: number | null;
     cp_meeting: number | null;
   };
@@ -1040,11 +1044,25 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-xl font-bold text-teal-400">{formatCurrency(totals.revenue_assessoria || 0)}</p>
             </CardContent>
           </Card>
-          {/* 16. CAC */}
+          {/* 16. CAC Geral */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">CAC</p>
+              <p className="text-xs text-muted-foreground uppercase">CAC Geral</p>
               <p className="text-lg font-bold">{formatCurrency(totals.cac)}</p>
+            </CardContent>
+          </Card>
+          {/* 16b. CAC Sprint */}
+          <Card className="border-violet-500/30">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">CAC Sprint</p>
+              <p className="text-lg font-bold text-violet-400">{formatCurrency(totals.cac_sprint)}</p>
+            </CardContent>
+          </Card>
+          {/* 16c. CAC Assessoria */}
+          <Card className="border-teal-500/30">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">CAC Assessoria</p>
+              <p className="text-lg font-bold text-teal-400">{formatCurrency(totals.cac_assessoria)}</p>
             </CardContent>
           </Card>
           {/* 17. ROAS */}
@@ -1262,12 +1280,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                               {c.cac !== null && <div className="text-muted-foreground text-[9px]">{formatCurrency(c.cac)}</div>}
                             </button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-48 p-3" align="end">
+                          <PopoverContent className="w-52 p-3" align="end">
                             <p className="text-xs font-semibold mb-2">Vendas por Tipo</p>
                             <div className="space-y-1 text-xs">
                               <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{c.sales_count}</span></div>
                               <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{c.sales_sprint_count || 0}</span></div>
                               <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{c.sales_assessoria_count || 0}</span></div>
+                            </div>
+                            <p className="text-xs font-semibold mb-2 mt-3">CAC por Tipo</p>
+                            <div className="space-y-1 text-xs">
+                              <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{formatCurrency(c.cac)}</span></div>
+                              <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{formatCurrency(c.cac_sprint)}</span></div>
+                              <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{formatCurrency(c.cac_assessoria)}</span></div>
                             </div>
                           </PopoverContent>
                         </Popover>

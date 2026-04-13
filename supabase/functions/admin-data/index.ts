@@ -1257,6 +1257,8 @@ Deno.serve(async (req: Request) => {
         const cost_per_enterprise = c.tier_enterprise_count > 0 ? c.spend / c.tier_enterprise_count : null;
         const cost_per_enterprise_plus = c.tier_enterprise_plus_count > 0 ? c.spend / c.tier_enterprise_plus_count : null;
         const cac = c.sales_count > 0 ? c.spend / c.sales_count : null;
+        const cac_sprint = c.sales_sprint_count > 0 ? c.spend / c.sales_sprint_count : null;
+        const cac_assessoria = c.sales_assessoria_count > 0 ? c.spend / c.sales_assessoria_count : null;
         const roas = c.spend > 0 ? c.revenue / c.spend : null;
         const cost_per_meeting = c.meetings_count > 0 ? c.spend / c.meetings_count : null;
         const is_active = recentSpendKeys.has(c.creative_key);
@@ -1270,6 +1272,8 @@ Deno.serve(async (req: Request) => {
           cost_per_enterprise,
           cost_per_enterprise_plus,
           cac,
+          cac_sprint,
+          cac_assessoria,
           roas,
           cost_per_meeting,
           meetings_count: c.meetings_count,
@@ -1323,6 +1327,8 @@ Deno.serve(async (req: Request) => {
             cp_tier_enterprise: totalTierEnterprise > 0 ? totalSpend / totalTierEnterprise : null,
             cp_tier_enterprise_plus: totalTierEnterprisePlus > 0 ? totalSpend / totalTierEnterprisePlus : null,
             cac: totalSales > 0 ? totalSpend / totalSales : null,
+            cac_sprint: totalSalesSprint > 0 ? totalSpend / totalSalesSprint : null,
+            cac_assessoria: totalSalesAssessoria > 0 ? totalSpend / totalSalesAssessoria : null,
             roas: totalSpend > 0 ? totalRevenue / totalSpend : null,
             cp_meeting: totalMeetingsCount > 0 ? totalSpend / totalMeetingsCount : null,
           },
