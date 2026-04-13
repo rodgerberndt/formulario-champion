@@ -1044,11 +1044,25 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-xl font-bold text-teal-400">{formatCurrency(totals.revenue_assessoria || 0)}</p>
             </CardContent>
           </Card>
-          {/* 16. CAC */}
+          {/* 16. CAC Geral */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">CAC</p>
+              <p className="text-xs text-muted-foreground uppercase">CAC Geral</p>
               <p className="text-lg font-bold">{formatCurrency(totals.cac)}</p>
+            </CardContent>
+          </Card>
+          {/* 16b. CAC Sprint */}
+          <Card className="border-violet-500/30">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">CAC Sprint</p>
+              <p className="text-lg font-bold text-violet-400">{formatCurrency(totals.cac_sprint)}</p>
+            </CardContent>
+          </Card>
+          {/* 16c. CAC Assessoria */}
+          <Card className="border-teal-500/30">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">CAC Assessoria</p>
+              <p className="text-lg font-bold text-teal-400">{formatCurrency(totals.cac_assessoria)}</p>
             </CardContent>
           </Card>
           {/* 17. ROAS */}
