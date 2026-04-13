@@ -388,9 +388,45 @@ export function useLeadNotifications(
     }
   }, [notificationsEnabled]);
 
+  // Test function: fires notifications for existing sales/meetings without creating anything
+  const testNotifications = useCallback(async () => {
+    const token = getToken();
+    if (!token) return;
+
+    const baseUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data`;
+    const headers = {
+      "x-admin-token": token,
+      "Content-Type": "application/json",
+      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    };
+
+    try {
+      const [salesRes, meetingsRes] = await Promise.all([
+        fetch(`${baseUrl}/manual-sales?from=2026-04-01&to=2026-04-13`, { headers }),
+        fetch(`${baseUrl}/meetings?from=2026-04-01T00:00:00Z&to=2026-04-13T23:59:59Z`, { headers }),
+      ]);
+
+      const sales: SaleRecord[] = salesRes.ok ? await salesRes.json() : [];
+      const meetings: MeetingRecord[] = meetingsRes.ok ? await meetingsRes.json() : [];
+
+      if (sales.length > 0) notifyNewSales(sales.slice(0, 3));
+      if (meetings.length > 0) {
+        setTimeout(() => notifyNewMeetings(meetings.slice(0, 2)), 3000);
+      }
+
+      toast({
+        title: "🧪 Teste disparado",
+        description: `${sales.length} vendas e ${meetings.length} reuniões encontradas`,
+      });
+    } catch (err) {
+      console.error("Test notification error:", err);
+    }
+  }, [getToken, notifyNewSales, notifyNewMeetings]);
+
   return {
     notificationsEnabled,
     permissionState,
     toggleNotifications,
+    testNotifications,
   };
 }

@@ -276,7 +276,7 @@ export default function AdminAnalytics() {
   const [loginLoading, setLoginLoading] = useState(false);
 
   // Lead notifications (realtime)
-  const { notificationsEnabled, toggleNotifications } = useLeadNotifications(
+  const { notificationsEnabled, toggleNotifications, testNotifications } = useLeadNotifications(
     isAuthenticated,
     handleNewLead,
     handleAuthError
@@ -1382,6 +1382,9 @@ export default function AdminAnalytics() {
               >
                 <Bell className={`w-4 h-4 sm:mr-1.5 ${notificationsEnabled ? "animate-pulse" : ""}`} />
                 <span className="hidden sm:inline">{notificationsEnabled ? "Notificações ON" : "Ativar notificações"}</span>
+              </Button>
+              <Button variant="outline" size="sm" onClick={testNotifications} className="text-xs sm:text-sm">
+                🧪 <span className="hidden sm:inline ml-1">Testar notificações</span>
               </Button>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Sair</span>
