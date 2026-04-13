@@ -1047,6 +1047,7 @@ Deno.serve(async (req: Request) => {
         revenue_sprint: number;
         revenue_assessoria: number;
         meetings_count: number;
+        meetings_attended_count: number;
         last_activity: string | null;
         leads_by_stage: Record<string, number>;
         campaigns: Set<string>;
@@ -1075,6 +1076,7 @@ Deno.serve(async (req: Request) => {
             revenue_sprint: 0,
             revenue_assessoria: 0,
             meetings_count: 0,
+            meetings_attended_count: 0,
             last_activity: null,
             leads_by_stage: {},
             campaigns: new Set(),
