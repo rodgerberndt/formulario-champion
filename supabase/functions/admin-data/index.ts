@@ -1503,6 +1503,19 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ──── PUT /meetings/:id ────
+    const updateMeetingMatch = path.match(/^\/meetings\/([a-f0-9-]+)$/);
+    if (updateMeetingMatch && req.method === "PUT") {
+      const meetingId = updateMeetingMatch[1];
+      const body = await req.json();
+      const updates: Record<string, unknown> = {};
+      if (body.notes !== undefined) updates.notes = body.notes || null;
+      if (body.attended !== undefined) updates.attended = !!body.attended;
+      const { data, error } = await supabase.from("meetings").update(updates).eq("id", meetingId).select().maybeSingle();
+      if (error) throw error;
+      return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ──── POST /capi-retroactive-meetings ────
     if (path === "/capi-retroactive-meetings" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
       const { data: allMeetings, error: meetErr } = await supabase
