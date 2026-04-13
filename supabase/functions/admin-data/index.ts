@@ -1826,6 +1826,13 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    if (req.method === "DELETE" && pathParts.length === 2 && pathParts[0] === "daily-reports") {
+      const reportId = pathParts[1];
+      const { error: dErr } = await supabase.from("daily_reports").delete().eq("id", reportId);
+      if (dErr) return new Response(JSON.stringify({ error: dErr.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     return new Response(
       JSON.stringify({ error: "Rota não encontrada" }),
       { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
