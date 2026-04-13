@@ -1586,6 +1586,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               loading={leadsLoading}
               selectedId={selectedLeadId}
               onSelect={setSelectedLeadId}
+              label="Lead (opcional)"
             />
 
             {selectedSaleLead && (
