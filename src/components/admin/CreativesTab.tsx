@@ -1757,7 +1757,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     <TableHead>Data</TableHead>
                     <TableHead>Criativo</TableHead>
                     <TableHead>Observação</TableHead>
-                    <TableHead className="w-10"></TableHead>
+                    <TableHead>Realizada</TableHead>
+                    <TableHead className="w-20"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -1776,15 +1777,44 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDeleteMeeting(meeting.id)}
-                          disabled={deletingMeetingId === meeting.id}
+                          onClick={() => handleToggleAttended(meeting)}
+                          disabled={togglingAttendedId === meeting.id}
+                          className={meeting.attended ? "text-emerald-400" : "text-muted-foreground"}
                         >
-                          {deletingMeetingId === meeting.id ? (
+                          {togglingAttendedId === meeting.id ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : meeting.attended ? (
+                            <><Check className="w-4 h-4 mr-1" /> Sim</>
                           ) : (
-                            <Trash2 className="w-4 h-4 text-destructive" />
+                            <><X className="w-4 h-4 mr-1" /> Não</>
                           )}
                         </Button>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setEditingMeeting(meeting);
+                              setEditMeetingForm({ notes: meeting.notes || "", attended: !!meeting.attended });
+                            }}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteMeeting(meeting.id)}
+                            disabled={deletingMeetingId === meeting.id}
+                          >
+                            {deletingMeetingId === meeting.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            )}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -1794,6 +1824,65 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </CardContent>
         )}
       </Card>
+
+      {/* Edit Sale Dialog */}
+      <Dialog open={!!editingSale} onOpenChange={(open) => !open && setEditingSale(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Venda</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm text-muted-foreground">Produto *</label>
+              <Select value={editSaleForm.sale_type} onValueChange={(v) => setEditSaleForm(p => ({ ...p, sale_type: v as "sprint" | "assessoria" }))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sprint">Sprint</SelectItem>
+                  <SelectItem value="assessoria">Assessoria Completa</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Receita (R$) *</label>
+              <Input type="number" step="0.01" value={editSaleForm.revenue} onChange={e => setEditSaleForm(p => ({ ...p, revenue: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Observação</label>
+              <Input value={editSaleForm.notes} onChange={e => setEditSaleForm(p => ({ ...p, notes: e.target.value }))} />
+            </div>
+            <Button onClick={handleEditSale} disabled={savingEditSale} className="w-full">
+              {savingEditSale ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Salvar Alterações
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Meeting Dialog */}
+      <Dialog open={!!editingMeeting} onOpenChange={(open) => !open && setEditingMeeting(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Reunião</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm text-muted-foreground">Observação</label>
+              <Input value={editMeetingForm.notes} onChange={e => setEditMeetingForm(p => ({ ...p, notes: e.target.value }))} />
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-muted-foreground">Realizada</label>
+              <Switch checked={editMeetingForm.attended} onCheckedChange={(v) => setEditMeetingForm(p => ({ ...p, attended: v }))} />
+              <span className="text-sm">{editMeetingForm.attended ? "Sim" : "Não"}</span>
+            </div>
+            <Button onClick={handleEditMeeting} disabled={savingEditMeeting} className="w-full">
+              {savingEditMeeting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Salvar Alterações
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
