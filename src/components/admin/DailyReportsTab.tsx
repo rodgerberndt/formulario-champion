@@ -205,7 +205,9 @@ export default function DailyReportsTab() {
   const [monthReports, setMonthReports] = useState<DailyReport[]>([]);
   const [popupReport, setPopupReport] = useState<DailyReport | null>(null);
 
-  // History view state
+  const getToken = () => sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
+  const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
+
   const [viewMode, setViewMode] = useState<"form" | "history">("form");
   const [historyMonth, setHistoryMonth] = useState(new Date());
   const [historyReports, setHistoryReports] = useState<DailyReport[]>([]);
