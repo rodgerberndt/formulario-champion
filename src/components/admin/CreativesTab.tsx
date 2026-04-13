@@ -38,6 +38,7 @@ import {
   Loader2,
   Plus,
   Trash2,
+  Pencil,
   Star,
   RefreshCw,
   Calendar,
@@ -95,6 +96,7 @@ interface CreativeData {
   leads_by_stage: Record<string, number>;
   campaigns: string[];
   meetings_count: number;
+  meetings_attended_count: number;
   cost_per_meeting: number | null;
   is_active: boolean;
 }
@@ -117,6 +119,7 @@ interface CreativesResponse {
     revenue_sprint: number;
     revenue_assessoria: number;
     meetings: number;
+    meetings_attended: number;
     cpl: number | null;
     cpmql: number | null;
     cp_tier_small: number | null;
@@ -155,6 +158,7 @@ interface Meeting {
   utm_content: string | null;
   notes: string | null;
   created_at: string;
+  attended: boolean;
 }
 
 interface LeadOption {
@@ -346,6 +350,15 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [showMeetingsList, setShowMeetingsList] = useState(false);
   const [deletingMeetingId, setDeletingMeetingId] = useState<string | null>(null);
 
+  // Edit states
+  const [editingSale, setEditingSale] = useState<ManualSale | null>(null);
+  const [editSaleForm, setEditSaleForm] = useState({ revenue: "", sale_type: "sprint" as "sprint" | "assessoria", notes: "" });
+  const [savingEditSale, setSavingEditSale] = useState(false);
+  const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
+  const [editMeetingForm, setEditMeetingForm] = useState({ notes: "", attended: false });
+  const [savingEditMeeting, setSavingEditMeeting] = useState(false);
+  const [togglingAttendedId, setTogglingAttendedId] = useState<string | null>(null);
+
   // Leads for picker
   const [leadsList, setLeadsList] = useState<LeadOption[]>([]);
   const [leadsLoading, setLeadsLoading] = useState(false);
@@ -522,6 +535,69 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       toast({ title: "Erro ao remover reunião", variant: "destructive" });
     } finally {
       setDeletingMeetingId(null);
+    }
+  };
+
+  const handleEditSale = async () => {
+    if (!editingSale) return;
+    setSavingEditSale(true);
+    try {
+      const token = sessionStorage.getItem("admin_analytics_token");
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      await fetch(`${supabaseUrl}/functions/v1/admin-data/manual-sales/${editingSale.id}`, {
+        method: "PUT",
+        headers: { "x-admin-token": token || "", "Content-Type": "application/json" },
+        body: JSON.stringify({ revenue: editSaleForm.revenue, sale_type: editSaleForm.sale_type, notes: editSaleForm.notes }),
+      });
+      toast({ title: "Venda atualizada!" });
+      setSalesList(prev => prev.map(s => s.id === editingSale.id ? { ...s, revenue: parseFloat(editSaleForm.revenue), sale_type: editSaleForm.sale_type, notes: editSaleForm.notes } : s));
+      setEditingSale(null);
+      loadData();
+    } catch {
+      toast({ title: "Erro ao atualizar venda", variant: "destructive" });
+    } finally {
+      setSavingEditSale(false);
+    }
+  };
+
+  const handleEditMeeting = async () => {
+    if (!editingMeeting) return;
+    setSavingEditMeeting(true);
+    try {
+      const token = sessionStorage.getItem("admin_analytics_token");
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      await fetch(`${supabaseUrl}/functions/v1/admin-data/meetings/${editingMeeting.id}`, {
+        method: "PUT",
+        headers: { "x-admin-token": token || "", "Content-Type": "application/json" },
+        body: JSON.stringify({ notes: editMeetingForm.notes, attended: editMeetingForm.attended }),
+      });
+      toast({ title: "Reunião atualizada!" });
+      setMeetingsList(prev => prev.map(m => m.id === editingMeeting.id ? { ...m, notes: editMeetingForm.notes, attended: editMeetingForm.attended } : m));
+      setEditingMeeting(null);
+      loadData();
+    } catch {
+      toast({ title: "Erro ao atualizar reunião", variant: "destructive" });
+    } finally {
+      setSavingEditMeeting(false);
+    }
+  };
+
+  const handleToggleAttended = async (meeting: Meeting) => {
+    setTogglingAttendedId(meeting.id);
+    try {
+      const token = sessionStorage.getItem("admin_analytics_token");
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      await fetch(`${supabaseUrl}/functions/v1/admin-data/meetings/${meeting.id}`, {
+        method: "PUT",
+        headers: { "x-admin-token": token || "", "Content-Type": "application/json" },
+        body: JSON.stringify({ attended: !meeting.attended }),
+      });
+      setMeetingsList(prev => prev.map(m => m.id === meeting.id ? { ...m, attended: !m.attended } : m));
+      loadData();
+    } catch {
+      toast({ title: "Erro ao atualizar", variant: "destructive" });
+    } finally {
+      setTogglingAttendedId(null);
     }
   };
 
@@ -898,12 +974,20 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-xs text-muted-foreground">MQL → Reuniões</p>
             </CardContent>
           </Card>
-          {/* 12. Reuniões */}
+          {/* 12. Reuniões Agendadas */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total Reuniões</p>
+              <p className="text-xs text-muted-foreground uppercase">Reuniões Agendadas</p>
               <p className="text-xl font-bold text-orange-400">{formatNumber(totals.meetings)}</p>
               <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_meeting)}</p>
+            </CardContent>
+          </Card>
+          {/* 12b. Reuniões Realizadas */}
+          <Card className="border-emerald-500/30">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Reuniões Realizadas</p>
+              <p className="text-xl font-bold text-emerald-400">{formatNumber(totals.meetings_attended || 0)}</p>
+              <p className="text-xs text-muted-foreground">{totals.meetings > 0 ? `${((totals.meetings_attended || 0) / totals.meetings * 100).toFixed(0)}% show rate` : "—"}</p>
             </CardContent>
           </Card>
           {/* 13. Conversão Call (Reuniões → Vendas) */}
@@ -1303,7 +1387,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     <TableHead className="text-right">Receita</TableHead>
                     <TableHead>Criativo</TableHead>
                     <TableHead>Notas</TableHead>
-                    <TableHead className="w-10"></TableHead>
+                    <TableHead className="w-20"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -1325,18 +1409,30 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{sale.notes || "—"}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteSale(sale.id)}
-                          disabled={deletingSaleId === sale.id}
-                        >
-                          {deletingSaleId === sale.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          )}
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setEditingSale(sale);
+                              setEditSaleForm({ revenue: String(sale.revenue), sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria", notes: sale.notes || "" });
+                            }}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteSale(sale.id)}
+                            disabled={deletingSaleId === sale.id}
+                          >
+                            {deletingSaleId === sale.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            )}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -1661,7 +1757,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     <TableHead>Data</TableHead>
                     <TableHead>Criativo</TableHead>
                     <TableHead>Observação</TableHead>
-                    <TableHead className="w-10"></TableHead>
+                    <TableHead>Realizada</TableHead>
+                    <TableHead className="w-20"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -1680,15 +1777,44 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDeleteMeeting(meeting.id)}
-                          disabled={deletingMeetingId === meeting.id}
+                          onClick={() => handleToggleAttended(meeting)}
+                          disabled={togglingAttendedId === meeting.id}
+                          className={meeting.attended ? "text-emerald-400" : "text-muted-foreground"}
                         >
-                          {deletingMeetingId === meeting.id ? (
+                          {togglingAttendedId === meeting.id ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : meeting.attended ? (
+                            <><Check className="w-4 h-4 mr-1" /> Sim</>
                           ) : (
-                            <Trash2 className="w-4 h-4 text-destructive" />
+                            <><X className="w-4 h-4 mr-1" /> Não</>
                           )}
                         </Button>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setEditingMeeting(meeting);
+                              setEditMeetingForm({ notes: meeting.notes || "", attended: !!meeting.attended });
+                            }}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteMeeting(meeting.id)}
+                            disabled={deletingMeetingId === meeting.id}
+                          >
+                            {deletingMeetingId === meeting.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            )}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -1698,6 +1824,65 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </CardContent>
         )}
       </Card>
+
+      {/* Edit Sale Dialog */}
+      <Dialog open={!!editingSale} onOpenChange={(open) => !open && setEditingSale(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Venda</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm text-muted-foreground">Produto *</label>
+              <Select value={editSaleForm.sale_type} onValueChange={(v) => setEditSaleForm(p => ({ ...p, sale_type: v as "sprint" | "assessoria" }))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sprint">Sprint</SelectItem>
+                  <SelectItem value="assessoria">Assessoria Completa</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Receita (R$) *</label>
+              <Input type="number" step="0.01" value={editSaleForm.revenue} onChange={e => setEditSaleForm(p => ({ ...p, revenue: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Observação</label>
+              <Input value={editSaleForm.notes} onChange={e => setEditSaleForm(p => ({ ...p, notes: e.target.value }))} />
+            </div>
+            <Button onClick={handleEditSale} disabled={savingEditSale} className="w-full">
+              {savingEditSale ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Salvar Alterações
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Meeting Dialog */}
+      <Dialog open={!!editingMeeting} onOpenChange={(open) => !open && setEditingMeeting(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Reunião</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm text-muted-foreground">Observação</label>
+              <Input value={editMeetingForm.notes} onChange={e => setEditMeetingForm(p => ({ ...p, notes: e.target.value }))} />
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-muted-foreground">Realizada</label>
+              <Switch checked={editMeetingForm.attended} onCheckedChange={(v) => setEditMeetingForm(p => ({ ...p, attended: v }))} />
+              <span className="text-sm">{editMeetingForm.attended ? "Sim" : "Não"}</span>
+            </div>
+            <Button onClick={handleEditMeeting} disabled={savingEditMeeting} className="w-full">
+              {savingEditMeeting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Salvar Alterações
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1047,6 +1047,7 @@ Deno.serve(async (req: Request) => {
         revenue_sprint: number;
         revenue_assessoria: number;
         meetings_count: number;
+        meetings_attended_count: number;
         last_activity: string | null;
         leads_by_stage: Record<string, number>;
         campaigns: Set<string>;
@@ -1075,6 +1076,7 @@ Deno.serve(async (req: Request) => {
             revenue_sprint: 0,
             revenue_assessoria: 0,
             meetings_count: 0,
+            meetings_attended_count: 0,
             last_activity: null,
             leads_by_stage: {},
             campaigns: new Set(),
@@ -1219,9 +1221,9 @@ Deno.serve(async (req: Request) => {
 
       // Process meetings - resolve creative from linked lead if needed
       let totalMeetingsCount = 0;
+      let totalMeetingsAttendedCount = 0;
       for (const meeting of (meetingsData || [])) {
         let rawKey = meeting.creative_key || meeting.utm_content;
-        // If no creative but has lead_id, try to get it from the lead
         if ((!rawKey || rawKey === '{{ad.name}}' || DIRECT_KEYS.has(normalizeKey(rawKey) || "")) && meeting.lead_id) {
           const leadCreative = leadUtmMap.get(meeting.lead_id);
           if (leadCreative) rawKey = leadCreative;
@@ -1239,6 +1241,10 @@ Deno.serve(async (req: Request) => {
         const agg = getOrCreate(ck, label, "utm_content");
         agg.meetings_count++;
         totalMeetingsCount++;
+        if (meeting.attended) {
+          agg.meetings_attended_count++;
+          totalMeetingsAttendedCount++;
+        }
       }
 
       // Calculate derived metrics
@@ -1267,6 +1273,7 @@ Deno.serve(async (req: Request) => {
           roas,
           cost_per_meeting,
           meetings_count: c.meetings_count,
+          meetings_attended_count: c.meetings_attended_count,
           is_active,
           campaigns: Array.from(c.campaigns),
         };
@@ -1307,6 +1314,7 @@ Deno.serve(async (req: Request) => {
             revenue_sprint: totalRevenueSprint,
             revenue_assessoria: totalRevenueAssessoria,
             meetings: totalMeetingsCount,
+            meetings_attended: totalMeetingsAttendedCount,
             cpl: totalLeads > 0 ? totalSpend / totalLeads : null,
             cpmql: totalMql > 0 ? totalSpend / totalMql : null,
             cp_tier_small: totalTierSmall > 0 ? totalSpend / totalTierSmall : null,
@@ -1353,6 +1361,20 @@ Deno.serve(async (req: Request) => {
       const { error } = await supabase.from("manual_sales").delete().eq("id", saleId);
       if (error) throw error;
       return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // ──── PUT /manual-sales/:id ────
+    const updateSaleMatch = path.match(/^\/manual-sales\/([a-f0-9-]+)$/);
+    if (updateSaleMatch && req.method === "PUT") {
+      const saleId = updateSaleMatch[1];
+      const body = await req.json();
+      const updates: Record<string, unknown> = {};
+      if (body.revenue !== undefined) updates.revenue = parseFloat(body.revenue);
+      if (body.sale_type !== undefined) updates.sale_type = body.sale_type;
+      if (body.notes !== undefined) updates.notes = body.notes || null;
+      const { data, error } = await supabase.from("manual_sales").update(updates).eq("id", saleId).select().maybeSingle();
+      if (error) throw error;
+      return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ──── POST /manual-sales ────
@@ -1487,6 +1509,19 @@ Deno.serve(async (req: Request) => {
       const { error } = await supabase.from("meetings").delete().eq("id", meetingId);
       if (error) throw error;
       return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // ──── PUT /meetings/:id ────
+    const updateMeetingMatch = path.match(/^\/meetings\/([a-f0-9-]+)$/);
+    if (updateMeetingMatch && req.method === "PUT") {
+      const meetingId = updateMeetingMatch[1];
+      const body = await req.json();
+      const updates: Record<string, unknown> = {};
+      if (body.notes !== undefined) updates.notes = body.notes || null;
+      if (body.attended !== undefined) updates.attended = !!body.attended;
+      const { data, error } = await supabase.from("meetings").update(updates).eq("id", meetingId).select().maybeSingle();
+      if (error) throw error;
+      return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ──── POST /capi-retroactive-meetings ────
