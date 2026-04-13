@@ -538,7 +538,69 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     }
   };
 
-  const handleAddSpend = async () => {
+  const handleEditSale = async () => {
+    if (!editingSale) return;
+    setSavingEditSale(true);
+    try {
+      const token = sessionStorage.getItem("admin_analytics_token");
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      await fetch(`${supabaseUrl}/functions/v1/admin-data/manual-sales/${editingSale.id}`, {
+        method: "PUT",
+        headers: { "x-admin-token": token || "", "Content-Type": "application/json" },
+        body: JSON.stringify({ revenue: editSaleForm.revenue, sale_type: editSaleForm.sale_type, notes: editSaleForm.notes }),
+      });
+      toast({ title: "Venda atualizada!" });
+      setSalesList(prev => prev.map(s => s.id === editingSale.id ? { ...s, revenue: parseFloat(editSaleForm.revenue), sale_type: editSaleForm.sale_type, notes: editSaleForm.notes } : s));
+      setEditingSale(null);
+      loadData();
+    } catch {
+      toast({ title: "Erro ao atualizar venda", variant: "destructive" });
+    } finally {
+      setSavingEditSale(false);
+    }
+  };
+
+  const handleEditMeeting = async () => {
+    if (!editingMeeting) return;
+    setSavingEditMeeting(true);
+    try {
+      const token = sessionStorage.getItem("admin_analytics_token");
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      await fetch(`${supabaseUrl}/functions/v1/admin-data/meetings/${editingMeeting.id}`, {
+        method: "PUT",
+        headers: { "x-admin-token": token || "", "Content-Type": "application/json" },
+        body: JSON.stringify({ notes: editMeetingForm.notes, attended: editMeetingForm.attended }),
+      });
+      toast({ title: "Reunião atualizada!" });
+      setMeetingsList(prev => prev.map(m => m.id === editingMeeting.id ? { ...m, notes: editMeetingForm.notes, attended: editMeetingForm.attended } : m));
+      setEditingMeeting(null);
+      loadData();
+    } catch {
+      toast({ title: "Erro ao atualizar reunião", variant: "destructive" });
+    } finally {
+      setSavingEditMeeting(false);
+    }
+  };
+
+  const handleToggleAttended = async (meeting: Meeting) => {
+    setTogglingAttendedId(meeting.id);
+    try {
+      const token = sessionStorage.getItem("admin_analytics_token");
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      await fetch(`${supabaseUrl}/functions/v1/admin-data/meetings/${meeting.id}`, {
+        method: "PUT",
+        headers: { "x-admin-token": token || "", "Content-Type": "application/json" },
+        body: JSON.stringify({ attended: !meeting.attended }),
+      });
+      setMeetingsList(prev => prev.map(m => m.id === meeting.id ? { ...m, attended: !m.attended } : m));
+      loadData();
+    } catch {
+      toast({ title: "Erro ao atualizar", variant: "destructive" });
+    } finally {
+      setTogglingAttendedId(null);
+    }
+  };
+
     if (!spendForm.date || !spendForm.spend) {
       toast({ title: "Preencha data e gasto", variant: "destructive" });
       return;
