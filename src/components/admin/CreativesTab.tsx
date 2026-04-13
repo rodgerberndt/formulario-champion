@@ -1280,12 +1280,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                               {c.cac !== null && <div className="text-muted-foreground text-[9px]">{formatCurrency(c.cac)}</div>}
                             </button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-48 p-3" align="end">
+                          <PopoverContent className="w-52 p-3" align="end">
                             <p className="text-xs font-semibold mb-2">Vendas por Tipo</p>
                             <div className="space-y-1 text-xs">
                               <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{c.sales_count}</span></div>
                               <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{c.sales_sprint_count || 0}</span></div>
                               <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{c.sales_assessoria_count || 0}</span></div>
+                            </div>
+                            <p className="text-xs font-semibold mb-2 mt-3">CAC por Tipo</p>
+                            <div className="space-y-1 text-xs">
+                              <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{formatCurrency(c.cac)}</span></div>
+                              <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{formatCurrency(c.cac_sprint)}</span></div>
+                              <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{formatCurrency(c.cac_assessoria)}</span></div>
                             </div>
                           </PopoverContent>
                         </Popover>
