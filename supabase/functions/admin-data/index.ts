@@ -1795,7 +1795,8 @@ Deno.serve(async (req: Request) => {
     }
 
     // ─── Daily Reports CRUD ───
-    if (method === "GET" && path === "/daily-reports") {
+    const pathParts = path.replace(/^\//, "").split("/");
+    if (req.method === "GET" && path === "/daily-reports") {
       const sdr = url.searchParams.get("sdr");
       const month = url.searchParams.get("month"); // YYYY-MM
       let query = supabase.from("daily_reports").select("*");
@@ -1808,14 +1809,14 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    if (method === "POST" && path === "/daily-reports") {
+    if (req.method === "POST" && path === "/daily-reports") {
       const body = await req.json();
       const { data, error: iErr } = await supabase.from("daily_reports").upsert(body, { onConflict: "report_date,sdr_name" }).select().single();
       if (iErr) return new Response(JSON.stringify({ error: iErr.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    if (method === "PUT" && pathParts.length === 2 && pathParts[0] === "daily-reports") {
+    if (req.method === "PUT" && pathParts.length === 2 && pathParts[0] === "daily-reports") {
       const reportId = pathParts[1];
       const body = await req.json();
       const { data, error: uErr } = await supabase.from("daily_reports").update({ ...body, updated_at: new Date().toISOString() }).eq("id", reportId).select().single();
