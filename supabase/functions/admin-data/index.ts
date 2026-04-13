@@ -1355,6 +1355,20 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ──── PUT /manual-sales/:id ────
+    const updateSaleMatch = path.match(/^\/manual-sales\/([a-f0-9-]+)$/);
+    if (updateSaleMatch && req.method === "PUT") {
+      const saleId = updateSaleMatch[1];
+      const body = await req.json();
+      const updates: Record<string, unknown> = {};
+      if (body.revenue !== undefined) updates.revenue = parseFloat(body.revenue);
+      if (body.sale_type !== undefined) updates.sale_type = body.sale_type;
+      if (body.notes !== undefined) updates.notes = body.notes || null;
+      const { data, error } = await supabase.from("manual_sales").update(updates).eq("id", saleId).select().maybeSingle();
+      if (error) throw error;
+      return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ──── POST /manual-sales ────
     if (path === "/manual-sales" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
       const params = Object.fromEntries(url.searchParams);
