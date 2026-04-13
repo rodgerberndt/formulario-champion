@@ -108,13 +108,15 @@ Deno.serve(async (req: Request) => {
       const leadId = leadUpdateMatch[1];
       const body = await req.json();
 
-      // Check if sdr_override is being set to "Rodger" for a true MQL faixa only
-      const leadForMqlCheck = await supabase
+      // Fetch current lead state before update (including lido for auto-increment)
+      const leadForCheck = await supabase
         .from("leads")
-        .select("sdr_override, investimento_faixa")
+        .select("sdr_override, investimento_faixa, lido")
         .eq("id", leadId)
         .maybeSingle();
-      const currentLead = leadForMqlCheck.data;
+      const currentLead = leadForCheck.data;
+
+      // Check if sdr_override is being set to "Rodger" for a true MQL faixa only
       const mqlFaixas = [
         "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
         "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
@@ -126,11 +128,15 @@ Deno.serve(async (req: Request) => {
       const nextInvestimentoFaixa = body.investimento_faixa ?? currentLead?.investimento_faixa;
       const isSettingMQL = body.sdr_override === "Rodger" && mqlFaixas.includes(nextInvestimentoFaixa || "");
 
-      // Fetch current lead to check previous sdr_override
       let wasMQL = false;
       if (isSettingMQL) {
         wasMQL = currentLead?.sdr_override === "Rodger";
       }
+
+      // Detect lido transition: false -> true
+      const wasLido = currentLead?.lido === true;
+      const isSettingLido = body.lido === true;
+      const isLidoTransition = !wasLido && isSettingLido;
       
       const { data, error } = await supabase
         .from("leads")
@@ -140,6 +146,52 @@ Deno.serve(async (req: Request) => {
         .maybeSingle();
 
       if (error) throw error;
+
+      // Auto-increment mqls_chamados when an MQL lead is marked as lido
+      if (isLidoTransition && data) {
+        const SDR_CAIO_FAT = [
+          "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
+        ];
+        const SDR_RODGER_FAT = [
+          "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
+          "De R$ 100 mil a R$ 150 mil", "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil",
+          "De R$ 300 mil a R$ 500 mil", "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão",
+          "De R$ 1 milhão a R$ 2 milhões", "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões",
+          "De R$ 5 milhões a R$ 10 milhões", "Acima de R$ 10 milhões",
+        ];
+        const leadInvest = data.investimento_faixa || "";
+        let sdrName = "Dara";
+        if (data.sdr_override) sdrName = data.sdr_override;
+        else if (SDR_CAIO_FAT.includes(leadInvest)) sdrName = "Caio";
+        else if (SDR_RODGER_FAT.includes(leadInvest)) sdrName = "Rodger";
+
+        const isMql = mqlFaixas.includes(leadInvest);
+        if (isMql) {
+          const today = new Date().toISOString().slice(0, 10);
+          try {
+            const { data: existingReport } = await supabase
+              .from("daily_reports")
+              .select("id, mqls_chamados")
+              .eq("report_date", today)
+              .eq("sdr_name", sdrName)
+              .maybeSingle();
+
+            if (existingReport) {
+              await supabase
+                .from("daily_reports")
+                .update({ mqls_chamados: (existingReport.mqls_chamados || 0) + 1 })
+                .eq("id", existingReport.id);
+            } else {
+              await supabase
+                .from("daily_reports")
+                .insert({ report_date: today, sdr_name: sdrName, mqls_chamados: 1 });
+            }
+            console.log(`Auto-incremented mqls_chamados for ${sdrName} on ${today}`);
+          } catch (mqErr) {
+            console.error("Error auto-incrementing mqls_chamados:", mqErr);
+          }
+        }
+      }
 
       // Fire Meta CAPI MQL event if sdr_override just changed to "Rodger"
       if (isSettingMQL && !wasMQL) {
@@ -157,7 +209,6 @@ Deno.serve(async (req: Request) => {
           const capiResult = await capiRes.json();
           console.log("Meta CAPI MQL result:", JSON.stringify(capiResult));
 
-          // Update capi_events_sent to track that MQL was sent
           if (capiRes.ok && capiResult.success) {
             const currentCapi = data?.capi_events_sent || {};
             await supabase
