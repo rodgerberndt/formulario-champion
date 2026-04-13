@@ -95,6 +95,7 @@ interface CreativeData {
   leads_by_stage: Record<string, number>;
   campaigns: string[];
   meetings_count: number;
+  meetings_attended_count: number;
   cost_per_meeting: number | null;
   is_active: boolean;
 }
@@ -117,6 +118,7 @@ interface CreativesResponse {
     revenue_sprint: number;
     revenue_assessoria: number;
     meetings: number;
+    meetings_attended: number;
     cpl: number | null;
     cpmql: number | null;
     cp_tier_small: number | null;
@@ -155,6 +157,7 @@ interface Meeting {
   utm_content: string | null;
   notes: string | null;
   created_at: string;
+  attended: boolean;
 }
 
 interface LeadOption {
