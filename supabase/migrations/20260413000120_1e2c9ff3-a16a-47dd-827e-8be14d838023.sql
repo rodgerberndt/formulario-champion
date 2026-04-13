@@ -1,0 +1,1 @@
+ALTER TABLE public.meetings ADD COLUMN attended boolean NOT NULL DEFAULT false;
