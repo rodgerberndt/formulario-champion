@@ -367,10 +367,10 @@ export default function DailyReportsTab() {
                       {label}
                     </label>
                     <Input
-                      type="number"
-                      min={0}
+                      type="text"
+                      inputMode="numeric"
                       value={report[key] as number}
-                      onChange={(e) => updateField(key, parseInt(e.target.value) || 0)}
+                      onChange={(e) => updateField(key, parseInt(e.target.value.replace(/\D/g, '')) || 0)}
                       className="bg-background"
                     />
                   </div>
@@ -391,10 +391,10 @@ export default function DailyReportsTab() {
                     Valor pipeline (R$)
                   </label>
                   <Input
-                    type="number"
-                    min={0}
+                    type="text"
+                    inputMode="numeric"
                     value={report.valor_pipeline}
-                    onChange={(e) => updateField("valor_pipeline", parseFloat(e.target.value) || 0)}
+                    onChange={(e) => updateField("valor_pipeline", parseFloat(e.target.value.replace(/[^\d.]/g, '')) || 0)}
                     className="bg-background"
                   />
                 </div>
@@ -403,10 +403,10 @@ export default function DailyReportsTab() {
                     Valor fechado (R$)
                   </label>
                   <Input
-                    type="number"
-                    min={0}
+                    type="text"
+                    inputMode="numeric"
                     value={report.valor_fechado}
-                    onChange={(e) => updateField("valor_fechado", parseFloat(e.target.value) || 0)}
+                    onChange={(e) => updateField("valor_fechado", parseFloat(e.target.value.replace(/[^\d.]/g, '')) || 0)}
                     className="bg-background"
                   />
                 </div>
