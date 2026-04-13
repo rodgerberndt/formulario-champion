@@ -1387,7 +1387,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     <TableHead className="text-right">Receita</TableHead>
                     <TableHead>Criativo</TableHead>
                     <TableHead>Notas</TableHead>
-                    <TableHead className="w-10"></TableHead>
+                    <TableHead className="w-20"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -1409,18 +1409,30 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{sale.notes || "—"}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteSale(sale.id)}
-                          disabled={deletingSaleId === sale.id}
-                        >
-                          {deletingSaleId === sale.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          )}
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setEditingSale(sale);
+                              setEditSaleForm({ revenue: String(sale.revenue), sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria", notes: sale.notes || "" });
+                            }}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteSale(sale.id)}
+                            disabled={deletingSaleId === sale.id}
+                          >
+                            {deletingSaleId === sale.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            )}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
