@@ -459,23 +459,19 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       toast({ title: "Preencha a receita", variant: "destructive" });
       return;
     }
-    if (!selectedLeadId) {
-      toast({ title: "Selecione um lead", variant: "destructive" });
-      return;
-    }
     setSavingSale(true);
     try {
-      const lead = selectedSaleLead!;
-      const ck = lead.utm_content ? normalizeCreativeKey(lead.utm_content) : "";
+      const lead = selectedSaleLead;
+      const ck = lead?.utm_content ? normalizeCreativeKey(lead.utm_content) : "";
       const today = new Date().toISOString().split("T")[0];
       await fetchAdminData("/manual-sales", {
         _method: "POST",
         sale_date: today,
         revenue: saleForm.revenue,
         creative_key: ck,
-        utm_content: lead.utm_content || "",
-        notes: `${lead.nome_completo}${saleForm.notes ? ` — ${saleForm.notes}` : ""}`,
-        lead_id: lead.id,
+        utm_content: lead?.utm_content || "",
+        notes: lead ? `${lead.nome_completo}${saleForm.notes ? ` — ${saleForm.notes}` : ""}` : (saleForm.notes || "Venda sem lead"),
+        lead_id: lead?.id || "",
         sale_type: saleForm.sale_type,
       });
       toast({ title: "Venda registrada!" });
