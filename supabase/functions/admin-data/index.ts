@@ -1221,9 +1221,9 @@ Deno.serve(async (req: Request) => {
 
       // Process meetings - resolve creative from linked lead if needed
       let totalMeetingsCount = 0;
+      let totalMeetingsAttendedCount = 0;
       for (const meeting of (meetingsData || [])) {
         let rawKey = meeting.creative_key || meeting.utm_content;
-        // If no creative but has lead_id, try to get it from the lead
         if ((!rawKey || rawKey === '{{ad.name}}' || DIRECT_KEYS.has(normalizeKey(rawKey) || "")) && meeting.lead_id) {
           const leadCreative = leadUtmMap.get(meeting.lead_id);
           if (leadCreative) rawKey = leadCreative;
@@ -1241,6 +1241,10 @@ Deno.serve(async (req: Request) => {
         const agg = getOrCreate(ck, label, "utm_content");
         agg.meetings_count++;
         totalMeetingsCount++;
+        if (meeting.attended) {
+          agg.meetings_attended_count++;
+          totalMeetingsAttendedCount++;
+        }
       }
 
       // Calculate derived metrics
