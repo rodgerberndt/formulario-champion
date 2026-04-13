@@ -205,8 +205,11 @@ export default function DailyReportsTab() {
   const [monthReports, setMonthReports] = useState<DailyReport[]>([]);
   const [popupReport, setPopupReport] = useState<DailyReport | null>(null);
 
-  const getToken = () => sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
-  const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
+  // History view state
+  const [viewMode, setViewMode] = useState<"form" | "history">("form");
+  const [historyMonth, setHistoryMonth] = useState(new Date());
+  const [historyReports, setHistoryReports] = useState<DailyReport[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const fetchReport = useCallback(async (date: string, sdr: string) => {
     setLoading(true);
