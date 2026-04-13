@@ -339,6 +339,21 @@ export default function DailyReportsTab() {
     setReport((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleDeleteReport = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este relatório?")) return;
+    try {
+      const res = await fetch(
+        `${supabaseUrl}/functions/v1/admin-data/daily-reports/${id}`,
+        { method: "DELETE", headers: { "x-admin-token": getToken() } }
+      );
+      if (!res.ok) throw new Error("Delete failed");
+      setHistoryReports((prev) => prev.filter((r) => r.id !== id));
+      toast({ title: "🗑️ Relatório excluído!" });
+    } catch {
+      toast({ title: "Erro ao excluir", variant: "destructive" });
+    }
+  };
+
   // History view render
   if (viewMode === "history") {
     return (
