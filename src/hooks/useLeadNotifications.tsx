@@ -124,7 +124,7 @@ export function useLeadNotifications(
   const notifyNewLeads = useCallback(
     (newLeads: NewLead[]) => {
       if (newLeads.length === 0) return;
-      playSaleSound();
+      playLeadSound();
 
       if (newLeads.length === 1) {
         const lead = newLeads[0];
