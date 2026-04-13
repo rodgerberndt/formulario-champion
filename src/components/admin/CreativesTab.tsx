@@ -38,6 +38,7 @@ import {
   Loader2,
   Plus,
   Trash2,
+  Pencil,
   Star,
   RefreshCw,
   Calendar,
