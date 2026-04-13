@@ -276,7 +276,7 @@ export default function AdminAnalytics() {
   const [loginLoading, setLoginLoading] = useState(false);
 
   // Lead notifications (realtime)
-  const { notificationsEnabled, toggleNotifications } = useLeadNotifications(
+  const { notificationsEnabled, toggleNotifications, testNotifications } = useLeadNotifications(
     isAuthenticated,
     handleNewLead,
     handleAuthError
