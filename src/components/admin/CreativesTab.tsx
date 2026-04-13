@@ -88,8 +88,6 @@ interface CreativeData {
   sales_sprint_count: number;
   sales_assessoria_count: number;
   cac: number | null;
-  cac_sprint: number | null;
-  cac_assessoria: number | null;
   revenue: number;
   revenue_sprint: number;
   revenue_assessoria: number;
@@ -130,8 +128,6 @@ interface CreativesResponse {
     cp_tier_enterprise: number | null;
     cp_tier_enterprise_plus: number | null;
     cac: number | null;
-    cac_sprint: number | null;
-    cac_assessoria: number | null;
     roas: number | null;
     cp_meeting: number | null;
   };
