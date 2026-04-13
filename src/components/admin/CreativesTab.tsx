@@ -974,12 +974,20 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-xs text-muted-foreground">MQL → Reuniões</p>
             </CardContent>
           </Card>
-          {/* 12. Reuniões */}
+          {/* 12. Reuniões Agendadas */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total Reuniões</p>
+              <p className="text-xs text-muted-foreground uppercase">Reuniões Agendadas</p>
               <p className="text-xl font-bold text-orange-400">{formatNumber(totals.meetings)}</p>
               <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_meeting)}</p>
+            </CardContent>
+          </Card>
+          {/* 12b. Reuniões Realizadas */}
+          <Card className="border-emerald-500/30">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground uppercase">Reuniões Realizadas</p>
+              <p className="text-xl font-bold text-emerald-400">{formatNumber(totals.meetings_attended || 0)}</p>
+              <p className="text-xs text-muted-foreground">{totals.meetings > 0 ? `${((totals.meetings_attended || 0) / totals.meetings * 100).toFixed(0)}% show rate` : "—"}</p>
             </CardContent>
           </Card>
           {/* 13. Conversão Call (Reuniões → Vendas) */}
