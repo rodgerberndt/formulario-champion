@@ -350,6 +350,15 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [showMeetingsList, setShowMeetingsList] = useState(false);
   const [deletingMeetingId, setDeletingMeetingId] = useState<string | null>(null);
 
+  // Edit states
+  const [editingSale, setEditingSale] = useState<ManualSale | null>(null);
+  const [editSaleForm, setEditSaleForm] = useState({ revenue: "", sale_type: "sprint" as "sprint" | "assessoria", notes: "" });
+  const [savingEditSale, setSavingEditSale] = useState(false);
+  const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
+  const [editMeetingForm, setEditMeetingForm] = useState({ notes: "", attended: false });
+  const [savingEditMeeting, setSavingEditMeeting] = useState(false);
+  const [togglingAttendedId, setTogglingAttendedId] = useState<string | null>(null);
+
   // Leads for picker
   const [leadsList, setLeadsList] = useState<LeadOption[]>([]);
   const [leadsLoading, setLeadsLoading] = useState(false);
