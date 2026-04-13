@@ -1743,6 +1743,35 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // ─── Daily Reports CRUD ───
+    if (method === "GET" && path === "/daily-reports") {
+      const sdr = url.searchParams.get("sdr");
+      const month = url.searchParams.get("month"); // YYYY-MM
+      let query = supabase.from("daily_reports").select("*");
+      if (sdr) query = query.eq("sdr_name", sdr);
+      if (month) {
+        query = query.gte("report_date", `${month}-01`).lte("report_date", `${month}-31`);
+      }
+      const { data, error: qErr } = await query.order("report_date", { ascending: false });
+      if (qErr) return new Response(JSON.stringify({ error: qErr.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    if (method === "POST" && path === "/daily-reports") {
+      const body = await req.json();
+      const { data, error: iErr } = await supabase.from("daily_reports").upsert(body, { onConflict: "report_date,sdr_name" }).select().single();
+      if (iErr) return new Response(JSON.stringify({ error: iErr.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    if (method === "PUT" && pathParts.length === 2 && pathParts[0] === "daily-reports") {
+      const reportId = pathParts[1];
+      const body = await req.json();
+      const { data, error: uErr } = await supabase.from("daily_reports").update({ ...body, updated_at: new Date().toISOString() }).eq("id", reportId).select().single();
+      if (uErr) return new Response(JSON.stringify({ error: uErr.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     return new Response(
       JSON.stringify({ error: "Rota não encontrada" }),
       { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
