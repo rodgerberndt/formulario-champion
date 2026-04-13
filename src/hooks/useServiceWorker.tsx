@@ -65,12 +65,7 @@ export function useServiceWorker() {
           });
         });
 
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener("controllerchange", () => {
-          if (refreshing) return;
-          refreshing = true;
-          window.location.reload();
-        });
+        // Removed auto-reload on controllerchange to prevent infinite refresh loops
       } catch (error) {
         console.error("Service Worker registration failed:", error);
       }
