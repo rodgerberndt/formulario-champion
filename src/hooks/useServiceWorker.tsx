@@ -1,12 +1,46 @@
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 
+function isPreviewEnvironment() {
+  if (typeof window === "undefined") return false;
+
+  const hostname = window.location.hostname;
+  return (
+    import.meta.env.DEV ||
+    hostname.includes("lovableproject.com") ||
+    hostname.includes("lovable.app") ||
+    hostname.includes("localhost") ||
+    hostname.includes("127.0.0.1")
+  );
+}
+
+async function unregisterServiceWorkers() {
+  if (!("serviceWorker" in navigator)) return;
+
+  const registrations = await navigator.serviceWorker.getRegistrations();
+  await Promise.all(registrations.map((registration) => registration.unregister()));
+
+  if ("caches" in window) {
+    const cacheKeys = await caches.keys();
+    await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+  }
+}
+
 export function useServiceWorker() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
+
+    const previewMode = isPreviewEnvironment();
+
+    if (previewMode) {
+      unregisterServiceWorkers().catch((error) => {
+        console.warn("Service worker cleanup failed:", error);
+      });
+      return;
+    }
 
     const registerSW = async () => {
       try {
@@ -15,7 +49,6 @@ export function useServiceWorker() {
         });
         setRegistration(reg);
 
-        // Check for updates
         reg.addEventListener("updatefound", () => {
           const newWorker = reg.installing;
           if (!newWorker) return;
@@ -45,15 +78,12 @@ export function useServiceWorker() {
           });
         });
 
-        // Handle controller change
         let refreshing = false;
         navigator.serviceWorker.addEventListener("controllerchange", () => {
           if (refreshing) return;
           refreshing = true;
           window.location.reload();
         });
-
-        console.log("Service Worker registered successfully");
       } catch (error) {
         console.error("Service Worker registration failed:", error);
       }
