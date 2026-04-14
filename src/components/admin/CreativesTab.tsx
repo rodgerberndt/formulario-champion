@@ -1005,46 +1005,28 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-xs text-muted-foreground">Realizadas → Assessoria</p>
             </CardContent>
           </Card>
-          {/* 14. Vendas Geral */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Vendas Geral</p>
-              <p className="text-xl font-bold text-blue-400">{formatNumber(totals.sales)}</p>
-            </CardContent>
-          </Card>
-          {/* 14b. Vendas Sprint */}
+          {/* 14. Sprint (Vendas + Fat) */}
           <Card className="border-violet-500/30">
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Vendas Sprint</p>
-              <p className="text-xl font-bold text-violet-400">{formatNumber(totals.sales_sprint || 0)}</p>
+              <p className="text-xs text-muted-foreground uppercase">Sprint</p>
+              <p className="text-xl font-bold text-violet-400">{formatNumber(totals.sales_sprint || 0)} <span className="text-sm font-normal text-muted-foreground">vendas</span></p>
+              <p className="text-sm font-semibold text-violet-300">{formatCurrency(totals.revenue_sprint || 0)}</p>
             </CardContent>
           </Card>
-          {/* 14c. Vendas Assessoria */}
+          {/* 14b. Assessoria (Vendas + Fat) */}
           <Card className="border-teal-500/30">
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Vendas Assessoria</p>
-              <p className="text-xl font-bold text-teal-400">{formatNumber(totals.sales_assessoria || 0)}</p>
+              <p className="text-xs text-muted-foreground uppercase">Assessoria</p>
+              <p className="text-xl font-bold text-teal-400">{formatNumber(totals.sales_assessoria || 0)} <span className="text-sm font-normal text-muted-foreground">vendas</span></p>
+              <p className="text-sm font-semibold text-teal-300">{formatCurrency(totals.revenue_assessoria || 0)}</p>
             </CardContent>
           </Card>
-          {/* 15. Faturamento Geral */}
+          {/* 15. Total Vendas + Fat */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Fat. Geral</p>
-              <p className="text-xl font-bold text-emerald-400">{formatCurrency(totals.revenue)}</p>
-            </CardContent>
-          </Card>
-          {/* 15b. Faturamento Sprint */}
-          <Card className="border-violet-500/30">
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Fat. Sprint</p>
-              <p className="text-xl font-bold text-violet-400">{formatCurrency(totals.revenue_sprint || 0)}</p>
-            </CardContent>
-          </Card>
-          {/* 15c. Faturamento Assessoria */}
-          <Card className="border-teal-500/30">
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Fat. Assessoria</p>
-              <p className="text-xl font-bold text-teal-400">{formatCurrency(totals.revenue_assessoria || 0)}</p>
+              <p className="text-xs text-muted-foreground uppercase">Total Vendas</p>
+              <p className="text-xl font-bold text-emerald-400">{formatNumber(totals.sales)} <span className="text-sm font-normal text-muted-foreground">vendas</span></p>
+              <p className="text-sm font-semibold text-emerald-300">{formatCurrency(totals.revenue)}</p>
             </CardContent>
           </Card>
           {/* 16. CAC */}
