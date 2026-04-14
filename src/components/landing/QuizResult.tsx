@@ -107,6 +107,7 @@ const CAIO_SKIP_LINK = "https://wa.me/558183990148?text=Falaa%2C%20furei%20a%20f
 
 const SDR_CAIO_FATURAMENTO = [
   "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
+  "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
 ];
 
 function getSdrSkipLink(_estagio?: string, investimento?: string): string {
