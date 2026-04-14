@@ -473,7 +473,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     try {
       const lead = selectedSaleLead;
       const ck = lead?.utm_content ? normalizeCreativeKey(lead.utm_content) : "";
-      const today = new Date().toISOString().split("T")[0];
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
       await fetchAdminData("/manual-sales", {
         _method: "POST",
         sale_date: today,
