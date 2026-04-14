@@ -592,7 +592,7 @@ export default function DailyReportsTab() {
 
   /* ─── Form View ─── */
   return (
-    <div className="space-y-6 max-w-3xl mx-auto pb-8">
+    <div className="space-y-6 max-w-5xl mx-auto pb-8">
       {popupReport && (
         <DraggableReportPopup
           report={popupReport}
