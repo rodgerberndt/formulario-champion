@@ -1,0 +1,15 @@
+ALTER TABLE public.daily_reports
+  ADD COLUMN IF NOT EXISTS leads_trabalhados integer NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS respostas_recebidas integer NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS oportunidades_quentes integer NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS objecao_principal text,
+  ADD COLUMN IF NOT EXISTS melhor_abordagem text,
+  ADD COLUMN IF NOT EXISTS padrao_leads text,
+  ADD COLUMN IF NOT EXISTS gargalo_funil text,
+  ADD COLUMN IF NOT EXISTS causa_gargalo text,
+  ADD COLUMN IF NOT EXISTS energia text NOT NULL DEFAULT 'Normal',
+  ADD COLUMN IF NOT EXISTS execucao text NOT NULL DEFAULT 'Boa',
+  ADD COLUMN IF NOT EXISTS atrapalhou_performance text,
+  ADD COLUMN IF NOT EXISTS aprendizado text,
+  ADD COLUMN IF NOT EXISTS ajuste_amanha text,
+  ADD COLUMN IF NOT EXISTS precisa_ajuda text;
