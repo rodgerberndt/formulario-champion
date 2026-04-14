@@ -320,7 +320,7 @@ function DraggableReportPopup({
             <span className="font-bold">{report.oportunidades_quentes || 0}</span>
           </div>
           <div className="flex justify-between bg-muted/40 rounded-lg px-3 py-1.5 col-span-2">
-            <span className="text-muted-foreground">Pipeline</span>
+            <span className="text-muted-foreground">Sprint X1</span>
             <span className="font-bold text-primary">{formatCurrency(Number(report.valor_pipeline) || 0)}</span>
           </div>
         </div>
@@ -568,7 +568,7 @@ export default function DailyReportsTab() {
                             <span className="font-semibold">{r.reunioes_agendadas || 0}</span>
                           </div>
                           <div className="flex justify-between bg-muted/30 rounded-md px-2.5 py-1.5">
-                            <span className="text-muted-foreground">Pipeline</span>
+                            <span className="text-muted-foreground">Sprint X1</span>
                             <span className="font-semibold text-primary">{formatCurrency(Number(r.valor_pipeline) || 0)}</span>
                           </div>
                         </div>
