@@ -592,7 +592,7 @@ export default function DailyReportsTab() {
 
   /* ─── Form View ─── */
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-8">
+    <div className="space-y-6 pb-8">
       {popupReport && (
         <DraggableReportPopup
           report={popupReport}
@@ -694,12 +694,12 @@ export default function DailyReportsTab() {
                   placeholder="Ex: 2"
                 />
                 <NumField
-                  label="Pipeline gerado no dia"
-                  icon={DollarSign}
-                  value={report.valor_pipeline}
-                  onChange={(v) => updateField("valor_pipeline", v)}
-                  placeholder="Ex: 2000"
-                  isCurrency
+                   label="Sprint vendido no X1 (se houver)"
+                   icon={DollarSign}
+                   value={report.valor_pipeline}
+                   onChange={(v) => updateField("valor_pipeline", v)}
+                   placeholder="Ex: 2000"
+                   isCurrency
                 />
               </div>
             </CardContent>
