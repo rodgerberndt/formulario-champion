@@ -1177,6 +1177,50 @@ Deno.serve(async (req: Request) => {
       // Keys that should be merged into the unattributed/direct bucket
       const DIRECT_KEYS = new Set(["__sem_criativo__", "ad-name", "link-in-bio", "link_in_bio", "ad.name"]);
 
+      // Build a map of IP -> utm_content from lead_sessions for recovering null utm_content
+      const leadsWithNullUtm = allLeads.filter(l => !l.utm_content && l.id);
+      const leadIpMap = new Map<string, string>(); // lead_id -> utm_content from session
+
+      if (leadsWithNullUtm.length > 0) {
+        // Fetch sessions that completed and have utm_content, match by lead name/whatsapp
+        // We'll use a simpler approach: fetch lead_sessions with utm_content in the period
+        let sessOffset = 0;
+        let allSessions: any[] = [];
+        let sessHasMore = true;
+        while (sessHasMore) {
+          let sq = supabase.from("lead_sessions")
+            .select("ip_address, utm_content, lead_whatsapp, completed, created_at")
+            .eq("completed", true)
+            .not("utm_content", "is", null)
+            .range(sessOffset, sessOffset + PAGE_SIZE - 1);
+          if (from) sq = sq.gte("created_at", from);
+          if (toEnd) sq = sq.lte("created_at", toEnd);
+          const { data: sd } = await sq;
+          if (sd) allSessions = allSessions.concat(sd);
+          sessHasMore = (sd?.length || 0) === PAGE_SIZE;
+          sessOffset += PAGE_SIZE;
+        }
+
+        // Build IP -> utm_content map from sessions (most recent wins)
+        const ipToUtmContent = new Map<string, string>();
+        for (const sess of allSessions) {
+          if (sess.ip_address && sess.utm_content && sess.utm_content !== '{{ad.name}}') {
+            ipToUtmContent.set(sess.ip_address, sess.utm_content);
+          }
+        }
+
+        // Try to recover utm_content for leads with null via their IP
+        for (const lead of allLeads) {
+          if (!lead.utm_content && lead.ip_address) {
+            const recovered = ipToUtmContent.get(lead.ip_address);
+            if (recovered) {
+              lead.utm_content = recovered;
+              lead._recovered = true;
+            }
+          }
+        }
+      }
+
       // Process leads (filter by campaign_type if specified)
       for (const lead of allLeads) {
         // Campaign type filter
