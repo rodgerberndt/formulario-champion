@@ -1046,11 +1046,20 @@ Deno.serve(async (req: Request) => {
         offset += PAGE_SIZE;
       }
 
-      // Fetch ad_spend in period (date-only column)
-      let spendQuery = supabase.from("ad_spend").select("*");
-      if (fromDate) spendQuery = spendQuery.gte("date", fromDate);
-      if (toDate) spendQuery = spendQuery.lte("date", toDate);
-      const { data: spendData } = await spendQuery;
+      // Fetch ad_spend in period (date-only column) — paginated to avoid 1000-row limit
+      let spendData: any[] = [];
+      let spendOffset = 0;
+      let spendHasMore = true;
+      while (spendHasMore) {
+        let sq = supabase.from("ad_spend").select("*").range(spendOffset, spendOffset + PAGE_SIZE - 1);
+        if (fromDate) sq = sq.gte("date", fromDate);
+        if (toDate) sq = sq.lte("date", toDate);
+        const { data: sd, error: se } = await sq;
+        if (se) throw se;
+        if (sd) spendData = spendData.concat(sd);
+        spendHasMore = (sd?.length || 0) === PAGE_SIZE;
+        spendOffset += PAGE_SIZE;
+      }
 
       // Fetch manual_sales in period (date-only column)
       let salesQuery = supabase.from("manual_sales").select("*");
