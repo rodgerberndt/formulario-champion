@@ -456,6 +456,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     if (showMeetingsList) loadMeetings();
   }, [startISO, endISO]);
 
+  // Reload sales list when dates change and list is visible
+  useEffect(() => {
+    if (showSalesList) loadSales();
+  }, [startISO, endISO]);
+
   const selectedSaleLead = selectedLeadId ? leadsList.find(l => l.id === selectedLeadId) : null;
   const selectedMeetingLead = meetingSelectedLeadId ? leadsList.find(l => l.id === meetingSelectedLeadId) : null;
 
