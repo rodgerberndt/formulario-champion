@@ -1006,7 +1006,7 @@ Deno.serve(async (req: Request) => {
       function isMqlCampaign(campaignName: string | null): boolean {
         if (!campaignName) return false;
         const lower = campaignName.toLowerCase();
-        return lower.includes('obj: "mql"') || lower.includes('obj: \u201cmql\u201d') || lower.includes('"mql"');
+        return lower.includes('obj: "mql"') || lower.includes('obj: \u201cmql\u201d') || lower.includes('"mql"') || lower.includes('mql');
       }
 
       // Helper to normalize creative key
@@ -1036,7 +1036,7 @@ Deno.serve(async (req: Request) => {
       let offset = 0;
       let hasMore = true;
       while (hasMore) {
-        let q = supabase.from("leads").select("id, created_at, utm_content, utm_campaign, utm_source, estagio_negocio, investimento_faixa, sdr_override, tier").range(offset, offset + PAGE_SIZE - 1);
+        let q = supabase.from("leads").select("id, created_at, utm_content, utm_campaign, utm_source, estagio_negocio, investimento_faixa, sdr_override, tier, ip_address").range(offset, offset + PAGE_SIZE - 1);
         if (from) q = q.gte("created_at", from);
         if (toEnd) q = q.lte("created_at", toEnd);
         const { data, error } = await q;
@@ -1046,11 +1046,20 @@ Deno.serve(async (req: Request) => {
         offset += PAGE_SIZE;
       }
 
-      // Fetch ad_spend in period (date-only column)
-      let spendQuery = supabase.from("ad_spend").select("*");
-      if (fromDate) spendQuery = spendQuery.gte("date", fromDate);
-      if (toDate) spendQuery = spendQuery.lte("date", toDate);
-      const { data: spendData } = await spendQuery;
+      // Fetch ad_spend in period (date-only column) — paginated to avoid 1000-row limit
+      let spendData: any[] = [];
+      let spendOffset = 0;
+      let spendHasMore = true;
+      while (spendHasMore) {
+        let sq = supabase.from("ad_spend").select("*").range(spendOffset, spendOffset + PAGE_SIZE - 1);
+        if (fromDate) sq = sq.gte("date", fromDate);
+        if (toDate) sq = sq.lte("date", toDate);
+        const { data: sd, error: se } = await sq;
+        if (se) throw se;
+        if (sd) spendData = spendData.concat(sd);
+        spendHasMore = (sd?.length || 0) === PAGE_SIZE;
+        spendOffset += PAGE_SIZE;
+      }
 
       // Fetch manual_sales in period (date-only column)
       let salesQuery = supabase.from("manual_sales").select("*");
@@ -1167,6 +1176,50 @@ Deno.serve(async (req: Request) => {
       const UNATTRIBUTED_LABEL = "Direct / Link in Bio";
       // Keys that should be merged into the unattributed/direct bucket
       const DIRECT_KEYS = new Set(["__sem_criativo__", "ad-name", "link-in-bio", "link_in_bio", "ad.name"]);
+
+      // Build a map of IP -> utm_content from lead_sessions for recovering null utm_content
+      const leadsWithNullUtm = allLeads.filter(l => !l.utm_content && l.id);
+      const leadIpMap = new Map<string, string>(); // lead_id -> utm_content from session
+
+      if (leadsWithNullUtm.length > 0) {
+        // Fetch sessions that completed and have utm_content, match by lead name/whatsapp
+        // We'll use a simpler approach: fetch lead_sessions with utm_content in the period
+        let sessOffset = 0;
+        let allSessions: any[] = [];
+        let sessHasMore = true;
+        while (sessHasMore) {
+          let sq = supabase.from("lead_sessions")
+            .select("ip_address, utm_content, lead_whatsapp, completed, created_at")
+            .eq("completed", true)
+            .not("utm_content", "is", null)
+            .range(sessOffset, sessOffset + PAGE_SIZE - 1);
+          if (from) sq = sq.gte("created_at", from);
+          if (toEnd) sq = sq.lte("created_at", toEnd);
+          const { data: sd } = await sq;
+          if (sd) allSessions = allSessions.concat(sd);
+          sessHasMore = (sd?.length || 0) === PAGE_SIZE;
+          sessOffset += PAGE_SIZE;
+        }
+
+        // Build IP -> utm_content map from sessions (most recent wins)
+        const ipToUtmContent = new Map<string, string>();
+        for (const sess of allSessions) {
+          if (sess.ip_address && sess.utm_content && sess.utm_content !== '{{ad.name}}') {
+            ipToUtmContent.set(sess.ip_address, sess.utm_content);
+          }
+        }
+
+        // Try to recover utm_content for leads with null via their IP
+        for (const lead of allLeads) {
+          if (!lead.utm_content && lead.ip_address) {
+            const recovered = ipToUtmContent.get(lead.ip_address);
+            if (recovered) {
+              lead.utm_content = recovered;
+              lead._recovered = true;
+            }
+          }
+        }
+      }
 
       // Process leads (filter by campaign_type if specified)
       for (const lead of allLeads) {
@@ -1390,6 +1443,7 @@ Deno.serve(async (req: Request) => {
             spend_total: spendTotal,
             sales_without_creative: salesWithoutCreative,
             leads_without_utms: leadsWithoutUtms,
+            leads_recovered: allLeads.filter((l: any) => l._recovered).length,
           },
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
