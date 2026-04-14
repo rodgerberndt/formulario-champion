@@ -1443,6 +1443,7 @@ Deno.serve(async (req: Request) => {
             spend_total: spendTotal,
             sales_without_creative: salesWithoutCreative,
             leads_without_utms: leadsWithoutUtms,
+            leads_recovered: allLeads.filter((l: any) => l._recovered).length,
           },
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
