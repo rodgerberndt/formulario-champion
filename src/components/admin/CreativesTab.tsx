@@ -1363,7 +1363,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               size="sm"
               onClick={() => {
                 setShowSalesList(!showSalesList);
-                if (!showSalesList && salesList.length === 0) loadSales();
+                if (!showSalesList) loadSales();
               }}
             >
               {showSalesList ? <ChevronUp className="w-4 h-4 mr-1" /> : <ChevronDown className="w-4 h-4 mr-1" />}
