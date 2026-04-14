@@ -451,6 +451,16 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     loadData();
   }, [loadData]);
 
+  // Reload meetings list when dates change and list is visible
+  useEffect(() => {
+    if (showMeetingsList) loadMeetings();
+  }, [startISO, endISO]);
+
+  // Reload sales list when dates change and list is visible
+  useEffect(() => {
+    if (showSalesList) loadSales();
+  }, [startISO, endISO]);
+
   const selectedSaleLead = selectedLeadId ? leadsList.find(l => l.id === selectedLeadId) : null;
   const selectedMeetingLead = meetingSelectedLeadId ? leadsList.find(l => l.id === meetingSelectedLeadId) : null;
 
@@ -1358,7 +1368,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               size="sm"
               onClick={() => {
                 setShowSalesList(!showSalesList);
-                if (!showSalesList && salesList.length === 0) loadSales();
+                if (!showSalesList) loadSales();
               }}
             >
               {showSalesList ? <ChevronUp className="w-4 h-4 mr-1" /> : <ChevronDown className="w-4 h-4 mr-1" />}
@@ -1731,7 +1741,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               size="sm"
               onClick={() => {
                 setShowMeetingsList(!showMeetingsList);
-                if (!showMeetingsList && meetingsList.length === 0) loadMeetings();
+                if (!showMeetingsList) loadMeetings();
               }}
             >
               {showMeetingsList ? <ChevronUp className="w-4 h-4 mr-1" /> : <ChevronDown className="w-4 h-4 mr-1" />}
