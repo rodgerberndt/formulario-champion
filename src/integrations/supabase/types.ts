@@ -70,14 +70,28 @@ export type Database = {
       }
       daily_reports: {
         Row: {
+          ajuste_amanha: string | null
+          aprendizado: string | null
+          atrapalhou_performance: string | null
+          causa_gargalo: string | null
           created_at: string
+          energia: string
+          execucao: string
+          gargalo_funil: string | null
           id: string
+          leads_trabalhados: number
           ligacoes_realizadas: number
+          melhor_abordagem: string | null
           mood: string
           mqls_chamados: number
           mqls_responderam: number
           notas: string | null
+          objecao_principal: string | null
+          oportunidades_quentes: number
+          padrao_leads: string | null
+          precisa_ajuda: string | null
           report_date: string
+          respostas_recebidas: number
           reunioes_agendadas: number
           sdr_name: string
           updated_at: string
@@ -86,14 +100,28 @@ export type Database = {
           vendas_sprint: number
         }
         Insert: {
+          ajuste_amanha?: string | null
+          aprendizado?: string | null
+          atrapalhou_performance?: string | null
+          causa_gargalo?: string | null
           created_at?: string
+          energia?: string
+          execucao?: string
+          gargalo_funil?: string | null
           id?: string
+          leads_trabalhados?: number
           ligacoes_realizadas?: number
+          melhor_abordagem?: string | null
           mood?: string
           mqls_chamados?: number
           mqls_responderam?: number
           notas?: string | null
+          objecao_principal?: string | null
+          oportunidades_quentes?: number
+          padrao_leads?: string | null
+          precisa_ajuda?: string | null
           report_date: string
+          respostas_recebidas?: number
           reunioes_agendadas?: number
           sdr_name: string
           updated_at?: string
@@ -102,14 +130,28 @@ export type Database = {
           vendas_sprint?: number
         }
         Update: {
+          ajuste_amanha?: string | null
+          aprendizado?: string | null
+          atrapalhou_performance?: string | null
+          causa_gargalo?: string | null
           created_at?: string
+          energia?: string
+          execucao?: string
+          gargalo_funil?: string | null
           id?: string
+          leads_trabalhados?: number
           ligacoes_realizadas?: number
+          melhor_abordagem?: string | null
           mood?: string
           mqls_chamados?: number
           mqls_responderam?: number
           notas?: string | null
+          objecao_principal?: string | null
+          oportunidades_quentes?: number
+          padrao_leads?: string | null
+          precisa_ajuda?: string | null
           report_date?: string
+          respostas_recebidas?: number
           reunioes_agendadas?: number
           sdr_name?: string
           updated_at?: string
