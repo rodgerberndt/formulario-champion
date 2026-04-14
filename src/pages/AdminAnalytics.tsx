@@ -277,8 +277,7 @@ export default function AdminAnalytics() {
   const [password, setPassword] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
 
-  // PWA update notification (admin only)
-  useAdminUpdateNotification();
+
 
   // Lead notifications (realtime)
   const { notificationsEnabled, toggleNotifications, testNotifications } = useLeadNotifications(
