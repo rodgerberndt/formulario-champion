@@ -4,7 +4,8 @@ import { QuizResultDara } from "./QuizResultDara";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-const WHATSAPP_NUMBER = "5548996378499";
+const RODGER_WHATSAPP_NUMBER = "5548996378499";
+const CAIO_WHATSAPP_NUMBER = "5581983990148";
 const SUPPORT_WHATSAPP_NUMBER = "5548996560104";
 const SUBMISSION_TS_KEY = "champion_submit_ts";
 interface QuizResultProps {
@@ -102,10 +103,16 @@ const SDR_MIN_FATURAMENTO = [
 
 const DARA_SKIP_LINK = "https://wa.me/554896560104?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
 const RODGER_SKIP_LINK = "https://wa.me/554896378499?text=Falaa%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
+const CAIO_SKIP_LINK = "https://wa.me/558183990148?text=Falaa%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
+
+const SDR_CAIO_FATURAMENTO = [
+  "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
+];
 
 function getSdrSkipLink(_estagio?: string, investimento?: string): string {
-  const faturaEnough = investimento ? SDR_MIN_FATURAMENTO.includes(investimento) : false;
-  return faturaEnough ? RODGER_SKIP_LINK : DARA_SKIP_LINK;
+  if (!investimento || !SDR_MIN_FATURAMENTO.includes(investimento)) return DARA_SKIP_LINK;
+  if (SDR_CAIO_FATURAMENTO.includes(investimento)) return CAIO_SKIP_LINK;
+  return RODGER_SKIP_LINK;
 }
 
 export function QuizResult({
@@ -127,7 +134,8 @@ export function QuizResult({
     return <QuizResultDara nome={nome} />;
   }
 
-  const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Acabei de concluir meu cadastro. ✅")}`;
+  const sdrNumber = SDR_CAIO_FATURAMENTO.includes(investimento_faixa || "") ? CAIO_WHATSAPP_NUMBER : RODGER_WHATSAPP_NUMBER;
+  const waLink = `https://wa.me/${sdrNumber}?text=${encodeURIComponent("Oi! Acabei de concluir meu cadastro. ✅")}`;
   const skipLink = getSdrSkipLink(estagio_negocio, investimento_faixa);
   const supportLink = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Já se passaram 6 horas e não recebi contato.")}`;
   return <div className="max-w-lg mx-auto animate-fade-in space-y-6">
