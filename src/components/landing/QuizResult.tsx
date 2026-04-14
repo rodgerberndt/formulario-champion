@@ -134,7 +134,8 @@ export function QuizResult({
     return <QuizResultDara nome={nome} />;
   }
 
-  const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Acabei de concluir meu cadastro. ✅")}`;
+  const sdrNumber = SDR_CAIO_FATURAMENTO.includes(investimento_faixa || "") ? CAIO_WHATSAPP_NUMBER : RODGER_WHATSAPP_NUMBER;
+  const waLink = `https://wa.me/${sdrNumber}?text=${encodeURIComponent("Oi! Acabei de concluir meu cadastro. ✅")}`;
   const skipLink = getSdrSkipLink(estagio_negocio, investimento_faixa);
   const supportLink = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Já se passaram 6 horas e não recebi contato.")}`;
   return <div className="max-w-lg mx-auto animate-fade-in space-y-6">
