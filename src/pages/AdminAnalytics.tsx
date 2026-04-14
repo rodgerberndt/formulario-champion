@@ -46,6 +46,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { PwaInstallButton } from "@/components/PwaInstallButton";
 import { useLeadNotifications } from "@/hooks/useLeadNotifications";
+import { useAdminUpdateNotification } from "@/hooks/useAdminUpdateNotification";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -275,6 +276,9 @@ export default function AdminAnalytics() {
   const [isLoading, setIsLoading] = useState(true);
   const [password, setPassword] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+
+  // PWA update notification (admin only)
+  useAdminUpdateNotification();
 
   // Lead notifications (realtime)
   const { notificationsEnabled, toggleNotifications, testNotifications } = useLeadNotifications(
