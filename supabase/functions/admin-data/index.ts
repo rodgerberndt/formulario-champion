@@ -1006,7 +1006,7 @@ Deno.serve(async (req: Request) => {
       function isMqlCampaign(campaignName: string | null): boolean {
         if (!campaignName) return false;
         const lower = campaignName.toLowerCase();
-        return lower.includes('obj: "mql"') || lower.includes('obj: \u201cmql\u201d') || lower.includes('"mql"');
+        return lower.includes('obj: "mql"') || lower.includes('obj: \u201cmql\u201d') || lower.includes('"mql"') || lower.includes('mql');
       }
 
       // Helper to normalize creative key
