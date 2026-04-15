@@ -2852,6 +2852,68 @@ export default function AdminAnalytics() {
 
           </Tabs>
 
+          {/* Ticket Médio + Win Rate Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 mb-8">
+            <Card className="border-amber-500/20">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <DollarSign className="w-8 h-8 text-amber-500" />
+                  <div>
+                    <p className="text-2xl font-bold">
+                      {ticketMedio.sprint.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Ticket Médio Sprint</p>
+                    <p className="text-[10px] text-muted-foreground/60">({ticketMedio.sprintCount} vendas)</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-purple-500/20">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <DollarSign className="w-8 h-8 text-purple-500" />
+                  <div>
+                    <p className="text-2xl font-bold">
+                      {ticketMedio.assessoria.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Ticket Médio Assessoria</p>
+                    <p className="text-[10px] text-muted-foreground/60">({ticketMedio.assessoriaCount} vendas)</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-primary/20">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <DollarSign className="w-8 h-8 text-primary" />
+                  <div>
+                    <p className="text-2xl font-bold">
+                      {ticketMedio.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Ticket Médio Geral</p>
+                    <p className="text-[10px] text-muted-foreground/60">({ticketMedio.totalCount} vendas)</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-green-500/20">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <TrendingUp className="w-8 h-8 text-green-500" />
+                  <div>
+                    <p className="text-2xl font-bold">
+                      {winRate.rate.toFixed(1)}%
+                    </p>
+                    <p className="text-xs text-muted-foreground">Win Rate</p>
+                    <p className="text-[10px] text-muted-foreground/60">
+                      ({winRate.totalSales} vendas / {winRate.qualifiedLeads} leads ≥5k)
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Completed Leads Modal */}
           <Dialog open={showCompletedModal} onOpenChange={setShowCompletedModal}>
             <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
