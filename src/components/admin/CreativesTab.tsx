@@ -1043,6 +1043,48 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-lg font-bold">{totals.roas !== null ? `${totals.roas.toFixed(2)}x` : "—"}</p>
             </CardContent>
           </Card>
+
+          {/* Ticket Médio + Win Rate */}
+          {(() => {
+            const avgSprint = totals.sales_sprint > 0 ? totals.revenue_sprint / totals.sales_sprint : 0;
+            const avgAssessoria = totals.sales_assessoria > 0 ? totals.revenue_assessoria / totals.sales_assessoria : 0;
+            const avgTotal = totals.sales > 0 ? totals.revenue / totals.sales : 0;
+            // Win rate: leads >= 5k (MQL) that converted to sales
+            const qualifiedLeads = totals.mql;
+            const winRateVal = qualifiedLeads > 0 ? (totals.sales / qualifiedLeads) * 100 : 0;
+            return (
+              <>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground uppercase">Ticket Médio Sprint</p>
+                    <p className="text-lg font-bold text-amber-400">{avgSprint > 0 ? formatCurrency(avgSprint) : "—"}</p>
+                    <p className="text-[10px] text-muted-foreground">({totals.sales_sprint} vendas)</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground uppercase">Ticket Médio Assessoria</p>
+                    <p className="text-lg font-bold text-purple-400">{avgAssessoria > 0 ? formatCurrency(avgAssessoria) : "—"}</p>
+                    <p className="text-[10px] text-muted-foreground">({totals.sales_assessoria} vendas)</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground uppercase">Ticket Médio Geral</p>
+                    <p className="text-lg font-bold">{avgTotal > 0 ? formatCurrency(avgTotal) : "—"}</p>
+                    <p className="text-[10px] text-muted-foreground">({totals.sales} vendas)</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground uppercase">Win Rate</p>
+                    <p className="text-lg font-bold text-green-400">{winRateVal > 0 ? `${winRateVal.toFixed(1)}%` : "—"}</p>
+                    <p className="text-[10px] text-muted-foreground">({totals.sales} vendas / {qualifiedLeads} leads ≥5k)</p>
+                  </CardContent>
+                </Card>
+              </>
+            );
+          })()}
         </div>
         );
       })()}
