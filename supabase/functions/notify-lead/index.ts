@@ -29,13 +29,10 @@ const WAHA_API_URL = Deno.env.get('WAHA_API_URL');
 const WAHA_API_KEY = Deno.env.get('WAHA_API_KEY');
 const WAHA_PHONE_NUMBER_ID = Deno.env.get('WAHA_PHONE_NUMBER_ID') || 'default';
 
-// SDR routing: Medium+Large (5k-100k) → Caio, Enterprise+ (100k+) → Rodger, rest → Dara
+// SDR routing: All >= 5k → Caio, rest → Dara (Rodger removido)
 const SDR_CAIO_FATURAMENTO = [
   "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
   "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
-];
-
-const SDR_RODGER_FATURAMENTO = [
   "De R$ 100 mil a R$ 150 mil",
   "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
   "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
@@ -46,9 +43,6 @@ const SDR_RODGER_FATURAMENTO = [
 function getSdrForLead(investimentoFaixa?: string | null): { name: string; phone: string } {
   if (investimentoFaixa && SDR_CAIO_FATURAMENTO.includes(investimentoFaixa)) {
     return { name: "Caio", phone: CAIO_WHATSAPP_E164 || "" };
-  }
-  if (investimentoFaixa && SDR_RODGER_FATURAMENTO.includes(investimentoFaixa)) {
-    return { name: "Rodger", phone: RODGER_WHATSAPP_E164 || "" };
   }
   return { name: "Dara", phone: DARA_WHATSAPP_E164 || "" };
 }
@@ -446,7 +440,7 @@ Deno.serve(async (req: Request) => {
       console.error('WhatsApp send failed:', msg);
     }
 
-    // 3. Send auto-message to MQL lead via WAHA (only if SDR is Rodger = MQL)
+    // 3. Send auto-message to MQL lead via WAHA (MQL = faturamento >= 10k, now handled by Caio)
     let wahaSuccess = false;
     const isPixelMqlEligible = [
       'De R$ 10 mil a R$ 20 mil',
@@ -467,7 +461,7 @@ Deno.serve(async (req: Request) => {
       'Acima de R$ 10 milhões',
     ].includes(leadInvestimentoFaixa || '');
 
-    if (sdr.name === 'Rodger' && isPixelMqlEligible && session.lead_whatsapp && session.lead_name) {
+    if (sdr.name === 'Caio' && isPixelMqlEligible && session.lead_whatsapp && session.lead_name) {
       try {
         const wahaResult = await withRetry(() =>
           sendWahaAutoMessage(session.lead_whatsapp, session.lead_name)
