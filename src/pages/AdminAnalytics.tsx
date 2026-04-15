@@ -485,6 +485,7 @@ export default function AdminAnalytics() {
       loadSessions();
       loadLeads();
       loadCampaignMetrics();
+      loadSalesForTicket();
     }
   }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, startISO, endISO, sessionsPage]);
 
