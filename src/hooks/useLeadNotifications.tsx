@@ -412,5 +412,6 @@ export function useLeadNotifications(
     permissionState,
     toggleNotifications,
     testNotifications,
+    sendWebPush,
   };
 }
