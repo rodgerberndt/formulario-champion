@@ -41,6 +41,7 @@ import {
   Tablet,
   Clock,
   Globe,
+  DollarSign,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
