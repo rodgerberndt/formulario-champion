@@ -1789,7 +1789,7 @@ Deno.serve(async (req: Request) => {
 
     // ──── POST /capi-retroactive-mqls ────
     if (path === "/capi-retroactive-mqls" && (req.method === "POST" || url.searchParams.get("_method") === "POST")) {
-      const SDR_RODGER_FAIXAS_RETRO = [
+      const MQL_FAIXAS_RETRO = [
         "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
         "De R$ 50 mil a R$ 100 mil", "Mais de R$ 100 mil",
         "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k",
@@ -1803,7 +1803,7 @@ Deno.serve(async (req: Request) => {
       if (leadsErr) throw leadsErr;
 
       const mqls = (allLeads || []).filter(l =>
-        l.sdr_override === "Rodger" || SDR_RODGER_FAIXAS_RETRO.includes(l.investimento_faixa || "")
+        l.sdr_override === "Caio" || l.sdr_override === "Rodger" || MQL_FAIXAS_RETRO.includes(l.investimento_faixa || "")
       );
 
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
