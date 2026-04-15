@@ -1628,6 +1628,54 @@ export default function AdminAnalytics() {
             </div>
           )}
 
+          {/* Ticket Médio Cards */}
+          {salesForTicket.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              <Card className="border-amber-500/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="w-8 h-8 text-amber-500" />
+                    <div>
+                      <p className="text-2xl font-bold">
+                        {ticketMedio.sprint.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Ticket Médio Sprint</p>
+                      <p className="text-[10px] text-muted-foreground/60">({ticketMedio.sprintCount} vendas)</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-purple-500/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="w-8 h-8 text-purple-500" />
+                    <div>
+                      <p className="text-2xl font-bold">
+                        {ticketMedio.assessoria.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Ticket Médio Assessoria</p>
+                      <p className="text-[10px] text-muted-foreground/60">({ticketMedio.assessoriaCount} vendas)</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-primary/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="w-8 h-8 text-primary" />
+                    <div>
+                      <p className="text-2xl font-bold">
+                        {ticketMedio.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Ticket Médio Geral</p>
+                      <p className="text-[10px] text-muted-foreground/60">({ticketMedio.totalCount} vendas)</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
           <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
             <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
               <TabsList className="w-max md:w-auto h-12 md:h-16 p-1.5 md:p-2 bg-card border-2 border-primary/30 rounded-xl md:rounded-2xl gap-1 md:gap-2 shadow-lg shadow-primary/10">
