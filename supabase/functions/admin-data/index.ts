@@ -193,7 +193,7 @@ Deno.serve(async (req: Request) => {
         }
       }
 
-      // Fire Meta CAPI MQL event if sdr_override just changed to "Rodger"
+      // Fire Meta CAPI MQL event if sdr_override just changed to MQL-eligible "Caio"
       if (isSettingMQL && !wasMQL) {
         try {
           const capiUrl = `${supabaseUrl}/functions/v1/meta-capi`;
