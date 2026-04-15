@@ -884,214 +884,138 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         </Card>
       )}
 
-      {/* Summary Cards - Funnel Order */}
+      {/* Summary Cards - Grouped Blocks */}
       {totals && (() => {
         const scheduleRate = totals.mql > 0 ? (totals.meetings / totals.mql) * 100 : null;
         const callConversion = totals.meetings_attended > 0 ? ((totals.sales_assessoria || 0) / totals.meetings_attended) * 100 : null;
+        const avgSprint = totals.sales_sprint > 0 ? totals.revenue_sprint / totals.sales_sprint : 0;
+        const avgAssessoria = totals.sales_assessoria > 0 ? totals.revenue_assessoria / totals.sales_assessoria : 0;
+        const avgTotal = totals.sales > 0 ? totals.revenue / totals.sales : 0;
+        const qualifiedLeads = totals.mql;
+        const winRateVal = qualifiedLeads > 0 ? (totals.sales / qualifiedLeads) * 100 : 0;
+
+        const MetricItem = ({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) => (
+          <div>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</p>
+            <p className={`text-lg font-bold ${color || ""}`}>{value}</p>
+            {sub && <p className="text-[10px] text-muted-foreground">{sub}</p>}
+          </div>
+        );
+
         return (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {/* 1. Gastos */}
+        <div className="space-y-4">
+          {/* Row 1: Tráfego + MQLs */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Tráfego */}
+            <Card>
+              <CardContent className="pt-4">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Tráfego</p>
+                <div className="grid grid-cols-3 gap-4">
+                  <MetricItem label="Total Spend" value={formatCurrency(totals.spend) || "—"} />
+                  <MetricItem label="Total Leads" value={formatNumber(totals.leads)} />
+                  <MetricItem label="CPL" value={formatCurrency(totals.cpl) || "—"} />
+                </div>
+              </CardContent>
+            </Card>
+            {/* MQLs */}
+            <Card>
+              <CardContent className="pt-4">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">MQLs</p>
+                <div className="grid grid-cols-4 gap-4">
+                  <MetricItem label="% MQL" value={totals.leads > 0 ? `${((totals.mql / totals.leads) * 100).toFixed(1)}%` : "—"} color="text-green-300" sub="Leads → MQL" />
+                  <MetricItem label="Total MQL" value={formatNumber(totals.mql)} color="text-green-400" />
+                  <MetricItem label="CPMQL" value={formatCurrency(totals.cpmql) || "—"} />
+                  <MetricItem label="CPL ≥5k" value={qualifiedLeads > 0 ? formatCurrency(totals.spend / qualifiedLeads) || "—" : "—"} color="text-cyan-400" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Row 2: Tiers */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total Spend</p>
-              <p className="text-xl font-bold">{formatCurrency(totals.spend)}</p>
-            </CardContent>
-          </Card>
-          {/* 2. Leads */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total Leads</p>
-              <p className="text-xl font-bold">{formatNumber(totals.leads)}</p>
-            </CardContent>
-          </Card>
-          {/* 3. CPL */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">CPL</p>
-              <p className="text-lg font-bold">{formatCurrency(totals.cpl)}</p>
-            </CardContent>
-          </Card>
-          {/* 4. % MQL */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">% MQL</p>
-              <p className="text-xl font-bold text-green-300">{totals.leads > 0 ? `${((totals.mql / totals.leads) * 100).toFixed(1)}%` : "—"}</p>
-              <p className="text-xs text-muted-foreground">Leads → MQL</p>
-            </CardContent>
-          </Card>
-          {/* 5. MQL */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total MQL</p>
-              <p className="text-xl font-bold text-green-400">{formatNumber(totals.mql)}</p>
-            </CardContent>
-          </Card>
-          {/* 6. CPMQL */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">CPMQL</p>
-              <p className="text-lg font-bold">{formatCurrency(totals.cpmql)}</p>
-            </CardContent>
-          </Card>
-          {/* 7. Small */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Small</p>
-              <p className="text-xl font-bold">{formatNumber(totals.tier_small)}</p>
-              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_small)}</p>
-            </CardContent>
-          </Card>
-          {/* 8. Medium */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Medium</p>
-              <p className="text-xl font-bold text-blue-400">{formatNumber(totals.tier_medium)}</p>
-              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_medium)}</p>
-            </CardContent>
-          </Card>
-          {/* 8. Large */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Large</p>
-              <p className="text-xl font-bold text-amber-400">{formatNumber(totals.tier_large)}</p>
-              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_large)}</p>
-            </CardContent>
-          </Card>
-          {/* 9. Enterprise */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Enterprise</p>
-              <p className="text-xl font-bold text-purple-400">{formatNumber(totals.tier_enterprise)}</p>
-              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_enterprise)}</p>
-            </CardContent>
-          </Card>
-          {/* 10. Enterprise+ */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Enterprise+</p>
-              <p className="text-xl font-bold text-pink-400">{formatNumber(totals.tier_enterprise_plus)}</p>
-              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_tier_enterprise_plus)}</p>
-            </CardContent>
-          </Card>
-          {/* 11. Taxa de Agendamento (MQL → Reuniões) */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Taxa Agendamento</p>
-              <p className="text-xl font-bold text-yellow-400">{scheduleRate !== null ? `${scheduleRate.toFixed(1)}%` : "—"}</p>
-              <p className="text-xs text-muted-foreground">MQL → Reuniões</p>
-            </CardContent>
-          </Card>
-          {/* 12. Reuniões Agendadas */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Reuniões Agendadas</p>
-              <p className="text-xl font-bold text-orange-400">{formatNumber(totals.meetings)}</p>
-              <p className="text-xs text-muted-foreground">{formatCurrency(totals.cp_meeting)}</p>
-            </CardContent>
-          </Card>
-          {/* 12b. Reuniões Realizadas */}
-          <Card className="border-emerald-500/30">
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Reuniões Realizadas</p>
-              <p className="text-xl font-bold text-emerald-400">{formatNumber(totals.meetings_attended || 0)}</p>
-              <p className="text-xs text-muted-foreground">{totals.meetings > 0 ? `${((totals.meetings_attended || 0) / totals.meetings * 100).toFixed(0)}% show rate` : "—"}</p>
-            </CardContent>
-          </Card>
-          {/* 13. Conversão Call (Reuniões → Vendas) */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Conversão Call</p>
-              <p className="text-xl font-bold text-cyan-400">{callConversion !== null ? `${callConversion.toFixed(1)}%` : "—"}</p>
-              <p className="text-xs text-muted-foreground">Realizadas → Assessoria</p>
-            </CardContent>
-          </Card>
-          {/* 14. Sprint (Vendas + Fat) */}
-          <Card className="border-violet-500/30">
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Sprint</p>
-              <p className="text-xl font-bold text-violet-400">{formatNumber(totals.sales_sprint || 0)} <span className="text-sm font-normal text-muted-foreground">vendas</span></p>
-              <p className="text-sm font-semibold text-violet-300">{formatCurrency(totals.revenue_sprint || 0)}</p>
-            </CardContent>
-          </Card>
-          {/* 14b. Assessoria (Vendas + Fat) */}
-          <Card className="border-teal-500/30">
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Assessoria</p>
-              <p className="text-xl font-bold text-teal-400">{formatNumber(totals.sales_assessoria || 0)} <span className="text-sm font-normal text-muted-foreground">vendas</span></p>
-              <p className="text-sm font-semibold text-teal-300">{formatCurrency(totals.revenue_assessoria || 0)}</p>
-            </CardContent>
-          </Card>
-          {/* 15. Total Vendas + Fat */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">Total Vendas</p>
-              <p className="text-xl font-bold text-emerald-400">{formatNumber(totals.sales)} <span className="text-sm font-normal text-muted-foreground">vendas</span></p>
-              <p className="text-sm font-semibold text-emerald-300">{formatCurrency(totals.revenue)}</p>
-            </CardContent>
-          </Card>
-          {/* 16. CAC */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">CAC</p>
-              <p className="text-lg font-bold">{formatCurrency(totals.cac)}</p>
-            </CardContent>
-          </Card>
-          {/* 17. ROAS */}
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground uppercase">ROAS</p>
-              <p className="text-lg font-bold">{totals.roas !== null ? `${totals.roas.toFixed(2)}x` : "—"}</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Tiers</p>
+              <div className="grid grid-cols-5 gap-4">
+                <MetricItem label="Small" value={formatNumber(totals.tier_small)} sub={formatCurrency(totals.cp_tier_small) || undefined} />
+                <MetricItem label="Medium" value={formatNumber(totals.tier_medium)} color="text-blue-400" sub={formatCurrency(totals.cp_tier_medium) || undefined} />
+                <MetricItem label="Large" value={formatNumber(totals.tier_large)} color="text-amber-400" sub={formatCurrency(totals.cp_tier_large) || undefined} />
+                <MetricItem label="Enterprise" value={formatNumber(totals.tier_enterprise)} color="text-purple-400" sub={formatCurrency(totals.cp_tier_enterprise) || undefined} />
+                <MetricItem label="Enterprise+" value={formatNumber(totals.tier_enterprise_plus)} color="text-pink-400" sub={formatCurrency(totals.cp_tier_enterprise_plus) || undefined} />
+              </div>
             </CardContent>
           </Card>
 
-          {/* Ticket Médio + Win Rate */}
-          {(() => {
-            const avgSprint = totals.sales_sprint > 0 ? totals.revenue_sprint / totals.sales_sprint : 0;
-            const avgAssessoria = totals.sales_assessoria > 0 ? totals.revenue_assessoria / totals.sales_assessoria : 0;
-            const avgTotal = totals.sales > 0 ? totals.revenue / totals.sales : 0;
-            // Win rate: leads >= 5k (MQL) that converted to sales
-            const qualifiedLeads = totals.mql;
-            const winRateVal = qualifiedLeads > 0 ? (totals.sales / qualifiedLeads) * 100 : 0;
-            return (
-              <>
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-xs text-muted-foreground uppercase">Ticket Médio Sprint</p>
-                    <p className="text-lg font-bold text-amber-400">{avgSprint > 0 ? formatCurrency(avgSprint) : "—"}</p>
-                    <p className="text-[10px] text-muted-foreground">({totals.sales_sprint} vendas)</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-xs text-muted-foreground uppercase">Ticket Médio Assessoria</p>
-                    <p className="text-lg font-bold text-purple-400">{avgAssessoria > 0 ? formatCurrency(avgAssessoria) : "—"}</p>
-                    <p className="text-[10px] text-muted-foreground">({totals.sales_assessoria} vendas)</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-xs text-muted-foreground uppercase">Ticket Médio Geral</p>
-                    <p className="text-lg font-bold">{avgTotal > 0 ? formatCurrency(avgTotal) : "—"}</p>
-                    <p className="text-[10px] text-muted-foreground">({totals.sales} vendas)</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-xs text-muted-foreground uppercase">Win Rate</p>
-                    <p className="text-lg font-bold text-green-400">{winRateVal > 0 ? `${winRateVal.toFixed(1)}%` : "—"}</p>
-                    <p className="text-[10px] text-muted-foreground">({totals.sales} vendas / {qualifiedLeads} leads ≥5k)</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-xs text-muted-foreground uppercase">CPL ≥5k</p>
-                    <p className="text-lg font-bold text-cyan-400">{qualifiedLeads > 0 ? formatCurrency(totals.spend / qualifiedLeads) : "—"}</p>
-                    <p className="text-[10px] text-muted-foreground">({formatCurrency(totals.spend)} / {qualifiedLeads} leads)</p>
-                  </CardContent>
-                </Card>
-              </>
-            );
-          })()}
+          {/* Row 3: Reuniões */}
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Reuniões</p>
+              <div className="grid grid-cols-4 gap-4">
+                <MetricItem label="Taxa Agendamento" value={scheduleRate !== null ? `${scheduleRate.toFixed(1)}%` : "—"} color="text-yellow-400" sub="MQL → Reuniões" />
+                <MetricItem label="Agendadas" value={formatNumber(totals.meetings)} color="text-orange-400" sub={formatCurrency(totals.cp_meeting) || undefined} />
+                <MetricItem label="Realizadas" value={formatNumber(totals.meetings_attended || 0)} color="text-emerald-400" sub={totals.meetings > 0 ? `${((totals.meetings_attended || 0) / totals.meetings * 100).toFixed(0)}% show rate` : "—"} />
+                <MetricItem label="Conversão Call" value={callConversion !== null ? `${callConversion.toFixed(1)}%` : "—"} color="text-cyan-400" sub="Realizadas → Assessoria" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Row 4: Vendas */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Sprint */}
+            <Card className="border-violet-500/20">
+              <CardContent className="pt-4">
+                <p className="text-xs font-semibold text-violet-400 uppercase tracking-wider mb-3 border-b border-violet-500/20 pb-2">Sprint</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <MetricItem label="Vendas" value={`${formatNumber(totals.sales_sprint || 0)}`} color="text-violet-400" sub={formatCurrency(totals.revenue_sprint || 0) || undefined} />
+                  <MetricItem label="Ticket Médio" value={avgSprint > 0 ? formatCurrency(avgSprint) || "—" : "—"} color="text-violet-300" />
+                </div>
+              </CardContent>
+            </Card>
+            {/* Assessoria */}
+            <Card className="border-teal-500/20">
+              <CardContent className="pt-4">
+                <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-3 border-b border-teal-500/20 pb-2">Assessoria</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <MetricItem label="Vendas" value={`${formatNumber(totals.sales_assessoria || 0)}`} color="text-teal-400" sub={formatCurrency(totals.revenue_assessoria || 0) || undefined} />
+                  <MetricItem label="Ticket Médio" value={avgAssessoria > 0 ? formatCurrency(avgAssessoria) || "—" : "—"} color="text-teal-300" />
+                </div>
+              </CardContent>
+            </Card>
+            {/* Totais */}
+            <Card className="border-emerald-500/20">
+              <CardContent className="pt-4">
+                <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-3 border-b border-emerald-500/20 pb-2">Total</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <MetricItem label="Vendas" value={`${formatNumber(totals.sales)}`} color="text-emerald-400" sub={formatCurrency(totals.revenue) || undefined} />
+                  <MetricItem label="Ticket Médio" value={avgTotal > 0 ? formatCurrency(avgTotal) || "—" : "—"} color="text-emerald-300" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Row 5: Performance */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <Card>
+              <CardContent className="pt-4">
+                <div className="grid grid-cols-1 gap-1">
+                  <MetricItem label="CAC" value={formatCurrency(totals.cac) || "—"} />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-4">
+                <div className="grid grid-cols-1 gap-1">
+                  <MetricItem label="ROAS" value={totals.roas !== null ? `${totals.roas.toFixed(2)}x` : "—"} />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-green-500/20">
+              <CardContent className="pt-4">
+                <div className="grid grid-cols-1 gap-1">
+                  <MetricItem label="Win Rate" value={winRateVal > 0 ? `${winRateVal.toFixed(1)}%` : "—"} color="text-green-400" sub={`${totals.sales} vendas / ${qualifiedLeads} leads ≥5k`} />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
         );
       })()}
