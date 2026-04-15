@@ -41,6 +41,7 @@ import {
   Tablet,
   Clock,
   Globe,
+  DollarSign,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -453,6 +454,10 @@ export default function AdminAnalytics() {
   const [campaignMetrics, setCampaignMetrics] = useState<CampaignMetrics | null>(null);
   const [campaignMetricsLoading, setCampaignMetricsLoading] = useState(false);
 
+  // Ticket médio state
+  interface SalesForTicket { revenue: number; sale_type: string }
+  const [salesForTicket, setSalesForTicket] = useState<SalesForTicket[]>([]);
+
   // Persist active tab to localStorage
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -480,6 +485,7 @@ export default function AdminAnalytics() {
       loadSessions();
       loadLeads();
       loadCampaignMetrics();
+      loadSalesForTicket();
     }
   }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, startISO, endISO, sessionsPage]);
 
@@ -500,6 +506,31 @@ export default function AdminAnalytics() {
       setLeadsLoading(false);
     }
   };
+
+  // Load manual sales for ticket médio
+  const loadSalesForTicket = async () => {
+    try {
+      const data = await fetchAdminData("/manual-sales", { from: startISO, to: endISO });
+      setSalesForTicket(data || []);
+    } catch { setSalesForTicket([]); }
+  };
+
+  // Compute ticket médio
+  const ticketMedio = (() => {
+    const sprint = salesForTicket.filter(s => s.sale_type === "sprint");
+    const assessoria = salesForTicket.filter(s => s.sale_type === "assessoria");
+    const all = salesForTicket;
+    const avg = (arr: SalesForTicket[]) => arr.length > 0 ? arr.reduce((sum, s) => sum + Number(s.revenue), 0) / arr.length : 0;
+    return {
+      sprint: avg(sprint),
+      assessoria: avg(assessoria),
+      total: avg(all),
+      sprintCount: sprint.length,
+      assessoriaCount: assessoria.length,
+      totalCount: all.length,
+    };
+  })();
+
 
   const updateLeadLido = async (id: string, lido: boolean) => {
     try {
@@ -1590,6 +1621,54 @@ export default function AdminAnalytics() {
                     <div>
                       <p className="text-2xl font-bold">{metrics.conversion_rate}%</p>
                       <p className="text-xs text-muted-foreground">Taxa de conversão</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Ticket Médio Cards */}
+          {salesForTicket.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              <Card className="border-amber-500/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="w-8 h-8 text-amber-500" />
+                    <div>
+                      <p className="text-2xl font-bold">
+                        {ticketMedio.sprint.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Ticket Médio Sprint</p>
+                      <p className="text-[10px] text-muted-foreground/60">({ticketMedio.sprintCount} vendas)</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-purple-500/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="w-8 h-8 text-purple-500" />
+                    <div>
+                      <p className="text-2xl font-bold">
+                        {ticketMedio.assessoria.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Ticket Médio Assessoria</p>
+                      <p className="text-[10px] text-muted-foreground/60">({ticketMedio.assessoriaCount} vendas)</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-primary/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="w-8 h-8 text-primary" />
+                    <div>
+                      <p className="text-2xl font-bold">
+                        {ticketMedio.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Ticket Médio Geral</p>
+                      <p className="text-[10px] text-muted-foreground/60">({ticketMedio.totalCount} vendas)</p>
                     </div>
                   </div>
                 </CardContent>
