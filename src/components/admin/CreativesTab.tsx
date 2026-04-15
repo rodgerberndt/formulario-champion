@@ -1082,6 +1082,13 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     <p className="text-[10px] text-muted-foreground">({totals.sales} vendas / {qualifiedLeads} leads ≥5k)</p>
                   </CardContent>
                 </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground uppercase">CPL ≥5k</p>
+                    <p className="text-lg font-bold text-cyan-400">{qualifiedLeads > 0 ? formatCurrency(totals.spend / qualifiedLeads) : "—"}</p>
+                    <p className="text-[10px] text-muted-foreground">({formatCurrency(totals.spend)} / {qualifiedLeads} leads)</p>
+                  </CardContent>
+                </Card>
               </>
             );
           })()}
