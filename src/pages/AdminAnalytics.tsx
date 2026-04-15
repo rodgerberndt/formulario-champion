@@ -507,7 +507,31 @@ export default function AdminAnalytics() {
     }
   };
 
-  const updateLeadLido = async (id: string, lido: boolean) => {
+  // Load manual sales for ticket médio
+  const loadSalesForTicket = async () => {
+    try {
+      const data = await fetchAdminData("/manual-sales", { from: startISO, to: endISO });
+      setSalesForTicket(data || []);
+    } catch { setSalesForTicket([]); }
+  };
+
+  // Compute ticket médio
+  const ticketMedio = (() => {
+    const sprint = salesForTicket.filter(s => s.sale_type === "sprint");
+    const assessoria = salesForTicket.filter(s => s.sale_type === "assessoria");
+    const all = salesForTicket;
+    const avg = (arr: SalesForTicket[]) => arr.length > 0 ? arr.reduce((sum, s) => sum + Number(s.revenue), 0) / arr.length : 0;
+    return {
+      sprint: avg(sprint),
+      assessoria: avg(assessoria),
+      total: avg(all),
+      sprintCount: sprint.length,
+      assessoriaCount: assessoria.length,
+      totalCount: all.length,
+    };
+  })();
+
+
     try {
       const token = getToken();
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${id}`;
