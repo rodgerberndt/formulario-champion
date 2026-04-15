@@ -348,11 +348,10 @@ export default function AdminAnalytics() {
   };
 
   // SDR assignment helper - uses override if set, otherwise based on faturamento
+  // Rodger removido — todos os leads >= 5k vão para Caio
   const SDR_CAIO_FAT = [
     "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
     "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
-  ];
-  const SDR_RODGER_FAT = [
     "De R$ 100 mil a R$ 150 mil",
     "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
     "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
@@ -360,16 +359,16 @@ export default function AdminAnalytics() {
     "Acima de R$ 10 milhões",
   ];
   const getLeadSdr = (lead: Lead): string => {
-    if (lead.sdr_override) return lead.sdr_override;
+    if (lead.sdr_override && lead.sdr_override !== "Rodger") return lead.sdr_override;
+    if (lead.sdr_override === "Rodger") return "Caio"; // migrate existing Rodger overrides
     if (lead.investimento_faixa && SDR_CAIO_FAT.includes(lead.investimento_faixa)) return "Caio";
-    if (lead.investimento_faixa && SDR_RODGER_FAT.includes(lead.investimento_faixa)) return "Rodger";
     return "Dara";
   };
 
-  // Cycle SDR between Rodger, Caio and Dara
+  // Cycle SDR between Caio and Dara
   const toggleSdr = async (lead: Lead) => {
     const currentSdr = getLeadSdr(lead);
-    const sdrCycle = ["Rodger", "Caio", "Dara"];
+    const sdrCycle = ["Caio", "Dara"];
     const idx = sdrCycle.indexOf(currentSdr);
     const newSdr = sdrCycle[(idx + 1) % sdrCycle.length];
     
@@ -682,7 +681,6 @@ export default function AdminAnalytics() {
     // SDR filter
     if (leadsSdrFilter !== "all") {
       const sdr = getLeadSdr(lead);
-      if (leadsSdrFilter === "rodger" && sdr !== "Rodger") return false;
       if (leadsSdrFilter === "caio" && sdr !== "Caio") return false;
       if (leadsSdrFilter === "dara" && sdr !== "Dara") return false;
     }
@@ -1705,9 +1703,8 @@ export default function AdminAnalytics() {
                   <SelectTrigger className="w-full md:w-36">
                     <SelectValue placeholder="SDR" />
                   </SelectTrigger>
-                  <SelectContent>
+                    <SelectContent>
                     <SelectItem value="all">Todos SDRs</SelectItem>
-                    <SelectItem value="rodger">Rodger</SelectItem>
                     <SelectItem value="caio">Caio</SelectItem>
                     <SelectItem value="dara">Dara</SelectItem>
                   </SelectContent>
@@ -1944,12 +1941,6 @@ export default function AdminAnalytics() {
                               <td className="p-2">
                                 {(() => {
                                   const sdr = getLeadSdr(lead);
-                                  if (sdr === "Rodger") return (
-                                    <Badge 
-                                      className="bg-blue-500/20 text-blue-400 border-blue-500/30 cursor-pointer hover:bg-blue-500/30 transition-colors"
-                                      onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
-                                    >Rodger</Badge>
-                                  );
                                   if (sdr === "Caio") return (
                                     <Badge 
                                       className="bg-green-500/20 text-green-400 border-green-500/30 cursor-pointer hover:bg-green-500/30 transition-colors"
