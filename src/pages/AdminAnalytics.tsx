@@ -455,6 +455,54 @@ export default function AdminAnalytics() {
   const [campaignMetricsLoading, setCampaignMetricsLoading] = useState(false);
 
 
+  // Persist active tab to localStorage
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    localStorage.setItem("admin_active_tab", value);
+  };
+
+  // Open completed leads modal
+  const openCompletedLeads = () => {
+    setShowCompletedModal(true);
+  };
+
+  // Check for existing token on mount
+  useEffect(() => {
+    const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+    if (token) {
+      setIsAuthenticated(true);
+    }
+    setIsLoading(false);
+  }, []);
+
+  // Load data when authenticated or global date range changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadMetrics();
+      loadSessions();
+      loadLeads();
+      loadCampaignMetrics();
+    }
+  }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, startISO, endISO, sessionsPage]);
+
+  // Load leads from legacy table via edge function
+  const loadLeads = async () => {
+    setLeadsLoading(true);
+    try {
+      const params: Record<string, string> = {
+        from: startISO,
+        to: endISO,
+      };
+      const data = await fetchAdminData("/leads", params);
+      setLeads(data || []);
+      setLeadsUnreadCount(data?.filter((l: Lead) => !l.lido).length || 0);
+    } catch (error) {
+      console.error("Error loading leads:", error);
+    } finally {
+      setLeadsLoading(false);
+    }
+  };
+
 
 
 
