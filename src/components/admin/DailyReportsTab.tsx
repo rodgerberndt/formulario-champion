@@ -499,13 +499,35 @@ export default function DailyReportsTab() {
   };
 
   const [expandedReportId, setExpandedReportId] = useState<string | null>(null);
+  const [selectedHistoryDate, setSelectedHistoryDate] = useState<string | null>(null);
+
+  // Build calendar grid for history month
+  const buildCalendarDays = (month: Date) => {
+    const year = month.getFullYear();
+    const m = month.getMonth();
+    const firstDay = new Date(year, m, 1);
+    const lastDay = new Date(year, m + 1, 0);
+    const startDow = firstDay.getDay(); // 0=Sun
+    const totalDays = lastDay.getDate();
+
+    const days: (number | null)[] = [];
+    for (let i = 0; i < startDow; i++) days.push(null);
+    for (let d = 1; d <= totalDays; d++) days.push(d);
+    while (days.length % 7 !== 0) days.push(null);
+    return days;
+  };
+
+  const calendarDays = buildCalendarDays(historyMonth);
+  const reportDatesHistory = new Set(historyReports.map((r) => r.report_date));
+  const selectedDayReports = selectedHistoryDate ? (groupedByDate[selectedHistoryDate] || []) : [];
 
   /* ─── History View ─── */
   if (viewMode === "history") {
     return (
       <div className="space-y-6">
+        {/* Header */}
         <div className="flex items-center justify-between">
-          <Button variant="ghost" className="gap-2" onClick={() => setViewMode("form")}>
+          <Button variant="ghost" className="gap-2" onClick={() => { setViewMode("form"); setSelectedHistoryDate(null); }}>
             <ArrowLeft className="h-4 w-4" />
             Voltar ao formulário
           </Button>
@@ -513,7 +535,7 @@ export default function DailyReportsTab() {
             <Button variant="outline" size="icon" onClick={() => changeHistoryMonth(-1)}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-sm font-semibold min-w-[120px] text-center">
+            <span className="text-sm font-semibold min-w-[140px] text-center capitalize">
               {format(historyMonth, "MMMM yyyy", { locale: ptBR })}
             </span>
             <Button variant="outline" size="icon" onClick={() => changeHistoryMonth(1)}>
@@ -526,125 +548,186 @@ export default function DailyReportsTab() {
           <div className="flex justify-center py-12">
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
           </div>
-        ) : sortedDates.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            Nenhum relatório encontrado neste mês.
-          </div>
         ) : (
-          sortedDates.map((date) => {
-            const reports = groupedByDate[date];
-            return (
-              <div key={date} className="space-y-3">
-                <h3 className="text-base font-bold border-b border-border/30 pb-2 text-foreground/90">
-                  {format(new Date(date + "T12:00:00"), "EEEE, dd 'de' MMMM", { locale: ptBR })}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {reports.map((r, i) => {
-                    const rid = r.id || `${date}-${i}`;
-                    const isExpanded = expandedReportId === rid;
+          <>
+            {/* Calendar Grid */}
+            <Card className="border border-border/30 bg-card/60">
+              <CardContent className="p-4">
+                {/* Day headers */}
+                <div className="grid grid-cols-7 gap-1 mb-2">
+                  {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d) => (
+                    <div key={d} className="text-center text-[11px] font-semibold text-muted-foreground py-1">
+                      {d}
+                    </div>
+                  ))}
+                </div>
+                {/* Day cells */}
+                <div className="grid grid-cols-7 gap-1">
+                  {calendarDays.map((day, idx) => {
+                    if (day === null) return <div key={`empty-${idx}`} className="h-12" />;
+                    const dateStr = format(new Date(historyMonth.getFullYear(), historyMonth.getMonth(), day), "yyyy-MM-dd");
+                    const hasReport = reportDatesHistory.has(dateStr);
+                    const isSelected = selectedHistoryDate === dateStr;
+                    const isToday = dateStr === format(new Date(), "yyyy-MM-dd");
+                    const reportsForDay = groupedByDate[dateStr] || [];
+                    const sdrCount = reportsForDay.length;
+
                     return (
-                      <Card
-                        key={rid}
+                      <button
+                        key={dateStr}
+                        onClick={() => {
+                          if (hasReport) {
+                            setSelectedHistoryDate(isSelected ? null : dateStr);
+                            setExpandedReportId(null);
+                          }
+                        }}
                         className={cn(
-                          "border border-border/30 bg-card/50 cursor-pointer transition-all duration-200 hover:border-primary/30 hover:shadow-md",
-                          isExpanded && "border-primary/40 shadow-lg col-span-1 md:col-span-2 lg:col-span-3"
+                          "h-12 rounded-lg text-sm font-medium relative transition-all duration-200 flex flex-col items-center justify-center gap-0.5",
+                          hasReport
+                            ? "cursor-pointer hover:bg-primary/20 hover:border-primary/40"
+                            : "cursor-default text-muted-foreground/50",
+                          isSelected && "bg-primary/20 border-primary/50 ring-2 ring-primary/30",
+                          isToday && !isSelected && "border border-primary/40",
+                          !isSelected && !isToday && "border border-transparent",
                         )}
-                        onClick={() => setExpandedReportId(isExpanded ? null : rid)}
                       >
-                        <CardContent className="p-4 space-y-3">
-                          {/* Preview (always visible) */}
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold text-sm">{r.sdr_name}</span>
-                              <Badge variant="outline" className="text-[10px]">{r.energia || "—"}</Badge>
-                              <Badge variant="outline" className="text-[10px]">{r.execucao || "—"}</Badge>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs text-muted-foreground">
-                                {r.reunioes_agendadas || 0} reuniões · {formatCurrency(Number(r.valor_pipeline) || 0)}
-                              </span>
-                              {r.id && (
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); handleDeleteReport(r.id!); }}
-                                  className="p-1 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </button>
-                              )}
-                            </div>
+                        <span className={cn(isToday && "text-primary font-bold")}>{day}</span>
+                        {hasReport && (
+                          <div className="flex gap-0.5">
+                            {sdrCount >= 1 && <div className="w-1.5 h-1.5 rounded-full bg-green-400" />}
+                            {sdrCount >= 2 && <div className="w-1.5 h-1.5 rounded-full bg-pink-400" />}
                           </div>
-
-                          {/* Expanded details */}
-                          {isExpanded && (
-                            <div className="space-y-4 pt-2 border-t border-border/30 animate-in fade-in-0 slide-in-from-top-2 duration-200">
-                              {/* Numbers */}
-                              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 text-xs">
-                                <div className="flex justify-between bg-muted/30 rounded-md px-2.5 py-1.5">
-                                  <span className="text-muted-foreground">Leads trab.</span>
-                                  <span className="font-semibold">{r.leads_trabalhados || 0}</span>
-                                </div>
-                                <div className="flex justify-between bg-muted/30 rounded-md px-2.5 py-1.5">
-                                  <span className="text-muted-foreground">Respostas</span>
-                                  <span className="font-semibold">{r.respostas_recebidas || 0}</span>
-                                </div>
-                                <div className="flex justify-between bg-muted/30 rounded-md px-2.5 py-1.5">
-                                  <span className="text-muted-foreground">Reuniões</span>
-                                  <span className="font-semibold">{r.reunioes_agendadas || 0}</span>
-                                </div>
-                                <div className="flex justify-between bg-muted/30 rounded-md px-2.5 py-1.5">
-                                  <span className="text-muted-foreground">Oport. quentes</span>
-                                  <span className="font-semibold">{r.oportunidades_quentes || 0}</span>
-                                </div>
-                                <div className="flex justify-between bg-muted/30 rounded-md px-2.5 py-1.5">
-                                  <span className="text-muted-foreground">Sprint X1</span>
-                                  <span className="font-semibold text-primary">{formatCurrency(Number(r.valor_pipeline) || 0)}</span>
-                                </div>
-                              </div>
-
-                              {/* Reading */}
-                              <div className="space-y-2 text-xs">
-                                {r.objecao_principal && (
-                                  <div><span className="font-semibold text-muted-foreground">Objeção principal:</span> <span>{r.objecao_principal}</span></div>
-                                )}
-                                {r.melhor_abordagem && (
-                                  <div><span className="font-semibold text-muted-foreground">Melhor abordagem:</span> <span>{r.melhor_abordagem}</span></div>
-                                )}
-                                {r.padrao_leads && (
-                                  <div><span className="font-semibold text-muted-foreground">Padrão dos leads:</span> <span>{r.padrao_leads}</span></div>
-                                )}
-                                {r.gargalo_funil && (
-                                  <div><span className="font-semibold text-muted-foreground">Gargalo:</span> <span>{r.gargalo_funil}</span></div>
-                                )}
-                                {r.causa_gargalo && (
-                                  <div><span className="font-semibold text-muted-foreground">Causa do gargalo:</span> <span>{r.causa_gargalo}</span></div>
-                                )}
-                              </div>
-
-                              {/* Evolution */}
-                              <div className="space-y-2 text-xs">
-                                {r.atrapalhou_performance && (
-                                  <div><span className="font-semibold text-muted-foreground">Atrapalhou performance:</span> <span>{r.atrapalhou_performance}</span></div>
-                                )}
-                                {r.aprendizado && (
-                                  <div><span className="font-semibold text-muted-foreground">Aprendizado:</span> <span>{r.aprendizado}</span></div>
-                                )}
-                                {r.ajuste_amanha && (
-                                  <div><span className="font-semibold text-muted-foreground">Ajuste amanhã:</span> <span>{r.ajuste_amanha}</span></div>
-                                )}
-                                {r.precisa_ajuda && (
-                                  <div><span className="font-semibold text-muted-foreground">Precisa de ajuda:</span> <span>{r.precisa_ajuda}</span></div>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
+                        )}
+                      </button>
                     );
                   })}
                 </div>
+                {/* Legend */}
+                <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/20">
+                  <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                    <div className="w-2 h-2 rounded-full bg-green-400" />
+                    Caio
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                    <div className="w-2 h-2 rounded-full bg-pink-400" />
+                    Dara
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Selected day reports */}
+            {selectedHistoryDate && (
+              <div className="space-y-4 animate-in fade-in-0 slide-in-from-top-3 duration-300">
+                <h3 className="text-base font-bold text-foreground/90 capitalize">
+                  {format(new Date(selectedHistoryDate + "T12:00:00"), "EEEE, dd 'de' MMMM", { locale: ptBR })}
+                </h3>
+                {selectedDayReports.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Nenhum relatório neste dia.</p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedDayReports.map((r, i) => {
+                      const rid = r.id || `${selectedHistoryDate}-${i}`;
+                      const isExpanded = expandedReportId === rid;
+                      return (
+                        <Card
+                          key={rid}
+                          className={cn(
+                            "border border-border/30 bg-card/50 cursor-pointer transition-all duration-200 hover:border-primary/30 hover:shadow-md",
+                            isExpanded && "border-primary/40 shadow-lg md:col-span-2"
+                          )}
+                          onClick={() => setExpandedReportId(isExpanded ? null : rid)}
+                        >
+                          <CardContent className="p-4 space-y-3">
+                            {/* Preview */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-sm">{r.sdr_name}</span>
+                                <Badge variant="outline" className="text-[10px]">{r.energia || "—"}</Badge>
+                                <Badge variant="outline" className="text-[10px]">{r.execucao || "—"}</Badge>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-muted-foreground">
+                                  {r.reunioes_agendadas || 0} reuniões · {formatCurrency(Number(r.valor_pipeline) || 0)}
+                                </span>
+                                {r.id && (
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); handleDeleteReport(r.id!); }}
+                                    className="p-1 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Expanded details */}
+                            {isExpanded && (
+                              <div className="space-y-4 pt-2 border-t border-border/30 animate-in fade-in-0 slide-in-from-top-2 duration-200">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 text-xs">
+                                  <div className="flex justify-between bg-muted/30 rounded-md px-2.5 py-1.5">
+                                    <span className="text-muted-foreground">Leads trab.</span>
+                                    <span className="font-semibold">{r.leads_trabalhados || 0}</span>
+                                  </div>
+                                  <div className="flex justify-between bg-muted/30 rounded-md px-2.5 py-1.5">
+                                    <span className="text-muted-foreground">Respostas</span>
+                                    <span className="font-semibold">{r.respostas_recebidas || 0}</span>
+                                  </div>
+                                  <div className="flex justify-between bg-muted/30 rounded-md px-2.5 py-1.5">
+                                    <span className="text-muted-foreground">Reuniões</span>
+                                    <span className="font-semibold">{r.reunioes_agendadas || 0}</span>
+                                  </div>
+                                  <div className="flex justify-between bg-muted/30 rounded-md px-2.5 py-1.5">
+                                    <span className="text-muted-foreground">Oport. quentes</span>
+                                    <span className="font-semibold">{r.oportunidades_quentes || 0}</span>
+                                  </div>
+                                  <div className="flex justify-between bg-muted/30 rounded-md px-2.5 py-1.5">
+                                    <span className="text-muted-foreground">Sprint X1</span>
+                                    <span className="font-semibold text-primary">{formatCurrency(Number(r.valor_pipeline) || 0)}</span>
+                                  </div>
+                                </div>
+                                <div className="space-y-2 text-xs">
+                                  {r.objecao_principal && (
+                                    <div><span className="font-semibold text-muted-foreground">Objeção principal:</span> <span>{r.objecao_principal}</span></div>
+                                  )}
+                                  {r.melhor_abordagem && (
+                                    <div><span className="font-semibold text-muted-foreground">Melhor abordagem:</span> <span>{r.melhor_abordagem}</span></div>
+                                  )}
+                                  {r.padrao_leads && (
+                                    <div><span className="font-semibold text-muted-foreground">Padrão dos leads:</span> <span>{r.padrao_leads}</span></div>
+                                  )}
+                                  {r.gargalo_funil && (
+                                    <div><span className="font-semibold text-muted-foreground">Gargalo:</span> <span>{r.gargalo_funil}</span></div>
+                                  )}
+                                  {r.causa_gargalo && (
+                                    <div><span className="font-semibold text-muted-foreground">Causa do gargalo:</span> <span>{r.causa_gargalo}</span></div>
+                                  )}
+                                </div>
+                                <div className="space-y-2 text-xs">
+                                  {r.atrapalhou_performance && (
+                                    <div><span className="font-semibold text-muted-foreground">Atrapalhou performance:</span> <span>{r.atrapalhou_performance}</span></div>
+                                  )}
+                                  {r.aprendizado && (
+                                    <div><span className="font-semibold text-muted-foreground">Aprendizado:</span> <span>{r.aprendizado}</span></div>
+                                  )}
+                                  {r.ajuste_amanha && (
+                                    <div><span className="font-semibold text-muted-foreground">Ajuste amanhã:</span> <span>{r.ajuste_amanha}</span></div>
+                                  )}
+                                  {r.precisa_ajuda && (
+                                    <div><span className="font-semibold text-muted-foreground">Precisa de ajuda:</span> <span>{r.precisa_ajuda}</span></div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            );
-          })
+            )}
+          </>
         )}
       </div>
     );
