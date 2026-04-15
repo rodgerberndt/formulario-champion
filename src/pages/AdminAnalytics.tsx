@@ -280,7 +280,7 @@ export default function AdminAnalytics() {
 
 
   // Lead notifications (realtime)
-  const { notificationsEnabled, toggleNotifications, testNotifications } = useLeadNotifications(
+  const { notificationsEnabled, toggleNotifications, testNotifications, sendWebPush } = useLeadNotifications(
     isAuthenticated,
     handleNewLead,
     handleAuthError
@@ -1390,6 +1390,14 @@ export default function AdminAnalytics() {
               >
                 <Bell className={`w-4 h-4 sm:mr-1.5 ${notificationsEnabled ? "animate-pulse" : ""}`} />
                 <span className="hidden sm:inline">{notificationsEnabled ? "Notificações ON" : "Ativar notificações"}</span>
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => sendWebPush("🔄 Atualização Nova", "Reinstale o app e recarregue a página no Safari para novas funcionalidades!")}
+                className="text-xs sm:text-sm bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+              >
+                📢 <span className="hidden sm:inline ml-1">Atualização Notificação</span>
               </Button>
               <Button variant="outline" size="sm" onClick={testNotifications} className="text-xs sm:text-sm">
                 🧪 <span className="hidden sm:inline ml-1">Testar notificações</span>
