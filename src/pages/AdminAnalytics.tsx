@@ -454,6 +454,10 @@ export default function AdminAnalytics() {
   const [campaignMetrics, setCampaignMetrics] = useState<CampaignMetrics | null>(null);
   const [campaignMetricsLoading, setCampaignMetricsLoading] = useState(false);
 
+  // Ticket médio state
+  interface SalesForTicket { revenue: number; sale_type: string }
+  const [salesForTicket, setSalesForTicket] = useState<SalesForTicket[]>([]);
+
   // Persist active tab to localStorage
   const handleTabChange = (value: string) => {
     setActiveTab(value);
