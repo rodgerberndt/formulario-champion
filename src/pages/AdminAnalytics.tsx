@@ -532,7 +532,7 @@ export default function AdminAnalytics() {
   })();
 
 
-    try {
+  const updateLeadLido = async (id: string, lido: boolean) => {
       const token = getToken();
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${id}`;
       const response = await fetch(url, {
