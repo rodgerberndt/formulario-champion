@@ -891,7 +891,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         const avgSprint = totals.sales_sprint > 0 ? totals.revenue_sprint / totals.sales_sprint : 0;
         const avgAssessoria = totals.sales_assessoria > 0 ? totals.revenue_assessoria / totals.sales_assessoria : 0;
         const avgTotal = totals.sales > 0 ? totals.revenue / totals.sales : 0;
-        const qualifiedLeads = totals.mql;
+        // Leads ≥5k = todos os tiers exceto Small (Small = até R$5k) e Desqualificado
+        const qualifiedLeads = (totals.tier_medium || 0) + (totals.tier_large || 0) + (totals.tier_enterprise || 0) + (totals.tier_enterprise_plus || 0);
         const winRateVal = qualifiedLeads > 0 ? (totals.sales / qualifiedLeads) * 100 : 0;
 
         const MetricItem = ({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) => (
