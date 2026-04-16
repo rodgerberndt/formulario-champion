@@ -121,11 +121,15 @@ export function usePresence() {
 }
 
 // Hook for admin to monitor active users
+// Combina Realtime Presence (ao vivo) + lead_sessions (fonte confiável dos últimos 2 min)
 export function useActiveUsers() {
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const [activeUsers, setActiveUsers] = useState<PresenceState[]>([]);
-  const [uniqueIps, setUniqueIps] = useState<Set<string>>(new Set());
+  const [presenceIps, setPresenceIps] = useState<Set<string>>(new Set());
+  const [dbActiveSessions, setDbActiveSessions] = useState<PresenceState[]>([]);
+  const [dbActiveIps, setDbActiveIps] = useState<Set<string>>(new Set());
 
+  // Realtime presence (instantâneo)
   useEffect(() => {
     const channel = supabase.channel(PRESENCE_CHANNEL);
 
@@ -136,7 +140,6 @@ export function useActiveUsers() {
         const ips = new Set<string>();
 
         Object.values(state).forEach((presences) => {
-          // Each presence is an array of objects with our tracked data
           (presences as unknown[]).forEach((p) => {
             const presence = p as PresenceState;
             if (presence.ip_address) {
@@ -149,7 +152,7 @@ export function useActiveUsers() {
         });
 
         setActiveUsers(users);
-        setUniqueIps(ips);
+        setPresenceIps(ips);
       })
       .subscribe();
 
@@ -163,15 +166,74 @@ export function useActiveUsers() {
     };
   }, []);
 
-  // Calculate time on site for each user
+  // Polling de lead_sessions (fonte confiável - últimos 2 minutos)
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchActive = async () => {
+      try {
+        const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+        const { data, error } = await supabase
+          .from('lead_sessions')
+          .select('id, ip_address, last_page, last_seen_at, device_type, user_agent')
+          .gte('last_seen_at', twoMinAgo)
+          .not('ip_address', 'is', null);
+
+        if (error || cancelled || !data) return;
+
+        const ips = new Set<string>();
+        const sessions: PresenceState[] = [];
+
+        for (const row of data) {
+          const ip = (row.ip_address || '').trim();
+          if (!ip || ip === 'unknown') continue;
+          if (ip.startsWith('10.') || ip.startsWith('192.168.') || ip === '127.0.0.1') continue;
+          ips.add(ip);
+          sessions.push({
+            session_id: row.id,
+            ip_address: ip,
+            page: row.last_page || '/',
+            entered_at: row.last_seen_at,
+            device_type: row.device_type || 'Desktop',
+            user_agent: row.user_agent || '',
+          });
+        }
+
+        setDbActiveSessions(sessions);
+        setDbActiveIps(ips);
+      } catch (e) {
+        console.error('[useActiveUsers] fetchActive error:', e);
+      }
+    };
+
+    fetchActive();
+    const interval = setInterval(fetchActive, 15000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
+
+  const unionIps = new Set<string>([...presenceIps, ...dbActiveIps]);
+
+  const combinedUsers: PresenceState[] = [...activeUsers];
+  const seenIps = new Set(activeUsers.map(u => u.ip_address));
+  for (const s of dbActiveSessions) {
+    if (!seenIps.has(s.ip_address)) {
+      combinedUsers.push(s);
+      seenIps.add(s.ip_address);
+    }
+  }
+
   const getUsersWithDuration = () => {
-    return activeUsers.map(user => {
+    return combinedUsers.map(user => {
       const enteredAt = new Date(user.entered_at);
       const now = new Date();
       const diffMs = now.getTime() - enteredAt.getTime();
       const diffMinutes = Math.floor(diffMs / 60000);
       const diffSeconds = Math.floor((diffMs % 60000) / 1000);
-      
+
       return {
         ...user,
         duration: diffMinutes > 0 ? `${diffMinutes}m ${diffSeconds}s` : `${diffSeconds}s`,
@@ -181,9 +243,9 @@ export function useActiveUsers() {
   };
 
   return {
-    activeUsers,
-    uniqueCount: uniqueIps.size || activeUsers.length,
-    users: activeUsers,
+    activeUsers: combinedUsers,
+    uniqueCount: unionIps.size || combinedUsers.length,
+    users: combinedUsers,
     getUsersWithDuration,
   };
 }
