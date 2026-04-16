@@ -168,6 +168,7 @@ interface LeadOption {
   mercado: string;
   utm_content: string | null;
   tier: string | null;
+  investimento_faixa?: string | null;
   created_at: string;
 }
 
