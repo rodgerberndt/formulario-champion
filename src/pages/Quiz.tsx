@@ -220,7 +220,7 @@ export default function Quiz() {
 
   // Forced 5s intro screen before quiz starts
   useEffect(() => {
-    const t = setTimeout(() => setShowIntro(false), 5000);
+    const t = setTimeout(() => setShowIntro(false), 10000);
     return () => clearTimeout(t);
   }, []);
   const formDataRef = useRef<QuizFormData | null>(null);
@@ -780,18 +780,18 @@ export default function Quiz() {
           <div className="max-w-md w-full text-center space-y-6">
             <Loader2 className="w-12 h-12 text-primary mx-auto animate-spin" strokeWidth={2.5} />
             <div className="space-y-3">
-              <h2 className="text-xl sm:text-2xl font-bold text-foreground leading-snug">
+              <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug">
                 Preparando seu diagnóstico...
               </h2>
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              <p className="text-base sm:text-lg text-white/95 leading-relaxed font-medium">
                 As pessoas que preencherem o formulário e no final falarem com o nosso time vão ganhar{" "}
-                <span className="text-primary font-semibold">algumas semanas da nossa assessoria gratuita</span>.
+                <span className="text-secondary font-bold">algumas semanas da nossa assessoria gratuita</span>.
               </p>
             </div>
-            <div className="h-1 w-full bg-muted/30 rounded-full overflow-hidden">
+            <div className="h-1.5 w-full bg-white/15 rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary rounded-full"
-                style={{ animation: "quiz-intro-progress 5s linear forwards" }}
+                className="h-full bg-secondary rounded-full"
+                style={{ animation: "quiz-intro-progress 10s linear forwards" }}
               />
             </div>
           </div>
