@@ -216,6 +216,13 @@ export default function Quiz() {
 
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+
+  // Forced 5s intro screen before quiz starts
+  useEffect(() => {
+    const t = setTimeout(() => setShowIntro(false), 5000);
+    return () => clearTimeout(t);
+  }, []);
   const formDataRef = useRef<QuizFormData | null>(null);
   const [formData, setFormData] = useState<QuizFormData>({
     nome_completo: "",
