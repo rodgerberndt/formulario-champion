@@ -121,19 +121,20 @@ const QuizBackground = memo(function QuizBackground() {
 
 // Loading step component (10s) — shows promo phrase while "loading answers"
 function LoadingCommitStep({ onFinish, onCommit }: {onFinish: () => void; onCommit: (v: boolean) => void;}) {
-  const hasFinished = useRef(false);
+  const onFinishRef = useRef(onFinish);
+  const onCommitRef = useRef(onCommit);
+  onFinishRef.current = onFinish;
+  onCommitRef.current = onCommit;
 
   useEffect(() => {
     // Auto-commit (legacy field kept true so payload stays consistent)
-    onCommit(true);
+    onCommitRef.current(true);
     const t = setTimeout(() => {
-      if (!hasFinished.current) {
-        hasFinished.current = true;
-        onFinish();
-      }
+      onFinishRef.current();
     }, 10000);
     return () => clearTimeout(t);
-  }, [onFinish, onCommit]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="space-y-8 animate-fade-in text-center py-4">
