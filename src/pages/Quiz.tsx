@@ -784,8 +784,8 @@ export default function Quiz() {
                 Preparando seu diagnóstico...
               </h2>
               <p className="text-base sm:text-lg text-white/95 leading-relaxed font-medium">
-                As pessoas que preencherem o formulário e no final falarem com o nosso time vão ganhar{" "}
-                <span className="text-secondary font-bold">algumas semanas da nossa assessoria gratuita</span>.
+                As pessoas que preencherem o formulário e no final falarem com o nosso time no WhatsApp, vão ganhar{" "}
+                <span className="text-secondary font-bold">algumas semanas da nossa Assessoria 100% Gratuita</span>.
               </p>
             </div>
             <div className="h-1.5 w-full bg-white/15 rounded-full overflow-hidden">
