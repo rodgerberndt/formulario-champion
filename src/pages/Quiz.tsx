@@ -119,94 +119,45 @@ const QuizBackground = memo(function QuizBackground() {
 
 });
 
-// Loading commitment step component
+// Loading step component (10s) — shows promo phrase while "loading answers"
 function LoadingCommitStep({ onFinish, onCommit }: {onFinish: () => void; onCommit: (v: boolean) => void;}) {
-  const [progress, setProgress] = useState(0);
-  const [committed, setCommitted] = useState(false);
-  const hasSubmitted = useRef(false);
   const hasFinished = useRef(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        // ~15 seconds total: 100 / 0.27 ≈ 370 ticks * 40ms ≈ 14800ms
-        return prev + 0.27;
-      });
-    }, 40);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (progress >= 100 && !hasSubmitted.current && !hasFinished.current) {
-      hasSubmitted.current = true;
-      // Small delay after bar fills for UX
-      setTimeout(() => {
-        if (!hasFinished.current) {
-          hasFinished.current = true;
-          onFinish();
-        }
-      }, 600);
-    }
-  }, [progress, onFinish]);
+    // Auto-commit (legacy field kept true so payload stays consistent)
+    onCommit(true);
+    const t = setTimeout(() => {
+      if (!hasFinished.current) {
+        hasFinished.current = true;
+        onFinish();
+      }
+    }, 10000);
+    return () => clearTimeout(t);
+  }, [onFinish, onCommit]);
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-fade-in text-center">
-      {/* Loading indicator */}
-      <div className="space-y-3">
-        <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary animate-spin mx-auto" />
-        <p className="text-muted-foreground text-sm sm:text-base">
-          Processando suas informações...
+    <div className="space-y-8 animate-fade-in text-center py-4">
+      <div className="space-y-4">
+        <Loader2 className="w-12 h-12 sm:w-14 sm:h-14 text-secondary animate-spin mx-auto" />
+        <p className="text-white text-base sm:text-lg font-semibold">
+          Carregando suas respostas...
         </p>
-        {/* Progress bar */}
-        <div className="h-2 bg-muted rounded-full overflow-hidden max-w-[240px] mx-auto">
+        <div className="h-1.5 w-full max-w-[280px] mx-auto bg-muted/30 rounded-full overflow-hidden">
           <div
-            className="h-full bg-primary rounded-full transition-all duration-100 ease-linear"
-            style={{ width: `${Math.min(progress, 100)}%` }} />
-
+            className="h-full bg-secondary rounded-full"
+            style={{ animation: "quiz-intro-progress 10s linear forwards" }}
+          />
         </div>
       </div>
 
-      {/* Commitment question */}
-      <div className="bg-secondary/10 border border-secondary/30 rounded-2xl p-4 sm:p-5">
-        <div className="flex items-start gap-3 mb-3">
-          <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 text-secondary shrink-0 mt-0.5" />
-          <p className="text-secondary font-bold text-base sm:text-lg leading-snug text-left">
-            Quando um de nossos consultores lhe chamar no WhatsApp em até 6 horas, você se compromete a responder o mais rápido possível?
-          </p>
-        </div>
-      <button
-          onClick={() => { 
-            setCommitted(true); 
-            onCommit(true); 
-            // Advance immediately on click - but only once
-            if (!hasFinished.current) {
-              hasFinished.current = true;
-              setTimeout(() => onFinish(), 400);
-            }
-          }}
-          disabled={committed}
-          className={`mt-2 w-full py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300 ${
-          committed ?
-          "bg-green-500/20 border-2 border-green-500/50 text-green-400" :
-          "bg-secondary/20 border-2 border-secondary/40 text-secondary hover:bg-secondary/30"}`
-          }>
-
-          {committed ?
-          <span className="flex items-center justify-center gap-2">
-              <Check className="w-5 h-5" />
-              Compromisso firmado!
-            </span> :
-
-          "Sim, me comprometo! 🤝"
-          }
-        </button>
+      <div className="bg-secondary/10 border border-secondary/30 rounded-2xl p-5 sm:p-6 max-w-md mx-auto">
+        <p className="text-base sm:text-lg text-white/95 font-medium leading-relaxed">
+          As pessoas que preencherem o formulário e no final falarem com o nosso time no WhatsApp, vão ganhar{" "}
+          <span className="text-secondary font-bold">algumas semanas da nossa Assessoria 100% Gratuita</span>.
+        </p>
       </div>
-    </div>);
-
+    </div>
+  );
 }
 
 export default function Quiz() {
