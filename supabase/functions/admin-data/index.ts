@@ -176,17 +176,17 @@ Deno.serve(async (req: Request) => {
               .eq("sdr_name", sdrName)
               .maybeSingle();
 
+            // Only increment if a report already exists for today/SDR.
+            // Do NOT auto-create reports — SDRs must create them manually.
             if (existingReport) {
               await supabase
                 .from("daily_reports")
                 .update({ mqls_chamados: (existingReport.mqls_chamados || 0) + 1 })
                 .eq("id", existingReport.id);
+              console.log(`Auto-incremented mqls_chamados for ${sdrName} on ${today}`);
             } else {
-              await supabase
-                .from("daily_reports")
-                .insert({ report_date: today, sdr_name: sdrName, mqls_chamados: 1 });
+              console.log(`Skipped auto-create of daily_report for ${sdrName} on ${today} (no existing report)`);
             }
-            console.log(`Auto-incremented mqls_chamados for ${sdrName} on ${today}`);
           } catch (mqErr) {
             console.error("Error auto-incrementing mqls_chamados:", mqErr);
           }
