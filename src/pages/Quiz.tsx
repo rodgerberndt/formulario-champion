@@ -220,7 +220,7 @@ export default function Quiz() {
 
   // Forced 5s intro screen before quiz starts
   useEffect(() => {
-    const t = setTimeout(() => setShowIntro(false), 5000);
+    const t = setTimeout(() => setShowIntro(false), 10000);
     return () => clearTimeout(t);
   }, []);
   const formDataRef = useRef<QuizFormData | null>(null);
