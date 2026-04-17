@@ -773,7 +773,31 @@ export default function Quiz() {
   return (
     <div className="min-h-[100svh] relative w-full max-w-full overflow-x-hidden">
       <QuizBackground />
-      
+
+      {/* Forced 5s intro / loading with promise */}
+      {showIntro && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-5 bg-background/95 backdrop-blur-md animate-fade-in">
+          <div className="max-w-md w-full text-center space-y-6">
+            <Loader2 className="w-12 h-12 text-primary mx-auto animate-spin" strokeWidth={2.5} />
+            <div className="space-y-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground leading-snug">
+                Preparando seu diagnóstico...
+              </h2>
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                As pessoas que preencherem o formulário e no final falarem com o nosso time vão ganhar{" "}
+                <span className="text-primary font-semibold">algumas semanas da nossa assessoria gratuita</span>.
+              </p>
+            </div>
+            <div className="h-1 w-full bg-muted/30 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full"
+                style={{ animation: "quiz-intro-progress 5s linear forwards" }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Top Bar */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/50">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-xl">
