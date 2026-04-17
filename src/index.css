@@ -200,6 +200,11 @@
     50% { box-shadow: 0 0 30px 5px hsl(238 98% 20% / 0.35), 0 0 80px -5px hsl(238 98% 20% / 0.2); }
   }
 
+  @keyframes quiz-intro-progress {
+    0% { width: 0%; }
+    100% { width: 100%; }
+  }
+
   /* Mobile Bottom CTA */
   .mobile-bottom-cta {
     @apply fixed bottom-0 left-0 right-0 z-50 p-4;
