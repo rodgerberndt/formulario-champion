@@ -251,7 +251,7 @@ export default function Quiz() {
   const canProceed = useCallback(() => {
     switch (step) {
       case 1:
-        return formData.dor_desejo.trim().length >= 10;
+        return formData.quer_vender_mais !== "";
       case 2:
         return formData.mercado !== "";
       case 3:
@@ -272,6 +272,8 @@ export default function Quiz() {
         return emailRegex.test(formData.email.trim());
       }
       case 8:
+        return formData.dor_desejo.trim().length >= 10;
+      case 9:
         return true;
       default:
         return false;
