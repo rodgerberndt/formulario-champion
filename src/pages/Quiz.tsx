@@ -50,13 +50,13 @@ const RESULT_STORAGE_KEY = "champion_quiz_result";
 
 // Step IDs for tracking
 const STEP_IDS = [
-"q1_nome",
-"q2_whats",
-"q3_insta",
-"q4_email",
-"q5_mercado",
-"q6_faturamento",
-"q7_dor",
+"q1_dor",
+"q2_mercado",
+"q3_faturamento",
+"q4_nome",
+"q5_whats",
+"q6_insta",
+"q7_email",
 "q8_loading"];
 
 
@@ -248,27 +248,26 @@ export default function Quiz() {
   const canProceed = useCallback(() => {
     switch (step) {
       case 1:
+        return formData.dor_desejo.trim().length >= 10;
+      case 2:
+        return formData.mercado !== "";
+      case 3:
+        return formData.investimento_faixa !== "";
+      case 4:
         return formData.nome_completo.trim().length >= 3;
-      case 2: {
+      case 5: {
         const digits = formData.whatsapp.replace(/\D/g, '');
-        // Must be 10-11 digits, DDD 11-99, and mobile must start with 9
         const validDDD = digits.length >= 2 && parseInt(digits.slice(0, 2)) >= 11 && parseInt(digits.slice(0, 2)) <= 99;
         const validMobile = digits.length === 11 && digits[2] === '9';
         const validLandline = digits.length === 10;
         return (validDDD && (validMobile || validLandline)) && formData.lgpd;
       }
-      case 3:
+      case 6:
         return formData.instagram.trim().length >= 1;
-      case 4: {
+      case 7: {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(formData.email.trim());
       }
-      case 5:
-        return formData.mercado !== "";
-      case 6:
-        return formData.investimento_faixa !== "";
-      case 7:
-        return formData.dor_desejo.trim().length >= 10;
       case 8:
         return true;
       default:
@@ -492,25 +491,25 @@ export default function Quiz() {
       const fieldData: Record<string, string> = {};
       switch (step) {
         case 1:
-          fieldData.nome = formData.nome_completo;
+          fieldData.dor_desejo = formData.dor_desejo;
           break;
         case 2:
-          fieldData.whatsapp = formData.whatsapp;
-          break;
-        case 3:
-          fieldData.instagram = formData.instagram;
-          break;
-        case 4:
-          fieldData.email = formData.email;
-          break;
-        case 5:
           fieldData.mercado = formData.mercado;
           break;
-        case 6:
+        case 3:
           fieldData.investimento = formData.investimento_faixa;
           break;
+        case 4:
+          fieldData.nome = formData.nome_completo;
+          break;
+        case 5:
+          fieldData.whatsapp = formData.whatsapp;
+          break;
+        case 6:
+          fieldData.instagram = formData.instagram;
+          break;
         case 7:
-          fieldData.dor_desejo = formData.dor_desejo;
+          fieldData.email = formData.email;
           break;
       }
 
@@ -542,7 +541,7 @@ export default function Quiz() {
 
   const renderStep = () => {
     switch (step) {
-      case 1:
+      case 4:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -557,7 +556,7 @@ export default function Quiz() {
 
           </div>);
 
-      case 2:
+      case 5:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -604,7 +603,7 @@ export default function Quiz() {
             </div>
           </div>);
 
-      case 3:
+      case 6:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -619,7 +618,7 @@ export default function Quiz() {
 
           </div>);
 
-      case 4:
+      case 7:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -635,7 +634,7 @@ export default function Quiz() {
               autoFocus />
           </div>);
 
-      case 5:
+      case 2:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -662,7 +661,7 @@ export default function Quiz() {
             </Select>
           </div>);
 
-      case 6:
+      case 3:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -689,7 +688,7 @@ export default function Quiz() {
             </Select>
           </div>);
 
-      case 7:
+      case 1:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             {/* Highlight block */}
