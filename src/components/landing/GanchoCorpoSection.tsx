@@ -165,12 +165,16 @@ function ProofCard({
     >
       <div className="relative overflow-hidden rounded-xl border border-secondary/20 shadow-lg shadow-secondary/5">
         <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 via-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
-        <img
-          src={src}
-          alt={alt}
-          loading="lazy"
-          className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.03]"
-        />
+        <picture>
+          <source srcSet={src.replace(/\.png(\?.*)?$/, ".webp")} type="image/webp" />
+          <img
+            src={src}
+            alt={alt}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+        </picture>
       </div>
       <p className="text-xs md:text-sm text-muted-foreground mt-3 text-center leading-relaxed">
         {caption.split(/\b(GANCHO|ROAS|Meta)\b/).map((part, i) =>

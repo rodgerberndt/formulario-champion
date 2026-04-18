@@ -36,7 +36,7 @@ export function LandingNavbar() {
     >
       <div className="container mx-auto px-5 flex items-center justify-between max-w-6xl">
         <img
-          src="/champion-logo.png"
+          src="/champion-logo.webp"
           alt="Champion"
           width={120}
           height={40}
