@@ -541,7 +541,7 @@ export default function Quiz() {
 
   const renderStep = () => {
     switch (step) {
-      case 1:
+      case 4:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -556,7 +556,7 @@ export default function Quiz() {
 
           </div>);
 
-      case 2:
+      case 5:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -603,7 +603,7 @@ export default function Quiz() {
             </div>
           </div>);
 
-      case 3:
+      case 6:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -618,7 +618,7 @@ export default function Quiz() {
 
           </div>);
 
-      case 4:
+      case 7:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -634,7 +634,7 @@ export default function Quiz() {
               autoFocus />
           </div>);
 
-      case 5:
+      case 2:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -661,7 +661,7 @@ export default function Quiz() {
             </Select>
           </div>);
 
-      case 6:
+      case 3:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -688,7 +688,7 @@ export default function Quiz() {
             </Select>
           </div>);
 
-      case 7:
+      case 1:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             {/* Highlight block */}
