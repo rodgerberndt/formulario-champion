@@ -709,7 +709,13 @@ export default function Quiz() {
                   <button
                     key={opt}
                     type="button"
-                    onClick={() => updateField("quer_vender_mais", opt)}
+                    onClick={async () => {
+                      updateField("quer_vender_mais", opt);
+                      const fromStepId = STEP_IDS[0];
+                      const toStepId = STEP_IDS[1];
+                      await trackStepNext(fromStepId, toStepId, { quer_vender_mais: opt });
+                      setStep(2);
+                    }}
                     className={`h-12 sm:h-14 rounded-xl border-2 text-sm sm:text-base font-semibold transition-colors duration-200 ${
                       selected
                         ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25"
