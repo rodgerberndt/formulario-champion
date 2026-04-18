@@ -809,7 +809,7 @@ export default function Quiz() {
         <div className="w-full max-w-[92vw] sm:max-w-md mx-auto">
           {/* Quiz Card - Compact and elegant */}
           <div
-            className="backdrop-blur-xl border border-border/60 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl w-full overflow-hidden"
+            className="backdrop-blur-xl border border-border/60 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl w-full overflow-hidden quiz-card-enter"
             style={{
               background: 'hsl(235 45% 7% / 0.94)',
               boxShadow: '0 8px 40px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset'
@@ -824,7 +824,7 @@ export default function Quiz() {
 
             {/* Form content area */}
             <div className="min-h-[180px] sm:min-h-[200px] flex flex-col">
-              <div className="flex-1">
+              <div key={step} className="flex-1 quiz-step-enter">
                 {renderStep()}
               </div>
 
