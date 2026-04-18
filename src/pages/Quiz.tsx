@@ -41,6 +41,7 @@ interface QuizFormData {
   mercado: string;
   investimento_faixa: string;
   dor_desejo: string;
+  quer_vender_mais: string;
   lgpd: boolean;
   compromisso_whatsapp: boolean;
 }
@@ -50,14 +51,15 @@ const RESULT_STORAGE_KEY = "champion_quiz_result";
 
 // Step IDs for tracking
 const STEP_IDS = [
-"q1_dor",
+"q1_quer_vender",
 "q2_mercado",
 "q3_faturamento",
 "q4_nome",
 "q5_whats",
 "q6_insta",
 "q7_email",
-"q8_loading"];
+"q8_dor",
+"q9_loading"];
 
 
 // Memoized background component
