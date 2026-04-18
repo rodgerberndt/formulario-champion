@@ -41,6 +41,7 @@ interface QuizFormData {
   mercado: string;
   investimento_faixa: string;
   dor_desejo: string;
+  quer_vender_mais: string;
   lgpd: boolean;
   compromisso_whatsapp: boolean;
 }
@@ -50,14 +51,15 @@ const RESULT_STORAGE_KEY = "champion_quiz_result";
 
 // Step IDs for tracking
 const STEP_IDS = [
-"q1_dor",
+"q1_quer_vender",
 "q2_mercado",
 "q3_faturamento",
 "q4_nome",
 "q5_whats",
 "q6_insta",
 "q7_email",
-"q8_loading"];
+"q8_dor",
+"q9_loading"];
 
 
 // Memoized background component
@@ -184,11 +186,12 @@ export default function Quiz() {
     mercado: "",
     investimento_faixa: "",
     dor_desejo: "",
+    quer_vender_mais: "",
     lgpd: false,
     compromisso_whatsapp: false
   });
 
-  const totalSteps = 8;
+  const totalSteps = 9;
   const hasTrackedQuizView = useRef(false);
   const lastTrackedStep = useRef<number | null>(null);
 
@@ -248,7 +251,7 @@ export default function Quiz() {
   const canProceed = useCallback(() => {
     switch (step) {
       case 1:
-        return formData.dor_desejo.trim().length >= 10;
+        return formData.quer_vender_mais !== "";
       case 2:
         return formData.mercado !== "";
       case 3:
@@ -269,6 +272,8 @@ export default function Quiz() {
         return emailRegex.test(formData.email.trim());
       }
       case 8:
+        return formData.dor_desejo.trim().length >= 10;
+      case 9:
         return true;
       default:
         return false;
@@ -491,7 +496,7 @@ export default function Quiz() {
       const fieldData: Record<string, string> = {};
       switch (step) {
         case 1:
-          fieldData.dor_desejo = formData.dor_desejo;
+          fieldData.quer_vender_mais = formData.quer_vender_mais;
           break;
         case 2:
           fieldData.mercado = formData.mercado;
@@ -510,6 +515,9 @@ export default function Quiz() {
           break;
         case 7:
           fieldData.email = formData.email;
+          break;
+        case 8:
+          fieldData.dor_desejo = formData.dor_desejo;
           break;
       }
 
@@ -691,6 +699,32 @@ export default function Quiz() {
       case 1:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
+              Você quer vender mais?
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {["Sim", "Não"].map((opt) => {
+                const selected = formData.quer_vender_mais === opt;
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => updateField("quer_vender_mais", opt)}
+                    className={`h-12 sm:h-14 rounded-xl border-2 text-sm sm:text-base font-semibold transition-colors duration-200 ${
+                      selected
+                        ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25"
+                        : "bg-input text-foreground border-border/60 hover:border-primary/60"
+                    }`}>
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+          </div>);
+
+      case 8:
+        return (
+          <div className="space-y-4 sm:space-y-5 animate-fade-in">
             {/* Highlight block */}
             <div className="bg-secondary/10 border border-secondary/20 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
               <div className="flex items-center gap-2">
@@ -714,7 +748,7 @@ export default function Quiz() {
 
           </div>);
 
-      case 8:
+      case 9:
         return <LoadingCommitStep onFinish={handleSubmit} onCommit={(v) => updateField("compromisso_whatsapp", v)} />;
       default:
         return null;
@@ -789,7 +823,7 @@ export default function Quiz() {
               </div>
 
             {/* Navigation Buttons - Hidden on loading step */}
-            {step !== 8 &&
+            {step !== 9 &&
               <div className={`mt-6 sm:mt-8 ${step > 1 ? 'flex flex-col-reverse sm:flex-row gap-3' : ''}`}>
                 {step > 1 &&
                 <Button
