@@ -496,7 +496,7 @@ export default function Quiz() {
       const fieldData: Record<string, string> = {};
       switch (step) {
         case 1:
-          fieldData.dor_desejo = formData.dor_desejo;
+          fieldData.quer_vender_mais = formData.quer_vender_mais;
           break;
         case 2:
           fieldData.mercado = formData.mercado;
@@ -515,6 +515,9 @@ export default function Quiz() {
           break;
         case 7:
           fieldData.email = formData.email;
+          break;
+        case 8:
+          fieldData.dor_desejo = formData.dor_desejo;
           break;
       }
 
