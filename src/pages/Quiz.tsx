@@ -50,13 +50,13 @@ const RESULT_STORAGE_KEY = "champion_quiz_result";
 
 // Step IDs for tracking
 const STEP_IDS = [
-"q1_nome",
-"q2_whats",
-"q3_insta",
-"q4_email",
-"q5_mercado",
-"q6_faturamento",
-"q7_dor",
+"q1_dor",
+"q2_mercado",
+"q3_faturamento",
+"q4_nome",
+"q5_whats",
+"q6_insta",
+"q7_email",
 "q8_loading"];
 
 
