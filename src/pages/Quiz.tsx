@@ -766,7 +766,7 @@ export default function Quiz() {
             <Loader2 className="w-12 h-12 text-primary mx-auto animate-spin" strokeWidth={2.5} />
             <div className="space-y-3">
               <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug">
-                Preparando seu diagnóstico...
+                Preparando seu formulário...
               </h2>
               <p className="text-base sm:text-lg text-white/95 leading-relaxed font-medium">
                 As pessoas que preencherem o formulário e no final falarem com o nosso time no WhatsApp, vão ganhar{" "}
