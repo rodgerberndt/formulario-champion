@@ -186,11 +186,12 @@ export default function Quiz() {
     mercado: "",
     investimento_faixa: "",
     dor_desejo: "",
+    quer_vender_mais: "",
     lgpd: false,
     compromisso_whatsapp: false
   });
 
-  const totalSteps = 8;
+  const totalSteps = 9;
   const hasTrackedQuizView = useRef(false);
   const lastTrackedStep = useRef<number | null>(null);
 
