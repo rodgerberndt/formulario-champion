@@ -10,7 +10,7 @@ export function Header() {
         {/* Logo */}
         <div className="flex items-center gap-2">
           <img 
-            src="/champion-logo.png" 
+            src="/champion-logo.webp" 
             alt="Champion" 
             className="h-8 md:h-10 w-auto"
             loading="eager"
