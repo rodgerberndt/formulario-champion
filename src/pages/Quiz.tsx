@@ -248,27 +248,26 @@ export default function Quiz() {
   const canProceed = useCallback(() => {
     switch (step) {
       case 1:
+        return formData.dor_desejo.trim().length >= 10;
+      case 2:
+        return formData.mercado !== "";
+      case 3:
+        return formData.investimento_faixa !== "";
+      case 4:
         return formData.nome_completo.trim().length >= 3;
-      case 2: {
+      case 5: {
         const digits = formData.whatsapp.replace(/\D/g, '');
-        // Must be 10-11 digits, DDD 11-99, and mobile must start with 9
         const validDDD = digits.length >= 2 && parseInt(digits.slice(0, 2)) >= 11 && parseInt(digits.slice(0, 2)) <= 99;
         const validMobile = digits.length === 11 && digits[2] === '9';
         const validLandline = digits.length === 10;
         return (validDDD && (validMobile || validLandline)) && formData.lgpd;
       }
-      case 3:
+      case 6:
         return formData.instagram.trim().length >= 1;
-      case 4: {
+      case 7: {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(formData.email.trim());
       }
-      case 5:
-        return formData.mercado !== "";
-      case 6:
-        return formData.investimento_faixa !== "";
-      case 7:
-        return formData.dor_desejo.trim().length >= 10;
       case 8:
         return true;
       default:
