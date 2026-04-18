@@ -170,6 +170,8 @@ function ProofCard({
           <img
             src={src}
             alt={alt}
+            width={1274}
+            height={src.includes("depoimento-ganchos") ? 536 : 1450}
             loading="lazy"
             decoding="async"
             className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.03]"
