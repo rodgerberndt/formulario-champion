@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Sparkles, TrendingUp } from "lucide-react";
-import founderPhoto from "@/assets/founder-photo.png";
+import founderPhoto from "@/assets/founder-photo.webp";
 import { ShimmerText, KeywordGlow, LineReveal } from "@/components/landing/TextEffects";
 import { useReveal } from "@/hooks/useReveal";
 
