@@ -823,7 +823,7 @@ export default function Quiz() {
               </div>
 
             {/* Navigation Buttons - Hidden on loading step */}
-            {step !== 8 &&
+            {step !== 9 &&
               <div className={`mt-6 sm:mt-8 ${step > 1 ? 'flex flex-col-reverse sm:flex-row gap-3' : ''}`}>
                 {step > 1 &&
                 <Button
