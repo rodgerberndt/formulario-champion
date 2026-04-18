@@ -699,6 +699,32 @@ export default function Quiz() {
       case 1:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
+              Você quer vender mais?
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {["Sim", "Não"].map((opt) => {
+                const selected = formData.quer_vender_mais === opt;
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => updateField("quer_vender_mais", opt)}
+                    className={`h-12 sm:h-14 rounded-xl border-2 text-sm sm:text-base font-semibold transition-colors duration-200 ${
+                      selected
+                        ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25"
+                        : "bg-input text-foreground border-border/60 hover:border-primary/60"
+                    }`}>
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+          </div>);
+
+      case 8:
+        return (
+          <div className="space-y-4 sm:space-y-5 animate-fade-in">
             {/* Highlight block */}
             <div className="bg-secondary/10 border border-secondary/20 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
               <div className="flex items-center gap-2">
@@ -722,7 +748,7 @@ export default function Quiz() {
 
           </div>);
 
-      case 8:
+      case 9:
         return <LoadingCommitStep onFinish={handleSubmit} onCommit={(v) => updateField("compromisso_whatsapp", v)} />;
       default:
         return null;
