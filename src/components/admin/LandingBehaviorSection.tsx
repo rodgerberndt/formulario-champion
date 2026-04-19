@@ -207,64 +207,6 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
           </div>
         </div>
 
-        {/* PROFUNDIDADE POR SEÇÃO + QUEDA */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-              <Activity className="w-3 h-3" /> Até qual seção os visitantes chegaram
-            </p>
-            <div className="space-y-2">
-              {cur.funnel.map((f) => {
-                const prevS = findPrev(f.section_id);
-                const delta = prevS ? f.pct_of_visitors - prevS.pct_of_visitors : null;
-                const label = SECTION_LABELS[f.section_id] || f.section_id;
-                return (
-                  <div key={f.section_id}>
-                    <div className="flex items-center justify-between text-[11px] mb-1 gap-2">
-                      <span className="text-muted-foreground truncate">
-                        <span className="font-mono text-[10px] text-muted-foreground/60 mr-1">#{f.order}</span>
-                        {label}
-                      </span>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="font-semibold text-foreground">{f.reached} ({fmtPct(f.pct_of_visitors)})</span>
-                        {delta !== null && Math.abs(delta) > 1 && (
-                          <span className={`text-[10px] ${delta >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-                            {delta >= 0 ? "+" : ""}{delta.toFixed(0)}pp
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="h-2 rounded bg-muted/30 overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-cyan-500 to-amber-400" style={{ width: `${Math.min(100, f.pct_of_visitors)}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-              <TrendingDown className="w-3 h-3" /> Queda ao longo da página (por seção)
-            </p>
-            <div className="flex items-end gap-1 h-32 px-1">
-              {cur.funnel.map((f) => (
-                <div key={f.section_id} className="flex-1 flex flex-col items-center justify-end gap-1 min-w-0">
-                  <span className="text-[9px] font-mono text-muted-foreground">{f.pct_of_visitors.toFixed(0)}%</span>
-                  <div
-                    className="w-full bg-gradient-to-t from-primary/80 to-primary/30 rounded-t"
-                    style={{ height: `${Math.max(4, (f.pct_of_visitors / 100) * 100)}%` }}
-                    title={`${SECTION_LABELS[f.section_id] || f.section_id}: ${f.reached} usuários`}
-                  />
-                  <span className="text-[8px] text-muted-foreground truncate w-full text-center" title={SECTION_LABELS[f.section_id] || f.section_id}>
-                    #{f.order}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {prev && (
           <div className="text-[10px] text-muted-foreground/70 text-center pt-2 border-t border-border/30">
             Comparações vs período anterior ({prev.totalVisitors} visitantes)
