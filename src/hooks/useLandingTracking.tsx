@@ -58,7 +58,7 @@ export function useLandingTracking(page = "/") {
           const id = el.dataset.trackId!;
           const order = parseInt(el.dataset.trackOrder || "0", 10);
 
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.4) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
             sectionStartRef.current.set(id, Date.now());
 
             if (!sectionLoggedRef.current.has(id)) {
@@ -73,7 +73,7 @@ export function useLandingTracking(page = "/") {
           }
         });
       },
-      { threshold: [0, 0.4, 0.8] }
+      { threshold: [0, 0.2, 0.5, 0.8] }
     );
 
     sections.forEach((s) => observer.observe(s));
