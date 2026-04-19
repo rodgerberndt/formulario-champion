@@ -304,7 +304,14 @@ interface FunnelMetricsInput {
   entered_quiz: number;
   completed: number;
   conversion_rate: number;
-  step_funnel?: Array<{ step_id: string; count: number }>;
+  step_funnel?: Array<{
+    step_id: string;
+    count: number;
+    flow?: string;
+    flow_index?: number;
+    flow_started?: number;
+    flow_completed?: number;
+  }>;
 }
 
 interface CreativesTabProps {
@@ -944,17 +951,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       {/* Funil do Quiz — drop-off etapa por etapa */}
       {funnelMetrics && funnelMetrics.step_funnel && funnelMetrics.step_funnel.length > 0 && (() => {
         const STEP_LABELS_LOCAL: Record<string, string> = {
-          // buckets unificados (fluxo atual)
-          quer_vender: "Quer vender mais?",
-          mercado: "Mercado",
-          faturamento: "Faturamento mensal",
-          estagio: "Estágio do negócio",
-          nome: "Nome",
-          whats: "WhatsApp",
-          insta: "Instagram",
-          email: "E-mail",
-          dor: "Dor / Desejo",
-          // legados (fallback)
           q1_quer_vender: "Quer vender mais?",
           q2_mercado: "Mercado",
           q3_faturamento: "Faturamento mensal",
@@ -966,49 +962,76 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           q1_nome: "Nome",
           q2_whats: "WhatsApp",
           q3_insta: "Instagram",
-          q4_mercado: "Mercado",
+          q4_email: "E-mail",
+          q5_mercado: "Mercado",
           q5_estagio: "Estágio do negócio",
+          q6_faturamento: "Faturamento mensal",
           q6_investimento: "Faturamento mensal",
-          q6_dor: "Dor / Desejo",
+          q7_email: "E-mail",
           q7_dor: "Dor / Desejo",
+          q8_dor: "Dor / Desejo",
         };
 
-        // Monta funil: Entrou no quiz → cada step → Concluiu
-        const enteredQuiz = funnelMetrics.entered_quiz;
-        const completed = funnelMetrics.completed;
         const steps = funnelMetrics.step_funnel;
-
-        // Numera reiniciando quando o fluxo muda (ex: antigo 1..7, depois novo 1..8)
-        let stepNum = 0;
-        let lastFlow: string | undefined = undefined;
-        const numberedSteps = steps.map((s) => {
-          const flow = (s as { flow?: string }).flow;
-          if (flow !== lastFlow) {
-            stepNum = 1;
-            lastFlow = flow;
-          } else {
-            stepNum += 1;
+        const groupedFlows = steps.reduce<Array<{ flowId: string; flowIndex: number; steps: typeof steps; started: number; completed: number }>>((acc, step) => {
+          const flowId = step.flow || `flow_${acc.length + 1}`;
+          const existing = acc.find((item) => item.flowId === flowId);
+          if (existing) {
+            existing.steps.push(step);
+            existing.started = Math.max(existing.started, step.flow_started ?? 0);
+            existing.completed = Math.max(existing.completed, step.flow_completed ?? 0);
+            return acc;
           }
-          return { ...s, _num: stepNum, _flow: flow };
+
+          acc.push({
+            flowId,
+            flowIndex: step.flow_index ?? acc.length,
+            steps: [step],
+            started: step.flow_started ?? 0,
+            completed: step.flow_completed ?? 0,
+          });
+          return acc;
+        }, []).sort((a, b) => a.flowIndex - b.flowIndex);
+
+        const allStages = groupedFlows.flatMap((flow, flowIdx) => {
+          const numberedSteps = flow.steps.map((step, stepIdx) => ({
+            ...step,
+            _num: stepIdx + 1,
+            _label: STEP_LABELS_LOCAL[step.step_id] || step.step_id,
+          }));
+
+          const stages = [
+            {
+              key: `${flow.flowId}_entered`,
+              label: groupedFlows.length > 1 ? `Entrou no quiz · fluxo ${flowIdx + 1}` : "Entrou no quiz",
+              count: Math.max(flow.started, numberedSteps[0]?.count || 0),
+              text: "text-cyan-300",
+              kind: "entered" as const,
+            },
+            ...numberedSteps.map((step, idx) => ({
+              key: `${flow.flowId}_${step.step_id}_${idx}`,
+              label: `${step._num}. ${step._label}`,
+              count: step.count,
+              text: idx % 2 === 0 ? "text-purple-300" : "text-violet-300",
+              kind: "step" as const,
+            })),
+            {
+              key: `${flow.flowId}_completed`,
+              label: groupedFlows.length > 1 ? `Concluiu · fluxo ${flowIdx + 1}` : "Concluiu o quiz",
+              count: flow.completed,
+              text: "text-emerald-300",
+              kind: "completed" as const,
+            },
+          ];
+
+          return stages;
         });
 
-        const allStages = [
-          { key: "entered", label: "Entrou no quiz", count: enteredQuiz, color: "bg-blue-500/80", text: "text-blue-300" },
-          ...numberedSteps.map((s, i) => {
-            const baseLabel = STEP_LABELS_LOCAL[s.step_id] || s.step_id;
-            const flowTag = s._flow === "antigo" ? " (fluxo antigo)" : s._flow === "novo" ? " (fluxo novo)" : "";
-            return {
-              key: `${s.step_id}_${i}`,
-              label: `${s._num}. ${baseLabel}${flowTag}`,
-              count: s.count,
-              color: i % 2 === 0 ? "bg-purple-500/70" : "bg-violet-500/70",
-              text: i % 2 === 0 ? "text-purple-300" : "text-violet-300",
-            };
-          }),
-          { key: "completed", label: "Concluiu o quiz", count: completed, color: "bg-green-500/80", text: "text-green-300" },
-        ];
-
-        const baseForWidth = Math.max(enteredQuiz, 1);
+        const topStages = allStages.filter((stage) => stage.kind === "entered");
+        const finalStages = allStages.filter((stage) => stage.kind === "completed");
+        const enteredQuiz = topStages.reduce((sum, stage) => sum + stage.count, 0);
+        const completed = finalStages.reduce((sum, stage) => sum + stage.count, 0);
+        const baseForWidth = Math.max(...topStages.map((stage) => stage.count), 1);
         const totalLoss = enteredQuiz > 0 ? ((enteredQuiz - completed) / enteredQuiz) * 100 : 0;
 
         // Identifica maior gargalo
