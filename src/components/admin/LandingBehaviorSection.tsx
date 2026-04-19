@@ -1,8 +1,52 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useDateRange } from "@/context/DateRangeContext";
 import { Loader2, TrendingDown, TrendingUp, MousePointerClick, ArrowDown, Activity, Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+
+/**
+ * BumpNumber: mostra o valor numérico e, quando ele muda, exibe um overlay
+ * verde grande com a diferença (+N / -N) por 3s, sem afetar o layout.
+ */
+function BumpNumber({ value, className }: { value: number; className?: string }) {
+  const prevRef = useRef<number>(value);
+  const [delta, setDelta] = useState<number | null>(null);
+  const firstRef = useRef(true);
+
+  useEffect(() => {
+    if (firstRef.current) {
+      firstRef.current = false;
+      prevRef.current = value;
+      return;
+    }
+    const diff = value - prevRef.current;
+    prevRef.current = value;
+    if (diff !== 0) {
+      setDelta(diff);
+      const t = setTimeout(() => setDelta(null), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [value]);
+
+  return (
+    <span className="relative inline-block">
+      <span className={className}>{value}</span>
+      {delta !== null && (
+        <span
+          className={`pointer-events-none absolute -top-7 left-1/2 -translate-x-1/2 text-2xl font-extrabold animate-fade-in ${
+            delta > 0 ? "text-emerald-400" : "text-rose-400"
+          }`}
+          style={{
+            textShadow: `0 0 12px ${delta > 0 ? "hsl(142 76% 45% / 0.9)" : "hsl(0 80% 60% / 0.9)"}`,
+            animation: "fade-in 0.25s ease-out, pulse 1s ease-in-out 0.25s 2",
+          }}
+        >
+          {delta > 0 ? "+" : ""}{delta}
+        </span>
+      )}
+    </span>
+  );
+}
 
 interface FunnelStep {
   section_id: string;
@@ -178,19 +222,19 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
                       <div className="flex items-center gap-3 text-[10px] flex-shrink-0">
                         <div className="text-right">
                           <p className="text-muted-foreground">Chegou</p>
-                          <p className="font-bold text-cyan-300">{f.reached} <span className="text-muted-foreground/70">({fmtPct(f.pct_of_visitors)})</span></p>
+                          <p className="font-bold text-cyan-300"><BumpNumber value={f.reached} /> <span className="text-muted-foreground/70">({fmtPct(f.pct_of_visitors)})</span></p>
                         </div>
                         <div className="text-right">
                           <p className="text-muted-foreground">Continuou</p>
-                          <p className="font-bold text-emerald-300">{f.continued} <span className="text-muted-foreground/70">({fmtPct(f.continue_rate)})</span></p>
+                          <p className="font-bold text-emerald-300"><BumpNumber value={f.continued} /> <span className="text-muted-foreground/70">({fmtPct(f.continue_rate)})</span></p>
                         </div>
                         <div className="text-right">
                           <p className="text-muted-foreground">Clicou</p>
-                          <p className="font-bold text-amber-300">{f.clicked ?? 0} <span className="text-muted-foreground/70">({fmtPct(f.click_rate ?? 0)})</span></p>
+                          <p className="font-bold text-amber-300"><BumpNumber value={f.clicked ?? 0} /> <span className="text-muted-foreground/70">({fmtPct(f.click_rate ?? 0)})</span></p>
                         </div>
                         <div className="text-right">
                           <p className="text-muted-foreground">Saiu</p>
-                          <p className="font-bold text-rose-300">{f.dropped} <span className="text-muted-foreground/70">({fmtPct(f.drop_rate)})</span></p>
+                          <p className="font-bold text-rose-300"><BumpNumber value={f.dropped} /> <span className="text-muted-foreground/70">({fmtPct(f.drop_rate)})</span></p>
                         </div>
                         {reachDelta !== null && (
                           <div className={`flex items-center gap-0.5 ${reachDelta >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
