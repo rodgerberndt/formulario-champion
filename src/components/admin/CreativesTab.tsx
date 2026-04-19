@@ -298,15 +298,24 @@ function isLeadMql(estagio: string, investimento: string | null, sdrOverride?: s
 }
 
 // ── Props ──
+interface FunnelMetricsInput {
+  visitors: number;
+  sessions: number;
+  entered_quiz: number;
+  completed: number;
+  conversion_rate: number;
+}
+
 interface CreativesTabProps {
   fetchAdminData: (path: string, params?: Record<string, string>) => Promise<any>;
   startDateOnly: string;
   endDateOnly: string;
   startISO: string;
   endISO: string;
+  funnelMetrics?: FunnelMetricsInput | null;
 }
 
-export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnly, startISO, endISO }: CreativesTabProps) {
+export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnly, startISO, endISO, funnelMetrics }: CreativesTabProps) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<CreativesResponse | null>(null);
   const [attribution, setAttribution] = useState<"first" | "last">("first");
