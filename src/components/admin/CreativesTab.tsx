@@ -944,14 +944,23 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       {/* Funil do Quiz — drop-off etapa por etapa */}
       {funnelMetrics && funnelMetrics.step_funnel && funnelMetrics.step_funnel.length > 0 && (() => {
         const STEP_LABELS_LOCAL: Record<string, string> = {
-          q1_nome: "1. Nome",
-          q2_whats: "2. WhatsApp",
-          q3_insta: "3. Instagram",
-          q4_mercado: "4. Mercado",
-          q5_estagio: "5. Estágio do negócio",
-          q6_investimento: "6. Faturamento mensal",
-          q6_dor: "6. Dor / Desejo",
-          q7_dor: "7. Dor / Desejo",
+          q1_quer_vender: "1. Quer vender mais?",
+          q2_mercado: "2. Mercado",
+          q3_faturamento: "3. Faturamento mensal",
+          q4_nome: "4. Nome",
+          q5_whats: "5. WhatsApp",
+          q6_insta: "6. Instagram",
+          q7_email: "7. E-mail",
+          q8_dor: "8. Dor / Desejo",
+          // Legados
+          q1_nome: "Nome",
+          q2_whats: "WhatsApp",
+          q3_insta: "Instagram",
+          q4_mercado: "Mercado",
+          q5_estagio: "Estágio do negócio",
+          q6_investimento: "Faturamento mensal",
+          q6_dor: "Dor / Desejo",
+          q7_dor: "Dor / Desejo",
         };
 
         // Monta funil: Entrou no quiz → cada step → Concluiu
