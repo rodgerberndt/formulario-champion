@@ -312,7 +312,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Comparar com</span>
               {ComparePicker}
             </div>
-            <Button onClick={load}><Play className="w-3 h-3 mr-1" />Gerar análise</Button>
+            <Button onClick={load} disabled={customMissing}><Play className="w-3 h-3 mr-1" />Gerar análise</Button>
           </div>
           <p className="text-[11px] text-muted-foreground">
             A análise não roda automaticamente. Escolha o período de comparação e clique em <strong>Gerar análise</strong>.
