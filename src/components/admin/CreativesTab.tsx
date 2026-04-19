@@ -982,7 +982,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           { key: "entered", label: "Entrou no quiz", count: enteredQuiz, color: "bg-blue-500/80", text: "text-blue-300" },
           ...steps.map((s, i) => ({
             key: s.step_id,
-            label: STEP_LABELS_LOCAL[s.step_id] || s.step_id,
+            label: `${i + 1}. ${STEP_LABELS_LOCAL[s.step_id] || s.step_id}`,
             count: s.count,
             color: i % 2 === 0 ? "bg-purple-500/70" : "bg-violet-500/70",
             text: i % 2 === 0 ? "text-purple-300" : "text-violet-300",
