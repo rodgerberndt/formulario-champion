@@ -2,20 +2,25 @@ import { useMemo, useState, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Copy, RefreshCw, Sparkles, AlertTriangle, CheckCircle2, Play } from "lucide-react";
+import { Loader2, Copy, RefreshCw, Sparkles, AlertTriangle, CheckCircle2, Play, CalendarIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useDateRange } from "@/context/DateRangeContext";
 import { runRulesEngine, type PeriodMetrics, type Alert } from "@/lib/rulesEngine";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
-type CompareMode = "previous" | "previous_2x" | "last_week" | "last_month" | "none";
+type CompareMode = "previous" | "previous_2x" | "last_week" | "last_month" | "custom" | "none";
 
 const COMPARE_OPTIONS: { value: CompareMode; label: string }[] = [
   { value: "previous", label: "Período anterior (mesmo tamanho)" },
   { value: "previous_2x", label: "2 períodos atrás (mesmo tamanho)" },
   { value: "last_week", label: "Mesma janela na semana passada (-7d)" },
   { value: "last_month", label: "Mesma janela no mês passado (-30d)" },
+  { value: "custom", label: "Personalizado (escolher no calendário)" },
   { value: "none", label: "Sem comparação" },
 ];
 
@@ -126,10 +131,15 @@ export default function InsightsTab({ fetchAdminData }: Props) {
   const [previous, setPrevious] = useState<PeriodMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [compareMode, setCompareMode] = useState<CompareMode>("previous");
+  const [customRange, setCustomRange] = useState<{ from?: Date; to?: Date }>({});
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // Use timestamps (primitives) to avoid Date identity churn between renders
   const startMs = start.getTime();
   const endMs = end.getTime();
+
+  const customFromMs = customRange.from?.getTime();
+  const customToMs = customRange.to?.getTime();
 
   const { prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly, prevLabel } = useMemo(() => {
     const span = endMs - startMs;
@@ -149,6 +159,15 @@ export default function InsightsTab({ fetchAdminData }: Props) {
         pStart = new Date(startMs - 30 * DAY);
         pEnd = new Date(endMs - 30 * DAY);
         break;
+      case "custom":
+        if (!customFromMs || !customToMs) {
+          return { prevStartISO: "", prevEndExclusiveISO: "", prevStartDateOnly: "", prevEndDateOnly: "", prevLabel: "(escolha as datas no calendário)" };
+        }
+        pStart = new Date(customFromMs);
+        pStart.setHours(0, 0, 0, 0);
+        pEnd = new Date(customToMs);
+        pEnd.setHours(23, 59, 59, 999);
+        break;
       case "none":
         return { prevStartISO: "", prevEndExclusiveISO: "", prevStartDateOnly: "", prevEndDateOnly: "", prevLabel: "(sem comparação)" };
       case "previous":
@@ -164,7 +183,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
       prevEndDateOnly: format(pEnd, "yyyy-MM-dd"),
       prevLabel: `${format(pStart, "dd/MM/yyyy")} → ${format(pEnd, "dd/MM/yyyy")}`,
     };
-  }, [startMs, endMs, compareMode]);
+  }, [startMs, endMs, compareMode, customFromMs, customToMs]);
 
   const periodLabel = useMemo(
     () => `${format(new Date(startMs), "dd/MM/yyyy")} → ${format(new Date(endMs), "dd/MM/yyyy")}`,
@@ -221,18 +240,59 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     }
   };
 
+  const customMissing = compareMode === "custom" && (!customRange.from || !customRange.to);
+
   // Comparison-mode picker (reused on initial screen + header)
   const ComparePicker = (
-    <Select value={compareMode} onValueChange={(v) => setCompareMode(v as CompareMode)}>
-      <SelectTrigger className="h-9 w-[260px] text-xs">
-        <SelectValue placeholder="Período de comparação" />
-      </SelectTrigger>
-      <SelectContent>
-        {COMPARE_OPTIONS.map((o) => (
-          <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="flex items-center gap-2 flex-wrap">
+      <Select value={compareMode} onValueChange={(v) => setCompareMode(v as CompareMode)}>
+        <SelectTrigger className="h-9 w-[260px] text-xs">
+          <SelectValue placeholder="Período de comparação" />
+        </SelectTrigger>
+        <SelectContent>
+          {COMPARE_OPTIONS.map((o) => (
+            <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {compareMode === "custom" && (
+        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn("h-9 text-xs gap-2 justify-start font-normal", !customRange.from && "text-muted-foreground")}
+            >
+              <CalendarIcon className="w-3 h-3" />
+              {customRange.from && customRange.to
+                ? `${format(customRange.from, "dd/MM/yyyy")} → ${format(customRange.to, "dd/MM/yyyy")}`
+                : "Escolher datas"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="range"
+              numberOfMonths={2}
+              locale={ptBR}
+              selected={{ from: customRange.from, to: customRange.to }}
+              onSelect={(r) => setCustomRange({ from: r?.from, to: r?.to })}
+              disabled={(d) => d > new Date()}
+              className={cn("p-3 pointer-events-auto")}
+            />
+            <div className="flex justify-end p-2 border-t border-border">
+              <Button
+                size="sm"
+                disabled={!customRange.from || !customRange.to}
+                onClick={() => setCalendarOpen(false)}
+              >
+                Aplicar
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+      )}
+    </div>
   );
 
   // Initial state — user must click "Gerar análise"
@@ -252,7 +312,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Comparar com</span>
               {ComparePicker}
             </div>
-            <Button onClick={load}><Play className="w-3 h-3 mr-1" />Gerar análise</Button>
+            <Button onClick={load} disabled={customMissing}><Play className="w-3 h-3 mr-1" />Gerar análise</Button>
           </div>
           <p className="text-[11px] text-muted-foreground">
             A análise não roda automaticamente. Escolha o período de comparação e clique em <strong>Gerar análise</strong>.
@@ -304,7 +364,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               {ComparePicker}
-              <Button onClick={load} variant="outline" size="sm"><RefreshCw className="w-3 h-3 mr-1" />Recalcular</Button>
+              <Button onClick={load} variant="outline" size="sm" disabled={customMissing}><RefreshCw className="w-3 h-3 mr-1" />Recalcular</Button>
               <Button onClick={handleCopy} size="sm" className="bg-primary"><Copy className="w-3 h-3 mr-1" />Copiar relatório</Button>
             </div>
           </div>
