@@ -222,19 +222,19 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
                       <div className="flex items-center gap-3 text-[10px] flex-shrink-0">
                         <div className="text-right">
                           <p className="text-muted-foreground">Chegou</p>
-                          <p className="font-bold text-cyan-300">{f.reached} <span className="text-muted-foreground/70">({fmtPct(f.pct_of_visitors)})</span></p>
+                          <p className="font-bold text-cyan-300"><BumpNumber value={f.reached} /> <span className="text-muted-foreground/70">({fmtPct(f.pct_of_visitors)})</span></p>
                         </div>
                         <div className="text-right">
                           <p className="text-muted-foreground">Continuou</p>
-                          <p className="font-bold text-emerald-300">{f.continued} <span className="text-muted-foreground/70">({fmtPct(f.continue_rate)})</span></p>
+                          <p className="font-bold text-emerald-300"><BumpNumber value={f.continued} /> <span className="text-muted-foreground/70">({fmtPct(f.continue_rate)})</span></p>
                         </div>
                         <div className="text-right">
                           <p className="text-muted-foreground">Clicou</p>
-                          <p className="font-bold text-amber-300">{f.clicked ?? 0} <span className="text-muted-foreground/70">({fmtPct(f.click_rate ?? 0)})</span></p>
+                          <p className="font-bold text-amber-300"><BumpNumber value={f.clicked ?? 0} /> <span className="text-muted-foreground/70">({fmtPct(f.click_rate ?? 0)})</span></p>
                         </div>
                         <div className="text-right">
                           <p className="text-muted-foreground">Saiu</p>
-                          <p className="font-bold text-rose-300">{f.dropped} <span className="text-muted-foreground/70">({fmtPct(f.drop_rate)})</span></p>
+                          <p className="font-bold text-rose-300"><BumpNumber value={f.dropped} /> <span className="text-muted-foreground/70">({fmtPct(f.drop_rate)})</span></p>
                         </div>
                         {reachDelta !== null && (
                           <div className={`flex items-center gap-0.5 ${reachDelta >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
