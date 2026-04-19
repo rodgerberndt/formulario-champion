@@ -86,24 +86,26 @@ export function DateRangeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isInitialized) return;
 
-    // Update URL without navigation
-    const newParams = serializeRangeToURL(preset, range.start, range.end);
-    const currentParams = new URLSearchParams(searchParams);
-    
-    // Preserve other params, update range params
-    currentParams.delete("range");
-    currentParams.delete("from");
-    currentParams.delete("to");
-    
-    newParams.forEach((value, key) => {
-      currentParams.set(key, value);
-    });
-    
-    setSearchParams(currentParams, { replace: true });
+    // Use functional updater so we always read the latest searchParams
+    // (avoids stale closure that could revert the URL/preset)
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete("range");
+        next.delete("from");
+        next.delete("to");
+        const newParams = serializeRangeToURL(preset, range.start, range.end);
+        newParams.forEach((value, key) => {
+          next.set(key, value);
+        });
+        return next;
+      },
+      { replace: true }
+    );
 
     // Save to localStorage
     saveRangeToStorage(preset, range.start, range.end);
-  }, [preset, range, isInitialized, setSearchParams, searchParams]);
+  }, [preset, range, isInitialized, setSearchParams]);
 
   const applyPreset = useCallback((newPreset: DatePreset) => {
     setPreset(newPreset);
