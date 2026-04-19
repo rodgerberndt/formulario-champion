@@ -1544,77 +1544,7 @@ export default function AdminAnalytics() {
             </CardContent>
           </Card>
 
-          {/* Metrics Cards */}
-          {metrics && (() => {
-            const visitors = metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors;
-            const entered = metrics.entered_quiz;
-            const completed = leads.length;
-            const visitorToQuiz = visitors > 0 ? (entered / visitors) * 100 : 0;
-            const quizToCompleted = entered > 0 ? (completed / entered) * 100 : 0;
-            return (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <Users className="w-8 h-8 text-primary" />
-                    <div>
-                      <p className="text-2xl font-bold">{visitors}</p>
-                      <p className="text-xs text-muted-foreground">Visitantes únicos</p>
-                      {metrics.has_reliable_ip_data && metrics.total_visitors > metrics.unique_visitors && (
-                        <p className="text-xs text-muted-foreground/60">({metrics.total_visitors} sessões)</p>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <Eye className="w-8 h-8 text-blue-500" />
-                    <div className="min-w-0">
-                      <p className="text-2xl font-bold">{entered}</p>
-                      <p className="text-xs text-muted-foreground">Entraram no quiz</p>
-                      <p className="text-[11px] mt-0.5">
-                        <span className="text-blue-400 font-semibold">{visitorToQuiz.toFixed(1)}%</span>
-                        <span className="text-muted-foreground/70"> conv. · perda {(100 - visitorToQuiz).toFixed(1)}%</span>
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card
-                className="cursor-pointer hover:bg-muted/50 transition-colors border-green-500/30 hover:border-green-500/50"
-                onClick={openCompletedLeads}
-              >
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-8 h-8 text-green-500" />
-                    <div className="min-w-0">
-                      <p className="text-2xl font-bold">{completed}</p>
-                      <p className="text-xs text-muted-foreground">Concluíram <span className="text-green-500">→ clique para ver</span></p>
-                      <p className="text-[11px] mt-0.5">
-                        <span className="text-green-400 font-semibold">{quizToCompleted.toFixed(1)}%</span>
-                        <span className="text-muted-foreground/70"> conv. · perda {(100 - quizToCompleted).toFixed(1)}%</span>
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <TrendingUp className="w-8 h-8 text-primary" />
-                    <div>
-                      <p className="text-2xl font-bold">{metrics.conversion_rate}%</p>
-                      <p className="text-xs text-muted-foreground">Taxa de conversão</p>
-                      <p className="text-[11px] mt-0.5 text-muted-foreground/70">Visitantes → Concluíram</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            );
-          })()}
+          {/* Metrics Cards movidos para a aba Criativos */}
 
 
           <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
