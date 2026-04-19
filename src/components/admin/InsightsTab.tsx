@@ -605,7 +605,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
               <Button onClick={handleCopy} size="sm" className="bg-primary"><Copy className="w-3 h-3 mr-1" />Copiar relatório</Button>
             </div>
           </div>
-          {Pickers}
+          {PeriodControls}
         </CardContent>
       </Card>
 
