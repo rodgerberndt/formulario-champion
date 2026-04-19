@@ -931,7 +931,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 </div>
                 <div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Taxa de conversão</p>
-                  <p className="text-xl font-bold text-primary">{conversion_rate}%</p>
+                  <p className="text-xl font-bold text-cyan-300">{conversion_rate}%</p>
                   <p className="text-[10px] text-muted-foreground/70">Visitantes → Concluíram</p>
                 </div>
               </div>
