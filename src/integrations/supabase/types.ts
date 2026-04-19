@@ -68,6 +68,45 @@ export type Database = {
         }
         Relationships: []
       }
+      click_events: {
+        Row: {
+          click_id: string | null
+          click_type: string
+          created_at: string
+          href: string | null
+          id: string
+          label: string | null
+          metadata: Json | null
+          page: string
+          section_id: string | null
+          session_id: string
+        }
+        Insert: {
+          click_id?: string | null
+          click_type: string
+          created_at?: string
+          href?: string | null
+          id?: string
+          label?: string | null
+          metadata?: Json | null
+          page?: string
+          section_id?: string | null
+          session_id: string
+        }
+        Update: {
+          click_id?: string | null
+          click_type?: string
+          created_at?: string
+          href?: string | null
+          id?: string
+          label?: string | null
+          metadata?: Json | null
+          page?: string
+          section_id?: string | null
+          session_id?: string
+        }
+        Relationships: []
+      }
       daily_reports: {
         Row: {
           ajuste_amanha: string | null
@@ -713,6 +752,66 @@ export type Database = {
           phone?: string
           status?: string
           utm?: Json
+        }
+        Relationships: []
+      }
+      scroll_milestones: {
+        Row: {
+          id: string
+          milestone: number
+          page: string
+          reached_at: string
+          session_id: string
+        }
+        Insert: {
+          id?: string
+          milestone: number
+          page?: string
+          reached_at?: string
+          session_id: string
+        }
+        Update: {
+          id?: string
+          milestone?: number
+          page?: string
+          reached_at?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
+      section_views: {
+        Row: {
+          created_at: string
+          first_seen_at: string
+          id: string
+          last_seen_at: string
+          page: string
+          section_id: string
+          section_order: number
+          session_id: string
+          time_spent_ms: number
+        }
+        Insert: {
+          created_at?: string
+          first_seen_at?: string
+          id?: string
+          last_seen_at?: string
+          page?: string
+          section_id: string
+          section_order: number
+          session_id: string
+          time_spent_ms?: number
+        }
+        Update: {
+          created_at?: string
+          first_seen_at?: string
+          id?: string
+          last_seen_at?: string
+          page?: string
+          section_id?: string
+          section_order?: number
+          session_id?: string
+          time_spent_ms?: number
         }
         Relationships: []
       }
