@@ -380,7 +380,11 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-1 text-[10px]">
+                  <div className="grid grid-cols-3 gap-1 text-[10px]">
+                    <div>
+                      <p className="text-muted-foreground">Tráfego</p>
+                      <p className="font-semibold text-amber-300">{d.sessions}</p>
+                    </div>
                     <div>
                       <p className="text-muted-foreground">Entrou</p>
                       <p className="font-semibold text-blue-400">{d.entered_quiz}</p>
