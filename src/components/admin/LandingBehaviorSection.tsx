@@ -102,7 +102,7 @@ interface Props {
 }
 
 const SECTION_LABELS: Record<string, string> = {
-  hero: "Hero (dobra inicial)",
+  hero: "Headline inicial",
   social_proof: "Prova social",
   dor: "Dor / problema",
   portfolio: "Portfólio",
@@ -112,6 +112,9 @@ const SECTION_LABELS: Record<string, string> = {
   como_funciona: "Como funciona",
   cta_final: "CTA final",
 };
+
+// Section IDs to hide from the funnel list (tracked elsewhere)
+const HIDDEN_SECTIONS = new Set(["cta_intermediario_btn"]);
 
 function fmtPct(n: number) { return `${n.toFixed(1)}%`; }
 function fmtTime(ms: number) {
