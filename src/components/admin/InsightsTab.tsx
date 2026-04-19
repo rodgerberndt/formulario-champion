@@ -591,6 +591,16 @@ export default function InsightsTab({ fetchAdminData }: Props) {
   );
 }
 
+function QualCard({ label, value, sub, highlight }: { label: string; value: string; sub?: string; highlight?: boolean }) {
+  return (
+    <div className={`rounded-md border p-2 ${highlight ? "border-amber-500/40 bg-amber-500/5" : "border-border/40 bg-background/40"}`}>
+      <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className={`text-xs font-bold mt-0.5 truncate ${highlight ? "text-amber-300" : ""}`} title={value}>{value}</p>
+      {sub && <p className="text-[9px] text-muted-foreground mt-0.5">{sub}</p>}
+    </div>
+  );
+}
+
 function SummaryCard({ label, value, prev, money }: { label: string; value: number; prev?: number; money?: boolean }) {
   const fmt = (n: number) => money ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(n) : new Intl.NumberFormat("pt-BR").format(n);
   const delta = prev !== undefined && prev > 0 ? ((value - prev) / prev) * 100 : null;
