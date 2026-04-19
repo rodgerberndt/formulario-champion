@@ -951,6 +951,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         );
       })()}
 
+      {/* Análise Semanal — performance por dia da semana */}
+      <WeeklyAnalysisSection fetchAdminData={fetchAdminData} />
+
       {/* Funil do Quiz — drop-off etapa por etapa (apenas quiz v2) */}
       {funnelMetrics && funnelMetrics.quiz_v2_empty && (
         <Card className="border-primary/30">
