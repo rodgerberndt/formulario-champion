@@ -131,10 +131,15 @@ export default function InsightsTab({ fetchAdminData }: Props) {
   const [previous, setPrevious] = useState<PeriodMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [compareMode, setCompareMode] = useState<CompareMode>("previous");
+  const [customRange, setCustomRange] = useState<{ from?: Date; to?: Date }>({});
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // Use timestamps (primitives) to avoid Date identity churn between renders
   const startMs = start.getTime();
   const endMs = end.getTime();
+
+  const customFromMs = customRange.from?.getTime();
+  const customToMs = customRange.to?.getTime();
 
   const { prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly, prevLabel } = useMemo(() => {
     const span = endMs - startMs;
@@ -154,6 +159,15 @@ export default function InsightsTab({ fetchAdminData }: Props) {
         pStart = new Date(startMs - 30 * DAY);
         pEnd = new Date(endMs - 30 * DAY);
         break;
+      case "custom":
+        if (!customFromMs || !customToMs) {
+          return { prevStartISO: "", prevEndExclusiveISO: "", prevStartDateOnly: "", prevEndDateOnly: "", prevLabel: "(escolha as datas no calendário)" };
+        }
+        pStart = new Date(customFromMs);
+        pStart.setHours(0, 0, 0, 0);
+        pEnd = new Date(customToMs);
+        pEnd.setHours(23, 59, 59, 999);
+        break;
       case "none":
         return { prevStartISO: "", prevEndExclusiveISO: "", prevStartDateOnly: "", prevEndDateOnly: "", prevLabel: "(sem comparação)" };
       case "previous":
@@ -169,7 +183,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
       prevEndDateOnly: format(pEnd, "yyyy-MM-dd"),
       prevLabel: `${format(pStart, "dd/MM/yyyy")} → ${format(pEnd, "dd/MM/yyyy")}`,
     };
-  }, [startMs, endMs, compareMode]);
+  }, [startMs, endMs, compareMode, customFromMs, customToMs]);
 
   const periodLabel = useMemo(
     () => `${format(new Date(startMs), "dd/MM/yyyy")} → ${format(new Date(endMs), "dd/MM/yyyy")}`,
