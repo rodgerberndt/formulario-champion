@@ -1084,8 +1084,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Tráfego</p>
                 <div className="grid grid-cols-3 gap-4">
                   <MetricItem label="Total Spend" value={formatCurrency(totals.spend) || "—"} />
-                  <MetricItem label="Total Leads" value={formatNumber(totals.leads)} />
-                  <MetricItem label="CPL" value={formatCurrency(totals.cpl) || "—"} />
+                  <MetricItem
+                    label="Total Leads"
+                    value={formatNumber(totals.leads)}
+                    sub={funnelMetrics && funnelMetrics.completed > 0 ? `${((totals.leads / funnelMetrics.completed) * 100).toFixed(1)}% das conclusões` : undefined}
+                  />
+                  <MetricItem label="CPL" value={formatCurrency(totals.cpl) || "—"} sub="Spend ÷ Leads" />
                 </div>
               </CardContent>
             </Card>
@@ -1107,13 +1111,13 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           {/* Row 2: Tiers */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Tiers</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Tiers (% sobre total de leads)</p>
               <div className="grid grid-cols-5 gap-4">
-                <MetricItem label="Small" value={formatNumber(totals.tier_small)} sub={formatCurrency(totals.cp_tier_small) || undefined} />
-                <MetricItem label="Medium" value={formatNumber(totals.tier_medium)} color="text-blue-400" sub={formatCurrency(totals.cp_tier_medium) || undefined} />
-                <MetricItem label="Large" value={formatNumber(totals.tier_large)} color="text-amber-400" sub={formatCurrency(totals.cp_tier_large) || undefined} />
-                <MetricItem label="Enterprise" value={formatNumber(totals.tier_enterprise)} color="text-purple-400" sub={formatCurrency(totals.cp_tier_enterprise) || undefined} />
-                <MetricItem label="Enterprise+" value={formatNumber(totals.tier_enterprise_plus)} color="text-pink-400" sub={formatCurrency(totals.cp_tier_enterprise_plus) || undefined} />
+                <MetricItem label="Small" value={formatNumber(totals.tier_small)} sub={`${totals.leads > 0 ? ((totals.tier_small / totals.leads) * 100).toFixed(1) : "0.0"}% · ${formatCurrency(totals.cp_tier_small) || "—"}`} />
+                <MetricItem label="Medium" value={formatNumber(totals.tier_medium)} color="text-blue-400" sub={`${totals.leads > 0 ? ((totals.tier_medium / totals.leads) * 100).toFixed(1) : "0.0"}% · ${formatCurrency(totals.cp_tier_medium) || "—"}`} />
+                <MetricItem label="Large" value={formatNumber(totals.tier_large)} color="text-amber-400" sub={`${totals.leads > 0 ? ((totals.tier_large / totals.leads) * 100).toFixed(1) : "0.0"}% · ${formatCurrency(totals.cp_tier_large) || "—"}`} />
+                <MetricItem label="Enterprise" value={formatNumber(totals.tier_enterprise)} color="text-purple-400" sub={`${totals.leads > 0 ? ((totals.tier_enterprise / totals.leads) * 100).toFixed(1) : "0.0"}% · ${formatCurrency(totals.cp_tier_enterprise) || "—"}`} />
+                <MetricItem label="Enterprise+" value={formatNumber(totals.tier_enterprise_plus)} color="text-pink-400" sub={`${totals.leads > 0 ? ((totals.tier_enterprise_plus / totals.leads) * 100).toFixed(1) : "0.0"}% · ${formatCurrency(totals.cp_tier_enterprise_plus) || "—"}`} />
               </div>
             </CardContent>
           </Card>
@@ -1138,7 +1142,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-violet-400 uppercase tracking-wider mb-3 border-b border-violet-500/20 pb-2">Sprint</p>
                 <div className="grid grid-cols-2 gap-4">
-                  <MetricItem label="Vendas" value={`${formatNumber(totals.sales_sprint || 0)}`} color="text-violet-400" sub={formatCurrency(totals.revenue_sprint || 0) || undefined} />
+                  <MetricItem
+                    label="Vendas"
+                    value={`${formatNumber(totals.sales_sprint || 0)}`}
+                    color="text-violet-400"
+                    sub={`${formatCurrency(totals.revenue_sprint || 0) || "—"} · ${qualifiedLeads > 0 ? (((totals.sales_sprint || 0) / qualifiedLeads) * 100).toFixed(1) : "0.0"}% leads ≥5k`}
+                  />
                   <MetricItem label="Ticket Médio" value={avgSprint > 0 ? formatCurrency(avgSprint) || "—" : "—"} color="text-violet-300" />
                 </div>
               </CardContent>
@@ -1148,7 +1157,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-3 border-b border-teal-500/20 pb-2">Assessoria</p>
                 <div className="grid grid-cols-2 gap-4">
-                  <MetricItem label="Vendas" value={`${formatNumber(totals.sales_assessoria || 0)}`} color="text-teal-400" sub={formatCurrency(totals.revenue_assessoria || 0) || undefined} />
+                  <MetricItem
+                    label="Vendas"
+                    value={`${formatNumber(totals.sales_assessoria || 0)}`}
+                    color="text-teal-400"
+                    sub={`${formatCurrency(totals.revenue_assessoria || 0) || "—"} · ${totals.mql > 0 ? (((totals.sales_assessoria || 0) / totals.mql) * 100).toFixed(1) : "0.0"}% MQLs`}
+                  />
                   <MetricItem label="Ticket Médio" value={avgAssessoria > 0 ? formatCurrency(avgAssessoria) || "—" : "—"} color="text-teal-300" />
                 </div>
               </CardContent>
@@ -1158,7 +1172,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-3 border-b border-emerald-500/20 pb-2">Total</p>
                 <div className="grid grid-cols-2 gap-4">
-                  <MetricItem label="Vendas" value={`${formatNumber(totals.sales)}`} color="text-emerald-400" sub={formatCurrency(totals.revenue) || undefined} />
+                  <MetricItem
+                    label="Vendas"
+                    value={`${formatNumber(totals.sales)}`}
+                    color="text-emerald-400"
+                    sub={`${formatCurrency(totals.revenue) || "—"} · ${totals.leads > 0 ? ((totals.sales / totals.leads) * 100).toFixed(2) : "0.00"}% leads`}
+                  />
                   <MetricItem label="Ticket Médio" value={avgTotal > 0 ? formatCurrency(avgTotal) || "—" : "—"} color="text-emerald-300" />
                 </div>
               </CardContent>
@@ -1170,14 +1189,14 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card>
               <CardContent className="pt-4">
                 <div className="grid grid-cols-1 gap-1">
-                  <MetricItem label="CAC" value={formatCurrency(totals.cac) || "—"} />
+                  <MetricItem label="CAC" value={formatCurrency(totals.cac) || "—"} sub="Spend ÷ Vendas" />
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-4">
                 <div className="grid grid-cols-1 gap-1">
-                  <MetricItem label="ROAS" value={totals.roas !== null ? `${totals.roas.toFixed(2)}x` : "—"} />
+                  <MetricItem label="ROAS" value={totals.roas !== null ? `${totals.roas.toFixed(2)}x` : "—"} sub="Receita ÷ Spend" />
                 </div>
               </CardContent>
             </Card>
