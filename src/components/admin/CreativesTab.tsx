@@ -989,10 +989,32 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           }
         }
 
+        // Paleta: topo (entrada) ciano, meio roxo/violeta, fim verde; gargalo destacado
+        const stageColors = allStages.map((_, i) => {
+          if (i === 0) return { stroke: "stroke-cyan-400", fill: "fill-cyan-500/15", text: "text-cyan-300", hex: "rgb(34 211 238)" };
+          if (i === allStages.length - 1) return { stroke: "stroke-emerald-400", fill: "fill-emerald-500/15", text: "text-emerald-300", hex: "rgb(52 211 153)" };
+          return { stroke: "stroke-violet-400", fill: "fill-violet-500/15", text: "text-violet-300", hex: "rgb(167 139 250)" };
+        });
+
+        const N = allStages.length;
+        const minW = 18; // % largura mínima do trapézio (base do funil)
+        const maxW = 100;
+        // largura proporcional à contagem (mas com mínimo para legibilidade)
+        const widths = allStages.map((s) => {
+          const raw = (s.count / baseForWidth) * 100;
+          return Math.max(minW, Math.min(maxW, raw));
+        });
+        // Garante decrescimento visual (cada etapa nunca mais larga que a anterior)
+        for (let i = 1; i < widths.length; i++) {
+          if (widths[i] > widths[i - 1]) widths[i] = widths[i - 1];
+        }
+
+        const ROW_H = 56; // altura de cada trapézio em px
+
         return (
           <Card className="border-primary/30">
             <CardContent className="pt-4">
-              <div className="flex items-center justify-between mb-3 border-b border-border/50 pb-2">
+              <div className="flex items-center justify-between mb-4 border-b border-border/50 pb-2">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Funil do Quiz — drop-off por etapa (período selecionado)
                 </p>
@@ -1001,52 +1023,109 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 </p>
               </div>
 
-              <div className="space-y-1.5">
-                {allStages.map((stage, idx) => {
-                  const prev = idx > 0 ? allStages[idx - 1] : null;
-                  const prevCount = prev?.count ?? null;
-                  const conv = prevCount && prevCount > 0
-                    ? (stage.count / prevCount) * 100
-                    : null;
-                  const loss = conv !== null ? 100 - conv : null;
-                  const lossAbs = prevCount !== null ? Math.max(0, prevCount - stage.count) : 0;
-                  const widthPct = Math.max(8, Math.min(100, (stage.count / baseForWidth) * 100));
-                  const isBottleneck = idx === biggestDropIdx && loss !== null && loss >= 20;
-
-                  return (
-                    <div key={stage.key} className="flex items-center gap-3">
-                      <div className={`relative flex-1 h-10 rounded-md overflow-hidden bg-muted/20 border ${isBottleneck ? "border-red-500/60" : "border-border/40"}`}>
-                        <div
-                          className={`absolute inset-y-0 left-0 ${stage.color} transition-all duration-500 ease-out`}
-                          style={{ width: `${widthPct}%` }}
-                        />
-                        <div className="relative h-full flex items-center justify-between px-3">
-                          <span className="text-xs font-medium text-foreground/90 uppercase tracking-wider truncate">
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 items-start">
+                {/* Coluna do funil (trapézios empilhados) */}
+                <div className="flex flex-col items-center">
+                  {allStages.map((stage, idx) => {
+                    const top = widths[idx];
+                    const bottom = idx < N - 1 ? widths[idx + 1] : Math.max(minW * 0.6, top * 0.7);
+                    const c = stageColors[idx];
+                    const isBottleneck = idx === biggestDropIdx;
+                    // pontos do trapézio em viewBox 100x100
+                    const leftTop = (100 - top) / 2;
+                    const rightTop = leftTop + top;
+                    const leftBot = (100 - bottom) / 2;
+                    const rightBot = leftBot + bottom;
+                    return (
+                      <div key={stage.key} className="relative w-full max-w-[640px]" style={{ height: ROW_H }}>
+                        <svg
+                          viewBox="0 0 100 100"
+                          preserveAspectRatio="none"
+                          className="absolute inset-0 w-full h-full"
+                        >
+                          <polygon
+                            points={`${leftTop},0 ${rightTop},0 ${rightBot},100 ${leftBot},100`}
+                            className={`${c.fill} ${c.stroke}`}
+                            strokeWidth={isBottleneck ? 2.5 : 1.5}
+                            stroke={isBottleneck ? "rgb(248 113 113)" : "currentColor"}
+                            vectorEffect="non-scaling-stroke"
+                          />
+                        </svg>
+                        <div className="relative h-full flex items-center justify-center px-4 gap-3">
+                          <span className="text-[11px] sm:text-xs font-semibold text-foreground/95 uppercase tracking-wider text-center truncate">
                             {stage.label}
-                            {isBottleneck && <span className="ml-2 text-[9px] text-red-300 font-bold">⚠ MAIOR PERDA</span>}
                           </span>
-                          <span className={`text-base font-bold ${stage.text} drop-shadow shrink-0`}>
+                          <span className={`text-sm font-bold ${c.text} drop-shadow`}>
                             {formatNumber(stage.count)}
                           </span>
+                          {isBottleneck && (
+                            <span className="text-[9px] text-red-300 font-bold whitespace-nowrap">⚠</span>
+                          )}
                         </div>
                       </div>
-                      <div className="w-32 shrink-0 text-right">
-                        {conv !== null ? (
-                          <>
-                            <p className={`text-xs font-semibold ${stage.text}`}>
-                              {conv.toFixed(1)}% conv.
-                            </p>
-                            <p className={`text-[10px] ${loss! >= 20 ? "text-red-400/90" : "text-muted-foreground/70"}`}>
-                              perda {loss!.toFixed(1)}% (-{formatNumber(lossAbs)})
-                            </p>
-                          </>
-                        ) : (
-                          <p className="text-[10px] text-muted-foreground/60">início</p>
-                        )}
+                    );
+                  })}
+                </div>
+
+                {/* Coluna das conversões (cards à direita, ligados ao funil) */}
+                <div className="flex flex-col gap-1">
+                  {allStages.map((stage, idx) => {
+                    const prev = idx > 0 ? allStages[idx - 1] : null;
+                    const prevCount = prev?.count ?? null;
+                    const conv = prevCount && prevCount > 0
+                      ? (stage.count / prevCount) * 100
+                      : null;
+                    const loss = conv !== null ? 100 - conv : null;
+                    const lossAbs = prevCount !== null ? Math.max(0, prevCount - stage.count) : 0;
+                    const c = stageColors[idx];
+                    const isBottleneck = idx === biggestDropIdx && loss !== null && loss >= 20;
+                    return (
+                      <div
+                        key={stage.key}
+                        className="flex items-center gap-2"
+                        style={{ height: ROW_H }}
+                      >
+                        <div className="flex-1 h-px bg-border/40" />
+                        <div className={`flex-1 rounded-md px-3 py-2 bg-muted/30 border ${isBottleneck ? "border-red-500/60" : "border-border/40"}`}>
+                          {conv !== null ? (
+                            <>
+                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider truncate">
+                                {prev?.label} → {stage.label}
+                              </p>
+                              <p className={`text-sm font-bold ${c.text}`}>
+                                {conv.toFixed(1)}%
+                                <span className={`ml-2 text-[10px] font-medium ${loss! >= 20 ? "text-red-400" : "text-muted-foreground/70"}`}>
+                                  perda {loss!.toFixed(1)}% (-{formatNumber(lossAbs)})
+                                </span>
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Topo do funil</p>
+                              <p className="text-sm font-bold text-cyan-300">100%</p>
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Legenda */}
+              <div className="flex items-center justify-center gap-6 mt-4 pt-3 border-t border-border/40">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Entrada</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-violet-400" />
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Etapas do quiz</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Conclusão</span>
+                </div>
               </div>
             </CardContent>
           </Card>
