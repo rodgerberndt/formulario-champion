@@ -8,6 +8,7 @@ import { PortfolioSection } from "@/components/landing/PortfolioSection";
 import { MetodoChampion } from "@/components/landing/MetodoChampion";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { GanchoCorpoSection } from "@/components/landing/GanchoCorpoSection";
+import { FAQSection } from "@/components/landing/FAQSection";
 
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
@@ -93,7 +94,11 @@ const Index = () => {
           <HowItWorks />
         </section>
 
-        <section data-theme="gold-haze" data-track-id="cta_final" data-track-order="9">
+        <section data-theme="cave" data-track-id="faq" data-track-order="9">
+          <FAQSection />
+        </section>
+
+        <section data-theme="gold-haze" data-track-id="cta_final" data-track-order="10">
           <FinalCTA />
         </section>
       </main>
