@@ -91,7 +91,7 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
     return Math.max(...cur.funnel.map((f) => f.reached));
   }, [cur]);
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <Card className="border-primary/30">
         <CardContent className="pt-6 flex items-center justify-center gap-2 text-muted-foreground">
