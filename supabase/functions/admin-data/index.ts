@@ -403,7 +403,7 @@ Deno.serve(async (req: Request) => {
       // Fetch ALL events for those sessions (paginated)
       const allEvents = await fetchAll<any>(
         "lead_events",
-        "event_name, step_id, session_id, metadata, button_id",
+        "event_name, step_id, session_id, metadata, button_id, created_at",
         (q: any) => {
           if (from) q = q.gte("created_at", from);
           if (toEnd) q = q.lte("created_at", toEnd);
@@ -447,70 +447,149 @@ Deno.serve(async (req: Request) => {
         start_btn_3: buttonEventCounts.start_btn_3.size,
       };
 
-      // Step funnel — preserva a ORDEM REAL das perguntas no período selecionado.
-      // Detecta o fluxo dominante (novo vs antigo) com base nos eventos do período.
-      // Fluxo novo (a partir de ~abril/2026): quer_vender → mercado → faturamento → nome → whats → insta → email → dor
-      // Fluxo antigo: nome → whats → insta → mercado → estagio → investimento → dor
-      const NEW_FLOW = ["q1_quer_vender", "q2_mercado", "q3_faturamento", "q4_nome", "q5_whats", "q6_insta", "q7_email", "q8_dor"];
-      const OLD_FLOW = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_investimento", "q7_dor"];
-
+      const sessionsWithSubmit = new Set(
+        filteredEvents.filter((e: any) => e.event_name === "submit").map((e: any) => e.session_id)
+      );
+      const isLoadingStep = (stepId: string) => stepId.toLowerCase().includes("loading");
       const stepCounts: Record<string, Set<string>> = {};
+      const stepFirstSeen: Record<string, string> = {};
       const sessionViewedSteps: Record<string, Set<string>> = {};
       const sessionAdvancedFrom: Record<string, Set<string>> = {};
+      const transitionCounts: Record<string, Set<string>> = {};
+      const transitionFirstSeen: Record<string, string> = {};
 
       filteredEvents.forEach((event: any) => {
         if (event.event_name === "step_view" && event.step_id) {
           if (!stepCounts[event.step_id]) stepCounts[event.step_id] = new Set();
           stepCounts[event.step_id].add(event.session_id);
+
+          if (!stepFirstSeen[event.step_id] || event.created_at < stepFirstSeen[event.step_id]) {
+            stepFirstSeen[event.step_id] = event.created_at;
+          }
+
           if (!sessionViewedSteps[event.session_id]) sessionViewedSteps[event.session_id] = new Set();
           sessionViewedSteps[event.session_id].add(event.step_id);
         }
+
         if (event.event_name === "step_next") {
           const metadata = event.metadata as Record<string, unknown> | null;
           const fromStep = metadata?.from_step as string | undefined;
+          const toStep = metadata?.to_step as string | undefined;
+
           if (fromStep) {
             if (!sessionAdvancedFrom[event.session_id]) sessionAdvancedFrom[event.session_id] = new Set();
             sessionAdvancedFrom[event.session_id].add(fromStep);
           }
+
+          if (fromStep && toStep) {
+            const key = `${fromStep}__${toStep}`;
+            if (!transitionCounts[key]) transitionCounts[key] = new Set();
+            transitionCounts[key].add(event.session_id);
+            if (!transitionFirstSeen[key] || event.created_at < transitionFirstSeen[key]) {
+              transitionFirstSeen[key] = event.created_at;
+            }
+          }
         }
       });
 
-      // Soma de sessões em cada fluxo (para detectar qual predomina no período)
-      const newFlowVolume = NEW_FLOW.reduce((acc, sid) => acc + (stepCounts[sid]?.size || 0), 0);
-      const oldFlowVolume = OLD_FLOW.reduce((acc, sid) => acc + (stepCounts[sid]?.size || 0), 0);
+      const questionStepIds = Object.keys(stepCounts).filter((stepId) => !isLoadingStep(stepId));
+      const maxStepCount = questionStepIds.reduce((max, stepId) => Math.max(max, stepCounts[stepId]?.size || 0), 0);
+      const minRelevantStepCount = Math.max(1, Math.ceil(maxStepCount * 0.01));
+      const displayStepIds = new Set(
+        questionStepIds.filter((stepId) => (stepCounts[stepId]?.size || 0) >= minRelevantStepCount),
+      );
 
-      // Constrói funil na ordem real:
-      // - Se ambos os fluxos tiverem dados, mostra os dois em sequência (antigo primeiro pois é mais cronológico)
-      // - Senão, mostra apenas o que tem dados
-      const stepFunnel: Array<{ step_id: string; count: number; flow?: string }> = [];
+      const sortedDisplaySteps = Array.from(displayStepIds).sort((a, b) => {
+        const firstSeenDiff = (stepFirstSeen[a] || "").localeCompare(stepFirstSeen[b] || "");
+        if (firstSeenDiff !== 0) return firstSeenDiff;
+        return a.localeCompare(b);
+      });
 
-      const hasNew = newFlowVolume > 0;
-      const hasOld = oldFlowVolume > 0;
+      const edgesByFrom = new Map<string, Array<{ to: string; count: number; firstSeen: string }>>();
+      Object.entries(transitionCounts).forEach(([key, sessions]) => {
+        const [fromStep, toStep] = key.split("__");
+        if (!displayStepIds.has(fromStep) || !displayStepIds.has(toStep)) return;
 
-      if (hasOld && hasNew) {
-        // Período de transição: mostra ambos rotulados
-        OLD_FLOW.forEach(sid => {
-          const c = stepCounts[sid]?.size || 0;
-          if (c > 0) stepFunnel.push({ step_id: sid, count: c, flow: "antigo" });
+        const current = edgesByFrom.get(fromStep) || [];
+        current.push({
+          to: toStep,
+          count: sessions.size,
+          firstSeen: transitionFirstSeen[key] || "",
         });
-        NEW_FLOW.forEach(sid => {
-          const c = stepCounts[sid]?.size || 0;
-          if (c > 0) stepFunnel.push({ step_id: sid, count: c, flow: "novo" });
+        edgesByFrom.set(fromStep, current);
+      });
+
+      const dominantNext = new Map<string, string>();
+      edgesByFrom.forEach((edges, fromStep) => {
+        const fromCount = stepCounts[fromStep]?.size || 0;
+        const sortedEdges = [...edges].sort((a, b) => b.count - a.count || a.firstSeen.localeCompare(b.firstSeen));
+        const topEdge = sortedEdges[0];
+        if (!topEdge) return;
+
+        const isStrongEdge = topEdge.count === fromCount || topEdge.count >= Math.max(2, Math.ceil(fromCount * 0.15));
+        if (isStrongEdge) {
+          dominantNext.set(fromStep, topEdge.to);
+        }
+      });
+
+      const incomingSteps = new Set(Array.from(dominantNext.values()));
+      const startSteps = sortedDisplaySteps.filter((stepId) => !incomingSteps.has(stepId));
+      const visitedSteps = new Set<string>();
+      const flows: string[][] = [];
+
+      const buildFlow = (startStep: string) => {
+        const sequence: string[] = [];
+        let currentStep: string | undefined = startStep;
+
+        while (currentStep && !visitedSteps.has(currentStep)) {
+          visitedSteps.add(currentStep);
+          sequence.push(currentStep);
+          currentStep = dominantNext.get(currentStep);
+        }
+
+        if (sequence.length > 0) flows.push(sequence);
+      };
+
+      startSteps.forEach(buildFlow);
+      sortedDisplaySteps.forEach((stepId) => {
+        if (!visitedSteps.has(stepId)) buildFlow(stepId);
+      });
+
+      const stepFunnel: Array<{
+        step_id: string;
+        count: number;
+        flow?: string;
+        flow_index?: number;
+        flow_started?: number;
+        flow_completed?: number;
+      }> = [];
+
+      flows.forEach((flowSteps, flowIndex) => {
+        const flowId = `flow_${flowIndex + 1}`;
+        const flowSessionIds = new Set<string>();
+
+        flowSteps.forEach((stepId) => {
+          stepCounts[stepId]?.forEach((sessionId) => flowSessionIds.add(sessionId));
         });
-      } else if (hasNew) {
-        NEW_FLOW.forEach(sid => {
-          stepFunnel.push({ step_id: sid, count: stepCounts[sid]?.size || 0, flow: "novo" });
+
+        const flowQuizViews = Array.from(flowSessionIds).filter((sessionId) => sessionsWithQuizView.has(sessionId)).length;
+        const flowCompleted = Array.from(flowSessionIds).filter((sessionId) => sessionsWithSubmit.has(sessionId)).length;
+        const firstStepCount = stepCounts[flowSteps[0]]?.size || 0;
+        const flowStarted = Math.max(firstStepCount, flowQuizViews);
+
+        flowSteps.forEach((stepId) => {
+          stepFunnel.push({
+            step_id: stepId,
+            count: stepCounts[stepId]?.size || 0,
+            flow: flowId,
+            flow_index: flowIndex,
+            flow_started: flowStarted,
+            flow_completed: flowCompleted,
+          });
         });
-      } else if (hasOld) {
-        OLD_FLOW.forEach(sid => {
-          stepFunnel.push({ step_id: sid, count: stepCounts[sid]?.size || 0, flow: "antigo" });
-        });
-      }
+      });
 
       // Drop-off analysis
-      const sessionsWithSubmit = new Set(
-        filteredEvents.filter((e: any) => e.event_name === "submit").map((e: any) => e.session_id)
-      );
       const dropOffs: Record<string, number> = {};
       // Ordem unificada para cálculo do drop-off (busca em ambos os fluxos: novo e antigo)
       const dropOffStepOrder = [
