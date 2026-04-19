@@ -70,7 +70,7 @@ export function FAQSection() {
                 className="gold-card !border-b !p-0 overflow-hidden"
               >
                 <AccordionTrigger className="px-5 py-4 md:px-6 md:py-5 text-left hover:no-underline group">
-                  <span className="text-sm md:text-base font-semibold text-foreground pr-4 group-hover:text-primary transition-colors">
+                  <span className="font-montserrat font-bold uppercase tracking-wide text-sm md:text-base text-foreground pr-4 group-hover:text-primary transition-colors">
                     {faq.q}
                   </span>
                 </AccordionTrigger>
