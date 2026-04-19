@@ -941,106 +941,112 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         );
       })()}
 
-      {/* Funil de Negócio (Gasto → Leads → 5k+ → MQL → Reunião → Venda) */}
-      {totals && (() => {
-        const leadsMais5k = leadsList.filter((lead) => {
-          const faixa = lead.investimento_faixa || null;
-          return !!faixa && !["Não vendo ainda (R$0/mês)", "Até R$ 5 mil"].includes(faixa);
-        }).length;
+      {/* Funil do Quiz — drop-off etapa por etapa */}
+      {funnelMetrics && funnelMetrics.step_funnel && funnelMetrics.step_funnel.length > 0 && (() => {
+        const STEP_LABELS_LOCAL: Record<string, string> = {
+          q1_nome: "1. Nome",
+          q2_whats: "2. WhatsApp",
+          q3_insta: "3. Instagram",
+          q4_mercado: "4. Mercado",
+          q5_estagio: "5. Estágio do negócio",
+          q6_investimento: "6. Faturamento mensal",
+          q6_dor: "6. Dor / Desejo",
+          q7_dor: "7. Dor / Desejo",
+        };
 
-        const stages = [
-          { key: "spend", label: "Gasto em tráfego", value: formatCurrency(totals.spend) || "R$ 0", count: null as number | null, color: "bg-amber-500/80", text: "text-amber-300" },
-          { key: "leads", label: "Leads totais", value: formatNumber(totals.leads), count: totals.leads, color: "bg-blue-500/80", text: "text-blue-300" },
-          { key: "leads5k", label: "Leads ≥ R$ 5k (Sprint)", value: formatNumber(leadsMais5k), count: leadsMais5k, color: "bg-cyan-500/80", text: "text-cyan-300" },
-          { key: "mql", label: "MQLs (Assessoria)", value: formatNumber(totals.mql), count: totals.mql, color: "bg-violet-500/80", text: "text-violet-300" },
-          { key: "meetings", label: "Reuniões", value: formatNumber(totals.meetings), count: totals.meetings, color: "bg-pink-500/80", text: "text-pink-300" },
-          { key: "sales", label: "Vendas", value: formatNumber(totals.sales), count: totals.sales, color: "bg-green-500/80", text: "text-green-300" },
+        // Monta funil: Entrou no quiz → cada step → Concluiu
+        const enteredQuiz = funnelMetrics.entered_quiz;
+        const completed = funnelMetrics.completed;
+        const steps = funnelMetrics.step_funnel;
+
+        const allStages = [
+          { key: "entered", label: "Entrou no quiz", count: enteredQuiz, color: "bg-blue-500/80", text: "text-blue-300" },
+          ...steps.map((s, i) => ({
+            key: s.step_id,
+            label: STEP_LABELS_LOCAL[s.step_id] || s.step_id,
+            count: s.count,
+            color: i % 2 === 0 ? "bg-purple-500/70" : "bg-violet-500/70",
+            text: i % 2 === 0 ? "text-purple-300" : "text-violet-300",
+          })),
+          { key: "completed", label: "Concluiu o quiz", count: completed, color: "bg-green-500/80", text: "text-green-300" },
         ];
 
-        const baseForWidth = Math.max(totals.leads, 1);
+        const baseForWidth = Math.max(enteredQuiz, 1);
+        const totalLoss = enteredQuiz > 0 ? ((enteredQuiz - completed) / enteredQuiz) * 100 : 0;
+
+        // Identifica maior gargalo
+        let biggestDropIdx = -1;
+        let biggestDropPct = 0;
+        for (let i = 1; i < allStages.length; i++) {
+          const prev = allStages[i - 1].count;
+          const curr = allStages[i].count;
+          if (prev > 0) {
+            const lossPct = ((prev - curr) / prev) * 100;
+            if (lossPct > biggestDropPct) {
+              biggestDropPct = lossPct;
+              biggestDropIdx = i;
+            }
+          }
+        }
 
         return (
           <Card className="border-primary/30">
             <CardContent className="pt-4">
               <div className="flex items-center justify-between mb-3 border-b border-border/50 pb-2">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Funil de Negócio (período selecionado)
+                  Funil do Quiz — drop-off por etapa (período selecionado)
                 </p>
-                <p className="text-[10px] text-muted-foreground/70 hidden md:block">
-                  Gasto → Leads → 5k+ → MQL → Reunião → Venda
+                <p className="text-[10px] text-muted-foreground/70">
+                  Perda total: <span className="text-red-400 font-semibold">{totalLoss.toFixed(1)}%</span>
                 </p>
               </div>
 
-              <div className="space-y-2">
-                {stages.map((stage, idx) => {
-                  const prev = idx > 0 ? stages[idx - 1] : null;
+              <div className="space-y-1.5">
+                {allStages.map((stage, idx) => {
+                  const prev = idx > 0 ? allStages[idx - 1] : null;
                   const prevCount = prev?.count ?? null;
-                  const conv = prevCount && prevCount > 0 && stage.count !== null
+                  const conv = prevCount && prevCount > 0
                     ? (stage.count / prevCount) * 100
                     : null;
                   const loss = conv !== null ? 100 - conv : null;
-
-                  let widthPct = 100;
-                  if (stage.key === "spend") {
-                    widthPct = 100;
-                  } else if (stage.count !== null) {
-                    widthPct = Math.max(8, Math.min(100, (stage.count / baseForWidth) * 100));
-                  }
+                  const lossAbs = prevCount !== null ? Math.max(0, prevCount - stage.count) : 0;
+                  const widthPct = Math.max(8, Math.min(100, (stage.count / baseForWidth) * 100));
+                  const isBottleneck = idx === biggestDropIdx && loss !== null && loss >= 20;
 
                   return (
                     <div key={stage.key} className="flex items-center gap-3">
-                      <div className="relative flex-1 h-11 rounded-md overflow-hidden bg-muted/20 border border-border/40">
+                      <div className={`relative flex-1 h-10 rounded-md overflow-hidden bg-muted/20 border ${isBottleneck ? "border-red-500/60" : "border-border/40"}`}>
                         <div
                           className={`absolute inset-y-0 left-0 ${stage.color} transition-all duration-500 ease-out`}
                           style={{ width: `${widthPct}%` }}
                         />
                         <div className="relative h-full flex items-center justify-between px-3">
-                          <span className="text-xs font-medium text-foreground/90 uppercase tracking-wider">
+                          <span className="text-xs font-medium text-foreground/90 uppercase tracking-wider truncate">
                             {stage.label}
+                            {isBottleneck && <span className="ml-2 text-[9px] text-red-300 font-bold">⚠ MAIOR PERDA</span>}
                           </span>
-                          <span className={`text-base font-bold ${stage.text} drop-shadow`}>
-                            {stage.value}
+                          <span className={`text-base font-bold ${stage.text} drop-shadow shrink-0`}>
+                            {formatNumber(stage.count)}
                           </span>
                         </div>
                       </div>
-                      <div className="w-28 shrink-0 text-right">
+                      <div className="w-32 shrink-0 text-right">
                         {conv !== null ? (
                           <>
                             <p className={`text-xs font-semibold ${stage.text}`}>
                               {conv.toFixed(1)}% conv.
                             </p>
-                            <p className="text-[10px] text-muted-foreground/70">
-                              perda {loss!.toFixed(1)}%
+                            <p className={`text-[10px] ${loss! >= 20 ? "text-red-400/90" : "text-muted-foreground/70"}`}>
+                              perda {loss!.toFixed(1)}% (-{formatNumber(lossAbs)})
                             </p>
                           </>
                         ) : (
-                          <p className="text-[10px] text-muted-foreground/60">—</p>
+                          <p className="text-[10px] text-muted-foreground/60">início</p>
                         )}
                       </div>
                     </div>
                   );
                 })}
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-border/50 grid grid-cols-2 md:grid-cols-3 gap-3">
-                <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Lead → Venda</p>
-                  <p className="text-sm font-bold text-green-300">
-                    {totals.leads > 0 ? ((totals.sales / totals.leads) * 100).toFixed(2) : "0.00"}%
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">MQL → Reunião</p>
-                  <p className="text-sm font-bold text-pink-300">
-                    {totals.mql > 0 ? ((totals.meetings / totals.mql) * 100).toFixed(1) : "0.0"}%
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Reunião → Venda</p>
-                  <p className="text-sm font-bold text-cyan-300">
-                    {totals.meetings > 0 ? ((totals.sales / totals.meetings) * 100).toFixed(1) : "0.0"}%
-                  </p>
-                </div>
               </div>
             </CardContent>
           </Card>
