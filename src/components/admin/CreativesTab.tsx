@@ -940,6 +940,112 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         );
       })()}
 
+      {/* Funil de Negócio (Gasto → Leads → 5k+ → MQL → Reunião → Venda) */}
+      {totals && (() => {
+        const leadsMais5k = leadsList.filter((lead) => {
+          const faixa = lead.investimento_faixa || null;
+          return !!faixa && !["Não vendo ainda (R$0/mês)", "Até R$ 5 mil"].includes(faixa);
+        }).length;
+
+        const stages = [
+          { key: "spend", label: "Gasto em tráfego", value: formatCurrency(totals.spend) || "R$ 0", count: null as number | null, color: "bg-amber-500/80", text: "text-amber-300" },
+          { key: "leads", label: "Leads totais", value: formatNumber(totals.leads), count: totals.leads, color: "bg-blue-500/80", text: "text-blue-300" },
+          { key: "leads5k", label: "Leads ≥ R$ 5k (Sprint)", value: formatNumber(leadsMais5k), count: leadsMais5k, color: "bg-cyan-500/80", text: "text-cyan-300" },
+          { key: "mql", label: "MQLs (Assessoria)", value: formatNumber(totals.mql), count: totals.mql, color: "bg-violet-500/80", text: "text-violet-300" },
+          { key: "meetings", label: "Reuniões", value: formatNumber(totals.meetings), count: totals.meetings, color: "bg-pink-500/80", text: "text-pink-300" },
+          { key: "sales", label: "Vendas", value: formatNumber(totals.sales), count: totals.sales, color: "bg-green-500/80", text: "text-green-300" },
+        ];
+
+        const baseForWidth = Math.max(totals.leads, 1);
+
+        return (
+          <Card className="border-primary/30">
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between mb-3 border-b border-border/50 pb-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Funil de Negócio (período selecionado)
+                </p>
+                <p className="text-[10px] text-muted-foreground/70 hidden md:block">
+                  Gasto → Leads → 5k+ → MQL → Reunião → Venda
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                {stages.map((stage, idx) => {
+                  const prev = idx > 0 ? stages[idx - 1] : null;
+                  const prevCount = prev?.count ?? null;
+                  const conv = prevCount && prevCount > 0 && stage.count !== null
+                    ? (stage.count / prevCount) * 100
+                    : null;
+                  const loss = conv !== null ? 100 - conv : null;
+
+                  let widthPct = 100;
+                  if (stage.key === "spend") {
+                    widthPct = 100;
+                  } else if (stage.count !== null) {
+                    widthPct = Math.max(8, Math.min(100, (stage.count / baseForWidth) * 100));
+                  }
+
+                  return (
+                    <div key={stage.key} className="flex items-center gap-3">
+                      <div className="relative flex-1 h-11 rounded-md overflow-hidden bg-muted/20 border border-border/40">
+                        <div
+                          className={`absolute inset-y-0 left-0 ${stage.color} transition-all duration-500 ease-out`}
+                          style={{ width: `${widthPct}%` }}
+                        />
+                        <div className="relative h-full flex items-center justify-between px-3">
+                          <span className="text-xs font-medium text-foreground/90 uppercase tracking-wider">
+                            {stage.label}
+                          </span>
+                          <span className={`text-base font-bold ${stage.text} drop-shadow`}>
+                            {stage.value}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-28 shrink-0 text-right">
+                        {conv !== null ? (
+                          <>
+                            <p className={`text-xs font-semibold ${stage.text}`}>
+                              {conv.toFixed(1)}% conv.
+                            </p>
+                            <p className="text-[10px] text-muted-foreground/70">
+                              perda {loss!.toFixed(1)}%
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-[10px] text-muted-foreground/60">—</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-border/50 grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Lead → Venda</p>
+                  <p className="text-sm font-bold text-green-300">
+                    {totals.leads > 0 ? ((totals.sales / totals.leads) * 100).toFixed(2) : "0.00"}%
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">MQL → Reunião</p>
+                  <p className="text-sm font-bold text-pink-300">
+                    {totals.mql > 0 ? ((totals.meetings / totals.mql) * 100).toFixed(1) : "0.0"}%
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Reunião → Venda</p>
+                  <p className="text-sm font-bold text-cyan-300">
+                    {totals.meetings > 0 ? ((totals.sales / totals.meetings) * 100).toFixed(1) : "0.0"}%
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
+
       {/* Summary Cards - Grouped Blocks */}
       {totals && (() => {
         const scheduleRate = totals.mql > 0 ? (totals.meetings / totals.mql) * 100 : null;
