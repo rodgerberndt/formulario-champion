@@ -17,6 +17,7 @@ import { useTracking } from "@/hooks/useTracking";
 import { useUtmCapture } from "@/hooks/useUtmCapture";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import { useSectionThemes } from "@/hooks/useSectionThemes";
+import { useLandingTracking } from "@/hooks/useLandingTracking";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const Index = () => {
   useUtmCapture();
   useSmoothScroll();
   useSectionThemes();
+  useLandingTracking("/");
 
   const handleStartClick = async (buttonId: string) => {
     try { await trackStartClick(buttonId); } catch (error) {
@@ -45,28 +47,23 @@ const Index = () => {
       <LandingNavbar />
 
       <main>
-        {/* Hero */}
-        <section data-theme="cave">
+        <section data-theme="cave" data-track-id="hero" data-track-order="1">
           <Hero onStartClick={() => handleStartClick("start_btn_1")} />
         </section>
 
-        {/* Social Proof Carousel */}
-        <section data-theme="void">
+        <section data-theme="void" data-track-id="social_proof" data-track-order="2">
           <SocialProofCarousel />
         </section>
 
-
-        {/* Pain Section */}
-        <section data-theme="ember">
+        <section data-theme="ember" data-track-id="dor" data-track-order="3">
           <PainSection />
         </section>
 
-        {/* Portfolio */}
-        <section data-theme="blue-temple">
+        <section data-theme="blue-temple" data-track-id="portfolio" data-track-order="4">
           <PortfolioSection />
         </section>
-        {/* CTA between Portfolio and Método */}
-        <section data-theme="cave" className="py-10 md:py-16">
+
+        <section data-theme="cave" data-track-id="cta_intermediario" data-track-order="5" className="py-10 md:py-16">
           <div className="container mx-auto px-5 text-center max-w-md">
             <p className="text-sm md:text-base text-muted-foreground mb-6">
               Responda o formulário rápido para que o próximo feedback seja você!
@@ -74,6 +71,8 @@ const Index = () => {
             <Button
               size="lg"
               onClick={() => handleStartClick("start_btn_2")}
+              data-track-click="cta_primary"
+              data-track-id="cta_intermediario_btn"
               className="group h-12 md:h-14 px-6 md:px-10 text-sm md:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]"
             >
               FAZER DIAGNÓSTICO (2 MIN)
@@ -82,25 +81,19 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Método Champion */}
-        <section data-theme="cave">
+        <section data-theme="cave" data-track-id="metodo" data-track-order="6">
           <MetodoChampion />
         </section>
 
-        {/* Gancho & Corpo — diferencial Champion */}
-        <section data-theme="blue-temple">
+        <section data-theme="blue-temple" data-track-id="gancho_corpo" data-track-order="7">
           <GanchoCorpoSection />
         </section>
 
-        {/* How It Works */}
-        <section data-theme="blue-temple">
+        <section data-theme="blue-temple" data-track-id="como_funciona" data-track-order="8">
           <HowItWorks />
         </section>
 
-        {/* CaseVault removed — duplicate of SocialProofCarousel */}
-
-        {/* Final CTA */}
-        <section data-theme="gold-haze">
+        <section data-theme="gold-haze" data-track-id="cta_final" data-track-order="9">
           <FinalCTA />
         </section>
       </main>
