@@ -240,18 +240,59 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     }
   };
 
+  const customMissing = compareMode === "custom" && (!customRange.from || !customRange.to);
+
   // Comparison-mode picker (reused on initial screen + header)
   const ComparePicker = (
-    <Select value={compareMode} onValueChange={(v) => setCompareMode(v as CompareMode)}>
-      <SelectTrigger className="h-9 w-[260px] text-xs">
-        <SelectValue placeholder="Período de comparação" />
-      </SelectTrigger>
-      <SelectContent>
-        {COMPARE_OPTIONS.map((o) => (
-          <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="flex items-center gap-2 flex-wrap">
+      <Select value={compareMode} onValueChange={(v) => setCompareMode(v as CompareMode)}>
+        <SelectTrigger className="h-9 w-[260px] text-xs">
+          <SelectValue placeholder="Período de comparação" />
+        </SelectTrigger>
+        <SelectContent>
+          {COMPARE_OPTIONS.map((o) => (
+            <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {compareMode === "custom" && (
+        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn("h-9 text-xs gap-2 justify-start font-normal", !customRange.from && "text-muted-foreground")}
+            >
+              <CalendarIcon className="w-3 h-3" />
+              {customRange.from && customRange.to
+                ? `${format(customRange.from, "dd/MM/yyyy")} → ${format(customRange.to, "dd/MM/yyyy")}`
+                : "Escolher datas"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="range"
+              numberOfMonths={2}
+              locale={ptBR}
+              selected={{ from: customRange.from, to: customRange.to }}
+              onSelect={(r) => setCustomRange({ from: r?.from, to: r?.to })}
+              disabled={(d) => d > new Date()}
+              className={cn("p-3 pointer-events-auto")}
+            />
+            <div className="flex justify-end p-2 border-t border-border">
+              <Button
+                size="sm"
+                disabled={!customRange.from || !customRange.to}
+                onClick={() => setCalendarOpen(false)}
+              >
+                Aplicar
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+      )}
+    </div>
   );
 
   // Initial state — user must click "Gerar análise"
