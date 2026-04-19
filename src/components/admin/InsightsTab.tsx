@@ -123,74 +123,62 @@ function buildPeriodMetrics(raw: RawData): PeriodMetrics {
   };
 }
 
+function startOfDay(d: Date): Date { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+function endOfDay(d: Date): Date { const x = new Date(d); x.setHours(23, 59, 59, 999); return x; }
+
 export default function InsightsTab({ fetchAdminData }: Props) {
-  const { startISO, endExclusiveISO, startDateOnly, endDateOnly, start, end } = useDateRange();
   const [loading, setLoading] = useState(false);
   const [hasRun, setHasRun] = useState(false);
   const [current, setCurrent] = useState<PeriodMetrics | null>(null);
   const [previous, setPrevious] = useState<PeriodMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [compareMode, setCompareMode] = useState<CompareMode>("previous");
-  const [customRange, setCustomRange] = useState<{ from?: Date; to?: Date }>({});
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
-  // Use timestamps (primitives) to avoid Date identity churn between renders
-  const startMs = start.getTime();
-  const endMs = end.getTime();
+  // Two independent ranges chosen by the user
+  const [rangeA, setRangeA] = useState<{ from?: Date; to?: Date }>({});
+  const [rangeB, setRangeB] = useState<{ from?: Date; to?: Date }>({});
+  const [openA, setOpenA] = useState(false);
+  const [openB, setOpenB] = useState(false);
 
-  const customFromMs = customRange.from?.getTime();
-  const customToMs = customRange.to?.getTime();
+  const aFromMs = rangeA.from?.getTime();
+  const aToMs = rangeA.to?.getTime();
+  const bFromMs = rangeB.from?.getTime();
+  const bToMs = rangeB.to?.getTime();
 
-  const { prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly, prevLabel } = useMemo(() => {
-    const span = endMs - startMs;
-    const DAY = 24 * 60 * 60 * 1000;
-    let pStart: Date;
-    let pEnd: Date;
-    switch (compareMode) {
-      case "previous_2x":
-        pEnd = new Date(startMs - span - 1);
-        pStart = new Date(pEnd.getTime() - span);
-        break;
-      case "last_week":
-        pStart = new Date(startMs - 7 * DAY);
-        pEnd = new Date(endMs - 7 * DAY);
-        break;
-      case "last_month":
-        pStart = new Date(startMs - 30 * DAY);
-        pEnd = new Date(endMs - 30 * DAY);
-        break;
-      case "custom":
-        if (!customFromMs || !customToMs) {
-          return { prevStartISO: "", prevEndExclusiveISO: "", prevStartDateOnly: "", prevEndDateOnly: "", prevLabel: "(escolha as datas no calendário)" };
-        }
-        pStart = new Date(customFromMs);
-        pStart.setHours(0, 0, 0, 0);
-        pEnd = new Date(customToMs);
-        pEnd.setHours(23, 59, 59, 999);
-        break;
-      case "none":
-        return { prevStartISO: "", prevEndExclusiveISO: "", prevStartDateOnly: "", prevEndDateOnly: "", prevLabel: "(sem comparação)" };
-      case "previous":
-      default:
-        pStart = new Date(startMs - span - 1);
-        pEnd = new Date(startMs - 1);
-        break;
-    }
+  const incomplete = !aFromMs || !aToMs;
+
+  const periodA = useMemo(() => {
+    if (!aFromMs || !aToMs) return null;
+    const s = startOfDay(new Date(aFromMs));
+    const e = endOfDay(new Date(aToMs));
+    const eExcl = new Date(e.getTime() + 1);
     return {
-      prevStartISO: pStart.toISOString(),
-      prevEndExclusiveISO: pEnd.toISOString(),
-      prevStartDateOnly: format(pStart, "yyyy-MM-dd"),
-      prevEndDateOnly: format(pEnd, "yyyy-MM-dd"),
-      prevLabel: `${format(pStart, "dd/MM/yyyy")} → ${format(pEnd, "dd/MM/yyyy")}`,
+      startISO: s.toISOString(),
+      endExclusiveISO: eExcl.toISOString(),
+      startDateOnly: format(s, "yyyy-MM-dd"),
+      endDateOnly: format(e, "yyyy-MM-dd"),
+      label: `${format(s, "dd/MM/yyyy")} → ${format(e, "dd/MM/yyyy")}`,
     };
-  }, [startMs, endMs, compareMode, customFromMs, customToMs]);
+  }, [aFromMs, aToMs]);
 
-  const periodLabel = useMemo(
-    () => `${format(new Date(startMs), "dd/MM/yyyy")} → ${format(new Date(endMs), "dd/MM/yyyy")}`,
-    [startMs, endMs]
-  );
+  const periodB = useMemo(() => {
+    if (!bFromMs || !bToMs) return null;
+    const s = startOfDay(new Date(bFromMs));
+    const e = endOfDay(new Date(bToMs));
+    const eExcl = new Date(e.getTime() + 1);
+    return {
+      startISO: s.toISOString(),
+      endExclusiveISO: eExcl.toISOString(),
+      startDateOnly: format(s, "yyyy-MM-dd"),
+      endDateOnly: format(e, "yyyy-MM-dd"),
+      label: `${format(s, "dd/MM/yyyy")} → ${format(e, "dd/MM/yyyy")}`,
+    };
+  }, [bFromMs, bToMs]);
+
+  const periodLabel = periodA?.label ?? "(escolha o Input 1)";
+  const prevLabel = periodB?.label ?? "(sem comparação)";
 
   const load = useCallback(async () => {
+    if (!periodA) return;
     setLoading(true);
     setError(null);
     try {
@@ -203,10 +191,10 @@ export default function InsightsTab({ fetchAdminData }: Props) {
         return { metrics, leads: leadsRes?.leads || leadsRes || [], creatives };
       };
 
-      const curPromise = fetchPeriod(startISO, endExclusiveISO, startDateOnly, endDateOnly);
-      const prevPromise = compareMode === "none"
-        ? Promise.resolve(null as RawData | null)
-        : fetchPeriod(prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly).catch(() => null);
+      const curPromise = fetchPeriod(periodA.startISO, periodA.endExclusiveISO, periodA.startDateOnly, periodA.endDateOnly);
+      const prevPromise = periodB
+        ? fetchPeriod(periodB.startISO, periodB.endExclusiveISO, periodB.startDateOnly, periodB.endDateOnly).catch(() => null)
+        : Promise.resolve(null as RawData | null);
 
       const [curRaw, prevRaw] = await Promise.all([curPromise, prevPromise]);
 
@@ -219,7 +207,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [fetchAdminData, startISO, endExclusiveISO, startDateOnly, endDateOnly, prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly, compareMode]);
+  }, [fetchAdminData, periodA, periodB]);
 
   const result = useMemo(() => {
     if (!current) return null;
