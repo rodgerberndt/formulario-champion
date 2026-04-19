@@ -1006,7 +1006,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         });
 
         const N = allStages.length;
-        const minW = 18; // % largura mínima do trapézio (base do funil)
+        const minW = 42; // % largura mínima do trapézio (garante texto legível dentro)
         const maxW = 100;
         // largura proporcional à contagem (mas com mínimo para legibilidade)
         const widths = allStages.map((s) => {
@@ -1018,7 +1018,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           if (widths[i] > widths[i - 1]) widths[i] = widths[i - 1];
         }
 
-        const ROW_H = 56; // altura de cada trapézio em px
+        const ROW_H = 60; // altura de cada trapézio em px
 
         return (
           <Card className="border-primary/30">
@@ -1032,21 +1032,20 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 items-start">
+              <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-4 items-start">
                 {/* Coluna do funil (trapézios empilhados) */}
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-stretch">
                   {allStages.map((stage, idx) => {
                     const top = widths[idx];
-                    const bottom = idx < N - 1 ? widths[idx + 1] : Math.max(minW * 0.6, top * 0.7);
+                    const bottom = idx < N - 1 ? widths[idx + 1] : Math.max(minW * 0.7, top * 0.75);
                     const c = stageColors[idx];
                     const isBottleneck = idx === biggestDropIdx;
-                    // pontos do trapézio em viewBox 100x100
                     const leftTop = (100 - top) / 2;
                     const rightTop = leftTop + top;
                     const leftBot = (100 - bottom) / 2;
                     const rightBot = leftBot + bottom;
                     return (
-                      <div key={stage.key} className="relative w-full max-w-[640px]" style={{ height: ROW_H }}>
+                      <div key={stage.key} className="relative w-full" style={{ height: ROW_H }}>
                         <svg
                           viewBox="0 0 100 100"
                           preserveAspectRatio="none"
@@ -1060,15 +1059,15 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                             vectorEffect="non-scaling-stroke"
                           />
                         </svg>
-                        <div className="relative h-full flex items-center justify-center px-4 gap-3">
-                          <span className="text-[11px] sm:text-xs font-semibold text-foreground/95 uppercase tracking-wider text-center truncate">
+                        <div className="relative h-full flex items-center justify-center px-3 gap-2">
+                          <span className="text-[11px] sm:text-xs font-semibold text-foreground/95 uppercase tracking-wider text-center leading-tight">
                             {stage.label}
                           </span>
-                          <span className={`text-sm font-bold ${c.text} drop-shadow`}>
+                          <span className={`text-sm font-bold ${c.text} drop-shadow shrink-0`}>
                             {formatNumber(stage.count)}
                           </span>
                           {isBottleneck && (
-                            <span className="text-[9px] text-red-300 font-bold whitespace-nowrap">⚠</span>
+                            <span className="text-[9px] text-red-300 font-bold whitespace-nowrap shrink-0">⚠</span>
                           )}
                         </div>
                       </div>
@@ -1076,8 +1075,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   })}
                 </div>
 
-                {/* Coluna das conversões (cards à direita, ligados ao funil) */}
-                <div className="flex flex-col gap-1">
+                {/* Coluna das conversões (cards à direita, alinhados a cada etapa) */}
+                <div className="flex flex-col gap-0">
                   {allStages.map((stage, idx) => {
                     const prev = idx > 0 ? allStages[idx - 1] : null;
                     const prevCount = prev?.count ?? null;
@@ -1094,25 +1093,30 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         className="flex items-center gap-2"
                         style={{ height: ROW_H }}
                       >
-                        <div className="flex-1 h-px bg-border/40" />
+                        {/* linha conectora */}
+                        <div className="w-6 shrink-0 flex items-center">
+                          <div className={`h-px w-full ${isBottleneck ? "bg-red-500/50" : "bg-border/60"}`} />
+                        </div>
                         <div className={`flex-1 rounded-md px-3 py-2 bg-muted/30 border ${isBottleneck ? "border-red-500/60" : "border-border/40"}`}>
                           {conv !== null ? (
-                            <>
-                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider truncate">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider leading-tight truncate">
                                 {prev?.label} → {stage.label}
                               </p>
-                              <p className={`text-sm font-bold ${c.text}`}>
-                                {conv.toFixed(1)}%
-                                <span className={`ml-2 text-[10px] font-medium ${loss! >= 20 ? "text-red-400" : "text-muted-foreground/70"}`}>
+                              <div className="text-right shrink-0">
+                                <p className={`text-sm font-bold leading-none ${c.text}`}>
+                                  {conv.toFixed(1)}%
+                                </p>
+                                <p className={`text-[10px] mt-0.5 ${loss! >= 20 ? "text-red-400" : "text-muted-foreground/70"}`}>
                                   perda {loss!.toFixed(1)}% (-{formatNumber(lossAbs)})
-                                </span>
-                              </p>
-                            </>
+                                </p>
+                              </div>
+                            </div>
                           ) : (
-                            <>
+                            <div className="flex items-center justify-between gap-2">
                               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Topo do funil</p>
                               <p className="text-sm font-bold text-cyan-300">100%</p>
-                            </>
+                            </div>
                           )}
                         </div>
                       </div>
