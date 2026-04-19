@@ -344,6 +344,153 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // GET /weekly-metrics - Aggregate visitors / quiz entries / completions per calendar day (America/Sao_Paulo)
+    if (path === "/weekly-metrics" && req.method === "GET") {
+      const from = url.searchParams.get("from");
+      const to = url.searchParams.get("to");
+      const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
+
+      async function fetchAllPaged<T>(table: string, select: string, filters: (q: any) => any): Promise<T[]> {
+        const PAGE_SIZE = 1000;
+        let all: T[] = [];
+        let offset = 0;
+        let hasMore = true;
+        while (hasMore) {
+          let q = supabase.from(table).select(select).range(offset, offset + PAGE_SIZE - 1);
+          q = filters(q);
+          const { data, error } = await q;
+          if (error) throw error;
+          if (data) all = all.concat(data as T[]);
+          hasMore = (data?.length || 0) === PAGE_SIZE;
+          offset += PAGE_SIZE;
+        }
+        return all;
+      }
+
+      // Fetch sessions in range
+      const rawSessions = await fetchAllPaged<any>(
+        "lead_sessions",
+        "id, ip_address, created_at, referrer, first_page",
+        (q: any) => {
+          if (from) q = q.gte("created_at", from);
+          if (toEnd) q = q.lte("created_at", toEnd);
+          return q;
+        }
+      );
+
+      // Filter internal/noise traffic (same rules as /metrics)
+      const sessions = rawSessions.filter((s: any) => {
+        const ref = (s.referrer || "").toLowerCase();
+        const firstPage = (s.first_page || "").toLowerCase();
+        if (ref.includes("lovable.dev") || ref.includes("lovableproject.com") || ref.includes("lovable.app/?forcehidebadge")) return false;
+        if (firstPage === "/admin") return false;
+        return true;
+      });
+      const sessionIds = new Set(sessions.map((s: any) => s.id));
+
+      // Fetch events to detect quiz entry (quiz_view event)
+      const events = await fetchAllPaged<any>(
+        "lead_events",
+        "event_name, session_id, created_at",
+        (q: any) => {
+          if (from) q = q.gte("created_at", from);
+          if (toEnd) q = q.lte("created_at", toEnd);
+          return q;
+        }
+      );
+      const enteredQuizSessionIds = new Set(
+        events
+          .filter((e: any) => e.event_name === "quiz_view" && sessionIds.has(e.session_id))
+          .map((e: any) => e.session_id)
+      );
+
+      // Fetch leads (completions ground truth)
+      const leads = await fetchAllPaged<any>(
+        "leads",
+        "id, created_at",
+        (q: any) => {
+          if (from) q = q.gte("created_at", from);
+          if (toEnd) q = q.lte("created_at", toEnd);
+          return q;
+        }
+      );
+
+      // Helpers — convert UTC ISO -> America/Sao_Paulo calendar date (YYYY-MM-DD)
+      // SP = UTC-3 (no DST currently). Use Intl for safety.
+      const tzFmt = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Sao_Paulo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+      const toLocalDate = (iso: string): string => {
+        // en-CA produces YYYY-MM-DD
+        return tzFmt.format(new Date(iso));
+      };
+      // Day of week 0=Sun..6=Sat, computed from local date string to be safe
+      const dowFromYmd = (ymd: string): number => {
+        const [y, m, d] = ymd.split("-").map((n) => parseInt(n, 10));
+        // Construct as UTC noon to avoid TZ rollover
+        return new Date(Date.UTC(y, m - 1, d, 12)).getUTCDay();
+      };
+
+      type DayBucket = {
+        date: string; // YYYY-MM-DD local
+        dow: number;
+        visitors: Set<string>; // unique IPs (fallback to session ids if no IP)
+        sessions: number;
+        entered_quiz: number;
+        completed: number;
+      };
+      const byDate = new Map<string, DayBucket>();
+      const ensure = (ymd: string): DayBucket => {
+        let b = byDate.get(ymd);
+        if (!b) {
+          b = { date: ymd, dow: dowFromYmd(ymd), visitors: new Set(), sessions: 0, entered_quiz: 0, completed: 0 };
+          byDate.set(ymd, b);
+        }
+        return b;
+      };
+
+      // Per-session -> earliest event date (use session created_at)
+      const sessionDate = new Map<string, string>();
+      sessions.forEach((s: any) => {
+        const ymd = toLocalDate(s.created_at);
+        sessionDate.set(s.id, ymd);
+        const b = ensure(ymd);
+        b.sessions += 1;
+        const visitorKey = (s.ip_address && s.ip_address !== "unknown") ? s.ip_address : `sess:${s.id}`;
+        b.visitors.add(visitorKey);
+      });
+
+      enteredQuizSessionIds.forEach((sid) => {
+        const ymd = sessionDate.get(sid as string);
+        if (!ymd) return;
+        ensure(ymd).entered_quiz += 1;
+      });
+
+      leads.forEach((l: any) => {
+        const ymd = toLocalDate(l.created_at);
+        ensure(ymd).completed += 1;
+      });
+
+      const days = Array.from(byDate.values())
+        .map((b) => ({
+          date: b.date,
+          dow: b.dow,
+          visitors: b.visitors.size,
+          sessions: b.sessions,
+          entered_quiz: b.entered_quiz,
+          completed: b.completed,
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      return new Response(
+        JSON.stringify({ days }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // GET /metrics - Get funnel metrics
     if (path === "/metrics" && req.method === "GET") {
       const from = url.searchParams.get("from");

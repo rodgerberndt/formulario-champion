@@ -63,6 +63,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
+import WeeklyAnalysisSection from "./WeeklyAnalysisSection";
 
 // ── Types ──
 interface CreativeData {
@@ -950,6 +951,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </Card>
         );
       })()}
+
+      {/* Análise Semanal — performance por dia da semana */}
+      <WeeklyAnalysisSection fetchAdminData={fetchAdminData} />
 
       {/* Funil do Quiz — drop-off etapa por etapa (apenas quiz v2) */}
       {funnelMetrics && funnelMetrics.quiz_v2_empty && (
