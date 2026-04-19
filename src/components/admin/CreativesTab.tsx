@@ -63,6 +63,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
+import WeeklyAnalysisSection from "./WeeklyAnalysisSection";
 
 // ── Types ──
 interface CreativeData {
