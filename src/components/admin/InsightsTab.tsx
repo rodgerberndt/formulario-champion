@@ -2,20 +2,25 @@ import { useMemo, useState, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Copy, RefreshCw, Sparkles, AlertTriangle, CheckCircle2, Play } from "lucide-react";
+import { Loader2, Copy, RefreshCw, Sparkles, AlertTriangle, CheckCircle2, Play, CalendarIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useDateRange } from "@/context/DateRangeContext";
 import { runRulesEngine, type PeriodMetrics, type Alert } from "@/lib/rulesEngine";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
-type CompareMode = "previous" | "previous_2x" | "last_week" | "last_month" | "none";
+type CompareMode = "previous" | "previous_2x" | "last_week" | "last_month" | "custom" | "none";
 
 const COMPARE_OPTIONS: { value: CompareMode; label: string }[] = [
   { value: "previous", label: "Período anterior (mesmo tamanho)" },
   { value: "previous_2x", label: "2 períodos atrás (mesmo tamanho)" },
   { value: "last_week", label: "Mesma janela na semana passada (-7d)" },
   { value: "last_month", label: "Mesma janela no mês passado (-30d)" },
+  { value: "custom", label: "Personalizado (escolher no calendário)" },
   { value: "none", label: "Sem comparação" },
 ];
 
