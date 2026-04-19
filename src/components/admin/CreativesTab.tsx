@@ -978,15 +978,33 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         const completed = funnelMetrics.completed;
         const steps = funnelMetrics.step_funnel;
 
+        // Numera reiniciando quando o fluxo muda (ex: antigo 1..7, depois novo 1..8)
+        let stepNum = 0;
+        let lastFlow: string | undefined = undefined;
+        const numberedSteps = steps.map((s) => {
+          const flow = (s as { flow?: string }).flow;
+          if (flow !== lastFlow) {
+            stepNum = 1;
+            lastFlow = flow;
+          } else {
+            stepNum += 1;
+          }
+          return { ...s, _num: stepNum, _flow: flow };
+        });
+
         const allStages = [
           { key: "entered", label: "Entrou no quiz", count: enteredQuiz, color: "bg-blue-500/80", text: "text-blue-300" },
-          ...steps.map((s, i) => ({
-            key: s.step_id,
-            label: `${i + 1}. ${STEP_LABELS_LOCAL[s.step_id] || s.step_id}`,
-            count: s.count,
-            color: i % 2 === 0 ? "bg-purple-500/70" : "bg-violet-500/70",
-            text: i % 2 === 0 ? "text-purple-300" : "text-violet-300",
-          })),
+          ...numberedSteps.map((s, i) => {
+            const baseLabel = STEP_LABELS_LOCAL[s.step_id] || s.step_id;
+            const flowTag = s._flow === "antigo" ? " (fluxo antigo)" : s._flow === "novo" ? " (fluxo novo)" : "";
+            return {
+              key: `${s.step_id}_${i}`,
+              label: `${s._num}. ${baseLabel}${flowTag}`,
+              count: s.count,
+              color: i % 2 === 0 ? "bg-purple-500/70" : "bg-violet-500/70",
+              text: i % 2 === 0 ? "text-purple-300" : "text-violet-300",
+            };
+          }),
           { key: "completed", label: "Concluiu o quiz", count: completed, color: "bg-green-500/80", text: "text-green-300" },
         ];
 
