@@ -124,7 +124,7 @@ function totalsOf(days: DayMetric[]) {
 }
 
 export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
-  const [mode, setMode] = useState<RangeMode>("current");
+  const [mode, setMode] = useState<RangeMode>("last7");
   const [loading, setLoading] = useState(false);
   const [days, setDays] = useState<DayMetric[]>([]);
   const [prevDays, setPrevDays] = useState<DayMetric[]>([]);
