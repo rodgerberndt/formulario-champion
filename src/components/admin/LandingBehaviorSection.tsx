@@ -265,58 +265,6 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
           </div>
         </div>
 
-        {/* CLIQUES */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-              <MousePointerClick className="w-3 h-3" /> Cliques por tipo
-            </p>
-            <div className="space-y-1.5">
-              {Object.entries(cur.clicksByType).sort(([, a], [, b]) => b - a).map(([type, count]) => {
-                const max = Math.max(...Object.values(cur.clicksByType));
-                const w = max > 0 ? (count / max) * 100 : 0;
-                return (
-                  <div key={type} className="flex items-center gap-2">
-                    <span className="text-[11px] capitalize w-24 truncate text-muted-foreground">{type}</span>
-                    <div className="flex-1 h-3 rounded bg-muted/30 overflow-hidden">
-                      <div className="h-full bg-amber-400/60" style={{ width: `${w}%` }} />
-                    </div>
-                    <span className="text-[11px] font-semibold w-10 text-right">{count}</span>
-                  </div>
-                );
-              })}
-              {Object.keys(cur.clicksByType).length === 0 && (
-                <p className="text-[11px] text-muted-foreground italic">Nenhum clique registrado.</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-              Top 10 elementos clicados
-            </p>
-            <div className="space-y-1 max-h-48 overflow-y-auto">
-              {cur.topClicks.slice(0, 10).map((c, i) => (
-                <div key={i} className="flex items-center justify-between gap-2 text-[11px] border-b border-border/30 py-1">
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">{c.label}</p>
-                    <p className="text-muted-foreground/70 text-[10px]">
-                      {c.section ? (SECTION_LABELS[c.section] || c.section) : "—"} · {c.type}
-                    </p>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="font-bold text-amber-300">{c.count}</p>
-                    <p className="text-muted-foreground/70 text-[10px]">{c.uniqueUsers} únicos</p>
-                  </div>
-                </div>
-              ))}
-              {cur.topClicks.length === 0 && (
-                <p className="text-[11px] text-muted-foreground italic">Nenhum clique registrado.</p>
-              )}
-            </div>
-          </div>
-        </div>
-
         {prev && (
           <div className="text-[10px] text-muted-foreground/70 text-center pt-2 border-t border-border/30">
             Comparações vs período anterior ({prev.totalVisitors} visitantes)
