@@ -17,6 +17,46 @@ export interface Alert {
   next_action: string;
 }
 
+export interface DistributionItem {
+  key: string;
+  total: number;
+  mql: number;
+  mql_rate: number; // %
+  share: number;    // % do total de leads
+}
+
+export interface ICP {
+  label: string;            // "Mercado X · Estágio Y · Faturamento Z · Dor W"
+  mercado: string;
+  estagio: string;
+  faturamento: string;
+  dor: string;
+  total: number;
+  mql: number;
+  mql_rate: number;
+  origem_dominante: string; // utm_source dominante dentro do ICP
+}
+
+export interface RecentLead {
+  date: string;
+  nome: string;
+  mercado: string;
+  estagio: string;
+  faturamento: string;
+  dor: string;
+  tier: string;
+  is_mql: boolean;
+  origem: string;
+}
+
+export interface MarketPainCombo {
+  mercado: string;
+  dor: string;
+  total: number;
+  mql: number;
+  mql_rate: number;
+}
+
 export interface PeriodMetrics {
   // visitantes / sessões / quiz
   visitors: number;
@@ -24,13 +64,31 @@ export interface PeriodMetrics {
   entered_quiz: number;
   completed: number;
   conversion_rate: number; // visitors -> completed
-  drop_off_total: number; // visitors - completed
+  entry_rate: number;      // entered_quiz / visitors (em %)
+  drop_off_total: number;  // visitors - completed
   // funil
   step_funnel: Array<{ step_id: string; count: number }>;
   // leads / mql
   leads: number;
   mql: number;
   mql_rate: number; // mql/leads
+  // qualificação extra
+  enterprise_share: number; // % de leads em tiers Enterprise / Enterprise+
+  // distribuições (já agregadas no client)
+  by_mercado: DistributionItem[];
+  by_origem: DistributionItem[];
+  by_faturamento: DistributionItem[];
+  by_estagio: DistributionItem[];
+  by_dor: DistributionItem[];
+  by_campaign: DistributionItem[];
+  market_pain_mql: MarketPainCombo[]; // top combinações Mercado x Dor (por MQL)
+  icps: ICP[];                         // top 3 ICPs
+  recent_top: RecentLead[];            // top 10 leads (recentes ou MQL)
+  // destaques rápidos
+  top_mercado_mql: { key: string; mql: number; rate: number } | null;
+  top_origem_mql: { key: string; mql: number; rate: number } | null;
+  top_dor_mql: { key: string; mql: number; rate: number } | null;
+  icp_dominante: ICP | null;
   // vendas
   sales: number;
   revenue: number;
