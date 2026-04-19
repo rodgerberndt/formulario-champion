@@ -1235,6 +1235,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         );
       })()}
 
+      {/* Comportamento na Landing Page — funil por seção, scroll, cliques */}
+      <LandingBehaviorSection fetchAdminData={fetchAdminData} />
+
       {/* Summary Cards - Grouped Blocks */}
       {totals && (() => {
         const scheduleRate = totals.mql > 0 ? (totals.meetings / totals.mql) * 100 : null;
