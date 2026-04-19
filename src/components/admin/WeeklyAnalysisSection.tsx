@@ -322,7 +322,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
             Por dia da semana {mode === "last4" ? "(soma das últimas 4 semanas)" : ""}
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-            {Array.from({ length: 7 }).map((_, dow) => {
+            {WEEK_ORDER.map((dow) => {
               const d = byDow[dow];
               const prev = prevByDow[dow];
               const visitorBarPct = maxVisitors > 0 ? (d.visitors / maxVisitors) * 100 : 0;
