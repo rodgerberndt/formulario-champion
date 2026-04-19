@@ -216,7 +216,7 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
             <ArrowDown className="w-3 h-3" /> Funil por seção da landing
           </p>
           <div className="space-y-1.5">
-            {cur.funnel.map((f) => {
+            {cur.funnel.filter((f) => !HIDDEN_SECTIONS.has(f.section_id)).map((f) => {
               const label = SECTION_LABELS[f.section_id] || f.section_id;
               const widthPct = maxReached > 0 ? (f.reached / maxReached) * 100 : 0;
               const intensity = f.pct_of_visitors / 100;
