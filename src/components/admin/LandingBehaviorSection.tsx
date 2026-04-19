@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 function BumpNumber({ value, className }: { value: number; className?: string }) {
   const prevRef = useRef<number>(value);
   const [delta, setDelta] = useState<number | null>(null);
+  const [phase, setPhase] = useState<"in" | "hold" | "out" | null>(null);
   const firstRef = useRef(true);
 
   useEffect(() => {
@@ -23,23 +24,38 @@ function BumpNumber({ value, className }: { value: number; className?: string })
     prevRef.current = value;
     if (diff !== 0) {
       setDelta(diff);
-      const t = setTimeout(() => setDelta(null), 3000);
-      return () => clearTimeout(t);
+      setPhase("in");
+      // depois do zoom-in (400ms), entra no hold
+      const t1 = setTimeout(() => setPhase("hold"), 400);
+      // após 2.4s no hold, começa o zoom-out (600ms)
+      const t2 = setTimeout(() => setPhase("out"), 2400);
+      // remove totalmente depois de 3s
+      const t3 = setTimeout(() => { setPhase(null); setDelta(null); }, 3000);
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }
   }, [value]);
+
+  const overlayStyle: React.CSSProperties = (() => {
+    const base: React.CSSProperties = {
+      textShadow: `0 0 14px ${delta && delta > 0 ? "hsl(142 76% 45% / 0.95)" : "hsl(0 80% 60% / 0.95)"}`,
+      transition: "transform 600ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 500ms ease-out",
+      transformOrigin: "center bottom",
+    };
+    if (phase === "in") return { ...base, transform: "translate(-50%, 0) scale(0.2)", opacity: 0 };
+    if (phase === "hold") return { ...base, transform: "translate(-50%, 0) scale(1)", opacity: 1 };
+    if (phase === "out") return { ...base, transform: "translate(-50%, -6px) scale(0.2)", opacity: 0, transition: "transform 600ms ease-in, opacity 600ms ease-in" };
+    return base;
+  })();
 
   return (
     <span className="relative inline-block">
       <span className={className}>{value}</span>
       {delta !== null && (
         <span
-          className={`pointer-events-none absolute -top-7 left-1/2 -translate-x-1/2 text-2xl font-extrabold animate-fade-in ${
+          className={`pointer-events-none absolute -top-8 left-1/2 text-3xl font-extrabold ${
             delta > 0 ? "text-emerald-400" : "text-rose-400"
           }`}
-          style={{
-            textShadow: `0 0 12px ${delta > 0 ? "hsl(142 76% 45% / 0.9)" : "hsl(0 80% 60% / 0.9)"}`,
-            animation: "fade-in 0.25s ease-out, pulse 1s ease-in-out 0.25s 2",
-          }}
+          style={overlayStyle}
         >
           {delta > 0 ? "+" : ""}{delta}
         </span>
