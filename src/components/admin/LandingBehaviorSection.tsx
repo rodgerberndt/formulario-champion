@@ -9,9 +9,11 @@ interface FunnelStep {
   order: number;
   reached: number;
   continued: number;
+  clicked?: number;
   dropped: number;
   drop_rate: number;
   continue_rate: number;
+  click_rate?: number;
   avg_time_ms: number;
   pct_of_visitors: number;
 }
