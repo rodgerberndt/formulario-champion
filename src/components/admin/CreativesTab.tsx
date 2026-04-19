@@ -304,6 +304,7 @@ interface FunnelMetricsInput {
   entered_quiz: number;
   completed: number;
   conversion_rate: number;
+  step_funnel?: Array<{ step_id: string; count: number }>;
 }
 
 interface CreativesTabProps {
