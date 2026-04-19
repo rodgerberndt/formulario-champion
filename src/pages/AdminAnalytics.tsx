@@ -2809,6 +2809,13 @@ export default function AdminAnalytics() {
                   endDateOnly={endDateOnly}
                   startISO={startISO}
                   endISO={endISO}
+                  funnelMetrics={metrics ? {
+                    visitors: metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors,
+                    sessions: metrics.total_visitors,
+                    entered_quiz: metrics.entered_quiz,
+                    completed: leads.length,
+                    conversion_rate: Number(metrics.conversion_rate) || 0,
+                  } : null}
                 />
               </Suspense>
             </TabsContent>
