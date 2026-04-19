@@ -120,26 +120,56 @@ function buildPeriodMetrics(raw: RawData): PeriodMetrics {
 
 export default function InsightsTab({ fetchAdminData }: Props) {
   const { startISO, endExclusiveISO, startDateOnly, endDateOnly, start, end } = useDateRange();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [hasRun, setHasRun] = useState(false);
   const [current, setCurrent] = useState<PeriodMetrics | null>(null);
   const [previous, setPrevious] = useState<PeriodMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [compareMode, setCompareMode] = useState<CompareMode>("previous");
 
-  // Compute previous period (same length)
+  // Use timestamps (primitives) to avoid Date identity churn between renders
+  const startMs = start.getTime();
+  const endMs = end.getTime();
+
   const { prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly, prevLabel } = useMemo(() => {
-    const span = end.getTime() - start.getTime();
-    const pStart = new Date(start.getTime() - span - 1);
-    const pEnd = new Date(start.getTime() - 1);
+    const span = endMs - startMs;
+    const DAY = 24 * 60 * 60 * 1000;
+    let pStart: Date;
+    let pEnd: Date;
+    switch (compareMode) {
+      case "previous_2x":
+        pEnd = new Date(startMs - span - 1);
+        pStart = new Date(pEnd.getTime() - span);
+        break;
+      case "last_week":
+        pStart = new Date(startMs - 7 * DAY);
+        pEnd = new Date(endMs - 7 * DAY);
+        break;
+      case "last_month":
+        pStart = new Date(startMs - 30 * DAY);
+        pEnd = new Date(endMs - 30 * DAY);
+        break;
+      case "none":
+        return { prevStartISO: "", prevEndExclusiveISO: "", prevStartDateOnly: "", prevEndDateOnly: "", prevLabel: "(sem comparação)" };
+      case "previous":
+      default:
+        pStart = new Date(startMs - span - 1);
+        pEnd = new Date(startMs - 1);
+        break;
+    }
     return {
       prevStartISO: pStart.toISOString(),
-      prevEndExclusiveISO: start.toISOString(),
+      prevEndExclusiveISO: pEnd.toISOString(),
       prevStartDateOnly: format(pStart, "yyyy-MM-dd"),
       prevEndDateOnly: format(pEnd, "yyyy-MM-dd"),
       prevLabel: `${format(pStart, "dd/MM/yyyy")} → ${format(pEnd, "dd/MM/yyyy")}`,
     };
-  }, [start, end]);
+  }, [startMs, endMs, compareMode]);
 
-  const periodLabel = `${format(start, "dd/MM/yyyy")} → ${format(end, "dd/MM/yyyy")}`;
+  const periodLabel = useMemo(
+    () => `${format(new Date(startMs), "dd/MM/yyyy")} → ${format(new Date(endMs), "dd/MM/yyyy")}`,
+    [startMs, endMs]
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -154,22 +184,23 @@ export default function InsightsTab({ fetchAdminData }: Props) {
         return { metrics, leads: leadsRes?.leads || leadsRes || [], creatives };
       };
 
-      const [curRaw, prevRaw] = await Promise.all([
-        fetchPeriod(startISO, endExclusiveISO, startDateOnly, endDateOnly),
-        fetchPeriod(prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly).catch(() => null),
-      ]);
+      const curPromise = fetchPeriod(startISO, endExclusiveISO, startDateOnly, endDateOnly);
+      const prevPromise = compareMode === "none"
+        ? Promise.resolve(null as RawData | null)
+        : fetchPeriod(prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly).catch(() => null);
+
+      const [curRaw, prevRaw] = await Promise.all([curPromise, prevPromise]);
 
       setCurrent(buildPeriodMetrics(curRaw));
       setPrevious(prevRaw ? buildPeriodMetrics(prevRaw) : null);
+      setHasRun(true);
     } catch (e: any) {
       console.error("InsightsTab load", e);
       setError(e?.message || "Erro ao carregar dados");
     } finally {
       setLoading(false);
     }
-  }, [fetchAdminData, startISO, endExclusiveISO, startDateOnly, endDateOnly, prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly]);
-
-  useEffect(() => { load(); }, [load]);
+  }, [fetchAdminData, startISO, endExclusiveISO, startDateOnly, endDateOnly, prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly, compareMode]);
 
   const result = useMemo(() => {
     if (!current) return null;
