@@ -944,15 +944,25 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       {/* Funil do Quiz — drop-off etapa por etapa */}
       {funnelMetrics && funnelMetrics.step_funnel && funnelMetrics.step_funnel.length > 0 && (() => {
         const STEP_LABELS_LOCAL: Record<string, string> = {
-          q1_quer_vender: "1. Quer vender mais?",
-          q2_mercado: "2. Mercado",
-          q3_faturamento: "3. Faturamento mensal",
-          q4_nome: "4. Nome",
-          q5_whats: "5. WhatsApp",
-          q6_insta: "6. Instagram",
-          q7_email: "7. E-mail",
-          q8_dor: "8. Dor / Desejo",
-          // Legados
+          // buckets unificados (fluxo atual)
+          quer_vender: "Quer vender mais?",
+          mercado: "Mercado",
+          faturamento: "Faturamento mensal",
+          estagio: "Estágio do negócio",
+          nome: "Nome",
+          whats: "WhatsApp",
+          insta: "Instagram",
+          email: "E-mail",
+          dor: "Dor / Desejo",
+          // legados (fallback)
+          q1_quer_vender: "Quer vender mais?",
+          q2_mercado: "Mercado",
+          q3_faturamento: "Faturamento mensal",
+          q4_nome: "Nome",
+          q5_whats: "WhatsApp",
+          q6_insta: "Instagram",
+          q7_email: "E-mail",
+          q8_dor: "Dor / Desejo",
           q1_nome: "Nome",
           q2_whats: "WhatsApp",
           q3_insta: "Instagram",
@@ -972,7 +982,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           { key: "entered", label: "Entrou no quiz", count: enteredQuiz, color: "bg-blue-500/80", text: "text-blue-300" },
           ...steps.map((s, i) => ({
             key: s.step_id,
-            label: STEP_LABELS_LOCAL[s.step_id] || s.step_id,
+            label: `${i + 1}. ${STEP_LABELS_LOCAL[s.step_id] || s.step_id}`,
             count: s.count,
             color: i % 2 === 0 ? "bg-purple-500/70" : "bg-violet-500/70",
             text: i % 2 === 0 ? "text-purple-300" : "text-violet-300",

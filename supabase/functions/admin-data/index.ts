@@ -447,16 +447,41 @@ Deno.serve(async (req: Request) => {
         start_btn_3: buttonEventCounts.start_btn_3.size,
       };
 
-      // Step funnel
-      const stepOrder = ["q1_quer_vender", "q2_mercado", "q3_faturamento", "q4_nome", "q5_whats", "q6_insta", "q7_email", "q8_dor"];
-      const stepCounts: Record<string, Set<string>> = {};
+      // Step funnel — unifica fluxos antigo (nome→whats→insta→mercado→estagio→investimento→dor)
+      // e novo (quer_vender→mercado→faturamento→nome→whats→insta→email→dor) em buckets lógicos.
+      // Mantém ordem do fluxo NOVO (atual) para exibição.
+      const stepBucketMap: Record<string, string> = {
+        // novo
+        q1_quer_vender: "quer_vender",
+        q2_mercado: "mercado",
+        q3_faturamento: "faturamento",
+        q4_nome: "nome",
+        q5_whats: "whats",
+        q6_insta: "insta",
+        q7_email: "email",
+        q8_dor: "dor",
+        // antigo
+        q1_nome: "nome",
+        q2_whats: "whats",
+        q3_insta: "insta",
+        q4_mercado: "mercado",
+        q5_estagio: "estagio",
+        q6_investimento: "faturamento",
+        q6_dor: "dor",
+        q7_dor: "dor",
+      };
+      // Ordem de exibição (fluxo atual). 'estagio' é legado e só aparece se houver dados.
+      const bucketOrder = ["quer_vender", "mercado", "faturamento", "estagio", "nome", "whats", "insta", "email", "dor"];
+
+      const bucketCounts: Record<string, Set<string>> = {};
       const sessionViewedSteps: Record<string, Set<string>> = {};
       const sessionAdvancedFrom: Record<string, Set<string>> = {};
 
       filteredEvents.forEach((event: any) => {
         if (event.event_name === "step_view" && event.step_id) {
-          if (!stepCounts[event.step_id]) stepCounts[event.step_id] = new Set();
-          stepCounts[event.step_id].add(event.session_id);
+          const bucket = stepBucketMap[event.step_id] || event.step_id;
+          if (!bucketCounts[bucket]) bucketCounts[bucket] = new Set();
+          bucketCounts[bucket].add(event.session_id);
           if (!sessionViewedSteps[event.session_id]) sessionViewedSteps[event.session_id] = new Set();
           sessionViewedSteps[event.session_id].add(event.step_id);
         }
@@ -470,9 +495,10 @@ Deno.serve(async (req: Request) => {
         }
       });
 
-      const stepFunnel = stepOrder.map(stepId => ({
-        step_id: stepId, count: stepCounts[stepId]?.size || 0,
-      }));
+      // Só inclui buckets com pelo menos 1 sessão (oculta etapas inexistentes no período)
+      const stepFunnel = bucketOrder
+        .filter(b => (bucketCounts[b]?.size || 0) > 0)
+        .map(b => ({ step_id: b, count: bucketCounts[b]?.size || 0 }));
 
       // Drop-off analysis
       const sessionsWithSubmit = new Set(
