@@ -62,7 +62,7 @@ const normStr = (v: any): string => {
   return s.length > 0 ? s : "—";
 };
 
-import type { DistributionItem, ICP, RecentLead, MarketPainCombo } from "@/lib/rulesEngine";
+
 
 function buildDistribution(
   leads: any[],
