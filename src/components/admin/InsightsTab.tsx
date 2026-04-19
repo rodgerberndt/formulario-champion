@@ -525,6 +525,26 @@ export default function InsightsTab({ fetchAdminData }: Props) {
         <SummaryCard label="Receita" value={current.revenue} prev={previous?.revenue} money />
       </div>
 
+      {/* Resumo de Qualificação (novo) */}
+      <Card className="border-amber-500/30">
+        <CardContent className="pt-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-4 h-4 text-amber-400" />
+            <h4 className="text-sm font-bold">Resumo de Qualificação</h4>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-2">
+            <QualCard label="Total Leads" value={String(current.leads)} />
+            <QualCard label="Total MQL" value={String(current.mql)} />
+            <QualCard label="Taxa MQL" value={`${current.mql_rate.toFixed(1)}%`} highlight />
+            <QualCard label="Mercado #1 MQL" value={current.top_mercado_mql?.key ?? "—"} sub={current.top_mercado_mql ? `${current.top_mercado_mql.mql} MQL` : undefined} />
+            <QualCard label="Origem #1 MQL" value={current.top_origem_mql?.key ?? "—"} sub={current.top_origem_mql ? `${current.top_origem_mql.mql} MQL` : undefined} />
+            <QualCard label="Dor #1 MQL" value={current.top_dor_mql ? current.top_dor_mql.key.slice(0, 32) + (current.top_dor_mql.key.length > 32 ? "…" : "") : "—"} sub={current.top_dor_mql ? `${current.top_dor_mql.mql} MQL` : undefined} />
+            <QualCard label="ICP Dominante" value={current.icp_dominante ? `${current.icp_dominante.mercado} · ${current.icp_dominante.faturamento.slice(0, 20)}` : "—"} sub={current.icp_dominante ? `${current.icp_dominante.mql} MQL` : undefined} />
+          </div>
+        </CardContent>
+      </Card>
+
+
       {/* Alertas */}
       <Card>
         <CardContent className="pt-4 space-y-3">
