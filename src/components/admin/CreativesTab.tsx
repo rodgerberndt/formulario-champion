@@ -967,9 +967,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           q5_estagio: "Estágio do negócio",
           q6_faturamento: "Faturamento mensal",
           q6_investimento: "Faturamento mensal",
-          q7_email: "E-mail",
           q7_dor: "Dor / Desejo",
-          q8_dor: "Dor / Desejo",
         };
 
         const steps = funnelMetrics.step_funnel;
@@ -1007,6 +1005,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               count: Math.max(flow.started, numberedSteps[0]?.count || 0),
               text: "text-cyan-300",
               kind: "entered" as const,
+              flowId: flow.flowId,
             },
             ...numberedSteps.map((step, idx) => ({
               key: `${flow.flowId}_${step.step_id}_${idx}`,
@@ -1014,6 +1013,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               count: step.count,
               text: idx % 2 === 0 ? "text-purple-300" : "text-violet-300",
               kind: "step" as const,
+              flowId: flow.flowId,
             })),
             {
               key: `${flow.flowId}_completed`,
@@ -1021,6 +1021,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               count: flow.completed,
               text: "text-emerald-300",
               kind: "completed" as const,
+              flowId: flow.flowId,
             },
           ];
 
@@ -1038,6 +1039,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         let biggestDropIdx = -1;
         let biggestDropPct = 0;
         for (let i = 1; i < allStages.length; i++) {
+          if (allStages[i - 1].flowId !== allStages[i].flowId) continue;
           const prev = allStages[i - 1].count;
           const curr = allStages[i].count;
           if (prev > 0) {
@@ -1051,8 +1053,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
         // Paleta: topo (entrada) ciano, meio roxo/violeta, fim verde; gargalo destacado
         const stageColors = allStages.map((_, i) => {
-          if (i === 0) return { stroke: "stroke-cyan-400", fill: "fill-cyan-500/15", text: "text-cyan-300", hex: "rgb(34 211 238)" };
-          if (i === allStages.length - 1) return { stroke: "stroke-emerald-400", fill: "fill-emerald-500/15", text: "text-emerald-300", hex: "rgb(52 211 153)" };
+          if (allStages[i].kind === "entered") return { stroke: "stroke-cyan-400", fill: "fill-cyan-500/15", text: "text-cyan-300", hex: "rgb(34 211 238)" };
+          if (allStages[i].kind === "completed") return { stroke: "stroke-emerald-400", fill: "fill-emerald-500/15", text: "text-emerald-300", hex: "rgb(52 211 153)" };
           return { stroke: "stroke-violet-400", fill: "fill-violet-500/15", text: "text-violet-300", hex: "rgb(167 139 250)" };
         });
 
@@ -1066,6 +1068,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         });
         // Garante decrescimento visual (cada etapa nunca mais larga que a anterior)
         for (let i = 1; i < widths.length; i++) {
+          if (allStages[i - 1].flowId !== allStages[i].flowId) continue;
           if (widths[i] > widths[i - 1]) widths[i] = widths[i - 1];
         }
 
@@ -1130,7 +1133,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 <div className="flex flex-col gap-0">
                   {allStages.map((stage, idx) => {
                     const prev = idx > 0 ? allStages[idx - 1] : null;
-                    const prevCount = prev?.count ?? null;
+                    const sameFlowAsPrev = prev?.flowId === stage.flowId;
+                    const prevCount = sameFlowAsPrev ? prev?.count ?? null : null;
                     const conv = prevCount && prevCount > 0
                       ? (stage.count / prevCount) * 100
                       : null;
