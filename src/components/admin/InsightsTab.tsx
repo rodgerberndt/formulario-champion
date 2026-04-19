@@ -228,58 +228,75 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     }
   };
 
-  const customMissing = compareMode === "custom" && (!customRange.from || !customRange.to);
-
-  // Comparison-mode picker (reused on initial screen + header)
-  const ComparePicker = (
-    <div className="flex items-center gap-2 flex-wrap">
-      <Select value={compareMode} onValueChange={(v) => setCompareMode(v as CompareMode)}>
-        <SelectTrigger className="h-9 w-[260px] text-xs">
-          <SelectValue placeholder="Período de comparação" />
-        </SelectTrigger>
-        <SelectContent>
-          {COMPARE_OPTIONS.map((o) => (
-            <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      {compareMode === "custom" && (
-        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className={cn("h-9 text-xs gap-2 justify-start font-normal", !customRange.from && "text-muted-foreground")}
-            >
-              <CalendarIcon className="w-3 h-3" />
-              {customRange.from && customRange.to
-                ? `${format(customRange.from, "dd/MM/yyyy")} → ${format(customRange.to, "dd/MM/yyyy")}`
-                : "Escolher datas"}
+  // Reusable date-range picker (single button + 2-month calendar popover)
+  const DateInput = ({
+    label,
+    value,
+    onChange,
+    open,
+    setOpen,
+    placeholder,
+  }: {
+    label: string;
+    value: { from?: Date; to?: Date };
+    onChange: (r: { from?: Date; to?: Date }) => void;
+    open: boolean;
+    setOpen: (b: boolean) => void;
+    placeholder: string;
+  }) => (
+    <div className="flex flex-col gap-1">
+      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className={cn("h-9 text-xs gap-2 justify-start font-normal w-[280px]", !value.from && "text-muted-foreground")}
+          >
+            <CalendarIcon className="w-3 h-3" />
+            {value.from && value.to
+              ? `${format(value.from, "dd/MM/yyyy")} → ${format(value.to, "dd/MM/yyyy")}`
+              : placeholder}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="range"
+            numberOfMonths={2}
+            locale={ptBR}
+            selected={{ from: value.from, to: value.to }}
+            onSelect={(r) => onChange({ from: r?.from, to: r?.to })}
+            disabled={(d) => d > new Date()}
+            className={cn("p-3 pointer-events-auto")}
+          />
+          <div className="flex justify-end p-2 border-t border-border">
+            <Button size="sm" disabled={!value.from || !value.to} onClick={() => setOpen(false)}>
+              Aplicar
             </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="range"
-              numberOfMonths={2}
-              locale={ptBR}
-              selected={{ from: customRange.from, to: customRange.to }}
-              onSelect={(r) => setCustomRange({ from: r?.from, to: r?.to })}
-              disabled={(d) => d > new Date()}
-              className={cn("p-3 pointer-events-auto")}
-            />
-            <div className="flex justify-end p-2 border-t border-border">
-              <Button
-                size="sm"
-                disabled={!customRange.from || !customRange.to}
-                onClick={() => setCalendarOpen(false)}
-              >
-                Aplicar
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-      )}
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+
+  const Pickers = (
+    <div className="flex flex-wrap items-end gap-3">
+      <DateInput
+        label="Input 1 — período base"
+        value={rangeA}
+        onChange={setRangeA}
+        open={openA}
+        setOpen={setOpenA}
+        placeholder="Escolher período base"
+      />
+      <DateInput
+        label="Input 2 — período de comparação"
+        value={rangeB}
+        onChange={setRangeB}
+        open={openB}
+        setOpen={setOpenB}
+        placeholder="Escolher período comparado (opcional)"
+      />
     </div>
   );
 
@@ -292,19 +309,13 @@ export default function InsightsTab({ fetchAdminData }: Props) {
             <Sparkles className="w-4 h-4 text-amber-300" />
             <h3 className="text-base font-bold">Insights — Rules Engine</h3>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Período atual: <span className="font-mono">{periodLabel}</span>
-          </p>
-          <div className="flex flex-col sm:flex-row sm:items-end gap-3">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Comparar com</span>
-              {ComparePicker}
-            </div>
-            <Button onClick={load} disabled={customMissing}><Play className="w-3 h-3 mr-1" />Gerar análise</Button>
-          </div>
           <p className="text-[11px] text-muted-foreground">
-            A análise não roda automaticamente. Escolha o período de comparação e clique em <strong>Gerar análise</strong>.
+            Escolha o <strong>Input 1</strong> (período base) e o <strong>Input 2</strong> (período a comparar). O Input 2 é opcional — sem ele a análise roda só com dados do Input 1.
           </p>
+          {Pickers}
+          <Button onClick={load} disabled={incomplete}>
+            <Play className="w-3 h-3 mr-1" />Gerar análise
+          </Button>
         </CardContent>
       </Card>
     );
@@ -326,7 +337,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
       <Card>
         <CardContent className="pt-6 text-center space-y-2">
           <p className="text-sm text-rose-400">{error || "Sem dados disponíveis"}</p>
-          <Button onClick={load} size="sm" variant="outline"><RefreshCw className="w-3 h-3 mr-1" />Tentar novamente</Button>
+          <Button onClick={load} size="sm" variant="outline" disabled={incomplete}><RefreshCw className="w-3 h-3 mr-1" />Tentar novamente</Button>
         </CardContent>
       </Card>
     );
@@ -339,7 +350,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     <div className="space-y-4">
       {/* Header */}
       <Card className="border-primary/40">
-        <CardContent className="pt-4">
+        <CardContent className="pt-4 space-y-3">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
@@ -347,15 +358,15 @@ export default function InsightsTab({ fetchAdminData }: Props) {
                 <h3 className="text-base font-bold">Insights — Rules Engine</h3>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Período: <span className="font-mono">{periodLabel}</span> {result.has_comparison ? <>vs <span className="font-mono">{prevLabel}</span></> : <span className="text-amber-400">(sem comparação)</span>}
+                Base: <span className="font-mono">{periodLabel}</span> {result.has_comparison ? <>vs Comparação: <span className="font-mono">{prevLabel}</span></> : <span className="text-amber-400">(sem comparação)</span>}
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              {ComparePicker}
-              <Button onClick={load} variant="outline" size="sm" disabled={customMissing}><RefreshCw className="w-3 h-3 mr-1" />Recalcular</Button>
+              <Button onClick={load} variant="outline" size="sm" disabled={incomplete}><RefreshCw className="w-3 h-3 mr-1" />Recalcular</Button>
               <Button onClick={handleCopy} size="sm" className="bg-primary"><Copy className="w-3 h-3 mr-1" />Copiar relatório</Button>
             </div>
           </div>
+          {Pickers}
         </CardContent>
       </Card>
 
