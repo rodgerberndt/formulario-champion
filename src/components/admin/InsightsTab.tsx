@@ -364,7 +364,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               {ComparePicker}
-              <Button onClick={load} variant="outline" size="sm"><RefreshCw className="w-3 h-3 mr-1" />Recalcular</Button>
+              <Button onClick={load} variant="outline" size="sm" disabled={customMissing}><RefreshCw className="w-3 h-3 mr-1" />Recalcular</Button>
               <Button onClick={handleCopy} size="sm" className="bg-primary"><Copy className="w-3 h-3 mr-1" />Copiar relatório</Button>
             </div>
           </div>
