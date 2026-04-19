@@ -192,22 +192,26 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
           </div>
         </div>
 
-        {/* SCROLL DEPTH + QUEDA */}
+        {/* PROFUNDIDADE POR SEÇÃO + QUEDA */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-              <Activity className="w-3 h-3" /> Profundidade de scroll
+              <Activity className="w-3 h-3" /> Até qual seção os visitantes chegaram
             </p>
             <div className="space-y-2">
-              {cur.scrollDepth.map((s) => {
-                const prevS = prev?.scrollDepth.find((x) => x.milestone === s.milestone);
-                const delta = prevS ? s.pct - prevS.pct : null;
+              {cur.funnel.map((f) => {
+                const prevS = findPrev(f.section_id);
+                const delta = prevS ? f.pct_of_visitors - prevS.pct_of_visitors : null;
+                const label = SECTION_LABELS[f.section_id] || f.section_id;
                 return (
-                  <div key={s.milestone}>
-                    <div className="flex items-center justify-between text-[11px] mb-1">
-                      <span className="text-muted-foreground">{s.milestone}% da página</span>
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-foreground">{s.users} ({fmtPct(s.pct)})</span>
+                  <div key={f.section_id}>
+                    <div className="flex items-center justify-between text-[11px] mb-1 gap-2">
+                      <span className="text-muted-foreground truncate">
+                        <span className="font-mono text-[10px] text-muted-foreground/60 mr-1">#{f.order}</span>
+                        {label}
+                      </span>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="font-semibold text-foreground">{f.reached} ({fmtPct(f.pct_of_visitors)})</span>
                         {delta !== null && Math.abs(delta) > 1 && (
                           <span className={`text-[10px] ${delta >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
                             {delta >= 0 ? "+" : ""}{delta.toFixed(0)}pp
@@ -216,7 +220,7 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
                       </div>
                     </div>
                     <div className="h-2 rounded bg-muted/30 overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-cyan-500 to-amber-400" style={{ width: `${Math.min(100, s.pct)}%` }} />
+                      <div className="h-full bg-gradient-to-r from-cyan-500 to-amber-400" style={{ width: `${Math.min(100, f.pct_of_visitors)}%` }} />
                     </div>
                   </div>
                 );
@@ -226,7 +230,7 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
 
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-              <TrendingDown className="w-3 h-3" /> Queda ao longo da página
+              <TrendingDown className="w-3 h-3" /> Queda ao longo da página (por seção)
             </p>
             <div className="flex items-end gap-1 h-32 px-1">
               {cur.funnel.map((f) => (
