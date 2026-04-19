@@ -1,29 +1,19 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Loader2, Copy, RefreshCw, Sparkles, AlertTriangle, CheckCircle2, Play, CalendarIcon, Trophy } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useDateRange } from "@/context/DateRangeContext";
 import { runRulesEngine, type PeriodMetrics, type Alert, type DistributionItem, type ICP, type RecentLead, type MarketPainCombo } from "@/lib/rulesEngine";
 import { getTierFromFaturamento } from "@/lib/leadScoring";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-
-type CompareMode = "previous" | "previous_2x" | "last_week" | "last_month" | "custom" | "none";
-
-const COMPARE_OPTIONS: { value: CompareMode; label: string }[] = [
-  { value: "previous", label: "Período anterior (mesmo tamanho)" },
-  { value: "previous_2x", label: "2 períodos atrás (mesmo tamanho)" },
-  { value: "last_week", label: "Mesma janela na semana passada (-7d)" },
-  { value: "last_month", label: "Mesma janela no mês passado (-30d)" },
-  { value: "custom", label: "Personalizado (escolher no calendário)" },
-  { value: "none", label: "Sem comparação" },
-];
 
 interface Props {
   fetchAdminData: (path: string, params?: Record<string, string>) => Promise<any>;
@@ -273,6 +263,71 @@ function buildPeriodMetrics(raw: RawData): PeriodMetrics {
 function startOfDay(d: Date): Date { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
 function endOfDay(d: Date): Date { const x = new Date(d); x.setHours(23, 59, 59, 999); return x; }
 
+// ---- Presets ----
+type PresetKey =
+  | "today" | "yesterday" | "last_7" | "last_14" | "last_30"
+  | "current_week" | "last_week" | "current_month" | "last_month" | "max" | "custom";
+
+const PRESETS: { key: PresetKey; label: string }[] = [
+  { key: "today", label: "Hoje" },
+  { key: "yesterday", label: "Ontem" },
+  { key: "last_7", label: "Últimos 7 dias" },
+  { key: "last_14", label: "Últimos 14 dias" },
+  { key: "last_30", label: "Últimos 30 dias" },
+  { key: "current_week", label: "Semana atual" },
+  { key: "last_week", label: "Semana passada" },
+  { key: "current_month", label: "Mês atual" },
+  { key: "last_month", label: "Mês passado" },
+  { key: "max", label: "Máximo" },
+];
+
+function computePresetRange(key: PresetKey): { from: Date; to: Date } {
+  const now = new Date();
+  const today = startOfDay(now);
+  switch (key) {
+    case "today": return { from: today, to: endOfDay(now) };
+    case "yesterday": {
+      const y = new Date(today); y.setDate(y.getDate() - 1);
+      return { from: y, to: endOfDay(y) };
+    }
+    case "last_7": {
+      const f = new Date(today); f.setDate(f.getDate() - 6);
+      return { from: f, to: endOfDay(now) };
+    }
+    case "last_14": {
+      const f = new Date(today); f.setDate(f.getDate() - 13);
+      return { from: f, to: endOfDay(now) };
+    }
+    case "last_30": {
+      const f = new Date(today); f.setDate(f.getDate() - 29);
+      return { from: f, to: endOfDay(now) };
+    }
+    case "current_week": {
+      const dow = today.getDay();
+      const f = new Date(today); f.setDate(f.getDate() - dow);
+      return { from: f, to: endOfDay(now) };
+    }
+    case "last_week": {
+      const dow = today.getDay();
+      const endLast = new Date(today); endLast.setDate(endLast.getDate() - dow - 1);
+      const startLast = new Date(endLast); startLast.setDate(startLast.getDate() - 6);
+      return { from: startOfDay(startLast), to: endOfDay(endLast) };
+    }
+    case "current_month": {
+      const f = new Date(today.getFullYear(), today.getMonth(), 1);
+      return { from: f, to: endOfDay(now) };
+    }
+    case "last_month": {
+      const f = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      const e = new Date(today.getFullYear(), today.getMonth(), 0);
+      return { from: f, to: endOfDay(e) };
+    }
+    case "max":
+    default:
+      return { from: new Date(2024, 0, 1), to: endOfDay(now) };
+  }
+}
+
 export default function InsightsTab({ fetchAdminData }: Props) {
   const [loading, setLoading] = useState(false);
   const [hasRun, setHasRun] = useState(false);
@@ -280,23 +335,31 @@ export default function InsightsTab({ fetchAdminData }: Props) {
   const [previous, setPrevious] = useState<PeriodMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Two independent ranges chosen by the user
-  const [rangeA, setRangeA] = useState<{ from?: Date; to?: Date }>({});
-  const [rangeB, setRangeB] = useState<{ from?: Date; to?: Date }>({});
-  const [openA, setOpenA] = useState(false);
-  const [openB, setOpenB] = useState(false);
+  // Single base range + automatic comparison
+  const initial = computePresetRange("last_7");
+  const [baseRange, setBaseRange] = useState<{ from?: Date; to?: Date }>({ from: initial.from, to: initial.to });
+  const [activePreset, setActivePreset] = useState<PresetKey>("last_7");
+  const [openCalendar, setOpenCalendar] = useState(false);
+  const [compareEnabled, setCompareEnabled] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
-  const aFromMs = rangeA.from?.getTime();
-  const aToMs = rangeA.to?.getTime();
-  const bFromMs = rangeB.from?.getTime();
-  const bToMs = rangeB.to?.getTime();
+  const fromMs = baseRange.from?.getTime();
+  const toMs = baseRange.to?.getTime();
+  const incomplete = !fromMs || !toMs;
 
-  const incomplete = !aFromMs || !aToMs;
+  // Validation
+  const validation = useMemo<{ valid: boolean; msg?: string; warn?: string }>(() => {
+    if (!fromMs || !toMs) return { valid: false, msg: "Selecione um período" };
+    if (toMs < fromMs) return { valid: false, msg: "Data final menor que inicial" };
+    const days = Math.ceil((toMs - fromMs) / (1000 * 60 * 60 * 24));
+    if (days > 365) return { valid: true, warn: `Período muito longo (${days} dias)` };
+    return { valid: true };
+  }, [fromMs, toMs]);
 
   const periodA = useMemo(() => {
-    if (!aFromMs || !aToMs) return null;
-    const s = startOfDay(new Date(aFromMs));
-    const e = endOfDay(new Date(aToMs));
+    if (!fromMs || !toMs) return null;
+    const s = startOfDay(new Date(fromMs));
+    const e = endOfDay(new Date(toMs));
     const eExcl = new Date(e.getTime() + 1);
     return {
       startISO: s.toISOString(),
@@ -305,27 +368,33 @@ export default function InsightsTab({ fetchAdminData }: Props) {
       endDateOnly: format(e, "yyyy-MM-dd"),
       label: `${format(s, "dd/MM/yyyy")} → ${format(e, "dd/MM/yyyy")}`,
     };
-  }, [aFromMs, aToMs]);
+  }, [fromMs, toMs]);
 
+  // Auto comparison: same length, immediately before
   const periodB = useMemo(() => {
-    if (!bFromMs || !bToMs) return null;
-    const s = startOfDay(new Date(bFromMs));
-    const e = endOfDay(new Date(bToMs));
-    const eExcl = new Date(e.getTime() + 1);
+    if (!compareEnabled || !fromMs || !toMs) return null;
+    const s = startOfDay(new Date(fromMs));
+    const e = endOfDay(new Date(toMs));
+    const span = e.getTime() - s.getTime();
+    const compEnd = new Date(s.getTime() - 1);
+    const compStart = new Date(compEnd.getTime() - span);
+    const compStartDay = startOfDay(compStart);
+    const compEndDay = endOfDay(compEnd);
+    const eExcl = new Date(compEndDay.getTime() + 1);
     return {
-      startISO: s.toISOString(),
+      startISO: compStartDay.toISOString(),
       endExclusiveISO: eExcl.toISOString(),
-      startDateOnly: format(s, "yyyy-MM-dd"),
-      endDateOnly: format(e, "yyyy-MM-dd"),
-      label: `${format(s, "dd/MM/yyyy")} → ${format(e, "dd/MM/yyyy")}`,
+      startDateOnly: format(compStartDay, "yyyy-MM-dd"),
+      endDateOnly: format(compEndDay, "yyyy-MM-dd"),
+      label: `${format(compStartDay, "dd/MM/yyyy")} → ${format(compEndDay, "dd/MM/yyyy")}`,
     };
-  }, [bFromMs, bToMs]);
+  }, [compareEnabled, fromMs, toMs]);
 
-  const periodLabel = periodA?.label ?? "(escolha o Input 1)";
-  const prevLabel = periodB?.label ?? "(sem comparação)";
+  const periodLabel = periodA?.label ?? "(escolha o período)";
+  const prevLabel = periodB?.label ?? "desativada";
 
   const load = useCallback(async () => {
-    if (!periodA) return;
+    if (!periodA || !validation.valid) return;
     setLoading(true);
     setError(null);
     try {
@@ -354,7 +423,15 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [fetchAdminData, periodA, periodB]);
+  }, [fetchAdminData, periodA, periodB, validation.valid]);
+
+  // Auto-refresh when period/comparison changes (only after first run)
+  useEffect(() => {
+    if (!autoRefresh || !hasRun) return;
+    const t = setTimeout(() => { void load(); }, 250);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromMs, toMs, compareEnabled, autoRefresh]);
 
   const result = useMemo(() => {
     if (!current) return null;
@@ -375,79 +452,97 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     }
   };
 
-  // Reusable date-range picker (single button + 2-month calendar popover)
-  const DateInput = ({
-    label,
-    value,
-    onChange,
-    open,
-    setOpen,
-    placeholder,
-  }: {
-    label: string;
-    value: { from?: Date; to?: Date };
-    onChange: (r: { from?: Date; to?: Date }) => void;
-    open: boolean;
-    setOpen: (b: boolean) => void;
-    placeholder: string;
-  }) => (
-    <div className="flex flex-col gap-1">
-      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+  const applyPreset = (key: PresetKey) => {
+    const r = computePresetRange(key);
+    setBaseRange({ from: r.from, to: r.to });
+    setActivePreset(key);
+  };
+
+  const PeriodControls = (
+    <div className="space-y-3">
+      {/* Preset buttons */}
+      <div className="flex flex-wrap gap-1.5">
+        {PRESETS.map((p) => (
           <Button
-            variant="outline"
+            key={p.key}
             size="sm"
-            className={cn("h-9 text-xs gap-2 justify-start font-normal w-[280px]", !value.from && "text-muted-foreground")}
+            variant={activePreset === p.key ? "default" : "outline"}
+            onClick={() => applyPreset(p.key)}
+            className="h-7 text-[11px] px-2.5"
           >
-            <CalendarIcon className="w-3 h-3" />
-            {value.from && value.to
-              ? `${format(value.from, "dd/MM/yyyy")} → ${format(value.to, "dd/MM/yyyy")}`
-              : placeholder}
+            {p.label}
           </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="range"
-            numberOfMonths={2}
-            locale={ptBR}
-            selected={{ from: value.from, to: value.to }}
-            onSelect={(r) => onChange({ from: r?.from, to: r?.to })}
-            disabled={(d) => d > new Date()}
-            className={cn("p-3 pointer-events-auto")}
-          />
-          <div className="flex justify-end p-2 border-t border-border">
-            <Button size="sm" disabled={!value.from || !value.to} onClick={() => setOpen(false)}>
-              Aplicar
-            </Button>
-          </div>
-        </PopoverContent>
-      </Popover>
+        ))}
+      </div>
+
+      {/* Single date picker + toggles + apply */}
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Período base</span>
+          <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn("h-9 text-xs gap-2 justify-start font-normal w-[280px]", !baseRange.from && "text-muted-foreground")}
+              >
+                <CalendarIcon className="w-3 h-3" />
+                {baseRange.from && baseRange.to
+                  ? `${format(baseRange.from, "dd/MM/yyyy")} → ${format(baseRange.to, "dd/MM/yyyy")}`
+                  : "Escolher período"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="range"
+                numberOfMonths={2}
+                locale={ptBR}
+                selected={{ from: baseRange.from, to: baseRange.to }}
+                onSelect={(r) => {
+                  setBaseRange({ from: r?.from, to: r?.to });
+                  setActivePreset("custom");
+                }}
+                disabled={(d) => d > new Date()}
+                className={cn("p-3 pointer-events-auto")}
+              />
+              <div className="flex justify-end p-2 border-t border-border">
+                <Button size="sm" disabled={!baseRange.from || !baseRange.to} onClick={() => setOpenCalendar(false)}>
+                  Fechar
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div className="flex items-center gap-2 h-9">
+          <Switch id="compare-toggle" checked={compareEnabled} onCheckedChange={setCompareEnabled} />
+          <Label htmlFor="compare-toggle" className="text-xs cursor-pointer">Comparar com período anterior</Label>
+        </div>
+
+        <div className="flex items-center gap-2 h-9">
+          <Switch id="auto-toggle" checked={autoRefresh} onCheckedChange={setAutoRefresh} />
+          <Label htmlFor="auto-toggle" className="text-xs cursor-pointer">Auto-recalcular</Label>
+        </div>
+
+        <Button onClick={load} disabled={incomplete || !validation.valid || loading} size="sm" className="h-9">
+          {loading ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Play className="w-3 h-3 mr-1" />}
+          Aplicar
+        </Button>
+      </div>
+
+      {/* Resumo do período */}
+      <div className="text-[11px] text-muted-foreground">
+        <span className="font-semibold text-foreground">Base:</span> <span className="font-mono">{periodLabel}</span>
+        {" | "}
+        <span className="font-semibold text-foreground">Comparação:</span>{" "}
+        {compareEnabled ? <span className="font-mono">{prevLabel}</span> : <span className="text-amber-400">desativada</span>}
+        {validation.warn && <span className="ml-2 text-amber-400">⚠ {validation.warn}</span>}
+        {!validation.valid && <span className="ml-2 text-rose-400">⚠ {validation.msg}</span>}
+      </div>
     </div>
   );
 
-  const Pickers = (
-    <div className="flex flex-wrap items-end gap-3">
-      <DateInput
-        label="Input 1 — período base"
-        value={rangeA}
-        onChange={setRangeA}
-        open={openA}
-        setOpen={setOpenA}
-        placeholder="Escolher período base"
-      />
-      <DateInput
-        label="Input 2 — período de comparação"
-        value={rangeB}
-        onChange={setRangeB}
-        open={openB}
-        setOpen={setOpenB}
-        placeholder="Escolher período comparado (opcional)"
-      />
-    </div>
-  );
-
-  // Initial state — user must click "Gerar análise"
+  // Initial state — user must click "Aplicar"
   if (!hasRun && !loading) {
     return (
       <Card className="border-primary/40">
@@ -457,12 +552,9 @@ export default function InsightsTab({ fetchAdminData }: Props) {
             <h3 className="text-base font-bold">Insights — Rules Engine</h3>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Escolha o <strong>Input 1</strong> (período base) e o <strong>Input 2</strong> (período a comparar). O Input 2 é opcional — sem ele a análise roda só com dados do Input 1.
+            Escolha um <strong>preset rápido</strong> ou um período customizado. A comparação com o período anterior é automática (mesmo tamanho, imediatamente antes) — você pode desativar no toggle.
           </p>
-          {Pickers}
-          <Button onClick={load} disabled={incomplete}>
-            <Play className="w-3 h-3 mr-1" />Gerar análise
-          </Button>
+          {PeriodControls}
         </CardContent>
       </Card>
     );
@@ -513,7 +605,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
               <Button onClick={handleCopy} size="sm" className="bg-primary"><Copy className="w-3 h-3 mr-1" />Copiar relatório</Button>
             </div>
           </div>
-          {Pickers}
+          {PeriodControls}
         </CardContent>
       </Card>
 
