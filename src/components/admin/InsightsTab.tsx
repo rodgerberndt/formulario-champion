@@ -1,12 +1,23 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Copy, RefreshCw, Sparkles, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Loader2, Copy, RefreshCw, Sparkles, AlertTriangle, CheckCircle2, Play } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useDateRange } from "@/context/DateRangeContext";
 import { runRulesEngine, type PeriodMetrics, type Alert } from "@/lib/rulesEngine";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
+
+type CompareMode = "previous" | "previous_2x" | "last_week" | "last_month" | "none";
+
+const COMPARE_OPTIONS: { value: CompareMode; label: string }[] = [
+  { value: "previous", label: "Período anterior (mesmo tamanho)" },
+  { value: "previous_2x", label: "2 períodos atrás (mesmo tamanho)" },
+  { value: "last_week", label: "Mesma janela na semana passada (-7d)" },
+  { value: "last_month", label: "Mesma janela no mês passado (-30d)" },
+  { value: "none", label: "Sem comparação" },
+];
 
 interface Props {
   fetchAdminData: (path: string, params?: Record<string, string>) => Promise<any>;
@@ -109,26 +120,56 @@ function buildPeriodMetrics(raw: RawData): PeriodMetrics {
 
 export default function InsightsTab({ fetchAdminData }: Props) {
   const { startISO, endExclusiveISO, startDateOnly, endDateOnly, start, end } = useDateRange();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [hasRun, setHasRun] = useState(false);
   const [current, setCurrent] = useState<PeriodMetrics | null>(null);
   const [previous, setPrevious] = useState<PeriodMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [compareMode, setCompareMode] = useState<CompareMode>("previous");
 
-  // Compute previous period (same length)
+  // Use timestamps (primitives) to avoid Date identity churn between renders
+  const startMs = start.getTime();
+  const endMs = end.getTime();
+
   const { prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly, prevLabel } = useMemo(() => {
-    const span = end.getTime() - start.getTime();
-    const pStart = new Date(start.getTime() - span - 1);
-    const pEnd = new Date(start.getTime() - 1);
+    const span = endMs - startMs;
+    const DAY = 24 * 60 * 60 * 1000;
+    let pStart: Date;
+    let pEnd: Date;
+    switch (compareMode) {
+      case "previous_2x":
+        pEnd = new Date(startMs - span - 1);
+        pStart = new Date(pEnd.getTime() - span);
+        break;
+      case "last_week":
+        pStart = new Date(startMs - 7 * DAY);
+        pEnd = new Date(endMs - 7 * DAY);
+        break;
+      case "last_month":
+        pStart = new Date(startMs - 30 * DAY);
+        pEnd = new Date(endMs - 30 * DAY);
+        break;
+      case "none":
+        return { prevStartISO: "", prevEndExclusiveISO: "", prevStartDateOnly: "", prevEndDateOnly: "", prevLabel: "(sem comparação)" };
+      case "previous":
+      default:
+        pStart = new Date(startMs - span - 1);
+        pEnd = new Date(startMs - 1);
+        break;
+    }
     return {
       prevStartISO: pStart.toISOString(),
-      prevEndExclusiveISO: start.toISOString(),
+      prevEndExclusiveISO: pEnd.toISOString(),
       prevStartDateOnly: format(pStart, "yyyy-MM-dd"),
       prevEndDateOnly: format(pEnd, "yyyy-MM-dd"),
       prevLabel: `${format(pStart, "dd/MM/yyyy")} → ${format(pEnd, "dd/MM/yyyy")}`,
     };
-  }, [start, end]);
+  }, [startMs, endMs, compareMode]);
 
-  const periodLabel = `${format(start, "dd/MM/yyyy")} → ${format(end, "dd/MM/yyyy")}`;
+  const periodLabel = useMemo(
+    () => `${format(new Date(startMs), "dd/MM/yyyy")} → ${format(new Date(endMs), "dd/MM/yyyy")}`,
+    [startMs, endMs]
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -143,22 +184,23 @@ export default function InsightsTab({ fetchAdminData }: Props) {
         return { metrics, leads: leadsRes?.leads || leadsRes || [], creatives };
       };
 
-      const [curRaw, prevRaw] = await Promise.all([
-        fetchPeriod(startISO, endExclusiveISO, startDateOnly, endDateOnly),
-        fetchPeriod(prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly).catch(() => null),
-      ]);
+      const curPromise = fetchPeriod(startISO, endExclusiveISO, startDateOnly, endDateOnly);
+      const prevPromise = compareMode === "none"
+        ? Promise.resolve(null as RawData | null)
+        : fetchPeriod(prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly).catch(() => null);
+
+      const [curRaw, prevRaw] = await Promise.all([curPromise, prevPromise]);
 
       setCurrent(buildPeriodMetrics(curRaw));
       setPrevious(prevRaw ? buildPeriodMetrics(prevRaw) : null);
+      setHasRun(true);
     } catch (e: any) {
       console.error("InsightsTab load", e);
       setError(e?.message || "Erro ao carregar dados");
     } finally {
       setLoading(false);
     }
-  }, [fetchAdminData, startISO, endExclusiveISO, startDateOnly, endDateOnly, prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly]);
-
-  useEffect(() => { load(); }, [load]);
+  }, [fetchAdminData, startISO, endExclusiveISO, startDateOnly, endDateOnly, prevStartISO, prevEndExclusiveISO, prevStartDateOnly, prevEndDateOnly, compareMode]);
 
   const result = useMemo(() => {
     if (!current) return null;
@@ -179,12 +221,53 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     }
   };
 
+  // Comparison-mode picker (reused on initial screen + header)
+  const ComparePicker = (
+    <Select value={compareMode} onValueChange={(v) => setCompareMode(v as CompareMode)}>
+      <SelectTrigger className="h-9 w-[260px] text-xs">
+        <SelectValue placeholder="Período de comparação" />
+      </SelectTrigger>
+      <SelectContent>
+        {COMPARE_OPTIONS.map((o) => (
+          <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+
+  // Initial state — user must click "Gerar análise"
+  if (!hasRun && !loading) {
+    return (
+      <Card className="border-primary/40">
+        <CardContent className="pt-6 pb-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            <h3 className="text-base font-bold">Insights — Rules Engine</h3>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Período atual: <span className="font-mono">{periodLabel}</span>
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Comparar com</span>
+              {ComparePicker}
+            </div>
+            <Button onClick={load}><Play className="w-3 h-3 mr-1" />Gerar análise</Button>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            A análise não roda automaticamente. Escolha o período de comparação e clique em <strong>Gerar análise</strong>.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (loading) {
     return (
       <Card>
         <CardContent className="pt-10 pb-10 flex flex-col items-center justify-center gap-3 text-muted-foreground">
           <Loader2 className="w-6 h-6 animate-spin" />
-          <p className="text-sm">Carregando métricas + comparação com período anterior…</p>
+          <p className="text-sm">Calculando métricas + comparação…</p>
         </CardContent>
       </Card>
     );
@@ -219,7 +302,8 @@ export default function InsightsTab({ fetchAdminData }: Props) {
                 Período: <span className="font-mono">{periodLabel}</span> {result.has_comparison ? <>vs <span className="font-mono">{prevLabel}</span></> : <span className="text-amber-400">(sem comparação)</span>}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              {ComparePicker}
               <Button onClick={load} variant="outline" size="sm"><RefreshCw className="w-3 h-3 mr-1" />Recalcular</Button>
               <Button onClick={handleCopy} size="sm" className="bg-primary"><Copy className="w-3 h-3 mr-1" />Copiar relatório</Button>
             </div>
