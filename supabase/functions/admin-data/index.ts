@@ -447,41 +447,21 @@ Deno.serve(async (req: Request) => {
         start_btn_3: buttonEventCounts.start_btn_3.size,
       };
 
-      // Step funnel — unifica fluxos antigo (nome→whats→insta→mercado→estagio→investimento→dor)
-      // e novo (quer_vender→mercado→faturamento→nome→whats→insta→email→dor) em buckets lógicos.
-      // Mantém ordem do fluxo NOVO (atual) para exibição.
-      const stepBucketMap: Record<string, string> = {
-        // novo
-        q1_quer_vender: "quer_vender",
-        q2_mercado: "mercado",
-        q3_faturamento: "faturamento",
-        q4_nome: "nome",
-        q5_whats: "whats",
-        q6_insta: "insta",
-        q7_email: "email",
-        q8_dor: "dor",
-        // antigo
-        q1_nome: "nome",
-        q2_whats: "whats",
-        q3_insta: "insta",
-        q4_mercado: "mercado",
-        q5_estagio: "estagio",
-        q6_investimento: "faturamento",
-        q6_dor: "dor",
-        q7_dor: "dor",
-      };
-      // Ordem de exibição (fluxo atual). 'estagio' é legado e só aparece se houver dados.
-      const bucketOrder = ["quer_vender", "mercado", "faturamento", "estagio", "nome", "whats", "insta", "email", "dor"];
+      // Step funnel — preserva a ORDEM REAL das perguntas no período selecionado.
+      // Detecta o fluxo dominante (novo vs antigo) com base nos eventos do período.
+      // Fluxo novo (a partir de ~abril/2026): quer_vender → mercado → faturamento → nome → whats → insta → email → dor
+      // Fluxo antigo: nome → whats → insta → mercado → estagio → investimento → dor
+      const NEW_FLOW = ["q1_quer_vender", "q2_mercado", "q3_faturamento", "q4_nome", "q5_whats", "q6_insta", "q7_email", "q8_dor"];
+      const OLD_FLOW = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_investimento", "q7_dor"];
 
-      const bucketCounts: Record<string, Set<string>> = {};
+      const stepCounts: Record<string, Set<string>> = {};
       const sessionViewedSteps: Record<string, Set<string>> = {};
       const sessionAdvancedFrom: Record<string, Set<string>> = {};
 
       filteredEvents.forEach((event: any) => {
         if (event.event_name === "step_view" && event.step_id) {
-          const bucket = stepBucketMap[event.step_id] || event.step_id;
-          if (!bucketCounts[bucket]) bucketCounts[bucket] = new Set();
-          bucketCounts[bucket].add(event.session_id);
+          if (!stepCounts[event.step_id]) stepCounts[event.step_id] = new Set();
+          stepCounts[event.step_id].add(event.session_id);
           if (!sessionViewedSteps[event.session_id]) sessionViewedSteps[event.session_id] = new Set();
           sessionViewedSteps[event.session_id].add(event.step_id);
         }
@@ -495,10 +475,37 @@ Deno.serve(async (req: Request) => {
         }
       });
 
-      // Só inclui buckets com pelo menos 1 sessão (oculta etapas inexistentes no período)
-      const stepFunnel = bucketOrder
-        .filter(b => (bucketCounts[b]?.size || 0) > 0)
-        .map(b => ({ step_id: b, count: bucketCounts[b]?.size || 0 }));
+      // Soma de sessões em cada fluxo (para detectar qual predomina no período)
+      const newFlowVolume = NEW_FLOW.reduce((acc, sid) => acc + (stepCounts[sid]?.size || 0), 0);
+      const oldFlowVolume = OLD_FLOW.reduce((acc, sid) => acc + (stepCounts[sid]?.size || 0), 0);
+
+      // Constrói funil na ordem real:
+      // - Se ambos os fluxos tiverem dados, mostra os dois em sequência (antigo primeiro pois é mais cronológico)
+      // - Senão, mostra apenas o que tem dados
+      const stepFunnel: Array<{ step_id: string; count: number; flow?: string }> = [];
+
+      const hasNew = newFlowVolume > 0;
+      const hasOld = oldFlowVolume > 0;
+
+      if (hasOld && hasNew) {
+        // Período de transição: mostra ambos rotulados
+        OLD_FLOW.forEach(sid => {
+          const c = stepCounts[sid]?.size || 0;
+          if (c > 0) stepFunnel.push({ step_id: sid, count: c, flow: "antigo" });
+        });
+        NEW_FLOW.forEach(sid => {
+          const c = stepCounts[sid]?.size || 0;
+          if (c > 0) stepFunnel.push({ step_id: sid, count: c, flow: "novo" });
+        });
+      } else if (hasNew) {
+        NEW_FLOW.forEach(sid => {
+          stepFunnel.push({ step_id: sid, count: stepCounts[sid]?.size || 0, flow: "novo" });
+        });
+      } else if (hasOld) {
+        OLD_FLOW.forEach(sid => {
+          stepFunnel.push({ step_id: sid, count: stepCounts[sid]?.size || 0, flow: "antigo" });
+        });
+      }
 
       // Drop-off analysis
       const sessionsWithSubmit = new Set(
