@@ -415,6 +415,20 @@ Deno.serve(async (req: Request) => {
         }
       );
 
+      // Fetch ad_spend in range. ad_spend.date is a DATE column already in
+      // local calendar (no timezone conversion needed) — query as YYYY-MM-DD.
+      const fromYmd = from ? from.slice(0, 10) : null;
+      const toYmd = to ? to.slice(0, 10) : null;
+      const adSpendRows = await fetchAllPaged<any>(
+        "ad_spend",
+        "date, spend, impressions, clicks",
+        (q: any) => {
+          if (fromYmd) q = q.gte("date", fromYmd);
+          if (toYmd) q = q.lte("date", toYmd);
+          return q;
+        }
+      );
+
       // Helpers — convert UTC ISO -> America/Sao_Paulo calendar date (YYYY-MM-DD)
       // SP = UTC-3 (no DST currently). Use Intl for safety.
       const tzFmt = new Intl.DateTimeFormat("en-CA", {
@@ -441,12 +455,19 @@ Deno.serve(async (req: Request) => {
         sessions: number;
         entered_quiz: number;
         completed: number;
+        spend: number;
+        impressions: number;
+        clicks: number;
       };
       const byDate = new Map<string, DayBucket>();
       const ensure = (ymd: string): DayBucket => {
         let b = byDate.get(ymd);
         if (!b) {
-          b = { date: ymd, dow: dowFromYmd(ymd), visitors: new Set(), sessions: 0, entered_quiz: 0, completed: 0 };
+          b = {
+            date: ymd, dow: dowFromYmd(ymd),
+            visitors: new Set(), sessions: 0, entered_quiz: 0, completed: 0,
+            spend: 0, impressions: 0, clicks: 0,
+          };
           byDate.set(ymd, b);
         }
         return b;
@@ -474,6 +495,15 @@ Deno.serve(async (req: Request) => {
         ensure(ymd).completed += 1;
       });
 
+      // ad_spend.date is already a YYYY-MM-DD string aligned to São Paulo
+      adSpendRows.forEach((row: any) => {
+        const ymd = String(row.date).slice(0, 10);
+        const b = ensure(ymd);
+        b.spend += Number(row.spend) || 0;
+        b.impressions += Number(row.impressions) || 0;
+        b.clicks += Number(row.clicks) || 0;
+      });
+
       const days = Array.from(byDate.values())
         .map((b) => ({
           date: b.date,
@@ -482,6 +512,9 @@ Deno.serve(async (req: Request) => {
           sessions: b.sessions,
           entered_quiz: b.entered_quiz,
           completed: b.completed,
+          spend: Number(b.spend.toFixed(2)),
+          impressions: b.impressions,
+          clicks: b.clicks,
         }))
         .sort((a, b) => a.date.localeCompare(b.date));
 
