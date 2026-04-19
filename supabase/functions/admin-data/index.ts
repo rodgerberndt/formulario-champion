@@ -2217,16 +2217,71 @@ Deno.serve(async (req: Request) => {
           set.add(c.session_id);
         });
 
-        // Build funnel: "continued" = advanced to next section OR clicked something in current section
+        // scroll milestones (precisamos ANTES do funil para usar como base)
+        let sm = supabase.from("scroll_milestones").select("session_id, milestone");
+        if (fromIso) sm = sm.gte("reached_at", fromIso);
+        if (toIso) sm = sm.lte("reached_at", toIso);
+        const { data: scrollRows } = await sm;
+        const scrolls = (scrollRows || []).filter((r: any) => validSessions.has(r.session_id));
+
+        // maxScrollBySession: maior milestone atingido por cada sessão
+        const maxScrollBySession = new Map<string, number>();
+        scrolls.forEach((r: any) => {
+          const cur = maxScrollBySession.get(r.session_id) || 0;
+          if (r.milestone > cur) maxScrollBySession.set(r.session_id, r.milestone);
+        });
+
+        const milestones: Record<number, Set<string>> = { 25: new Set(), 50: new Set(), 75: new Set(), 100: new Set() };
+        scrolls.forEach((r: any) => milestones[r.milestone]?.add(r.session_id));
+        const scrollDepth = [25, 50, 75, 100].map((m) => ({
+          milestone: m,
+          users: milestones[m].size,
+          pct: totalVisitors > 0 ? (milestones[m].size / totalVisitors) * 100 : 0,
+        }));
+
+        // Funil baseado em SCROLL-DEPTH (mais confiável que IntersectionObserver):
+        // Cada seção recebe uma posição estimada de scroll (% da página) baseada na sua ordem.
+        // Uma sessão "alcançou" a seção se: (a) viu a seção via observer OU (b) scroll máximo >= posição da seção.
+        // Garantia de monotonicidade: reached(N) inclui todos de reached(N+1) — se chegou no fim, viu tudo antes.
+        const N = sortedSections.length;
+        // Posição estimada de cada seção em % da página (distribuição uniforme entre 0% e 100%).
+        const sectionScrollPos = sortedSections.map((_, idx) => N > 1 ? (idx / (N - 1)) * 100 : 0);
+
+        // Construir reached do FINAL para o INÍCIO garantindo monotonicidade
+        const reachedSets: Set<string>[] = new Array(N).fill(null).map(() => new Set<string>());
+        for (let idx = N - 1; idx >= 0; idx--) {
+          const s = sortedSections[idx];
+          const pos = sectionScrollPos[idx];
+          const set = reachedSets[idx];
+          // (a) sessões que viram a seção via observer
+          s.sessions.forEach((sid) => set.add(sid));
+          // (b) sessões cujo scroll máximo passou da posição da seção
+          maxScrollBySession.forEach((maxM, sid) => {
+            if (maxM >= pos) set.add(sid);
+          });
+          // (c) herdar todas as sessões que alcançaram seções posteriores (monotonicidade)
+          if (idx < N - 1) {
+            reachedSets[idx + 1].forEach((sid) => set.add(sid));
+          }
+        }
+
+        // Para a primeira seção, todos os visitantes válidos são considerados "alcançados"
+        // (pois entraram na página, então viram pelo menos o topo)
+        if (N > 0) {
+          validSessions.forEach((sid) => reachedSets[0].add(sid));
+        }
+
         const funnel = sortedSections.map((s, idx) => {
-          const reached = s.sessions.size;
+          const reached = reachedSets[idx].size;
           const next = sortedSections[idx + 1];
           const clickersHere = clickSessionsBySection.get(s.id) || new Set<string>();
-          const advanced = next ? Array.from(s.sessions).filter((sid) => next.sessions.has(sid)) : [];
-          const continuedSet = new Set<string>([...advanced, ...Array.from(clickersHere).filter((sid) => s.sessions.has(sid))]);
-          const continued = continuedSet.size;
-          const clickedCount = Array.from(clickersHere).filter((sid) => s.sessions.has(sid)).length;
-          const dropped = reached - continued;
+          const clickedCount = Array.from(clickersHere).filter((sid) => reachedSets[idx].has(sid)).length;
+          // "continued" = avançou para a próxima seção OU clicou em algo nesta seção
+          const continuedSet = new Set<string>();
+          if (next) reachedSets[idx + 1].forEach((sid) => { if (reachedSets[idx].has(sid)) continuedSet.add(sid); });
+          clickersHere.forEach((sid) => { if (reachedSets[idx].has(sid)) continuedSet.add(sid); });
+          const continued = next ? continuedSet.size : clickedCount;
+          const dropped = Math.max(0, reached - continued);
           return {
             section_id: s.id,
             order: s.order,
@@ -2241,20 +2296,6 @@ Deno.serve(async (req: Request) => {
             pct_of_visitors: totalVisitors > 0 ? (reached / totalVisitors) * 100 : 0,
           };
         });
-
-        // scroll milestones
-        let sm = supabase.from("scroll_milestones").select("session_id, milestone");
-        if (fromIso) sm = sm.gte("reached_at", fromIso);
-        if (toIso) sm = sm.lte("reached_at", toIso);
-        const { data: scrollRows } = await sm;
-        const scrolls = (scrollRows || []).filter((r: any) => validSessions.has(r.session_id));
-        const milestones: Record<number, Set<string>> = { 25: new Set(), 50: new Set(), 75: new Set(), 100: new Set() };
-        scrolls.forEach((r: any) => milestones[r.milestone]?.add(r.session_id));
-        const scrollDepth = [25, 50, 75, 100].map((m) => ({
-          milestone: m,
-          users: milestones[m].size,
-          pct: totalVisitors > 0 ? (milestones[m].size / totalVisitors) * 100 : 0,
-        }));
 
         // click aggregations (clicks already fetched above for funnel calc)
 
