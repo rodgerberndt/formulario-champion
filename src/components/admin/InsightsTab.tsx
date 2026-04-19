@@ -221,12 +221,53 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     }
   };
 
+  // Comparison-mode picker (reused on initial screen + header)
+  const ComparePicker = (
+    <Select value={compareMode} onValueChange={(v) => setCompareMode(v as CompareMode)}>
+      <SelectTrigger className="h-9 w-[260px] text-xs">
+        <SelectValue placeholder="Período de comparação" />
+      </SelectTrigger>
+      <SelectContent>
+        {COMPARE_OPTIONS.map((o) => (
+          <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+
+  // Initial state — user must click "Gerar análise"
+  if (!hasRun && !loading) {
+    return (
+      <Card className="border-primary/40">
+        <CardContent className="pt-6 pb-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            <h3 className="text-base font-bold">Insights — Rules Engine</h3>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Período atual: <span className="font-mono">{periodLabel}</span>
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Comparar com</span>
+              {ComparePicker}
+            </div>
+            <Button onClick={load}><Play className="w-3 h-3 mr-1" />Gerar análise</Button>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            A análise não roda automaticamente. Escolha o período de comparação e clique em <strong>Gerar análise</strong>.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (loading) {
     return (
       <Card>
         <CardContent className="pt-10 pb-10 flex flex-col items-center justify-center gap-3 text-muted-foreground">
           <Loader2 className="w-6 h-6 animate-spin" />
-          <p className="text-sm">Carregando métricas + comparação com período anterior…</p>
+          <p className="text-sm">Calculando métricas + comparação…</p>
         </CardContent>
       </Card>
     );
@@ -261,7 +302,8 @@ export default function InsightsTab({ fetchAdminData }: Props) {
                 Período: <span className="font-mono">{periodLabel}</span> {result.has_comparison ? <>vs <span className="font-mono">{prevLabel}</span></> : <span className="text-amber-400">(sem comparação)</span>}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              {ComparePicker}
               <Button onClick={load} variant="outline" size="sm"><RefreshCw className="w-3 h-3 mr-1" />Recalcular</Button>
               <Button onClick={handleCopy} size="sm" className="bg-primary"><Copy className="w-3 h-3 mr-1" />Copiar relatório</Button>
             </div>
