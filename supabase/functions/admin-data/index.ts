@@ -2201,20 +2201,42 @@ Deno.serve(async (req: Request) => {
 
         const sortedSections = Array.from(sectionMap.values()).sort((a, b) => a.order - b.order);
 
-        // Build funnel (drop-off / continuity)
+        // click events (need them BEFORE funnel to count clicks per section)
+        let ce = supabase.from("click_events").select("session_id, click_type, click_id, section_id, label, href");
+        if (fromIso) ce = ce.gte("created_at", fromIso);
+        if (toIso) ce = ce.lte("created_at", toIso);
+        const { data: clickRows } = await ce;
+        const clicks = (clickRows || []).filter((r: any) => validSessions.has(r.session_id));
+
+        // Map: section_id -> Set of session_ids that clicked something in that section
+        const clickSessionsBySection = new Map<string, Set<string>>();
+        clicks.forEach((c: any) => {
+          if (!c.section_id) return;
+          let set = clickSessionsBySection.get(c.section_id);
+          if (!set) { set = new Set(); clickSessionsBySection.set(c.section_id, set); }
+          set.add(c.session_id);
+        });
+
+        // Build funnel: "continued" = advanced to next section OR clicked something in current section
         const funnel = sortedSections.map((s, idx) => {
           const reached = s.sessions.size;
           const next = sortedSections[idx + 1];
-          const continued = next ? Array.from(s.sessions).filter((sid) => next.sessions.has(sid)).length : 0;
+          const clickersHere = clickSessionsBySection.get(s.id) || new Set<string>();
+          const advanced = next ? Array.from(s.sessions).filter((sid) => next.sessions.has(sid)) : [];
+          const continuedSet = new Set<string>([...advanced, ...Array.from(clickersHere).filter((sid) => s.sessions.has(sid))]);
+          const continued = continuedSet.size;
+          const clickedCount = Array.from(clickersHere).filter((sid) => s.sessions.has(sid)).length;
           const dropped = reached - continued;
           return {
             section_id: s.id,
             order: s.order,
             reached,
             continued,
+            clicked: clickedCount,
             dropped,
             drop_rate: reached > 0 ? (dropped / reached) * 100 : 0,
             continue_rate: reached > 0 ? (continued / reached) * 100 : 0,
+            click_rate: reached > 0 ? (clickedCount / reached) * 100 : 0,
             avg_time_ms: s.count > 0 ? Math.round(s.totalTime / s.count) : 0,
             pct_of_visitors: totalVisitors > 0 ? (reached / totalVisitors) * 100 : 0,
           };
