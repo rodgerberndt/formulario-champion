@@ -307,11 +307,14 @@ interface FunnelMetricsInput {
   step_funnel?: Array<{
     step_id: string;
     count: number;
+    label?: string;
     flow?: string;
     flow_index?: number;
     flow_started?: number;
     flow_completed?: number;
   }>;
+  quiz_v2_empty?: boolean;
+  quiz_v1_present?: boolean;
 }
 
 interface CreativesTabProps {
