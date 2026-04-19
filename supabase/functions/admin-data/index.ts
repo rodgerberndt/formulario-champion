@@ -451,168 +451,108 @@ Deno.serve(async (req: Request) => {
         filteredEvents.filter((e: any) => e.event_name === "submit").map((e: any) => e.session_id)
       );
       const isLoadingStep = (stepId: string) => stepId.toLowerCase().includes("loading");
+
+      // ====== QUIZ v2 ONLY ======
+      // Critério de detecção: step_id ∈ V2_STEP_IDS abaixo. Qualquer outro step
+      // (q1_nome, q2_whats, q3_insta, q4_mercado, q5_estagio, q6_investimento, q7_dor)
+      // é considerado v1 e IGNORADO no funil. Se o período não tiver dados v2,
+      // step_funnel volta vazio e o front mostra "Sem dados do quiz novo...".
+      const V2_STEP_IDS = [
+        "q1_quer_vender",
+        "q2_mercado",
+        "q3_faturamento",
+        "q4_nome",
+        "q5_whats",
+        "q6_insta",
+        "q7_email",
+        "q8_dor",
+      ];
+      const V2_STEP_SET = new Set(V2_STEP_IDS);
+      const V2_LABELS: Record<string, string> = {
+        q1_quer_vender: "Quer vender mais?",
+        q2_mercado: "Mercado",
+        q3_faturamento: "Faturamento mensal",
+        q4_nome: "Nome completo",
+        q5_whats: "WhatsApp",
+        q6_insta: "Instagram",
+        q7_email: "E-mail",
+        q8_dor: "Dor / Desejo",
+      };
+
       const stepCounts: Record<string, Set<string>> = {};
-      const stepFirstSeen: Record<string, string> = {};
       const sessionViewedSteps: Record<string, Set<string>> = {};
       const sessionAdvancedFrom: Record<string, Set<string>> = {};
-      const transitionCounts: Record<string, Set<string>> = {};
-      const transitionFirstSeen: Record<string, string> = {};
+      let hasV1Data = false;
 
       filteredEvents.forEach((event: any) => {
         if (event.event_name === "step_view" && event.step_id) {
+          if (!V2_STEP_SET.has(event.step_id)) {
+            if (!isLoadingStep(event.step_id)) hasV1Data = true;
+            return;
+          }
           if (!stepCounts[event.step_id]) stepCounts[event.step_id] = new Set();
           stepCounts[event.step_id].add(event.session_id);
-
-          if (!stepFirstSeen[event.step_id] || event.created_at < stepFirstSeen[event.step_id]) {
-            stepFirstSeen[event.step_id] = event.created_at;
-          }
-
           if (!sessionViewedSteps[event.session_id]) sessionViewedSteps[event.session_id] = new Set();
           sessionViewedSteps[event.session_id].add(event.step_id);
         }
-
-        if (event.event_name === "step_next") {
-          const metadata = event.metadata as Record<string, unknown> | null;
+        if (event.event_name === "step_next" && event.metadata) {
+          const metadata = event.metadata as Record<string, unknown>;
           const fromStep = metadata?.from_step as string | undefined;
-          const toStep = metadata?.to_step as string | undefined;
-
-          if (fromStep) {
+          if (fromStep && V2_STEP_SET.has(fromStep)) {
             if (!sessionAdvancedFrom[event.session_id]) sessionAdvancedFrom[event.session_id] = new Set();
             sessionAdvancedFrom[event.session_id].add(fromStep);
           }
-
-          if (fromStep && toStep) {
-            const key = `${fromStep}__${toStep}`;
-            if (!transitionCounts[key]) transitionCounts[key] = new Set();
-            transitionCounts[key].add(event.session_id);
-            if (!transitionFirstSeen[key] || event.created_at < transitionFirstSeen[key]) {
-              transitionFirstSeen[key] = event.created_at;
-            }
-          }
         }
       });
 
-      const questionStepIds = Object.keys(stepCounts).filter((stepId) => !isLoadingStep(stepId));
-      const maxStepCount = questionStepIds.reduce((max, stepId) => Math.max(max, stepCounts[stepId]?.size || 0), 0);
-      const minRelevantStepCount = Math.max(1, Math.ceil(maxStepCount * 0.01));
-      const displayStepIds = new Set(
-        questionStepIds.filter((stepId) => (stepCounts[stepId]?.size || 0) >= minRelevantStepCount),
-      );
-
-      const sortedDisplaySteps = Array.from(displayStepIds).sort((a, b) => {
-        const firstSeenDiff = (stepFirstSeen[a] || "").localeCompare(stepFirstSeen[b] || "");
-        if (firstSeenDiff !== 0) return firstSeenDiff;
-        return a.localeCompare(b);
-      });
-
-      const edgesByFrom = new Map<string, Array<{ to: string; count: number; firstSeen: string }>>();
-      Object.entries(transitionCounts).forEach(([key, sessions]) => {
-        const [fromStep, toStep] = key.split("__");
-        if (!displayStepIds.has(fromStep) || !displayStepIds.has(toStep)) return;
-
-        const current = edgesByFrom.get(fromStep) || [];
-        current.push({
-          to: toStep,
-          count: sessions.size,
-          firstSeen: transitionFirstSeen[key] || "",
-        });
-        edgesByFrom.set(fromStep, current);
-      });
-
-      const dominantNext = new Map<string, string>();
-      edgesByFrom.forEach((edges, fromStep) => {
-        const fromCount = stepCounts[fromStep]?.size || 0;
-        const sortedEdges = [...edges].sort((a, b) => b.count - a.count || a.firstSeen.localeCompare(b.firstSeen));
-        const topEdge = sortedEdges[0];
-        if (!topEdge) return;
-
-        const isStrongEdge = topEdge.count === fromCount || topEdge.count >= Math.max(2, Math.ceil(fromCount * 0.15));
-        if (isStrongEdge) {
-          dominantNext.set(fromStep, topEdge.to);
-        }
-      });
-
-      const incomingSteps = new Set(Array.from(dominantNext.values()));
-      const startSteps = sortedDisplaySteps.filter((stepId) => !incomingSteps.has(stepId));
-      const visitedSteps = new Set<string>();
-      const flows: string[][] = [];
-
-      const buildFlow = (startStep: string) => {
-        const sequence: string[] = [];
-        let currentStep: string | undefined = startStep;
-
-        while (currentStep && !visitedSteps.has(currentStep)) {
-          visitedSteps.add(currentStep);
-          sequence.push(currentStep);
-          currentStep = dominantNext.get(currentStep);
-        }
-
-        if (sequence.length > 0) flows.push(sequence);
-      };
-
-      startSteps.forEach(buildFlow);
-      sortedDisplaySteps.forEach((stepId) => {
-        if (!visitedSteps.has(stepId)) buildFlow(stepId);
-      });
+      const v2SessionIds = new Set<string>();
+      Object.values(stepCounts).forEach((set) => set.forEach((id) => v2SessionIds.add(id)));
+      const hasV2Data = v2SessionIds.size > 0;
 
       const stepFunnel: Array<{
         step_id: string;
+        label: string;
         count: number;
-        flow?: string;
-        flow_index?: number;
-        flow_started?: number;
-        flow_completed?: number;
+        flow: string;
+        flow_started: number;
+        flow_completed: number;
       }> = [];
 
-      flows.forEach((flowSteps, flowIndex) => {
-        const flowId = `flow_${flowIndex + 1}`;
-        const flowSessionIds = new Set<string>();
+      let v2Completed = 0;
+      let v2Entered = 0;
 
-        flowSteps.forEach((stepId) => {
-          stepCounts[stepId]?.forEach((sessionId) => flowSessionIds.add(sessionId));
-        });
-
-        const flowQuizViews = Array.from(flowSessionIds).filter((sessionId) => sessionsWithQuizView.has(sessionId)).length;
-        const flowCompleted = Array.from(flowSessionIds).filter((sessionId) => sessionsWithSubmit.has(sessionId)).length;
-        const firstStepCount = stepCounts[flowSteps[0]]?.size || 0;
-        const flowStarted = Math.max(firstStepCount, flowQuizViews);
-
-        flowSteps.forEach((stepId) => {
+      if (hasV2Data) {
+        v2Completed = Array.from(v2SessionIds).filter((sid) => sessionsWithSubmit.has(sid)).length;
+        v2Entered = Math.max(stepCounts["q1_quer_vender"]?.size || 0, v2SessionIds.size);
+        V2_STEP_IDS.forEach((stepId) => {
           stepFunnel.push({
             step_id: stepId,
+            label: V2_LABELS[stepId],
             count: stepCounts[stepId]?.size || 0,
-            flow: flowId,
-            flow_index: flowIndex,
-            flow_started: flowStarted,
-            flow_completed: flowCompleted,
+            flow: "v2",
+            flow_started: v2Entered,
+            flow_completed: v2Completed,
           });
         });
-      });
+      }
 
-      // Drop-off analysis
       const dropOffs: Record<string, number> = {};
-      // Ordem unificada para cálculo do drop-off (busca em ambos os fluxos: novo e antigo)
-      const dropOffStepOrder = [
-        "q1_quer_vender", "q2_mercado", "q3_faturamento", "q4_nome", "q5_whats", "q6_insta", "q7_email", "q8_dor",
-        "q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_investimento", "q6_dor", "q7_dor",
-      ];
       Object.entries(sessionViewedSteps).forEach(([sessionId, viewedSteps]) => {
-        if (!sessionsWithSubmit.has(sessionId)) {
-          const advancedFrom = sessionAdvancedFrom[sessionId] || new Set();
-          let dropOffStep: string | null = null;
-          let dropOffIndex = -1;
-          viewedSteps.forEach(step => {
-            const stepIndex = dropOffStepOrder.indexOf(step);
-            if (!advancedFrom.has(step) && stepIndex > dropOffIndex) {
-              dropOffStep = step;
-              dropOffIndex = stepIndex;
-            }
-          });
-          if (dropOffStep) dropOffs[dropOffStep] = (dropOffs[dropOffStep] || 0) + 1;
-        }
+        if (sessionsWithSubmit.has(sessionId)) return;
+        const advancedFrom = sessionAdvancedFrom[sessionId] || new Set();
+        let dropOffStep: string | null = null;
+        let dropOffIndex = -1;
+        viewedSteps.forEach((step) => {
+          const stepIndex = V2_STEP_IDS.indexOf(step);
+          if (stepIndex >= 0 && !advancedFrom.has(step) && stepIndex > dropOffIndex) {
+            dropOffStep = step;
+            dropOffIndex = stepIndex;
+          }
+        });
+        if (dropOffStep) dropOffs[dropOffStep] = (dropOffs[dropOffStep] || 0) + 1;
       });
 
-      console.log("[FUNNEL] Raw:", rawSessions.length, "Filtered:", filteredOutCount, "Clean:", total, "Events:", filteredEvents.length, "Leads:", completed, "UniqueIPs:", uniqueIps.size);
+      console.log("[FUNNEL v2] Sessions:", v2SessionIds.size, "Completed:", v2Completed, "HasV1:", hasV1Data);
 
       return new Response(
         JSON.stringify({
@@ -629,6 +569,8 @@ Deno.serve(async (req: Request) => {
           button_distribution: buttonDistribution,
           step_funnel: stepFunnel,
           drop_offs: dropOffs,
+          quiz_v2_empty: !hasV2Data,
+          quiz_v1_present: hasV1Data,
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );

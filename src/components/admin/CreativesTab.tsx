@@ -307,11 +307,14 @@ interface FunnelMetricsInput {
   step_funnel?: Array<{
     step_id: string;
     count: number;
+    label?: string;
     flow?: string;
     flow_index?: number;
     flow_started?: number;
     flow_completed?: number;
   }>;
+  quiz_v2_empty?: boolean;
+  quiz_v1_present?: boolean;
 }
 
 interface CreativesTabProps {
@@ -948,8 +951,30 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         );
       })()}
 
-      {/* Funil do Quiz — drop-off etapa por etapa */}
-      {funnelMetrics && funnelMetrics.step_funnel && funnelMetrics.step_funnel.length > 0 && (() => {
+      {/* Funil do Quiz — drop-off etapa por etapa (apenas quiz v2) */}
+      {funnelMetrics && funnelMetrics.quiz_v2_empty && (
+        <Card className="border-primary/30">
+          <CardContent className="pt-4">
+            <div className="flex items-center justify-between mb-3 border-b border-border/50 pb-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Funil do Quiz — drop-off por etapa (período selecionado)
+              </p>
+            </div>
+            <div className="py-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                Sem dados do quiz novo para este período.
+              </p>
+              {funnelMetrics.quiz_v1_present && (
+                <p className="text-[11px] text-muted-foreground/70 mt-2">
+                  Este período contém apenas o quiz antigo (v1), que foi descontinuado e não é exibido aqui.
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {funnelMetrics && !funnelMetrics.quiz_v2_empty && funnelMetrics.step_funnel && funnelMetrics.step_funnel.length > 0 && (() => {
         const STEP_LABELS_LOCAL: Record<string, string> = {
           q1_quer_vender: "Quer vender mais?",
           q2_mercado: "Mercado",
@@ -1085,6 +1110,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   Perda total: <span className="text-red-400 font-semibold">{totalLoss.toFixed(1)}%</span>
                 </p>
               </div>
+              {funnelMetrics.quiz_v1_present && (
+                <p className="text-[10px] text-amber-300/90 mb-3 -mt-2">
+                  Parte do período contém quiz antigo (v1) e foi ignorada no funil.
+                </p>
+              )}
 
               <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-4 items-start">
                 {/* Coluna do funil (trapézios empilhados) */}
