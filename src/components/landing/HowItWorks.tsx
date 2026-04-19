@@ -50,7 +50,7 @@ export function HowItWorks() {
       <div className="container mx-auto px-5 max-w-4xl">
         <div className={`text-center mb-10 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-2">
-            <ShimmerText isVisible={isVisible}>COMO </ShimmerText>
+            <ShimmerText isVisible={isVisible}>COMO{"\u00A0"}</ShimmerText>
             <KeywordGlow>FUNCIONA</KeywordGlow>
           </h2>
         </div>
