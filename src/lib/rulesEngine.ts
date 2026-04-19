@@ -486,6 +486,144 @@ function runRules(ctx: RuleContext): Alert[] {
     });
   }
 
+  // QUALIFICAÇÃO / DORES / ORIGEM (BLOCO LEAD REPORTS) ─────────
+  // 1) Enterprise share caiu
+  if (p.enterprise_share > 0) {
+    const espVar = pctVar(c.enterprise_share, p.enterprise_share);
+    if (espVar < -30) {
+      alerts.push({
+        id: "enterprise-share-down",
+        area: "MQL",
+        severity: espVar < -50 ? "ALTA" : "MÉDIA",
+        title: "Share de Enterprise/Enterprise+ caiu",
+        evidence: `Enterprise share: ${fmtPct(c.enterprise_share)} vs ${fmtPct(p.enterprise_share)} (${espVar.toFixed(1)}%)`,
+        signal: "↓ proporção de leads de alto faturamento diminuiu — qualidade caiu.",
+        impact: "Pipeline de receita futura encolhe (ticket médio menor).",
+        hypotheses: [
+          "Criativo amplo demais atraindo audiência menor",
+          "Mudança de oferta na landing reduziu apelo enterprise",
+          "Tráfego frio aumentou em proporção",
+        ],
+        checks: [
+          "Olhar mix de faturamento na aba Relatórios Lead",
+          "Conferir top criativos por %MQL Enterprise+",
+          "Validar se a copy do anúncio fala com o ICP top",
+        ],
+        next_action: "Reforçar criativos voltados para Enterprise e pausar os de baixa qualificação.",
+      });
+    }
+  }
+
+  // 2) Volume de leads sobe MAS taxa MQL cai (qualidade piorou)
+  if (p.leads > 0 && p.mql_rate > 0) {
+    const lv = pctVar(c.leads, p.leads);
+    const mqlRv = pctVar(c.mql_rate, p.mql_rate);
+    if (lv > 15 && mqlRv < -15) {
+      alerts.push({
+        id: "vol-up-quality-down",
+        area: "MQL",
+        severity: "MÉDIA",
+        title: "Volume de leads subiu, mas qualidade caiu",
+        evidence: `Leads ${lv >= 0 ? "+" : ""}${lv.toFixed(1)}% | Taxa MQL ${mqlRv.toFixed(1)}%`,
+        signal: "↑ volume / ↓ qualidade — provavelmente entrou tráfego desalinhado.",
+        impact: "Time comercial trabalha mais para fechar menos.",
+        hypotheses: [
+          "Criativo novo trazendo audiência fora do ICP",
+          "Otimização do Meta saiu de conversão para tráfego",
+          "Origem orgânica/bio cresceu sem qualificar",
+        ],
+        checks: [
+          "Comparar %MQL por origem vs período anterior",
+          "Olhar criativos novos com volume alto e %MQL baixa",
+          "Conferir se a oferta no topo da landing mudou",
+        ],
+        next_action: "Pausar criativos de alto volume e baixo %MQL; reativar campanha MQL específica.",
+      });
+    }
+  }
+
+  // 3) Concentração extrema de origem (>70% do volume em 1 fonte)
+  if (c.by_origem.length > 0 && c.leads > 10) {
+    const top = c.by_origem.reduce((a, b) => (b.total > a.total ? b : a));
+    const concentration = (top.total / c.leads) * 100;
+    if (concentration > 70) {
+      alerts.push({
+        id: "origem-concentration",
+        area: "DADOS",
+        severity: concentration > 85 ? "ALTA" : "MÉDIA",
+        title: `Dependência de uma origem (${top.key})`,
+        evidence: `${top.key} concentra ${fmtPct(concentration)} dos leads (${fmtN(top.total)}/${fmtN(c.leads)})`,
+        signal: "↑ risco de queda brusca se essa origem parar.",
+        impact: "Diversificação fraca — vulnerabilidade alta.",
+        hypotheses: [
+          "Apenas 1 campanha ativa no Meta",
+          "Outras origens (orgânico, parcerias) zeradas",
+          "Atribuição falhando e jogando tudo em 1 bucket",
+        ],
+        checks: [
+          "Conferir se há outras campanhas pausadas",
+          "Validar links de Instagram/bio com UTM",
+          "Verificar se há canais sem tracking",
+        ],
+        next_action: "Ativar pelo menos 1 origem secundária e padronizar UTMs.",
+      });
+    }
+  }
+
+  // 4) Mercado #1 em volume com taxa MQL muito baixa (<15%)
+  if (c.by_mercado.length > 0 && c.leads > 10) {
+    const topVol = [...c.by_mercado].sort((a, b) => b.total - a.total)[0];
+    if (topVol.total >= 5 && topVol.mql_rate < 15) {
+      alerts.push({
+        id: `top-mercado-low-mql-${topVol.key}`,
+        area: "MQL",
+        severity: "MÉDIA",
+        title: `Mercado #1 em volume tem baixa qualificação`,
+        evidence: `${topVol.key}: ${fmtN(topVol.total)} leads, taxa MQL ${fmtPct(topVol.mql_rate)}`,
+        signal: "↑ tráfego concentrado em mercado de baixa qualidade.",
+        impact: "Custo de aquisição alto vs MQLs gerados.",
+        hypotheses: [
+          "Criativo está atraindo curiosos no mercado errado",
+          "Copy não filtra ICP",
+          "Oferta genérica demais",
+        ],
+        checks: [
+          "Ver quais dores esse mercado traz",
+          "Cruzar com criativos top desse mercado",
+          "Comparar com mercado de alta taxa MQL",
+        ],
+        next_action: `Refinar criativos de "${topVol.key}" ou redirecionar verba para mercado com taxa MQL maior.`,
+      });
+    }
+  }
+
+  // 5) Dor com muito volume e baixa taxa MQL (mensagem desalinhada)
+  if (c.by_dor.length > 0 && c.leads > 10) {
+    const topDorVol = [...c.by_dor].sort((a, b) => b.total - a.total)[0];
+    if (topDorVol.total >= 5 && topDorVol.mql_rate < 15) {
+      alerts.push({
+        id: `top-dor-low-mql`,
+        area: "MQL",
+        severity: "MÉDIA",
+        title: "Dor dominante atrai leads de baixa qualidade",
+        evidence: `"${topDorVol.key.slice(0, 60)}…": ${fmtN(topDorVol.total)} leads, ${fmtPct(topDorVol.mql_rate)} MQL`,
+        signal: "↓ promessa do criativo não está filtrando ICP.",
+        impact: "Mensagem ressoa, mas com público errado.",
+        hypotheses: [
+          "Promessa muito genérica",
+          "Criativo prometendo solução para faturamento baixo",
+          "Falta de gancho de exclusividade",
+        ],
+        checks: [
+          "Olhar copies dos criativos com essa dor",
+          "Ver mercado dominante dentro dessa dor",
+          "Comparar com dor que tem MQL alto",
+        ],
+        next_action: "Reescrever copy para qualificar melhor (mencionar faturamento mínimo, ICP).",
+      });
+    }
+  }
+
   // Sort by severity
   const order: Record<Severity, number> = { ALTA: 0, "MÉDIA": 1, BAIXA: 2 };
   alerts.sort((a, b) => order[a.severity] - order[b.severity]);
