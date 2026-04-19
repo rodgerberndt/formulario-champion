@@ -1110,6 +1110,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   Perda total: <span className="text-red-400 font-semibold">{totalLoss.toFixed(1)}%</span>
                 </p>
               </div>
+              {funnelMetrics.quiz_v1_present && (
+                <p className="text-[10px] text-amber-300/90 mb-3 -mt-2">
+                  Parte do período contém quiz antigo (v1) e foi ignorada no funil.
+                </p>
+              )}
 
               <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-4 items-start">
                 {/* Coluna do funil (trapézios empilhados) */}
