@@ -7,7 +7,7 @@ import { useReveal } from "@/hooks/useReveal";
 import { ShimmerText, KeywordGlow, LineReveal } from "./TextEffects";
 
 const steps = [
-  { icon: ClipboardCheck, text: "Preencha o quiz (1–2 min)" },
+  { icon: ClipboardCheck, text: "Preencha o formulário (1–2 min)" },
   { icon: BarChart3, text: "Análise do seu cenário (hoje)" },
   { icon: PhoneCall, text: "Especialista te chama" },
   { icon: Rocket, text: "Plano de criativos + próximos passos" },
@@ -40,7 +40,7 @@ export function FinalCTA() {
 
           <LineReveal isVisible={isVisible} delay={200}>
             <p className="text-sm text-muted-foreground mb-8 max-w-md mx-auto">
-              Preencha o diagnóstico gratuito e descubra como a Champion pode transformar seus resultados.
+              Preencha o formulário de 2 minutos, e descubra como a Champion pode transformar seus resultados.
             </p>
           </LineReveal>
 
@@ -68,7 +68,7 @@ export function FinalCTA() {
               onClick={handleCTA}
               className="btn-shine glow-breathe w-full sm:w-auto h-14 px-8 sm:px-10 text-sm sm:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 transition-all active:scale-[0.98] min-h-[56px]"
             >
-              QUERO O DIAGNÓSTICO GRATUITO
+              QUEROPREENCHEROFORMULÁRIO
               <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
             </Button>
           </LineReveal>
