@@ -298,15 +298,24 @@ function isLeadMql(estagio: string, investimento: string | null, sdrOverride?: s
 }
 
 // ── Props ──
+interface FunnelMetricsInput {
+  visitors: number;
+  sessions: number;
+  entered_quiz: number;
+  completed: number;
+  conversion_rate: number;
+}
+
 interface CreativesTabProps {
   fetchAdminData: (path: string, params?: Record<string, string>) => Promise<any>;
   startDateOnly: string;
   endDateOnly: string;
   startISO: string;
   endISO: string;
+  funnelMetrics?: FunnelMetricsInput | null;
 }
 
-export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnly, startISO, endISO }: CreativesTabProps) {
+export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnly, startISO, endISO, funnelMetrics }: CreativesTabProps) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<CreativesResponse | null>(null);
   const [attribution, setAttribution] = useState<"first" | "last">("first");
@@ -884,6 +893,52 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </CardContent>
         </Card>
       )}
+
+      {/* Funnel Overview (espelha topo do dashboard) */}
+      {funnelMetrics && (() => {
+        const { visitors, sessions, entered_quiz, completed, conversion_rate } = funnelMetrics;
+        const visitorToQuiz = visitors > 0 ? (entered_quiz / visitors) * 100 : 0;
+        const quizToCompleted = entered_quiz > 0 ? (completed / entered_quiz) * 100 : 0;
+        return (
+          <Card className="border-primary/30">
+            <CardContent className="pt-4">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">
+                Funil do Site (período selecionado)
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Visitantes únicos</p>
+                  <p className="text-xl font-bold">{visitors}</p>
+                  {sessions > visitors && (
+                    <p className="text-[10px] text-muted-foreground/70">{sessions} sessões</p>
+                  )}
+                </div>
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Entraram no quiz</p>
+                  <p className="text-xl font-bold text-blue-400">{entered_quiz}</p>
+                  <p className="text-[10px]">
+                    <span className="text-blue-400 font-semibold">{visitorToQuiz.toFixed(1)}%</span>
+                    <span className="text-muted-foreground/70"> conv. · perda {(100 - visitorToQuiz).toFixed(1)}%</span>
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Concluíram</p>
+                  <p className="text-xl font-bold text-green-400">{completed}</p>
+                  <p className="text-[10px]">
+                    <span className="text-green-400 font-semibold">{quizToCompleted.toFixed(1)}%</span>
+                    <span className="text-muted-foreground/70"> conv. · perda {(100 - quizToCompleted).toFixed(1)}%</span>
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Taxa de conversão</p>
+                  <p className="text-xl font-bold text-primary">{conversion_rate}%</p>
+                  <p className="text-[10px] text-muted-foreground/70">Visitantes → Concluíram</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* Summary Cards - Grouped Blocks */}
       {totals && (() => {
