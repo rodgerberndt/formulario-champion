@@ -31,6 +31,8 @@ interface Props {
 
 const DOW_FULL = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 const DOW_SHORT = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
+// Ordem de exibição: Segunda → Domingo
+const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
 type RangeMode = "current" | "previous" | "last4" | "last7";
 
@@ -50,16 +52,18 @@ function addDays(ymd: string, n: number): string {
   d.setUTCDate(d.getUTCDate() + n);
   return dateToYmd(d);
 }
-// Get current week range (Sun..Sat) in SP timezone
+// Get current week range (Mon..Sun) in SP timezone
 function getCurrentWeekSP(): { from: string; to: string } {
   const fmt = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Sao_Paulo",
     year: "numeric", month: "2-digit", day: "2-digit",
   });
   const todayYmd = fmt.format(new Date());
-  const dow = ymdToDate(todayYmd).getUTCDay(); // 0..6
-  const from = addDays(todayYmd, -dow); // Sunday
-  const to = addDays(from, 6); // Saturday
+  const dow = ymdToDate(todayYmd).getUTCDay(); // 0..6 (0=Dom)
+  // Distância até a segunda-feira anterior: Dom→6, Seg→0, Ter→1, ...
+  const daysSinceMonday = (dow + 6) % 7;
+  const from = addDays(todayYmd, -daysSinceMonday); // Segunda
+  const to = addDays(from, 6); // Domingo
   return { from, to };
 }
 
