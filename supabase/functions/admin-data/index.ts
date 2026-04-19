@@ -2126,6 +2126,182 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // GET /landing-behavior — funil por seção, scroll depth, cliques + comparação período anterior
+    if (path === "/landing-behavior" && req.method === "GET") {
+      const from = url.searchParams.get("from");
+      const to = url.searchParams.get("to");
+      const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
+
+      // Compute previous period (same length, immediately before)
+      let prevFrom: string | null = null;
+      let prevToEnd: string | null = null;
+      if (from && toEnd) {
+        const fromMs = new Date(from).getTime();
+        const toMs = new Date(toEnd).getTime();
+        const span = toMs - fromMs;
+        prevFrom = new Date(fromMs - span).toISOString();
+        prevToEnd = new Date(fromMs - 1).toISOString();
+      }
+
+      async function pagedFetch(table: string, select: string, fromIso: string | null, toIso: string | null) {
+        const PAGE = 1000;
+        let all: any[] = [];
+        let offset = 0;
+        let more = true;
+        while (more) {
+          let q = supabase.from(table).select(select).range(offset, offset + PAGE - 1);
+          if (fromIso) q = q.gte("created_at", fromIso);
+          if (toIso) q = q.lte("created_at", toIso);
+          const { data, error } = await q;
+          if (error) throw error;
+          if (data) all = all.concat(data);
+          more = (data?.length || 0) === PAGE;
+          offset += PAGE;
+        }
+        return all;
+      }
+
+      // Filter out internal sessions for accuracy
+      async function getValidSessionIds(fromIso: string | null, toIso: string | null): Promise<Set<string>> {
+        const sessions = await pagedFetch("lead_sessions", "id, referrer, first_page", fromIso, toIso);
+        const valid = new Set<string>();
+        sessions.forEach((s: any) => {
+          const ref = (s.referrer || "").toLowerCase();
+          const fp = (s.first_page || "").toLowerCase();
+          if (ref.includes("lovable.dev") || ref.includes("lovableproject.com")) return;
+          if (fp === "/admin") return;
+          valid.add(s.id);
+        });
+        return valid;
+      }
+
+      async function buildPeriod(fromIso: string | null, toIso: string | null) {
+        const validSessions = await getValidSessionIds(fromIso, toIso);
+        const totalVisitors = validSessions.size;
+
+        // section_views
+        let sv = supabase.from("section_views").select("session_id, section_id, section_order, time_spent_ms");
+        if (fromIso) sv = sv.gte("created_at", fromIso);
+        if (toIso) sv = sv.lte("created_at", toIso);
+        const { data: sectionRows } = await sv;
+        const sections = (sectionRows || []).filter((r: any) => validSessions.has(r.session_id));
+
+        // Group sections
+        const sectionMap = new Map<string, { id: string; order: number; sessions: Set<string>; totalTime: number; count: number }>();
+        sections.forEach((r: any) => {
+          let s = sectionMap.get(r.section_id);
+          if (!s) {
+            s = { id: r.section_id, order: r.section_order, sessions: new Set(), totalTime: 0, count: 0 };
+            sectionMap.set(r.section_id, s);
+          }
+          s.sessions.add(r.session_id);
+          s.totalTime += r.time_spent_ms || 0;
+          s.count += 1;
+        });
+
+        const sortedSections = Array.from(sectionMap.values()).sort((a, b) => a.order - b.order);
+
+        // Build funnel (drop-off / continuity)
+        const funnel = sortedSections.map((s, idx) => {
+          const reached = s.sessions.size;
+          const next = sortedSections[idx + 1];
+          const continued = next ? Array.from(s.sessions).filter((sid) => next.sessions.has(sid)).length : 0;
+          const dropped = reached - continued;
+          return {
+            section_id: s.id,
+            order: s.order,
+            reached,
+            continued,
+            dropped,
+            drop_rate: reached > 0 ? (dropped / reached) * 100 : 0,
+            continue_rate: reached > 0 ? (continued / reached) * 100 : 0,
+            avg_time_ms: s.count > 0 ? Math.round(s.totalTime / s.count) : 0,
+            pct_of_visitors: totalVisitors > 0 ? (reached / totalVisitors) * 100 : 0,
+          };
+        });
+
+        // scroll milestones
+        let sm = supabase.from("scroll_milestones").select("session_id, milestone");
+        if (fromIso) sm = sm.gte("reached_at", fromIso);
+        if (toIso) sm = sm.lte("reached_at", toIso);
+        const { data: scrollRows } = await sm;
+        const scrolls = (scrollRows || []).filter((r: any) => validSessions.has(r.session_id));
+        const milestones: Record<number, Set<string>> = { 25: new Set(), 50: new Set(), 75: new Set(), 100: new Set() };
+        scrolls.forEach((r: any) => milestones[r.milestone]?.add(r.session_id));
+        const scrollDepth = [25, 50, 75, 100].map((m) => ({
+          milestone: m,
+          users: milestones[m].size,
+          pct: totalVisitors > 0 ? (milestones[m].size / totalVisitors) * 100 : 0,
+        }));
+
+        // click events
+        let ce = supabase.from("click_events").select("session_id, click_type, click_id, section_id, label, href");
+        if (fromIso) ce = ce.gte("created_at", fromIso);
+        if (toIso) ce = ce.lte("created_at", toIso);
+        const { data: clickRows } = await ce;
+        const clicks = (clickRows || []).filter((r: any) => validSessions.has(r.session_id));
+
+        const clicksByType: Record<string, number> = {};
+        const clicksBySection: Record<string, number> = {};
+        const topClicks: Record<string, { id: string; label: string; section: string | null; type: string; count: number; uniqueUsers: Set<string> }> = {};
+        clicks.forEach((c: any) => {
+          clicksByType[c.click_type] = (clicksByType[c.click_type] || 0) + 1;
+          if (c.section_id) clicksBySection[c.section_id] = (clicksBySection[c.section_id] || 0) + 1;
+          const key = `${c.click_type}::${c.click_id || c.label || "unknown"}`;
+          if (!topClicks[key]) {
+            topClicks[key] = { id: c.click_id || "?", label: c.label || c.click_id || "?", section: c.section_id, type: c.click_type, count: 0, uniqueUsers: new Set() };
+          }
+          topClicks[key].count += 1;
+          topClicks[key].uniqueUsers.add(c.session_id);
+        });
+        const topClicksArr = Object.values(topClicks)
+          .map((t) => ({ ...t, uniqueUsers: t.uniqueUsers.size }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 15);
+
+        return {
+          totalVisitors,
+          funnel,
+          scrollDepth,
+          clicksByType,
+          clicksBySection,
+          topClicks: topClicksArr,
+          totalClicks: clicks.length,
+        };
+      }
+
+      const current = await buildPeriod(from, toEnd);
+      const previous = (prevFrom && prevToEnd) ? await buildPeriod(prevFrom, prevToEnd) : null;
+
+      // Insights
+      const insights: string[] = [];
+      if (current.funnel.length > 0) {
+        const worst = [...current.funnel].sort((a, b) => b.drop_rate - a.drop_rate)[0];
+        const best = [...current.funnel].sort((a, b) => b.continue_rate - a.continue_rate)[0];
+        if (worst) insights.push(`Maior queda acontece na seção "${worst.section_id}" (${worst.drop_rate.toFixed(0)}% saem aqui).`);
+        if (best && best.section_id !== worst?.section_id) insights.push(`Melhor retenção na seção "${best.section_id}" (${best.continue_rate.toFixed(0)}% continuam).`);
+        const lastReached = current.funnel.filter((f) => f.pct_of_visitors >= 50).pop();
+        if (lastReached) insights.push(`A maioria dos visitantes alcança até "${lastReached.section_id}".`);
+      }
+      const scroll50 = current.scrollDepth.find((s) => s.milestone === 50);
+      const scroll100 = current.scrollDepth.find((s) => s.milestone === 100);
+      if (scroll50 && scroll50.pct < 50) insights.push(`Apenas ${scroll50.pct.toFixed(0)}% chegam à metade da página — perda forte no início.`);
+      if (scroll100 && scroll100.pct < 20) insights.push(`Só ${scroll100.pct.toFixed(0)}% chegam ao fim da página.`);
+      if (previous && current.funnel.length > 0 && previous.funnel.length > 0) {
+        const cReach = current.funnel[current.funnel.length - 1]?.pct_of_visitors || 0;
+        const pReach = previous.funnel[previous.funnel.length - 1]?.pct_of_visitors || 0;
+        const diff = cReach - pReach;
+        if (Math.abs(diff) > 3) {
+          insights.push(`Retenção até o final ${diff > 0 ? "melhorou" : "piorou"} ${Math.abs(diff).toFixed(0)}pp vs período anterior.`);
+        }
+      }
+
+      return new Response(JSON.stringify({ current, previous, insights }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     return new Response(
       JSON.stringify({ error: "Rota não encontrada" }),
       { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
