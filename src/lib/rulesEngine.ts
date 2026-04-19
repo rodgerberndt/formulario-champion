@@ -967,6 +967,18 @@ function buildMarkdown(ctx: RuleContext, alerts: Alert[]): string {
   lines.push(`- **Leads Direct/Link in Bio:** ${fmtN(c.direct_bio_leads)}`);
   lines.push("");
 
+  // Tabela analítica resumida (Top 10 leads recentes / MQL)
+  if (c.recent_top.length > 0) {
+    lines.push(`## 🧾 Tabela analítica — Top 10 leads (MQLs primeiro, depois recentes)`);
+    lines.push("");
+    lines.push(`| Data | Nome | Mercado | Estágio | Faturamento | Dor | Tier | MQL | Origem |`);
+    lines.push(`|---|---|---|---|---|---|---|---|---|`);
+    c.recent_top.forEach((l) => {
+      lines.push(`| ${l.date} | ${l.nome} | ${l.mercado} | ${l.estagio} | ${l.faturamento} | ${l.dor.slice(0, 50)} | ${l.tier} | ${l.is_mql ? "✅" : "—"} | ${l.origem} |`);
+    });
+    lines.push("");
+  }
+
   // Checklist final
   if (alerts.length > 0) {
     lines.push(`## ✅ Ações recomendadas (checklist)`);
