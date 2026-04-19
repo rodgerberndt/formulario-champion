@@ -2256,12 +2256,7 @@ Deno.serve(async (req: Request) => {
           pct: totalVisitors > 0 ? (milestones[m].size / totalVisitors) * 100 : 0,
         }));
 
-        // click events
-        let ce = supabase.from("click_events").select("session_id, click_type, click_id, section_id, label, href");
-        if (fromIso) ce = ce.gte("created_at", fromIso);
-        if (toIso) ce = ce.lte("created_at", toIso);
-        const { data: clickRows } = await ce;
-        const clicks = (clickRows || []).filter((r: any) => validSessions.has(r.session_id));
+        // click aggregations (clicks already fetched above for funnel calc)
 
         const clicksByType: Record<string, number> = {};
         const clicksBySection: Record<string, number> = {};
