@@ -67,11 +67,18 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
+    // Só mostra "loading" full quando ainda não há dados; refreshes ficam discretos
+    if (!data) setLoading(true);
+    setRefreshing(true);
     fetchAdminData("/landing-behavior", { from: startISO, to: endExclusiveISO })
       .then((res) => { if (!cancelled) setData(res); })
       .catch((e) => { console.error("landing-behavior", e); })
-      .finally(() => { if (!cancelled) setLoading(false); });
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+          setRefreshing(false);
+        }
+      });
     return () => { cancelled = true; };
   }, [startISO, endExclusiveISO, fetchAdminData]);
 
