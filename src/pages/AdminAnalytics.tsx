@@ -2745,6 +2745,7 @@ export default function AdminAnalytics() {
                     entered_quiz: metrics.entered_quiz,
                     completed: leads.length,
                     conversion_rate: Number(metrics.conversion_rate) || 0,
+                    step_funnel: metrics.step_funnel || [],
                   } : null}
                 />
               </Suspense>
