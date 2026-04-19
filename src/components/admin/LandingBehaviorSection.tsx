@@ -64,6 +64,7 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
   const { startISO, endExclusiveISO } = useDateRange();
   const [data, setData] = useState<BehaviorResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
