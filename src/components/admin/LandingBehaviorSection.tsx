@@ -169,15 +169,15 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
                         </div>
                         <div className="text-right">
                           <p className="text-muted-foreground">Continuou</p>
-                          <p className="font-bold text-emerald-300">{fmtPct(f.continue_rate)}</p>
+                          <p className="font-bold text-emerald-300">{f.continued} <span className="text-muted-foreground/70">({fmtPct(f.continue_rate)})</span></p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-muted-foreground">Clicou</p>
+                          <p className="font-bold text-amber-300">{f.clicked ?? 0} <span className="text-muted-foreground/70">({fmtPct(f.click_rate ?? 0)})</span></p>
                         </div>
                         <div className="text-right">
                           <p className="text-muted-foreground">Saiu</p>
-                          <p className="font-bold text-rose-300">{fmtPct(f.drop_rate)}</p>
-                        </div>
-                        <div className="text-right hidden md:block">
-                          <p className="text-muted-foreground">T. médio</p>
-                          <p className="font-semibold text-amber-300">{fmtTime(f.avg_time_ms)}</p>
+                          <p className="font-bold text-rose-300">{f.dropped} <span className="text-muted-foreground/70">({fmtPct(f.drop_rate)})</span></p>
                         </div>
                         {reachDelta !== null && (
                           <div className={`flex items-center gap-0.5 ${reachDelta >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
