@@ -17,6 +17,46 @@ export interface Alert {
   next_action: string;
 }
 
+export interface DistributionItem {
+  key: string;
+  total: number;
+  mql: number;
+  mql_rate: number; // %
+  share: number;    // % do total de leads
+}
+
+export interface ICP {
+  label: string;            // "Mercado X · Estágio Y · Faturamento Z · Dor W"
+  mercado: string;
+  estagio: string;
+  faturamento: string;
+  dor: string;
+  total: number;
+  mql: number;
+  mql_rate: number;
+  origem_dominante: string; // utm_source dominante dentro do ICP
+}
+
+export interface RecentLead {
+  date: string;
+  nome: string;
+  mercado: string;
+  estagio: string;
+  faturamento: string;
+  dor: string;
+  tier: string;
+  is_mql: boolean;
+  origem: string;
+}
+
+export interface MarketPainCombo {
+  mercado: string;
+  dor: string;
+  total: number;
+  mql: number;
+  mql_rate: number;
+}
+
 export interface PeriodMetrics {
   // visitantes / sessões / quiz
   visitors: number;
@@ -24,13 +64,31 @@ export interface PeriodMetrics {
   entered_quiz: number;
   completed: number;
   conversion_rate: number; // visitors -> completed
-  drop_off_total: number; // visitors - completed
+  entry_rate: number;      // entered_quiz / visitors (em %)
+  drop_off_total: number;  // visitors - completed
   // funil
   step_funnel: Array<{ step_id: string; count: number }>;
   // leads / mql
   leads: number;
   mql: number;
   mql_rate: number; // mql/leads
+  // qualificação extra
+  enterprise_share: number; // % de leads em tiers Enterprise / Enterprise+
+  // distribuições (já agregadas no client)
+  by_mercado: DistributionItem[];
+  by_origem: DistributionItem[];
+  by_faturamento: DistributionItem[];
+  by_estagio: DistributionItem[];
+  by_dor: DistributionItem[];
+  by_campaign: DistributionItem[];
+  market_pain_mql: MarketPainCombo[]; // top combinações Mercado x Dor (por MQL)
+  icps: ICP[];                         // top 3 ICPs
+  recent_top: RecentLead[];            // top 10 leads (recentes ou MQL)
+  // destaques rápidos
+  top_mercado_mql: { key: string; mql: number; rate: number } | null;
+  top_origem_mql: { key: string; mql: number; rate: number } | null;
+  top_dor_mql: { key: string; mql: number; rate: number } | null;
+  icp_dominante: ICP | null;
   // vendas
   sales: number;
   revenue: number;
@@ -428,6 +486,144 @@ function runRules(ctx: RuleContext): Alert[] {
     });
   }
 
+  // QUALIFICAÇÃO / DORES / ORIGEM (BLOCO LEAD REPORTS) ─────────
+  // 1) Enterprise share caiu
+  if (p.enterprise_share > 0) {
+    const espVar = pctVar(c.enterprise_share, p.enterprise_share);
+    if (espVar < -30) {
+      alerts.push({
+        id: "enterprise-share-down",
+        area: "MQL",
+        severity: espVar < -50 ? "ALTA" : "MÉDIA",
+        title: "Share de Enterprise/Enterprise+ caiu",
+        evidence: `Enterprise share: ${fmtPct(c.enterprise_share)} vs ${fmtPct(p.enterprise_share)} (${espVar.toFixed(1)}%)`,
+        signal: "↓ proporção de leads de alto faturamento diminuiu — qualidade caiu.",
+        impact: "Pipeline de receita futura encolhe (ticket médio menor).",
+        hypotheses: [
+          "Criativo amplo demais atraindo audiência menor",
+          "Mudança de oferta na landing reduziu apelo enterprise",
+          "Tráfego frio aumentou em proporção",
+        ],
+        checks: [
+          "Olhar mix de faturamento na aba Relatórios Lead",
+          "Conferir top criativos por %MQL Enterprise+",
+          "Validar se a copy do anúncio fala com o ICP top",
+        ],
+        next_action: "Reforçar criativos voltados para Enterprise e pausar os de baixa qualificação.",
+      });
+    }
+  }
+
+  // 2) Volume de leads sobe MAS taxa MQL cai (qualidade piorou)
+  if (p.leads > 0 && p.mql_rate > 0) {
+    const lv = pctVar(c.leads, p.leads);
+    const mqlRv = pctVar(c.mql_rate, p.mql_rate);
+    if (lv > 15 && mqlRv < -15) {
+      alerts.push({
+        id: "vol-up-quality-down",
+        area: "MQL",
+        severity: "MÉDIA",
+        title: "Volume de leads subiu, mas qualidade caiu",
+        evidence: `Leads ${lv >= 0 ? "+" : ""}${lv.toFixed(1)}% | Taxa MQL ${mqlRv.toFixed(1)}%`,
+        signal: "↑ volume / ↓ qualidade — provavelmente entrou tráfego desalinhado.",
+        impact: "Time comercial trabalha mais para fechar menos.",
+        hypotheses: [
+          "Criativo novo trazendo audiência fora do ICP",
+          "Otimização do Meta saiu de conversão para tráfego",
+          "Origem orgânica/bio cresceu sem qualificar",
+        ],
+        checks: [
+          "Comparar %MQL por origem vs período anterior",
+          "Olhar criativos novos com volume alto e %MQL baixa",
+          "Conferir se a oferta no topo da landing mudou",
+        ],
+        next_action: "Pausar criativos de alto volume e baixo %MQL; reativar campanha MQL específica.",
+      });
+    }
+  }
+
+  // 3) Concentração extrema de origem (>70% do volume em 1 fonte)
+  if (c.by_origem.length > 0 && c.leads > 10) {
+    const top = c.by_origem.reduce((a, b) => (b.total > a.total ? b : a));
+    const concentration = (top.total / c.leads) * 100;
+    if (concentration > 70) {
+      alerts.push({
+        id: "origem-concentration",
+        area: "DADOS",
+        severity: concentration > 85 ? "ALTA" : "MÉDIA",
+        title: `Dependência de uma origem (${top.key})`,
+        evidence: `${top.key} concentra ${fmtPct(concentration)} dos leads (${fmtN(top.total)}/${fmtN(c.leads)})`,
+        signal: "↑ risco de queda brusca se essa origem parar.",
+        impact: "Diversificação fraca — vulnerabilidade alta.",
+        hypotheses: [
+          "Apenas 1 campanha ativa no Meta",
+          "Outras origens (orgânico, parcerias) zeradas",
+          "Atribuição falhando e jogando tudo em 1 bucket",
+        ],
+        checks: [
+          "Conferir se há outras campanhas pausadas",
+          "Validar links de Instagram/bio com UTM",
+          "Verificar se há canais sem tracking",
+        ],
+        next_action: "Ativar pelo menos 1 origem secundária e padronizar UTMs.",
+      });
+    }
+  }
+
+  // 4) Mercado #1 em volume com taxa MQL muito baixa (<15%)
+  if (c.by_mercado.length > 0 && c.leads > 10) {
+    const topVol = [...c.by_mercado].sort((a, b) => b.total - a.total)[0];
+    if (topVol.total >= 5 && topVol.mql_rate < 15) {
+      alerts.push({
+        id: `top-mercado-low-mql-${topVol.key}`,
+        area: "MQL",
+        severity: "MÉDIA",
+        title: `Mercado #1 em volume tem baixa qualificação`,
+        evidence: `${topVol.key}: ${fmtN(topVol.total)} leads, taxa MQL ${fmtPct(topVol.mql_rate)}`,
+        signal: "↑ tráfego concentrado em mercado de baixa qualidade.",
+        impact: "Custo de aquisição alto vs MQLs gerados.",
+        hypotheses: [
+          "Criativo está atraindo curiosos no mercado errado",
+          "Copy não filtra ICP",
+          "Oferta genérica demais",
+        ],
+        checks: [
+          "Ver quais dores esse mercado traz",
+          "Cruzar com criativos top desse mercado",
+          "Comparar com mercado de alta taxa MQL",
+        ],
+        next_action: `Refinar criativos de "${topVol.key}" ou redirecionar verba para mercado com taxa MQL maior.`,
+      });
+    }
+  }
+
+  // 5) Dor com muito volume e baixa taxa MQL (mensagem desalinhada)
+  if (c.by_dor.length > 0 && c.leads > 10) {
+    const topDorVol = [...c.by_dor].sort((a, b) => b.total - a.total)[0];
+    if (topDorVol.total >= 5 && topDorVol.mql_rate < 15) {
+      alerts.push({
+        id: `top-dor-low-mql`,
+        area: "MQL",
+        severity: "MÉDIA",
+        title: "Dor dominante atrai leads de baixa qualidade",
+        evidence: `"${topDorVol.key.slice(0, 60)}…": ${fmtN(topDorVol.total)} leads, ${fmtPct(topDorVol.mql_rate)} MQL`,
+        signal: "↓ promessa do criativo não está filtrando ICP.",
+        impact: "Mensagem ressoa, mas com público errado.",
+        hypotheses: [
+          "Promessa muito genérica",
+          "Criativo prometendo solução para faturamento baixo",
+          "Falta de gancho de exclusividade",
+        ],
+        checks: [
+          "Olhar copies dos criativos com essa dor",
+          "Ver mercado dominante dentro dessa dor",
+          "Comparar com dor que tem MQL alto",
+        ],
+        next_action: "Reescrever copy para qualificar melhor (mencionar faturamento mínimo, ICP).",
+      });
+    }
+  }
+
   // Sort by severity
   const order: Record<Severity, number> = { ALTA: 0, "MÉDIA": 1, BAIXA: 2 };
   alerts.sort((a, b) => order[a.severity] - order[b.severity]);
@@ -472,6 +668,23 @@ function buildMarkdown(ctx: RuleContext, alerts: Alert[]): string {
     if (c.revenue > 0 || p.revenue > 0) {
       lines.push(`- Receita: ${fmtMoney(c.revenue)} (${pctVar(c.revenue, p.revenue).toFixed(1)}%) | ROAS: ${c.roas ? `${c.roas.toFixed(2)}x` : "—"}`);
     }
+    // Diagnóstico de gargalo principal
+    const diagnostics: string[] = [];
+    const entryVar = pctVar(c.entry_rate, p.entry_rate);
+    const completionVar = pctVar(c.conversion_rate, p.conversion_rate);
+    const mqlRateVar = pctVar(c.mql_rate, p.mql_rate);
+    const ckRateCur = c.leads > 0 ? (c.leads_with_creative_key / c.leads) * 100 : 0;
+    const ckRatePrev = p.leads > 0 ? (p.leads_with_creative_key / p.leads) * 100 : 0;
+    const cplVar = c.cpl !== null && p.cpl !== null && p.cpl > 0 ? pctVar(c.cpl, p.cpl) : 0;
+    const cpmqlVar = c.cpmql !== null && p.cpmql !== null && p.cpmql > 0 ? pctVar(c.cpmql, p.cpmql) : 0;
+    if (entryVar < -15) diagnostics.push(`🪧 **Gargalo principal:** LANDING (taxa de entrada caiu ${entryVar.toFixed(1)}%)`);
+    if (completionVar < -15) diagnostics.push(`📝 **Gargalo principal:** QUIZ (taxa de conclusão caiu ${completionVar.toFixed(1)}%)`);
+    if (mqlRateVar < -15 && pctVar(c.leads, p.leads) > -10) diagnostics.push(`🎯 **Gargalo principal:** QUALIDADE DO TRÁFEGO/MENSAGEM (taxa MQL caiu ${mqlRateVar.toFixed(1)}% com volume estável)`);
+    if (ckRatePrev > 0 && (ckRateCur - ckRatePrev) < -10) diagnostics.push(`🔍 **Gargalo principal:** TRACKING (creative_key coverage caiu ${(ckRateCur - ckRatePrev).toFixed(1)}pp)`);
+    if (cplVar > 20 || cpmqlVar > 20) diagnostics.push(`🎬 **Gargalo principal:** CRIATIVOS / EFICIÊNCIA (CPL ${cplVar >= 0 ? "+" : ""}${cplVar.toFixed(1)}% / CPMQL ${cpmqlVar >= 0 ? "+" : ""}${cpmqlVar.toFixed(1)}%)`);
+    if (diagnostics.length === 0) diagnostics.push(`✅ Funil estável — nenhum gargalo crítico identificado.`);
+    diagnostics.forEach((d) => lines.push(`- ${d}`));
+
     const urgency = high >= 3 ? "🚨 ALTA" : high >= 1 ? "⚠️ MÉDIA" : "🟢 BAIXA";
     lines.push(`- **Urgência:** ${urgency}`);
   }
@@ -567,7 +780,133 @@ function buildMarkdown(ctx: RuleContext, alerts: Alert[]): string {
     lines.push("");
   }
 
-  // Criativos
+  // ═══════ QUALIDADE DO LEAD (MQL) + DISTRIBUIÇÕES ═══════
+  lines.push(`## 🎯 Qualidade do lead (MQL)`);
+  lines.push("");
+  lines.push(`- **Total leads:** ${fmtN(c.leads)}${p ? ` (anterior: ${fmtN(p.leads)}, ${pctVar(c.leads, p.leads) >= 0 ? "+" : ""}${pctVar(c.leads, p.leads).toFixed(1)}%)` : ""}`);
+  lines.push(`- **Total MQL:** ${fmtN(c.mql)}${p ? ` (anterior: ${fmtN(p.mql)}, ${pctVar(c.mql, p.mql) >= 0 ? "+" : ""}${pctVar(c.mql, p.mql).toFixed(1)}%)` : ""}`);
+  lines.push(`- **Taxa MQL:** ${fmtPct(c.mql_rate)}${p ? ` (anterior: ${fmtPct(p.mql_rate)})` : ""}`);
+  lines.push(`- **Enterprise/Enterprise+ share:** ${fmtPct(c.enterprise_share)}${p ? ` (anterior: ${fmtPct(p.enterprise_share)})` : ""}`);
+  if (c.top_mercado_mql) lines.push(`- **Mercado #1 em MQL:** ${c.top_mercado_mql.key} (${c.top_mercado_mql.mql} MQL · ${fmtPct(c.top_mercado_mql.rate)})`);
+  if (c.top_origem_mql) lines.push(`- **Origem #1 em MQL:** ${c.top_origem_mql.key} (${c.top_origem_mql.mql} MQL · ${fmtPct(c.top_origem_mql.rate)})`);
+  if (c.top_dor_mql) lines.push(`- **Dor #1 em MQL:** "${c.top_dor_mql.key.slice(0, 80)}" (${c.top_dor_mql.mql} MQL · ${fmtPct(c.top_dor_mql.rate)})`);
+  if (c.icp_dominante) lines.push(`- **ICP dominante:** ${c.icp_dominante.label} → ${c.icp_dominante.mql} MQL (origem: ${c.icp_dominante.origem_dominante})`);
+  lines.push("");
+
+  // Distribuições
+  function distTable(title: string, items: DistributionItem[], limit = 10) {
+    if (items.length === 0) return;
+    lines.push(`### ${title}`);
+    lines.push(`| ${title.split(" ").slice(-1)[0]} | Total | MQLs | Taxa MQL | % do total |`);
+    lines.push(`|---|---|---|---|---|`);
+    items.slice(0, limit).forEach((it) => {
+      lines.push(`| ${it.key.slice(0, 60)} | ${fmtN(it.total)} | ${fmtN(it.mql)} | ${fmtPct(it.mql_rate)} | ${fmtPct(it.share)} |`);
+    });
+    lines.push("");
+  }
+
+  lines.push(`## 📊 Distribuição dos leads`);
+  lines.push("");
+  distTable("Leads por Mercado", c.by_mercado);
+  distTable("Leads por Origem", c.by_origem);
+  distTable("Leads por Faturamento", c.by_faturamento);
+  distTable("Leads por Estágio", c.by_estagio);
+  if (c.by_campaign.length > 0) distTable("Top Campanhas → MQL", c.by_campaign);
+
+  // Mapa de dores + Mercado x Dor
+  if (c.by_dor.length > 0) {
+    lines.push(`## 💢 Mapa de dores`);
+    lines.push("");
+    distTable("Ranking de Dores", c.by_dor.slice(0, 10));
+
+    if (c.market_pain_mql.length > 0) {
+      lines.push(`### Mercado × Dor (top combinações por MQL)`);
+      lines.push(`| Mercado | Dor | Total | MQLs | Taxa MQL |`);
+      lines.push(`|---|---|---|---|---|`);
+      c.market_pain_mql.slice(0, 10).forEach((m) => {
+        lines.push(`| ${m.mercado} | ${m.dor.slice(0, 60)} | ${fmtN(m.total)} | ${fmtN(m.mql)} | ${fmtPct(m.mql_rate)} |`);
+      });
+      lines.push("");
+    }
+
+    // destaques de dores
+    const dorAlta = c.by_dor.filter((d) => d.total >= 5 && d.mql_rate >= 30).slice(0, 3);
+    const dorRuido = c.by_dor.filter((d) => d.total >= 5 && d.mql_rate < 15).slice(0, 3);
+    if (dorAlta.length > 0) {
+      lines.push(`> ✅ **Dores que mais qualificam (tema-chave para criativos):**`);
+      dorAlta.forEach((d) => lines.push(`> - "${d.key.slice(0, 70)}" — ${fmtPct(d.mql_rate)} MQL (${d.mql}/${d.total})`));
+      lines.push("");
+    }
+    if (dorRuido.length > 0) {
+      lines.push(`> ⚠️ **Dores com volume e baixa qualificação (mensagem desalinhada):**`);
+      dorRuido.forEach((d) => lines.push(`> - "${d.key.slice(0, 70)}" — ${fmtPct(d.mql_rate)} MQL (${d.mql}/${d.total})`));
+      lines.push("");
+    }
+  }
+
+  // ICPs Ideais
+  if (c.icps.length > 0) {
+    lines.push(`## 🏆 ICPs Ideais (top 3)`);
+    lines.push("");
+    c.icps.forEach((icp, i) => {
+      lines.push(`**ICP #${i + 1}** — ${icp.label}`);
+      lines.push(`- MQLs: ${icp.mql} | Origem dominante: ${icp.origem_dominante}`);
+      lines.push("");
+    });
+  }
+
+  // Oportunidades de criativos (templates determinísticos)
+  if (c.by_dor.length > 0 || c.by_mercado.length > 0) {
+    lines.push(`## 💡 Oportunidades de criativos`);
+    lines.push("");
+    const angulos: string[] = [];
+    // 1. Dores que convertem
+    c.by_dor.filter((d) => d.mql >= 2 && d.mql_rate >= 25).slice(0, 3).forEach((d) => {
+      angulos.push(`Criar criativo sobre **"${d.key.slice(0, 60)}"** (${d.mql} MQL · ${fmtPct(d.mql_rate)}) — dor de alta conversão.`);
+    });
+    // 2. Mercados dominantes em MQL
+    c.by_mercado.filter((m) => m.mql >= 2).slice(0, 2).forEach((m) => {
+      angulos.push(`Campanha segmentada para **${m.key}** (${m.mql} MQL · ${fmtPct(m.mql_rate)}) — mercado já convertendo.`);
+    });
+    // 3. Combinações Mercado + Dor
+    c.market_pain_mql.filter((m) => m.mql >= 2).slice(0, 3).forEach((m) => {
+      angulos.push(`Copy específico para **${m.mercado}** falando sobre **"${m.dor.slice(0, 50)}"** (${m.mql} MQL).`);
+    });
+    // 4. ICP top
+    if (c.icp_dominante) {
+      angulos.push(`Gancho dedicado ao ICP dominante: ${c.icp_dominante.mercado} · faturamento ${c.icp_dominante.faturamento}.`);
+    }
+    // 5. Origem que mais qualifica
+    if (c.top_origem_mql && c.top_origem_mql.key !== "direct/sem-utm") {
+      angulos.push(`Reforçar verba na origem **${c.top_origem_mql.key}** (${c.top_origem_mql.mql} MQL · ${fmtPct(c.top_origem_mql.rate)}).`);
+    }
+    if (angulos.length === 0) angulos.push("Sem padrões suficientes para sugerir ângulos — coletar mais leads.");
+    lines.push(`### Sugestões de ângulos`);
+    angulos.slice(0, 8).forEach((a, i) => lines.push(`${i + 1}. ${a}`));
+    lines.push("");
+
+    if (c.by_dor.filter((d) => d.mql > 0).length > 0) {
+      lines.push(`### Top dores para explorar em criativos`);
+      lines.push(`| Dor | Total | MQLs |`);
+      lines.push(`|---|---|---|`);
+      c.by_dor.filter((d) => d.mql > 0).slice(0, 5).forEach((d) => {
+        lines.push(`| ${d.key.slice(0, 60)} | ${fmtN(d.total)} | ${fmtN(d.mql)} |`);
+      });
+      lines.push("");
+    }
+
+    if (c.by_mercado.filter((m) => m.mql > 0).length > 0) {
+      lines.push(`### Top mercados para campanhas específicas`);
+      lines.push(`| Mercado | MQLs | Taxa MQL |`);
+      lines.push(`|---|---|---|`);
+      c.by_mercado.filter((m) => m.mql > 0).slice(0, 5).forEach((m) => {
+        lines.push(`| ${m.key} | ${fmtN(m.mql)} | ${fmtPct(m.mql_rate)} |`);
+      });
+      lines.push("");
+    }
+  }
+
+
   if (c.top_creatives_leads.length > 0) {
     lines.push(`## 🎬 Top criativos`);
     lines.push("");
@@ -627,6 +966,18 @@ function buildMarkdown(ctx: RuleContext, alerts: Alert[]): string {
   lines.push(`- **Vendas sem creative_key:** ${fmtN(c.sales_without_creative_key)}`);
   lines.push(`- **Leads Direct/Link in Bio:** ${fmtN(c.direct_bio_leads)}`);
   lines.push("");
+
+  // Tabela analítica resumida (Top 10 leads recentes / MQL)
+  if (c.recent_top.length > 0) {
+    lines.push(`## 🧾 Tabela analítica — Top 10 leads (MQLs primeiro, depois recentes)`);
+    lines.push("");
+    lines.push(`| Data | Nome | Mercado | Estágio | Faturamento | Dor | Tier | MQL | Origem |`);
+    lines.push(`|---|---|---|---|---|---|---|---|---|`);
+    c.recent_top.forEach((l) => {
+      lines.push(`| ${l.date} | ${l.nome} | ${l.mercado} | ${l.estagio} | ${l.faturamento} | ${l.dor.slice(0, 50)} | ${l.tier} | ${l.is_mql ? "✅" : "—"} | ${l.origem} |`);
+    });
+    lines.push("");
+  }
 
   // Checklist final
   if (alerts.length > 0) {

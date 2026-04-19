@@ -2,10 +2,11 @@ import { useMemo, useState, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Copy, RefreshCw, Sparkles, AlertTriangle, CheckCircle2, Play, CalendarIcon } from "lucide-react";
+import { Loader2, Copy, RefreshCw, Sparkles, AlertTriangle, CheckCircle2, Play, CalendarIcon, Trophy } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useDateRange } from "@/context/DateRangeContext";
-import { runRulesEngine, type PeriodMetrics, type Alert } from "@/lib/rulesEngine";
+import { runRulesEngine, type PeriodMetrics, type Alert, type DistributionItem, type ICP, type RecentLead, type MarketPainCombo } from "@/lib/rulesEngine";
+import { getTierFromFaturamento } from "@/lib/leadScoring";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -34,6 +35,128 @@ interface RawData {
   creatives: any;
 }
 
+// MQL faixas (≥ 10k) — fonte da verdade
+const MQL_FAIXAS = new Set([
+  "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+  "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
+  "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
+  "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
+  "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
+  "Acima de R$ 10 milhões",
+  "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k",
+]);
+
+const isLeadMql = (l: any) =>
+  l?.faturamento_faixa && MQL_FAIXAS.has(l.faturamento_faixa) && l.sdr_override !== "Dara";
+
+const normalizeOrigem = (l: any): string => {
+  const src = (l.utm_source || "").trim().toLowerCase();
+  const med = (l.utm_medium || "").trim().toLowerCase();
+  if (!src || src === "direct") return "direct/sem-utm";
+  if (med === "bio" || med === "link-in-bio" || src === "instagram") return "link-in-bio";
+  return src;
+};
+
+const normStr = (v: any): string => {
+  const s = (v ?? "").toString().trim();
+  return s.length > 0 ? s : "—";
+};
+
+
+
+function buildDistribution(
+  leads: any[],
+  getter: (l: any) => string,
+  totalLeads: number
+): DistributionItem[] {
+  const buckets: Record<string, { total: number; mql: number }> = {};
+  leads.forEach((l) => {
+    const k = getter(l);
+    if (!buckets[k]) buckets[k] = { total: 0, mql: 0 };
+    buckets[k].total += 1;
+    if (isLeadMql(l)) buckets[k].mql += 1;
+  });
+  return Object.entries(buckets)
+    .map(([key, v]) => ({
+      key,
+      total: v.total,
+      mql: v.mql,
+      mql_rate: v.total > 0 ? (v.mql / v.total) * 100 : 0,
+      share: totalLeads > 0 ? (v.total / totalLeads) * 100 : 0,
+    }))
+    .sort((a, b) => b.mql - a.mql || b.total - a.total);
+}
+
+function buildMarketPainCombos(leads: any[]): MarketPainCombo[] {
+  const buckets: Record<string, { mercado: string; dor: string; total: number; mql: number }> = {};
+  leads.forEach((l) => {
+    const m = normStr(l.mercado);
+    const d = normStr(l.dor_desejo).slice(0, 80);
+    const k = `${m}__${d}`;
+    if (!buckets[k]) buckets[k] = { mercado: m, dor: d, total: 0, mql: 0 };
+    buckets[k].total += 1;
+    if (isLeadMql(l)) buckets[k].mql += 1;
+  });
+  return Object.values(buckets)
+    .map((v) => ({ ...v, mql_rate: v.total > 0 ? (v.mql / v.total) * 100 : 0 }))
+    .sort((a, b) => b.mql - a.mql || b.total - a.total)
+    .slice(0, 10);
+}
+
+function buildICPs(leads: any[]): ICP[] {
+  const buckets: Record<string, { mercado: string; estagio: string; faturamento: string; dor: string; total: number; mql: number; origens: Record<string, number> }> = {};
+  leads.forEach((l) => {
+    if (!isLeadMql(l)) return; // ICP é construído sobre MQLs
+    const mercado = normStr(l.mercado);
+    const estagio = normStr(l.estagio_negocio);
+    const faturamento = normStr(l.faturamento_faixa);
+    const dor = normStr(l.dor_desejo).slice(0, 60);
+    const k = `${mercado}__${estagio}__${faturamento}__${dor}`;
+    if (!buckets[k]) buckets[k] = { mercado, estagio, faturamento, dor, total: 0, mql: 0, origens: {} };
+    buckets[k].total += 1;
+    buckets[k].mql += 1;
+    const o = normalizeOrigem(l);
+    buckets[k].origens[o] = (buckets[k].origens[o] || 0) + 1;
+  });
+  return Object.values(buckets)
+    .map((v) => {
+      const origem_dominante = Object.entries(v.origens).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "—";
+      return {
+        label: `${v.mercado} · ${v.estagio} · ${v.faturamento} · ${v.dor}`,
+        mercado: v.mercado,
+        estagio: v.estagio,
+        faturamento: v.faturamento,
+        dor: v.dor,
+        total: v.total,
+        mql: v.mql,
+        mql_rate: 100,
+        origem_dominante,
+      } as ICP;
+    })
+    .sort((a, b) => b.mql - a.mql)
+    .slice(0, 3);
+}
+
+function buildRecentTop(leads: any[]): RecentLead[] {
+  const sorted = [...leads].sort((a, b) => {
+    const am = isLeadMql(a) ? 1 : 0;
+    const bm = isLeadMql(b) ? 1 : 0;
+    if (am !== bm) return bm - am; // MQLs primeiro
+    return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+  });
+  return sorted.slice(0, 10).map((l) => ({
+    date: l.created_at ? new Date(l.created_at).toLocaleDateString("pt-BR") : "—",
+    nome: normStr(l.nome_completo).slice(0, 40),
+    mercado: normStr(l.mercado),
+    estagio: normStr(l.estagio_negocio),
+    faturamento: normStr(l.faturamento_faixa),
+    dor: normStr(l.dor_desejo).slice(0, 60),
+    tier: getTierFromFaturamento(l.faturamento_faixa),
+    is_mql: isLeadMql(l),
+    origem: normalizeOrigem(l),
+  }));
+}
+
 // Build PeriodMetrics from raw API responses
 function buildPeriodMetrics(raw: RawData): PeriodMetrics {
   const m = raw.metrics || {};
@@ -41,19 +164,8 @@ function buildPeriodMetrics(raw: RawData): PeriodMetrics {
   const cr = raw.creatives || {};
   const creatives: any[] = cr.creatives || [];
 
-  // MQL faixas (≥ 10k)
-  const MQL_FAIXAS = new Set([
-    "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
-    "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
-    "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
-    "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
-    "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
-    "Acima de R$ 10 milhões",
-    "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k",
-  ]);
-
   const leadsCount = leads.length;
-  const mqlCount = leads.filter((l: any) => l.faturamento_faixa && MQL_FAIXAS.has(l.faturamento_faixa) && l.sdr_override !== "Dara").length;
+  const mqlCount = leads.filter(isLeadMql).length;
   const leadsWithCk = leads.filter((l: any) => l.utm_content && !l.utm_content.includes("{{") && l.utm_content.trim().length > 0).length;
   const leadsNoUtm = leads.filter((l: any) => !l.utm_source || l.utm_source === "" || l.utm_source.includes("{{")).length;
   const directBio = leads.filter((l: any) => {
@@ -62,7 +174,6 @@ function buildPeriodMetrics(raw: RawData): PeriodMetrics {
     return !src || src === "direct" || med === "bio" || med === "link-in-bio" || src === "instagram";
   }).length;
 
-  // Aggregate creatives totals (from /creatives endpoint)
   const totalSpend = creatives.reduce((s: number, c: any) => s + (c.spend || 0), 0);
   const totalSales = creatives.reduce((s: number, c: any) => s + (c.sales_count || 0), 0);
   const totalRevenue = creatives.reduce((s: number, c: any) => s + (c.revenue || 0), 0);
@@ -72,7 +183,6 @@ function buildPeriodMetrics(raw: RawData): PeriodMetrics {
   const cpmql = mqlCount > 0 && totalSpend > 0 ? totalSpend / mqlCount : null;
   const roas = totalSpend > 0 && totalRevenue > 0 ? totalRevenue / totalSpend : null;
 
-  // Top creatives
   const enriched = creatives.map((c: any) => {
     const mqlRate = c.leads_count > 0 ? (c.mql_count / c.leads_count) * 100 : 0;
     const cplC = c.leads_count > 0 && c.spend > 0 ? c.spend / c.leads_count : null;
@@ -95,18 +205,55 @@ function buildPeriodMetrics(raw: RawData): PeriodMetrics {
   const visitors = m.unique_visitors || m.total_visitors || 0;
   const completed = m.completed || 0;
   const conversionRate = typeof m.conversion_rate === "number" ? m.conversion_rate : parseFloat(m.conversion_rate) || 0;
+  const enteredQuiz = m.entered_quiz || 0;
+
+  const by_mercado = buildDistribution(leads, (l) => normStr(l.mercado), leadsCount);
+  const by_origem = buildDistribution(leads, normalizeOrigem, leadsCount);
+  const by_faturamento = buildDistribution(leads, (l) => normStr(l.faturamento_faixa), leadsCount);
+  const by_estagio = buildDistribution(leads, (l) => normStr(l.estagio_negocio), leadsCount);
+  const by_dor = buildDistribution(leads, (l) => normStr(l.dor_desejo).slice(0, 80), leadsCount);
+  const by_campaign = buildDistribution(leads, (l) => normStr(l.utm_campaign), leadsCount);
+
+  const market_pain_mql = buildMarketPainCombos(leads);
+  const icps = buildICPs(leads);
+  const recent_top = buildRecentTop(leads);
+
+  const enterpriseCount = leads.filter((l: any) => {
+    const t = getTierFromFaturamento(l.faturamento_faixa);
+    return t === "Enterprise" || t === "Enterprise+";
+  }).length;
+  const enterprise_share = leadsCount > 0 ? (enterpriseCount / leadsCount) * 100 : 0;
+
+  const top_mercado_mql = by_mercado[0] && by_mercado[0].mql > 0 ? { key: by_mercado[0].key, mql: by_mercado[0].mql, rate: by_mercado[0].mql_rate } : null;
+  const top_origem_mql = by_origem[0] && by_origem[0].mql > 0 ? { key: by_origem[0].key, mql: by_origem[0].mql, rate: by_origem[0].mql_rate } : null;
+  const top_dor_mql = by_dor[0] && by_dor[0].mql > 0 ? { key: by_dor[0].key, mql: by_dor[0].mql, rate: by_dor[0].mql_rate } : null;
 
   return {
     visitors,
     sessions: m.total_visitors || 0,
-    entered_quiz: m.entered_quiz || 0,
+    entered_quiz: enteredQuiz,
     completed,
     conversion_rate: conversionRate,
+    entry_rate: visitors > 0 ? (enteredQuiz / visitors) * 100 : 0,
     drop_off_total: visitors - completed,
     step_funnel: m.step_funnel || [],
     leads: leadsCount,
     mql: mqlCount,
     mql_rate: leadsCount > 0 ? (mqlCount / leadsCount) * 100 : 0,
+    enterprise_share,
+    by_mercado,
+    by_origem,
+    by_faturamento,
+    by_estagio,
+    by_dor,
+    by_campaign,
+    market_pain_mql,
+    icps,
+    recent_top,
+    top_mercado_mql,
+    top_origem_mql,
+    top_dor_mql,
+    icp_dominante: icps[0] || null,
     sales: totalSales,
     revenue: totalRevenue,
     spend: totalSpend,
@@ -378,6 +525,26 @@ export default function InsightsTab({ fetchAdminData }: Props) {
         <SummaryCard label="Receita" value={current.revenue} prev={previous?.revenue} money />
       </div>
 
+      {/* Resumo de Qualificação (novo) */}
+      <Card className="border-amber-500/30">
+        <CardContent className="pt-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-4 h-4 text-amber-400" />
+            <h4 className="text-sm font-bold">Resumo de Qualificação</h4>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-2">
+            <QualCard label="Total Leads" value={String(current.leads)} />
+            <QualCard label="Total MQL" value={String(current.mql)} />
+            <QualCard label="Taxa MQL" value={`${current.mql_rate.toFixed(1)}%`} highlight />
+            <QualCard label="Mercado #1 MQL" value={current.top_mercado_mql?.key ?? "—"} sub={current.top_mercado_mql ? `${current.top_mercado_mql.mql} MQL` : undefined} />
+            <QualCard label="Origem #1 MQL" value={current.top_origem_mql?.key ?? "—"} sub={current.top_origem_mql ? `${current.top_origem_mql.mql} MQL` : undefined} />
+            <QualCard label="Dor #1 MQL" value={current.top_dor_mql ? current.top_dor_mql.key.slice(0, 32) + (current.top_dor_mql.key.length > 32 ? "…" : "") : "—"} sub={current.top_dor_mql ? `${current.top_dor_mql.mql} MQL` : undefined} />
+            <QualCard label="ICP Dominante" value={current.icp_dominante ? `${current.icp_dominante.mercado} · ${current.icp_dominante.faturamento.slice(0, 20)}` : "—"} sub={current.icp_dominante ? `${current.icp_dominante.mql} MQL` : undefined} />
+          </div>
+        </CardContent>
+      </Card>
+
+
       {/* Alertas */}
       <Card>
         <CardContent className="pt-4 space-y-3">
@@ -420,6 +587,16 @@ export default function InsightsTab({ fetchAdminData }: Props) {
           </pre>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+function QualCard({ label, value, sub, highlight }: { label: string; value: string; sub?: string; highlight?: boolean }) {
+  return (
+    <div className={`rounded-md border p-2 ${highlight ? "border-amber-500/40 bg-amber-500/5" : "border-border/40 bg-background/40"}`}>
+      <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className={`text-xs font-bold mt-0.5 truncate ${highlight ? "text-amber-300" : ""}`} title={value}>{value}</p>
+      {sub && <p className="text-[9px] text-muted-foreground mt-0.5">{sub}</p>}
     </div>
   );
 }
