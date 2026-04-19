@@ -64,14 +64,22 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
   const { startISO, endExclusiveISO } = useDateRange();
   const [data, setData] = useState<BehaviorResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
+    // Só mostra "loading" full quando ainda não há dados; refreshes ficam discretos
+    if (!data) setLoading(true);
+    setRefreshing(true);
     fetchAdminData("/landing-behavior", { from: startISO, to: endExclusiveISO })
       .then((res) => { if (!cancelled) setData(res); })
       .catch((e) => { console.error("landing-behavior", e); })
-      .finally(() => { if (!cancelled) setLoading(false); });
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+          setRefreshing(false);
+        }
+      });
     return () => { cancelled = true; };
   }, [startISO, endExclusiveISO, fetchAdminData]);
 
@@ -83,7 +91,7 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
     return Math.max(...cur.funnel.map((f) => f.reached));
   }, [cur]);
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <Card className="border-primary/30">
         <CardContent className="pt-6 flex items-center justify-center gap-2 text-muted-foreground">
@@ -114,8 +122,13 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
     <Card className="border-primary/30">
       <CardContent className="pt-4 space-y-6">
         <div className="flex items-center justify-between border-b border-border/50 pb-2">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
             Comportamento na Landing Page — funil por seção, scroll e cliques
+            {refreshing && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-normal text-muted-foreground/70 normal-case tracking-normal">
+                <Loader2 className="w-3 h-3 animate-spin" /> atualizando…
+              </span>
+            )}
           </p>
           <Badge variant="outline" className="text-[10px]">
             {cur.totalVisitors} visitantes únicos
