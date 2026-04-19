@@ -505,13 +505,18 @@ Deno.serve(async (req: Request) => {
         filteredEvents.filter((e: any) => e.event_name === "submit").map((e: any) => e.session_id)
       );
       const dropOffs: Record<string, number> = {};
+      // Ordem unificada para cálculo do drop-off (busca em ambos os fluxos: novo e antigo)
+      const dropOffStepOrder = [
+        "q1_quer_vender", "q2_mercado", "q3_faturamento", "q4_nome", "q5_whats", "q6_insta", "q7_email", "q8_dor",
+        "q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_investimento", "q6_dor", "q7_dor",
+      ];
       Object.entries(sessionViewedSteps).forEach(([sessionId, viewedSteps]) => {
         if (!sessionsWithSubmit.has(sessionId)) {
           const advancedFrom = sessionAdvancedFrom[sessionId] || new Set();
           let dropOffStep: string | null = null;
           let dropOffIndex = -1;
           viewedSteps.forEach(step => {
-            const stepIndex = stepOrder.indexOf(step);
+            const stepIndex = dropOffStepOrder.indexOf(step);
             if (!advancedFrom.has(step) && stepIndex > dropOffIndex) {
               dropOffStep = step;
               dropOffIndex = stepIndex;
