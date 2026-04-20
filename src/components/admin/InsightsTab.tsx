@@ -327,6 +327,15 @@ function computePresetRange(key: PresetKey): { from: Date; to: Date } {
   }
 }
 
+type ComparisonMode = "none" | "previous" | "last_week" | "last_month";
+
+const COMPARISON_OPTIONS: { value: ComparisonMode; label: string; hint: string }[] = [
+  { value: "none", label: "Nenhuma", hint: "Sem comparação" },
+  { value: "previous", label: "Período anterior", hint: "Mesmo tamanho, imediatamente antes" },
+  { value: "last_week", label: "Semana passada", hint: "Mesmos dias da semana anterior" },
+  { value: "last_month", label: "Mês passado", hint: "Mesma janela no mês anterior" },
+];
+
 export default function InsightsTab({ fetchAdminData }: Props) {
   const [loading, setLoading] = useState(false);
   const [hasRun, setHasRun] = useState(false);
