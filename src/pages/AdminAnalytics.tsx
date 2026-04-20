@@ -47,6 +47,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { PwaInstallButton } from "@/components/PwaInstallButton";
 import { useLeadNotifications } from "@/hooks/useLeadNotifications";
+import { NotificationsPopover } from "@/components/admin/NotificationsPopover";
 
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -1398,26 +1399,12 @@ export default function AdminAnalytics() {
             <h1 className="text-xl sm:text-2xl font-bold">Analytics do Funil</h1>
             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
               <PwaInstallButton />
-              <Button
-                variant={notificationsEnabled ? "default" : "outline"}
-                size="sm"
-                onClick={toggleNotifications}
-                className={`text-xs sm:text-sm ${notificationsEnabled ? "bg-primary/20 text-primary hover:bg-primary/30 border border-primary/30" : ""}`}
-              >
-                <Bell className={`w-4 h-4 sm:mr-1.5 ${notificationsEnabled ? "animate-pulse" : ""}`} />
-                <span className="hidden sm:inline">{notificationsEnabled ? "Notificações ON" : "Ativar notificações"}</span>
-              </Button>
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => sendWebPush("🔄 Atualização Nova", "Reinstale o app e recarregue a página no Safari para novas funcionalidades!")}
-                className="text-xs sm:text-sm bg-amber-600 hover:bg-amber-700 text-white font-semibold"
-              >
-                📢 <span className="hidden sm:inline ml-1">Atualização Notificação</span>
-              </Button>
-              <Button variant="outline" size="sm" onClick={testNotifications} className="text-xs sm:text-sm">
-                🧪 <span className="hidden sm:inline ml-1">Testar notificações</span>
-              </Button>
+              <NotificationsPopover
+                notificationsEnabled={notificationsEnabled}
+                toggleNotifications={toggleNotifications}
+                testNotifications={testNotifications}
+                sendWebPush={sendWebPush}
+              />
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Sair</span>
               </Button>
