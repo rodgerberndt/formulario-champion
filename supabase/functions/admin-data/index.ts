@@ -2383,6 +2383,162 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    // GET /tracking-diagnostics - Compare Meta clicks vs landing_hits vs cta_clicks vs pageview sessions
+    if (path === "/tracking-diagnostics" && req.method === "GET") {
+      const fromParam = url.searchParams.get("from");
+      const toParam = url.searchParams.get("to");
+      if (!fromParam || !toParam) {
+        return new Response(
+          JSON.stringify({ error: "from e to são obrigatórios" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      const fromISO = fromParam;
+      const toISO = toParam.includes("T") ? toParam : toParam + "T23:59:59.999Z";
+      const fromDateOnly = fromParam.slice(0, 10);
+      const toDateOnly = toParam.slice(0, 10);
+
+      // 1. Meta Ads clicks (from ad_spend.clicks)
+      const { data: spendRows } = await supabase
+        .from("ad_spend")
+        .select("clicks, impressions, spend, date")
+        .gte("date", fromDateOnly)
+        .lte("date", toDateOnly);
+      const metaClicks = (spendRows || []).reduce((s: number, r: any) => s + (r.clicks || 0), 0);
+      const metaImpressions = (spendRows || []).reduce((s: number, r: any) => s + (r.impressions || 0), 0);
+
+      // 2. Landing hits (paginated to bypass 1000 row limit)
+      type Hit = { device_type: string | null; utm_source: string | null; click_id: string | null; session_id: string | null };
+      const allHits: Hit[] = [];
+      const PAGE = 1000;
+      let offset = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from("landing_hits")
+          .select("device_type, utm_source, click_id, session_id")
+          .gte("created_at", fromISO)
+          .lte("created_at", toISO)
+          .range(offset, offset + PAGE - 1);
+        if (error) break;
+        if (!data || data.length === 0) break;
+        allHits.push(...(data as Hit[]));
+        if (data.length < PAGE) break;
+        offset += PAGE;
+      }
+
+      const totalHits = allHits.length;
+      const byDevice: Record<string, number> = { ios: 0, android: 0, desktop: 0, mobile: 0, unknown: 0 };
+      let hitsFromAds = 0;
+      let hitsOrganic = 0;
+      for (const h of allHits) {
+        const d = h.device_type || "unknown";
+        byDevice[d] = (byDevice[d] || 0) + 1;
+        const src = (h.utm_source || "").toLowerCase();
+        if (src && src !== "direct" && src !== "organic" && !src.includes("{{")) hitsFromAds++;
+        else hitsOrganic++;
+      }
+
+      // 3. CTA clicks (click_events with click_type=cta_primary or button + start_btn)
+      const allClicks: { click_type: string; click_id: string | null }[] = [];
+      offset = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from("click_events")
+          .select("click_type, click_id")
+          .gte("created_at", fromISO)
+          .lte("created_at", toISO)
+          .eq("page", "/")
+          .range(offset, offset + PAGE - 1);
+        if (error) break;
+        if (!data || data.length === 0) break;
+        allClicks.push(...(data as any));
+        if (data.length < PAGE) break;
+        offset += PAGE;
+      }
+      const ctaClicks = allClicks.filter((c) => {
+        const t = (c.click_type || "").toLowerCase();
+        const id = (c.click_id || "").toLowerCase();
+        return t === "cta_primary" || id.includes("start_btn") || id.includes("cta");
+      }).length;
+
+      // 4. Lead sessions (legacy "pageviews") in same period - filter for landing page only
+      const { count: legacyPageviews } = await supabase
+        .from("lead_sessions")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", fromISO)
+        .lte("created_at", toISO)
+        .eq("first_page", "/");
+
+      // 5. Diagnostics
+      const alerts: { severity: "ALTA" | "MÉDIA" | "BAIXA"; title: string; message: string }[] = [];
+      const lossMetaToHits = metaClicks - totalHits;
+      const lossPct = metaClicks > 0 ? (lossMetaToHits / metaClicks) * 100 : 0;
+
+      if (metaClicks > 0 && lossPct > 30) {
+        alerts.push({
+          severity: "ALTA",
+          title: "Perda de carregamento crítica",
+          message: `${lossMetaToHits} cliques (${lossPct.toFixed(1)}%) do Meta não chegaram na landing. Possível lentidão, timeout ou script bloqueando o carregamento.`,
+        });
+      } else if (metaClicks > 0 && lossPct > 15) {
+        alerts.push({
+          severity: "MÉDIA",
+          title: "Perda de carregamento moderada",
+          message: `${lossMetaToHits} cliques (${lossPct.toFixed(1)}%) do Meta não viraram landing_hit. Verifique velocidade da página.`,
+        });
+      }
+
+      const pvDiff = totalHits - (legacyPageviews || 0);
+      if (totalHits > 50 && legacyPageviews && pvDiff / totalHits > 0.2) {
+        alerts.push({
+          severity: "MÉDIA",
+          title: "Pixel/tracking secundário com perda",
+          message: `${pvDiff} hits não foram registrados pelo tracking de sessão (lead_sessions). Pode indicar bloqueio de script (ITP/AdBlock/WebView).`,
+        });
+      }
+
+      const iosShare = totalHits > 0 ? (byDevice.ios || 0) / totalHits : 0;
+      const iosClicksShare = ctaClicks > 0 ? 0 : 0; // cant infer device from click_events
+      if (iosShare > 0.3 && metaClicks > 0 && lossPct > 20) {
+        alerts.push({
+          severity: "MÉDIA",
+          title: "Possível impacto de ITP/WebView (iOS)",
+          message: `iOS representa ${(iosShare * 100).toFixed(0)}% dos hits e há perda de ${lossPct.toFixed(1)}%. Safari/WebView podem estar bloqueando scripts.`,
+        });
+      }
+
+      if (metaClicks === 0 && totalHits === 0) {
+        alerts.push({
+          severity: "BAIXA",
+          title: "Sem dados no período",
+          message: "Nenhum clique do Meta nem landing_hit registrado neste período.",
+        });
+      }
+
+      return new Response(
+        JSON.stringify({
+          period: { from: fromISO, to: toISO },
+          meta: { clicks: metaClicks, impressions: metaImpressions },
+          landing_hits: {
+            total: totalHits,
+            by_device: byDevice,
+            from_ads: hitsFromAds,
+            organic: hitsOrganic,
+          },
+          cta_clicks: ctaClicks,
+          legacy_pageviews: legacyPageviews || 0,
+          comparisons: {
+            meta_vs_hits_loss: lossMetaToHits,
+            meta_vs_hits_loss_pct: Number(lossPct.toFixed(2)),
+            hits_vs_cta_engagement_pct:
+              totalHits > 0 ? Number(((ctaClicks / totalHits) * 100).toFixed(2)) : 0,
+          },
+          alerts,
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: "Rota não encontrada" }),
       { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
