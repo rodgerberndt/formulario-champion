@@ -619,7 +619,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
             <h3 className="text-base font-bold">Insights — Rules Engine</h3>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Escolha um <strong>preset rápido</strong> ou um período customizado. A comparação com o período anterior é automática (mesmo tamanho, imediatamente antes) — você pode desativar no toggle.
+            Clique em um <strong>preset</strong> para aplicar imediatamente, ou escolha datas no calendário e clique em <strong>Aplicar</strong>. A comparação recalcula sozinha quando você muda o tipo.
           </p>
           {PeriodControls}
         </CardContent>
