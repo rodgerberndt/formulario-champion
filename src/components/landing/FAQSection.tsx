@@ -55,10 +55,14 @@ export function FAQSection() {
     <section className="py-12 md:py-20 relative overflow-hidden" ref={ref}>
       <div className="container mx-auto px-5 max-w-3xl relative z-10">
         <div className={`text-center mb-8 md:mb-12 reveal-up ${isVisible ? "visible" : ""}`}>
-          <h2 className="text-foreground mb-3">
-            <ShimmerText isVisible={isVisible}>PERGUNTAS </ShimmerText>
+          <h2 className="text-foreground mb-2">
+            <ShimmerText isVisible={isVisible}>PERGUNTAS</ShimmerText>
+            <span className="inline-block w-2 md:w-3" />
             <KeywordGlow>FREQUENTES</KeywordGlow>
           </h2>
+          <p className="font-montserrat font-bold uppercase tracking-[0.3em] text-xs md:text-sm text-primary mb-4">
+            FAQ
+          </p>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
             As dúvidas que mais aparecem antes de marcar o diagnóstico. Respondidas sem rodeio.
           </p>
@@ -73,12 +77,12 @@ export function FAQSection() {
                 className="gold-card !border-b !p-0 overflow-hidden"
               >
                 <AccordionTrigger
-                  className="px-5 py-4 md:px-6 md:py-5 text-left hover:no-underline group"
+                  className="px-5 py-4 md:px-6 md:py-5 text-left hover:no-underline group [@media(hover:none)]:hover:bg-transparent"
                   data-track-click="faq_open"
                   data-track-id={faqSlug(i)}
                   aria-label={faq.q}
                 >
-                  <span className="font-montserrat font-bold uppercase tracking-wide text-sm md:text-base text-foreground pr-4 group-hover:text-primary transition-colors">
+                  <span className="font-montserrat font-bold uppercase tracking-wide text-sm md:text-base text-foreground pr-4 md:group-hover:text-primary transition-colors">
                     {faq.q}
                   </span>
                 </AccordionTrigger>
