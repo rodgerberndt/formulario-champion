@@ -131,13 +131,29 @@ function totalsOf(days: DayMetric[]) {
 }
 
 export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
-  const [mode, setMode] = useState<RangeMode>("last7");
+  const [mode, setMode] = useState<RangeMode>("global");
   const [loading, setLoading] = useState(false);
   const [days, setDays] = useState<DayMetric[]>([]);
   const [prevDays, setPrevDays] = useState<DayMetric[]>([]);
+  const { start: globalStart, end: globalEnd } = useDateRange();
 
   // Compute date ranges based on mode
   const { primary, previous } = useMemo(() => {
+    if (mode === "global") {
+      const fmt = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Sao_Paulo",
+        year: "numeric", month: "2-digit", day: "2-digit",
+      });
+      const from = fmt.format(globalStart);
+      const to = fmt.format(globalEnd);
+      const fromD = ymdToDate(from);
+      const toD = ymdToDate(to);
+      const len = Math.round((toD.getTime() - fromD.getTime()) / 86400000) + 1;
+      return {
+        primary: { from, to },
+        previous: { from: addDays(from, -len), to: addDays(from, -1) },
+      };
+    }
     const cur = getCurrentWeekSP();
     if (mode === "current") {
       return {
@@ -167,7 +183,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
       primary: { from, to: todayYmd },
       previous: { from: addDays(from, -7), to: addDays(from, -1) },
     };
-  }, [mode]);
+  }, [mode, globalStart, globalEnd]);
 
   useEffect(() => {
     let cancelled = false;
