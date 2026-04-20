@@ -600,6 +600,44 @@ Deno.serve(async (req: Request) => {
       const { count: leadsCount } = await leadsQuery;
       const completed = leadsCount || 0;
 
+      // ===== Landing Views (fonte da verdade) =====
+      // Conta hits únicos por session_id; se session_id null, dedup por (ip + user_agent) janela de 30min
+      let hitsQuery = supabase
+        .from("landing_hits")
+        .select("session_id, ip_address, user_agent, created_at, referrer")
+        .order("created_at", { ascending: true });
+      if (from) hitsQuery = hitsQuery.gte("created_at", from);
+      if (toEnd) hitsQuery = hitsQuery.lte("created_at", toEnd);
+      const { data: hitsData } = await hitsQuery;
+      const cleanHits = (hitsData || []).filter((h: any) => {
+        const ref = (h.referrer || "").toLowerCase();
+        return !ref.includes("lovable.dev") && !ref.includes("lovableproject.com");
+      });
+      const hitSessionIds = new Set<string>();
+      const ipUaBuckets = new Map<string, number>(); // key -> last timestamp ms
+      let landingHitsTotal = 0;
+      for (const h of cleanHits) {
+        landingHitsTotal++;
+        if (h.session_id) {
+          hitSessionIds.add(h.session_id);
+        } else if (h.ip_address) {
+          const key = `${h.ip_address}|${(h.user_agent || "").slice(0, 80)}`;
+          const ts = new Date(h.created_at).getTime();
+          const last = ipUaBuckets.get(key);
+          if (!last || ts - last > 30 * 60 * 1000) {
+            ipUaBuckets.set(key, ts);
+          }
+        }
+      }
+      const landingViews = hitSessionIds.size + ipUaBuckets.size;
+
+      // ===== Meta clicks (do ad_spend já agregado) =====
+      let spendQuery = supabase.from("ad_spend").select("clicks, date");
+      if (from) spendQuery = spendQuery.gte("date", from.slice(0, 10));
+      if (toEnd) spendQuery = spendQuery.lte("date", toEnd.slice(0, 10));
+      const { data: spendData } = await spendQuery;
+      const metaClicks = (spendData || []).reduce((sum: number, r: any) => sum + (r.clicks || 0), 0);
+
       // Calculate event-based metrics
       const sessionsWithQuizView = new Set(
         filteredEvents.filter((e: any) => e.event_name === "quiz_view").map((e: any) => e.session_id)
@@ -744,6 +782,10 @@ Deno.serve(async (req: Request) => {
           entered_quiz: enteredQuiz,
           started_quiz: startedQuiz,
           completed,
+          landing_views: landingViews,
+          landing_hits_total: landingHitsTotal,
+          meta_clicks: metaClicks,
+          loss_clicks_vs_views: Math.max(0, metaClicks - landingViews),
           conversion_rate: uniqueVisitors > 0 ? (completed / uniqueVisitors * 100).toFixed(1) : 0,
           completion_rate: enteredQuiz > 0 ? (completed / enteredQuiz * 100).toFixed(1) : 0,
           button_distribution: buttonDistribution,
