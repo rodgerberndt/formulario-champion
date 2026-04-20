@@ -501,11 +501,16 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    // Determine if this lead is MQL (faturamento >= R$ 10k) for distinct push styling
+    const isMqlForPush = isPixelMqlEligible;
+    const pushTitle = isMqlForPush ? '🏆 Novo MQL Caiu!' : '🚀 Novo Lead Caiu!';
+    const pushHeading = isMqlForPush ? '🏆 Novo MQL!' : '🚀 Novo Lead!';
+
     // 3. Send Web Push notification (non-blocking)
     let webPushSuccess = false;
     try {
       const pushPayload = {
-        title: '🚀 Novo Lead Caiu!',
+        title: pushTitle,
         body: `Tier: ${leadTier} | SDR: ${sdr.name}`,
         url: `/${ADMIN_ROUTE_SLUG}?highlight=${targetId}`,
       };
@@ -545,7 +550,7 @@ Deno.serve(async (req: Request) => {
           body: JSON.stringify({
             app_id: '2ba7eef1-4bc9-47dd-83fc-745bb1548799',
             included_segments: ['All'],
-            headings: { en: '🚀Novo Lead!' },
+            headings: { en: pushHeading },
             contents: { en: `Nome: ${leadName} - Tier: ${leadTier} SDR: ${sdr.name}` },
             url: `/${ADMIN_ROUTE_SLUG}?highlight=${targetId}`,
           }),

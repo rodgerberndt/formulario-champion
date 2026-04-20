@@ -4,7 +4,7 @@ import { toast } from "@/hooks/use-toast";
 const NOTIFY_PREF_KEY = "champion_notify_enabled";
 const POLL_INTERVAL_MS = 15_000; // Poll every 15 seconds
 
-/** Plays a bright ascending chime for new leads */
+/** Plays a bright ascending chime for new (non-MQL) leads */
 function playLeadSound() {
   try {
     const audio = new Audio("/newlead.wav");
@@ -12,6 +12,59 @@ function playLeadSound() {
     audio.play().catch((err) => console.warn("Could not play lead sound:", err));
   } catch (err) {
     console.warn("Could not play lead sound:", err);
+  }
+}
+
+/** Plays a triumphant victory fanfare for MQL leads (synthesized via Web Audio API) */
+function playMqlSound() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+
+    // Victory fanfare: C5 → E5 → G5 → C6 (major arpeggio ascending)
+    const notes = [
+      { freq: 523.25, start: 0.00, dur: 0.18 }, // C5
+      { freq: 659.25, start: 0.15, dur: 0.18 }, // E5
+      { freq: 783.99, start: 0.30, dur: 0.22 }, // G5
+      { freq: 1046.5, start: 0.50, dur: 0.55 }, // C6 (sustained)
+    ];
+
+    notes.forEach(({ freq, start, dur }) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, now + start);
+
+      // ADSR envelope
+      gain.gain.setValueAtTime(0, now + start);
+      gain.gain.linearRampToValueAtTime(0.35, now + start + 0.02);
+      gain.gain.linearRampToValueAtTime(0.25, now + start + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + dur);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + start);
+      osc.stop(now + start + dur + 0.05);
+    });
+
+    // Add a subtle bell harmonic on the final note
+    const bell = ctx.createOscillator();
+    const bellGain = ctx.createGain();
+    bell.type = "sine";
+    bell.frequency.setValueAtTime(2093, now + 0.50); // C7
+    bellGain.gain.setValueAtTime(0, now + 0.50);
+    bellGain.gain.linearRampToValueAtTime(0.15, now + 0.52);
+    bellGain.gain.exponentialRampToValueAtTime(0.001, now + 1.10);
+    bell.connect(bellGain);
+    bellGain.connect(ctx.destination);
+    bell.start(now + 0.50);
+    bell.stop(now + 1.15);
+
+    setTimeout(() => ctx.close().catch(() => {}), 1500);
+  } catch (err) {
+    console.warn("Could not play MQL sound:", err);
   }
 }
 
@@ -44,6 +97,7 @@ interface NewLead {
   estagio_negocio: string;
   mercado: string;
   tier: string | null;
+  investimento_faixa?: string | null;
   created_at: string;
 }
 
@@ -120,36 +174,69 @@ export function useLeadNotifications(
     }
   }, []);
 
-  // ── Notify new leads ──
+  // ── Notify new leads (split MQL vs non-MQL for distinct sounds) ──
+  const isMqlLead = useCallback((lead: NewLead): boolean => {
+    // MQL = faturamento >= R$ 10k
+    const mqlFaixas = new Set([
+      "De R$ 10 mil a R$ 20 mil",
+      "De R$ 20 mil a R$ 30 mil",
+      "De R$ 30 mil a R$ 50 mil",
+      "De R$ 50 mil a R$ 75 mil",
+      "De R$ 75 mil a R$ 100 mil",
+      "De R$ 100 mil a R$ 150 mil",
+      "De R$ 150 mil a R$ 200 mil",
+      "De R$ 200 mil a R$ 300 mil",
+      "De R$ 300 mil a R$ 500 mil",
+      "De R$ 500 mil a R$ 750 mil",
+      "De R$ 750 mil a R$ 1 milhão",
+      "De R$ 1 milhão a R$ 2 milhões",
+      "De R$ 2 milhões a R$ 3 milhões",
+      "De R$ 3 milhões a R$ 5 milhões",
+      "De R$ 5 milhões a R$ 10 milhões",
+      "Acima de R$ 10 milhões",
+    ]);
+    if (lead.investimento_faixa && mqlFaixas.has(lead.investimento_faixa)) return true;
+    // Fallback by tier (Large/Enterprise/Enterprise+ are always MQL)
+    const t = (lead.tier || "").toLowerCase();
+    return t === "large" || t.startsWith("enterprise");
+  }, []);
+
   const notifyNewLeads = useCallback(
     (newLeads: NewLead[]) => {
       if (newLeads.length === 0) return;
-      playLeadSound();
+
+      const mqlLeads = newLeads.filter(isMqlLead);
+      const normalLeads = newLeads.filter((l) => !isMqlLead(l));
+
+      // Play victory sound for MQLs, normal chime for the rest
+      if (mqlLeads.length > 0) playMqlSound();
+      if (normalLeads.length > 0) playLeadSound();
 
       if (newLeads.length === 1) {
         const lead = newLeads[0];
+        const isMql = mqlLeads.length === 1;
         toast({
-          title: "🔔 Novo lead!",
+          title: isMql ? "🏆 Novo MQL!" : "🔔 Novo lead!",
           description: `${lead.nome_completo} | ${lead.mercado} | ${lead.estagio_negocio}`,
         });
       } else {
         toast({
-          title: `🔔 +${newLeads.length} novos leads!`,
+          title: `🔔 +${newLeads.length} novos leads!${mqlLeads.length > 0 ? ` (${mqlLeads.length} MQL 🏆)` : ""}`,
           description: `Últimos: ${newLeads.slice(0, 3).map((l) => l.nome_completo).join(", ")}`,
         });
       }
 
       const title = newLeads.length === 1
-        ? "Novo lead no Champion"
-        : `+${newLeads.length} novos leads no Champion`;
+        ? (mqlLeads.length === 1 ? "🏆 Novo MQL no Champion" : "Novo lead no Champion")
+        : `+${newLeads.length} novos leads no Champion${mqlLeads.length > 0 ? ` (${mqlLeads.length} MQL)` : ""}`;
       const body = newLeads.length === 1
         ? `Nome: ${newLeads[0].nome_completo} | Etapa: ${newLeads[0].estagio_negocio}`
         : newLeads.slice(0, 3).map((l) => `${l.nome_completo} (${l.estagio_negocio})`).join("\n");
-      sendNativeNotification(title, body, "champion-new-lead");
+      sendNativeNotification(title, body, mqlLeads.length > 0 ? "champion-new-mql" : "champion-new-lead");
 
       onNewLead?.();
     },
-    [onNewLead, sendNativeNotification]
+    [onNewLead, sendNativeNotification, isMqlLead]
   );
 
   // ── Notify new sales ──
