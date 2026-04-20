@@ -80,6 +80,7 @@ interface FunnelStep {
 
 interface ScrollDepth { milestone: number; users: number; pct: number; }
 interface TopClick { id: string; label: string; section: string | null; type: string; count: number; uniqueUsers: number; }
+interface ButtonClick { id: string; label: string; type: string; count: number; uniqueUsers: number; }
 
 interface PeriodData {
   totalVisitors: number;
@@ -87,6 +88,7 @@ interface PeriodData {
   scrollDepth: ScrollDepth[];
   clicksByType: Record<string, number>;
   clicksBySection: Record<string, number>;
+  clicksByButton?: Record<string, ButtonClick[]>;
   topClicks: TopClick[];
   totalClicks: number;
 }
@@ -110,7 +112,22 @@ const SECTION_LABELS: Record<string, string> = {
   metodo: "Método Champion",
   gancho_corpo: "Gancho & Corpo",
   como_funciona: "Como funciona",
+  faq: "FAQ",
   cta_final: "CTA final",
+};
+
+// Labels amigáveis das perguntas do FAQ (ordem deve bater com FAQSection.tsx)
+const FAQ_QUESTION_LABELS: Record<string, string> = {
+  faq_q1: "Criativo morre na escala?",
+  faq_q2: "Já tenho time/agência. Por que Champion?",
+  faq_q3: "Em quanto tempo vejo resultado?",
+  faq_q4: "Funciona pro meu nicho?",
+  faq_q5: "Qual o investimento?",
+  faq_q6: "Vocês produzem o criativo?",
+  faq_q7: "Como garantem performance?",
+  faq_q8: "Sprint vs Assessoria?",
+  faq_q9: "Por que responder o quiz antes?",
+  faq_q10: "E se eu não gostar dos criativos?",
 };
 
 // Section IDs to hide from the funnel list (tracked elsewhere)
