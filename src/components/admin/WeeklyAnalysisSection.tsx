@@ -303,6 +303,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
           </div>
           <div className="flex items-center gap-1 flex-wrap">
             {([
+              ["global", "Filtro global"],
               ["current", "Semana atual"],
               ["previous", "Semana passada"],
               ["last7", "Últimos 7 dias"],
