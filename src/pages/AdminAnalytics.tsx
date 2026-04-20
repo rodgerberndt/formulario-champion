@@ -486,6 +486,16 @@ export default function AdminAnalytics() {
     }
   }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, startISO, endISO, sessionsPage]);
 
+  // Auto-refresh quiz funnel metrics every 15s while authenticated so the
+  // Funil do Quiz updates live (same UX as the real-time lead notifications).
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const id = window.setInterval(() => {
+      loadMetrics();
+    }, 15000);
+    return () => window.clearInterval(id);
+  }, [isAuthenticated, startISO, endISO]);
+
   // Load leads from legacy table via edge function
   const loadLeads = async () => {
     setLeadsLoading(true);

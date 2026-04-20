@@ -65,6 +65,7 @@ import { ptBR } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
 import WeeklyAnalysisSection from "./WeeklyAnalysisSection";
 import LandingBehaviorSection from "./LandingBehaviorSection";
+import { AnimatedNumber } from "./AnimatedNumber";
 
 // ── Types ──
 interface CreativeData {
@@ -1112,7 +1113,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   Funil do Quiz — drop-off por etapa (período selecionado)
                 </p>
                 <p className="text-[10px] text-muted-foreground/70">
-                  Perda total: <span className="text-red-400 font-semibold">{totalLoss.toFixed(1)}%</span>
+                  Perda total: <AnimatedNumber value={totalLoss} decimals={1} suffix="%" className="text-red-400 font-semibold" />
                 </p>
               </div>
               {funnelMetrics.quiz_v1_present && (
@@ -1153,7 +1154,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                             {stage.label}
                           </span>
                           <span className={`text-sm font-bold ${c.text} drop-shadow shrink-0`}>
-                            {formatNumber(stage.count)}
+                            <AnimatedNumber value={stage.count} />
                           </span>
                           {isBottleneck && (
                             <span className="text-[9px] text-red-300 font-bold whitespace-nowrap shrink-0">⚠</span>
@@ -1195,10 +1196,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                               </p>
                               <div className="text-right shrink-0">
                                 <p className={`text-sm font-bold leading-none ${c.text}`}>
-                                  {conv.toFixed(1)}%
+                                  <AnimatedNumber value={conv} decimals={1} suffix="%" />
                                 </p>
                                 <p className={`text-[10px] mt-0.5 ${loss! >= 20 ? "text-red-400" : "text-muted-foreground/70"}`}>
-                                  perda {loss!.toFixed(1)}% (-{formatNumber(lossAbs)})
+                                  perda <AnimatedNumber value={loss!} decimals={1} suffix="%" /> (-<AnimatedNumber value={lossAbs} />)
                                 </p>
                               </div>
                             </div>
