@@ -65,6 +65,7 @@ import { ptBR } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
 import WeeklyAnalysisSection from "./WeeklyAnalysisSection";
 import LandingBehaviorSection from "./LandingBehaviorSection";
+import { AnimatedNumber } from "./AnimatedNumber";
 
 // ── Types ──
 interface CreativeData {
