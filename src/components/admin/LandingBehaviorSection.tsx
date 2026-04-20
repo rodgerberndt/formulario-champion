@@ -283,6 +283,10 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
                           <p className="font-bold text-cyan-300"><BumpNumber value={f.reached} /> <span className="text-muted-foreground/70">({fmtPct(f.pct_of_visitors)})</span></p>
                         </div>
                         <div className="text-right">
+                          <p className="text-muted-foreground">Tempo médio</p>
+                          <p className="font-bold text-violet-300">{fmtTime(f.avg_time_ms)}</p>
+                        </div>
+                        <div className="text-right">
                           <p className="text-muted-foreground">Continuou</p>
                           <p className="font-bold text-emerald-300"><BumpNumber value={f.continued} /> <span className="text-muted-foreground/70">({fmtPct(f.continue_rate)})</span></p>
                         </div>
