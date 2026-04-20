@@ -122,7 +122,8 @@ export function useLandingTracking(page = "/") {
           }
         });
       },
-      { threshold: [0, 0.2, 0.5, 0.8] }
+      // PERF: 1 threshold só (0.2) em vez de 4 — reduz callbacks do observer
+      { threshold: 0.2 }
     );
 
     sections.forEach((section) => observerRef.current?.observe(section));
@@ -193,24 +194,12 @@ export function useLandingTracking(page = "/") {
       void flushAllSectionTimes();
     }, FLUSH_INTERVAL_MS);
 
-    // flush precoce para capturar bounces/visitas curtas sem esperar 8s+
-    window.setTimeout(() => {
-      void flushAllSectionTimes();
-    }, 1200);
-
-    const onHidden = () => {
+    // PERF: removido flush precoce de 1.2s e handlers duplicados.
+    // Mantemos apenas pagehide (mais confiável que beforeunload + visibilitychange juntos)
+    pageHideHandlerRef.current = () => {
       void flushAllSectionTimes();
     };
-
-    visibilityHandlerRef.current = () => {
-      if (document.visibilityState === "hidden") onHidden();
-    };
-    pageHideHandlerRef.current = onHidden;
-    beforeUnloadHandlerRef.current = onHidden;
-
-    document.addEventListener("visibilitychange", visibilityHandlerRef.current);
     window.addEventListener("pagehide", pageHideHandlerRef.current);
-    window.addEventListener("beforeunload", beforeUnloadHandlerRef.current);
   }
 
   function setupScrollTracking(sessionId: string) {
