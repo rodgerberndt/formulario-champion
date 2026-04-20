@@ -392,6 +392,17 @@
     0%, 100% { transform: translateX(-120%); }
     25%, 30% { transform: translateX(120%); }
   }
+
+  /* Pulse highlight when an animated metric value updates */
+  .animate-pulse-once {
+    animation: pulse-once 800ms ease-out;
+    color: hsl(var(--primary));
+  }
+  @keyframes pulse-once {
+    0%   { transform: scale(1);    filter: brightness(1); }
+    35%  { transform: scale(1.12); filter: brightness(1.4); }
+    100% { transform: scale(1);    filter: brightness(1); }
+  }
 }
 
 /* Reduced motion */
