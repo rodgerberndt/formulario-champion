@@ -235,7 +235,7 @@ export function useLeadNotifications(
 
       onNewLead?.();
     },
-    [onNewLead, sendNativeNotification, isMqlLead]
+    [onNewLead, sendNativeNotification]
   );
 
   // ── Notify new sales ──
