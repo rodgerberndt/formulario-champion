@@ -11,6 +11,9 @@ import {
   Sparkles,
   CalendarDays,
 } from "lucide-react";
+import { useDateRange } from "@/context/DateRangeContext";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface DayMetric {
   date: string; // YYYY-MM-DD (local SP)
