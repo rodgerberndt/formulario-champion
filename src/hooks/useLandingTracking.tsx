@@ -206,8 +206,11 @@ export function useLandingTracking(page = "/") {
         interactive.getAttribute("aria-label") ||
         text.slice(0, 40);
 
-      // find owning section
-      const section = interactive.closest<HTMLElement>("[data-track-id]");
+      // find owning section — IMPORTANT: skip the interactive element itself
+      // (e.g. an AccordionTrigger that carries its own data-track-id like "faq_q1")
+      // so we attribute the click to the parent section ("faq"), not the button id.
+      const sectionStart = interactive.parentElement || interactive;
+      const section = sectionStart.closest<HTMLElement>("section[data-track-id], [data-track-id]:not([data-track-click])");
       const sectionId = section?.dataset.trackId || null;
 
       void supabase.from("click_events").insert({

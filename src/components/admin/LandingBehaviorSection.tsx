@@ -253,7 +253,9 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
 
               const buttons = cur.clicksByButton?.[f.section_id] || [];
               const isOpen = expanded.has(f.section_id);
-              const canExpand = buttons.length > 0;
+              // Sub-detalhamento por botão SÓ no FAQ (outras seções têm muitos
+              // rótulos diferentes para o mesmo CTA, gerando ruído visual).
+              const canExpand = f.section_id === "faq" && buttons.length > 0;
 
               return (
                 <div key={f.section_id} className="rounded-md border border-border/40 overflow-hidden">
