@@ -135,9 +135,12 @@ const HIDDEN_SECTIONS = new Set(["cta_intermediario_btn"]);
 
 function fmtPct(n: number) { return `${n.toFixed(1)}%`; }
 function fmtTime(ms: number) {
-  if (ms < 1000) return `${ms}ms`;
-  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
-  return `${Math.floor(ms / 60000)}m ${Math.floor((ms % 60000) / 1000)}s`;
+  if (!ms || ms < 0) return "0s";
+  const totalSec = ms / 1000;
+  if (totalSec < 60) return `${totalSec.toFixed(1)}s`;
+  const min = Math.floor(totalSec / 60);
+  const sec = Math.round(totalSec % 60);
+  return `${min}m ${sec}s`;
 }
 
 export default function LandingBehaviorSection({ fetchAdminData }: Props) {

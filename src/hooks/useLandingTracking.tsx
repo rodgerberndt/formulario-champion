@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const SESSION_KEY = "champion_session_id";
+const FLUSH_INTERVAL_MS = 8000; // envia tempos acumulados a cada 8s
 
 /**
  * Tracks landing page behavior:
@@ -13,7 +14,12 @@ const SESSION_KEY = "champion_session_id";
  */
 export function useLandingTracking(page = "/") {
   const sessionIdRef = useRef<string | null>(null);
+  // Quando a seção entrou em vista (timestamp ms). null = não está visível.
   const sectionStartRef = useRef<Map<string, number>>(new Map());
+  // Ordem da seção (capturada do data-track-order)
+  const sectionOrderRef = useRef<Map<string, number>>(new Map());
+  // Tempo acumulado pendente de flush para o servidor
+  const pendingTimeRef = useRef<Map<string, number>>(new Map());
   const sectionLoggedRef = useRef<Set<string>>(new Set());
   const scrollLoggedRef = useRef<Set<number>>(new Set());
 
@@ -30,6 +36,7 @@ export function useLandingTracking(page = "/") {
       setupSectionTracking(sid);
       setupScrollTracking(sid);
       setupClickTracking(sid);
+      setupTimeFlush(sid);
     };
     init();
 
@@ -43,8 +50,8 @@ export function useLandingTracking(page = "/") {
   // --- SECTION TRACKING ---
   function setupSectionTracking(sessionId: string) {
     const sections = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-track-id]")
-    );
+      document.querySelectorAll<HTMLElement>("section[data-track-id], [data-track-id]:not([data-track-click])")
+    ).filter((el) => !el.hasAttribute("data-track-click"));
     if (sections.length === 0) {
       // try again a bit later (sections may render after first paint)
       setTimeout(() => setupSectionTracking(sessionId), 1500);
@@ -57,19 +64,26 @@ export function useLandingTracking(page = "/") {
           const el = entry.target as HTMLElement;
           const id = el.dataset.trackId!;
           const order = parseInt(el.dataset.trackOrder || "0", 10);
+          sectionOrderRef.current.set(id, order);
 
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
-            sectionStartRef.current.set(id, Date.now());
+          const visible = entry.isIntersecting && entry.intersectionRatio >= 0.2;
 
+          if (visible) {
+            // Marca início somente se ainda não estava visível
+            if (!sectionStartRef.current.has(id)) {
+              sectionStartRef.current.set(id, Date.now());
+            }
             if (!sectionLoggedRef.current.has(id)) {
               sectionLoggedRef.current.add(id);
               insertSectionView(sessionId, id, order);
             }
           } else if (sectionStartRef.current.has(id)) {
+            // Saiu da viewport: acumula o tempo localmente (NÃO envia ainda)
             const start = sectionStartRef.current.get(id)!;
             const elapsed = Date.now() - start;
             sectionStartRef.current.delete(id);
-            updateSectionTime(sessionId, id, elapsed);
+            const cur = pendingTimeRef.current.get(id) || 0;
+            pendingTimeRef.current.set(id, cur + Math.min(elapsed, 5 * 60 * 1000));
           }
         });
       },
@@ -81,6 +95,8 @@ export function useLandingTracking(page = "/") {
 
   async function insertSectionView(sessionId: string, sectionId: string, order: number) {
     try {
+      // Garante linha base (ON CONFLICT DO NOTHING via .upsert seria ideal,
+      // mas tabela tem unique index e .insert ignora silenciosamente em caso de conflito).
       await supabase.from("section_views").insert({
         session_id: sessionId,
         section_id: sectionId,
@@ -93,41 +109,65 @@ export function useLandingTracking(page = "/") {
     }
   }
 
-  async function updateSectionTime(sessionId: string, sectionId: string, addMs: number) {
-    try {
-      // Read current time_spent_ms then update; cheap because only on exit
-      const { data } = await supabase
-        .from("section_views")
-        .select("time_spent_ms")
-        .eq("session_id", sessionId)
-        .eq("section_id", sectionId)
-        .eq("page", page)
-        .maybeSingle();
+  /**
+   * Para cada seção com tempo pendente OU visível, soma o tempo acumulado
+   * desde o último flush e chama a RPC atômica `increment_section_time`.
+   * Isto evita race conditions e garante que o tempo NUNCA seja zero.
+   */
+  function flushPendingTimes(sessionId: string, includeCurrentlyVisible: boolean) {
+    const now = Date.now();
 
-      const current = data?.time_spent_ms ?? 0;
-      await supabase
-        .from("section_views")
-        .update({
-          time_spent_ms: current + Math.min(addMs, 5 * 60 * 1000), // cap 5min
-          last_seen_at: new Date().toISOString(),
-        })
-        .eq("session_id", sessionId)
-        .eq("section_id", sectionId)
-        .eq("page", page);
-    } catch (e) {
-      // ignore
+    // Para seções ainda visíveis: capturar o tempo decorrido e reiniciar o relógio
+    if (includeCurrentlyVisible) {
+      sectionStartRef.current.forEach((start, id) => {
+        const elapsed = now - start;
+        if (elapsed > 0) {
+          const cur = pendingTimeRef.current.get(id) || 0;
+          pendingTimeRef.current.set(id, cur + Math.min(elapsed, 5 * 60 * 1000));
+          sectionStartRef.current.set(id, now); // reinicia o relógio
+        }
+      });
     }
+
+    // Envia tudo o que está pendente
+    pendingTimeRef.current.forEach((ms, id) => {
+      if (ms <= 0) return;
+      const order = sectionOrderRef.current.get(id) || 0;
+      void supabase.rpc("increment_section_time", {
+        p_session_id: sessionId,
+        p_section_id: id,
+        p_section_order: order,
+        p_page: page,
+        p_add_ms: Math.round(ms),
+      });
+    });
+    pendingTimeRef.current.clear();
+  }
+
+  /**
+   * Configura flush periódico (8s) e em eventos de saída de página.
+   */
+  function setupTimeFlush(sessionId: string) {
+    const interval = window.setInterval(() => {
+      flushPendingTimes(sessionId, true);
+    }, FLUSH_INTERVAL_MS);
+
+    const onHide = () => flushPendingTimes(sessionId, true);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") onHide();
+    });
+    window.addEventListener("pagehide", onHide);
+    window.addEventListener("beforeunload", onHide);
+
+    (window as any).__landingTimeFlushCleanup = () => {
+      window.clearInterval(interval);
+    };
   }
 
   function flushAllSectionTimes() {
     const sid = sessionIdRef.current;
     if (!sid) return;
-    sectionStartRef.current.forEach((start, id) => {
-      const elapsed = Date.now() - start;
-      // best-effort, fire-and-forget
-      void updateSectionTime(sid, id, elapsed);
-    });
-    sectionStartRef.current.clear();
+    flushPendingTimes(sid, true);
   }
 
   // --- SCROLL TRACKING ---
