@@ -1898,6 +1898,12 @@ Deno.serve(async (req: Request) => {
 
       for (const m of (allMeetings || [])) {
         try {
+          // Dedup: skip if Meeting event was already sent for this lead
+          const { data: leadCheck } = await supabase.from("leads").select("capi_events_sent").eq("id", m.lead_id).maybeSingle();
+          const alreadySent = ((leadCheck?.capi_events_sent as Record<string, boolean>) || {})["Meeting"];
+          if (alreadySent) {
+            continue;
+          }
           const resp = await fetch(`${supabaseUrl}/functions/v1/meta-capi`, {
             method: "POST",
             headers: {
