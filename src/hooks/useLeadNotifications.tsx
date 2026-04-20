@@ -97,6 +97,7 @@ interface NewLead {
   estagio_negocio: string;
   mercado: string;
   tier: string | null;
+  investimento_faixa?: string | null;
   created_at: string;
 }
 
