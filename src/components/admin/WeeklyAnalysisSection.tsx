@@ -455,7 +455,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
         )}
 
         <p className="text-[10px] text-muted-foreground/70">
-          Período analisado: {primary.from} → {primary.to} · Comparado com {previous.from} → {previous.to} (fuso America/São_Paulo)
+          Período analisado: <span className="font-semibold text-foreground/90">{format(ymdToDate(primary.from), "dd/MM/yyyy", { locale: ptBR })} → {format(ymdToDate(primary.to), "dd/MM/yyyy", { locale: ptBR })}</span> · Comparado com {format(ymdToDate(previous.from), "dd/MM/yyyy", { locale: ptBR })} → {format(ymdToDate(previous.to), "dd/MM/yyyy", { locale: ptBR })} (fuso America/São_Paulo)
         </p>
       </CardContent>
     </Card>
