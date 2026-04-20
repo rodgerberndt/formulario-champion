@@ -4,7 +4,7 @@ import { toast } from "@/hooks/use-toast";
 const NOTIFY_PREF_KEY = "champion_notify_enabled";
 const POLL_INTERVAL_MS = 15_000; // Poll every 15 seconds
 
-/** Plays a bright ascending chime for new leads */
+/** Plays a bright ascending chime for new (non-MQL) leads */
 function playLeadSound() {
   try {
     const audio = new Audio("/newlead.wav");
@@ -12,6 +12,59 @@ function playLeadSound() {
     audio.play().catch((err) => console.warn("Could not play lead sound:", err));
   } catch (err) {
     console.warn("Could not play lead sound:", err);
+  }
+}
+
+/** Plays a triumphant victory fanfare for MQL leads (synthesized via Web Audio API) */
+function playMqlSound() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+
+    // Victory fanfare: C5 → E5 → G5 → C6 (major arpeggio ascending)
+    const notes = [
+      { freq: 523.25, start: 0.00, dur: 0.18 }, // C5
+      { freq: 659.25, start: 0.15, dur: 0.18 }, // E5
+      { freq: 783.99, start: 0.30, dur: 0.22 }, // G5
+      { freq: 1046.5, start: 0.50, dur: 0.55 }, // C6 (sustained)
+    ];
+
+    notes.forEach(({ freq, start, dur }) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, now + start);
+
+      // ADSR envelope
+      gain.gain.setValueAtTime(0, now + start);
+      gain.gain.linearRampToValueAtTime(0.35, now + start + 0.02);
+      gain.gain.linearRampToValueAtTime(0.25, now + start + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + dur);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + start);
+      osc.stop(now + start + dur + 0.05);
+    });
+
+    // Add a subtle bell harmonic on the final note
+    const bell = ctx.createOscillator();
+    const bellGain = ctx.createGain();
+    bell.type = "sine";
+    bell.frequency.setValueAtTime(2093, now + 0.50); // C7
+    bellGain.gain.setValueAtTime(0, now + 0.50);
+    bellGain.gain.linearRampToValueAtTime(0.15, now + 0.52);
+    bellGain.gain.exponentialRampToValueAtTime(0.001, now + 1.10);
+    bell.connect(bellGain);
+    bellGain.connect(ctx.destination);
+    bell.start(now + 0.50);
+    bell.stop(now + 1.15);
+
+    setTimeout(() => ctx.close().catch(() => {}), 1500);
+  } catch (err) {
+    console.warn("Could not play MQL sound:", err);
   }
 }
 
