@@ -1,10 +1,9 @@
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Loader2, Copy, RefreshCw, Sparkles, AlertTriangle, CheckCircle2, Play, CalendarIcon, Trophy } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, Copy, RefreshCw, Sparkles, AlertTriangle, CheckCircle2, CalendarIcon, Trophy } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useDateRange } from "@/context/DateRangeContext";
 import { runRulesEngine, type PeriodMetrics, type Alert, type DistributionItem, type ICP, type RecentLead, type MarketPainCombo } from "@/lib/rulesEngine";
