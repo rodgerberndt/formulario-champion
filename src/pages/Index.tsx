@@ -92,7 +92,7 @@ const Index = () => {
     }
 
     const trackedEntry = isAdEntry(window.location.search, document.referrer || "");
-    if (window.location.hash && trackedEntry) {
+    if (window.location.hash) {
       window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
     }
 
