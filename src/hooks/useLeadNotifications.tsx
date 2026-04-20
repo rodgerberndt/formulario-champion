@@ -175,31 +175,12 @@ export function useLeadNotifications(
   }, []);
 
   // ── Notify new leads (split MQL vs non-MQL for distinct sounds) ──
-  const isMqlLead = useCallback((lead: NewLead): boolean => {
-    // MQL = faturamento >= R$ 10k
-    const mqlFaixas = new Set([
-      "De R$ 10 mil a R$ 20 mil",
-      "De R$ 20 mil a R$ 30 mil",
-      "De R$ 30 mil a R$ 50 mil",
-      "De R$ 50 mil a R$ 75 mil",
-      "De R$ 75 mil a R$ 100 mil",
-      "De R$ 100 mil a R$ 150 mil",
-      "De R$ 150 mil a R$ 200 mil",
-      "De R$ 200 mil a R$ 300 mil",
-      "De R$ 300 mil a R$ 500 mil",
-      "De R$ 500 mil a R$ 750 mil",
-      "De R$ 750 mil a R$ 1 milhão",
-      "De R$ 1 milhão a R$ 2 milhões",
-      "De R$ 2 milhões a R$ 3 milhões",
-      "De R$ 3 milhões a R$ 5 milhões",
-      "De R$ 5 milhões a R$ 10 milhões",
-      "Acima de R$ 10 milhões",
-    ]);
-    if (lead.investimento_faixa && mqlFaixas.has(lead.investimento_faixa)) return true;
-    // Fallback by tier (Large/Enterprise/Enterprise+ are always MQL)
-    const t = (lead.tier || "").toLowerCase();
-    return t === "large" || t.startsWith("enterprise");
-  }, []);
+  const notifyNewLeads = useCallback(
+    (newLeads: NewLead[]) => {
+      if (newLeads.length === 0) return;
+
+      const mqlLeads = newLeads.filter(isMqlLead);
+      const normalLeads = newLeads.filter((l) => !isMqlLead(l));
 
   const notifyNewLeads = useCallback(
     (newLeads: NewLead[]) => {
