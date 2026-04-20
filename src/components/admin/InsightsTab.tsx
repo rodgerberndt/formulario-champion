@@ -599,7 +599,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
         {comparisonMode === "none"
           ? <span className="text-amber-400">desativada</span>
           : <>
-              <span className="text-foreground/80">({COMPARISON_LABEL_SHORT[comparisonMode]})</span>{" "}
+              <span className="text-foreground/80">({COMPARISON_OPTIONS.find(o => o.value === comparisonMode)?.label})</span>{" "}
               <span className="font-mono">{prevLabel}</span>
             </>
         }
