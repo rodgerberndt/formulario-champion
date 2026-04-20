@@ -1,4 +1,4 @@
-const CACHE_NAME = "champion-v1";
+const CACHE_NAME = "champion-v2";
 const STATIC_ASSETS = [
   "/",
   "/icons/icon-192.png",
@@ -125,7 +125,7 @@ self.addEventListener("message", (event) => {
   }
 });
 
-// Push notification handler
+// Push notification handler — high-priority, persistent (overlays other apps on desktop)
 self.addEventListener("push", (event) => {
   let data = { title: "Novo lead no Champion", body: "Você tem um novo lead!" };
 
@@ -137,14 +137,21 @@ self.addEventListener("push", (event) => {
     console.error("Push data parse error:", e);
   }
 
+  // Unique tag per notification so they STACK instead of replacing each other
+  const uniqueTag = data.tag || `champion-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: "/icons/icon-192.png",
-      badge: "/icons/icon-192.png",
-      tag: "champion-lead",
+      icon: data.icon || "/icons/icon-192.png",
+      badge: data.badge || "/icons/icon-192.png",
+      tag: uniqueTag,
       renotify: true,
-      data: data,
+      requireInteraction: true, // Persist until user interacts (overlays desktop)
+      silent: false,
+      vibrate: [200, 100, 200, 100, 200],
+      timestamp: Date.now(),
+      data: { ...data, url: data.url || "/admin" },
     })
   );
 });
