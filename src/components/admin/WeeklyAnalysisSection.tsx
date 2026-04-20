@@ -37,7 +37,7 @@ const DOW_SHORT = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
 // Ordem de exibição: Segunda → Domingo
 const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
-type RangeMode = "current" | "previous" | "last4" | "last7";
+type RangeMode = "global" | "current" | "previous" | "last4" | "last7";
 
 function ymdToDate(ymd: string): Date {
   const [y, m, d] = ymd.split("-").map((n) => parseInt(n, 10));
