@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { installLandingInitialScrollGuard } from "./lib/landingInitialScrollGuard";
 
 async function cleanupPreviewServiceWorkers() {
   if (typeof window === "undefined") return;
@@ -30,8 +31,13 @@ async function cleanupPreviewServiceWorkers() {
 }
 
 async function bootstrap() {
+  const cleanupInitialScrollGuard = installLandingInitialScrollGuard();
   await cleanupPreviewServiceWorkers();
   createRoot(document.getElementById("root")!).render(<App />);
+
+  window.setTimeout(() => {
+    cleanupInitialScrollGuard();
+  }, 1200);
 }
 
 bootstrap();
