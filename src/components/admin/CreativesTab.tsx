@@ -1113,7 +1113,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   Funil do Quiz — drop-off por etapa (período selecionado)
                 </p>
                 <p className="text-[10px] text-muted-foreground/70">
-                  Perda total: <span className="text-red-400 font-semibold">{totalLoss.toFixed(1)}%</span>
+                  Perda total: <AnimatedNumber value={totalLoss} decimals={1} suffix="%" className="text-red-400 font-semibold" />
                 </p>
               </div>
               {funnelMetrics.quiz_v1_present && (
