@@ -807,13 +807,22 @@ export default function AdminAnalytics() {
 
         return fetchResponse.json();
       } catch (error) {
-      // Network error or other issue
-      if (error instanceof Error && error.message === "Sessão expirada") {
+        if (error instanceof Error && error.message === "Sessão expirada") {
+          throw error;
+        }
+        // Retry on network errors too
+        if (attempt < MAX_RETRIES - 1) {
+          lastError = error as Error;
+          const delay = 400 * Math.pow(2, attempt) + Math.random() * 200;
+          console.warn(`[admin-data] network error on ${path}, retrying in ${Math.round(delay)}ms`);
+          await new Promise((r) => setTimeout(r, delay));
+          continue;
+        }
+        console.error("Fetch error:", error);
         throw error;
       }
-      console.error("Fetch error:", error);
-      throw error;
     }
+    throw lastError || new Error("Falha após múltiplas tentativas");
   };
 
   const loadMetrics = async () => {
