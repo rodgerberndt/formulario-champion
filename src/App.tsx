@@ -8,6 +8,7 @@ import { Suspense, lazy } from "react";
 import { TrackingProvider } from "@/hooks/useTracking";
 import { usePresence } from "@/hooks/usePresence";
 import { useServiceWorker } from "@/hooks/useServiceWorker";
+import { DateRangeProvider } from "@/context/DateRangeContext";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -78,7 +79,9 @@ const App = () => (
               path={`/${ADMIN_ANALYTICS_SLUG}`}
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <AdminAnalytics />
+                  <DateRangeProvider>
+                    <AdminAnalytics />
+                  </DateRangeProvider>
                 </Suspense>
               } 
             />
