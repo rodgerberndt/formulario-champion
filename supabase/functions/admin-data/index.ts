@@ -2186,13 +2186,16 @@ Deno.serve(async (req: Request) => {
         const { data: sectionRows } = await sv;
         const sections = (sectionRows || []).filter((r: any) => validSessions.has(r.session_id));
 
-        // Group sections
+        // Group sections — usa o MAIOR section_order encontrado (ordem mais recente
+        // da página vence; evita rótulos antigos com ordem desatualizada)
         const sectionMap = new Map<string, { id: string; order: number; sessions: Set<string>; totalTime: number; count: number }>();
         sections.forEach((r: any) => {
           let s = sectionMap.get(r.section_id);
           if (!s) {
             s = { id: r.section_id, order: r.section_order, sessions: new Set(), totalTime: 0, count: 0 };
             sectionMap.set(r.section_id, s);
+          } else if (r.section_order > s.order) {
+            s.order = r.section_order;
           }
           s.sessions.add(r.session_id);
           s.totalTime += r.time_spent_ms || 0;
