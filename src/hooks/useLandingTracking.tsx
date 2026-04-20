@@ -2,8 +2,9 @@ import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const SESSION_KEY = "champion_session_id";
-const FLUSH_INTERVAL_MS = 3000;
-const MAX_SINGLE_FLUSH_MS = 60_000;
+// PERF: flush a cada 30s em vez de 3s — reduz 10x as requisições de rede
+const FLUSH_INTERVAL_MS = 30_000;
+const MAX_SINGLE_FLUSH_MS = 5 * 60_000;
 
 export function useLandingTracking(page = "/") {
   const sessionIdRef = useRef<string | null>(null);
@@ -121,7 +122,8 @@ export function useLandingTracking(page = "/") {
           }
         });
       },
-      { threshold: [0, 0.2, 0.5, 0.8] }
+      // PERF: 1 threshold só (0.2) em vez de 4 — reduz callbacks do observer
+      { threshold: 0.2 }
     );
 
     sections.forEach((section) => observerRef.current?.observe(section));
@@ -192,24 +194,12 @@ export function useLandingTracking(page = "/") {
       void flushAllSectionTimes();
     }, FLUSH_INTERVAL_MS);
 
-    // flush precoce para capturar bounces/visitas curtas sem esperar 8s+
-    window.setTimeout(() => {
-      void flushAllSectionTimes();
-    }, 1200);
-
-    const onHidden = () => {
+    // PERF: removido flush precoce de 1.2s e handlers duplicados.
+    // Mantemos apenas pagehide (mais confiável que beforeunload + visibilitychange juntos)
+    pageHideHandlerRef.current = () => {
       void flushAllSectionTimes();
     };
-
-    visibilityHandlerRef.current = () => {
-      if (document.visibilityState === "hidden") onHidden();
-    };
-    pageHideHandlerRef.current = onHidden;
-    beforeUnloadHandlerRef.current = onHidden;
-
-    document.addEventListener("visibilitychange", visibilityHandlerRef.current);
     window.addEventListener("pagehide", pageHideHandlerRef.current);
-    window.addEventListener("beforeunload", beforeUnloadHandlerRef.current);
   }
 
   function setupScrollTracking(sessionId: string) {
