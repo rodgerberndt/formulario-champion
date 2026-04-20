@@ -848,6 +848,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_section_time: {
+        Args: {
+          p_add_ms: number
+          p_page: string
+          p_section_id: string
+          p_section_order: number
+          p_session_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "user"
