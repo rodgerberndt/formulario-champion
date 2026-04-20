@@ -126,7 +126,7 @@ Deno.serve(async (req) => {
 
       // ── Send push notification ──
       if (pathname === "/send") {
-        const { title, body: notifBody, url: notifUrl } = body;
+        const { title, body: notifBody, url: notifUrl, sound, tag } = body;
 
         // Get VAPID keys
         const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY");
@@ -193,13 +193,18 @@ Deno.serve(async (req) => {
           privateKey: privateKeyForLib,
         });
 
+        // Unique tag per send so notifications STACK on the desktop
+        const uniqueTag = tag || `champion-${Date.now()}`;
+
         const payload = JSON.stringify({
           title: title || "Novo lead no Champion",
           body: notifBody || "Você tem um novo lead!",
           url: notifUrl || "/admin",
           icon: "/icons/icon-192.png",
           badge: "/icons/icon-192.png",
-          tag: "champion-lead",
+          tag: uniqueTag,
+          sound: sound || null,
+          requireInteraction: true,
         });
 
         let sentCount = 0;
