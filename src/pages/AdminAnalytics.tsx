@@ -77,6 +77,10 @@ interface Metrics {
   completed: number;
   conversion_rate: string | number;
   completion_rate: string | number;
+  landing_views?: number;
+  landing_hits_total?: number;
+  meta_clicks?: number;
+  loss_clicks_vs_views?: number;
   button_distribution: {
     start_btn_1: number;
     start_btn_2: number;
@@ -1609,6 +1613,58 @@ export default function AdminAnalytics() {
 
             {/* Leads Tab */}
             <TabsContent value="leads">
+              {/* Tracking Funnel: Meta Clicks → Landing Hits → Loss */}
+              {metrics && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                          <MousePointer className="w-6 h-6 text-blue-500" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">{(metrics.meta_clicks ?? 0).toLocaleString("pt-BR")}</p>
+                          <p className="text-xs text-muted-foreground">Meta Clicks (anúncio)</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-primary/40">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                          <Eye className="w-6 h-6 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold text-primary">{(metrics.landing_views ?? 0).toLocaleString("pt-BR")}</p>
+                          <p className="text-xs text-muted-foreground">Landing Hits ✓ (fonte real)</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
+                          <XCircle className="w-6 h-6 text-red-500" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">
+                            {(metrics.loss_clicks_vs_views ?? 0).toLocaleString("pt-BR")}
+                            {(metrics.meta_clicks ?? 0) > 0 && (
+                              <span className="text-sm text-muted-foreground ml-2">
+                                ({(((metrics.loss_clicks_vs_views ?? 0) / (metrics.meta_clicks ?? 1)) * 100).toFixed(0)}%)
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs text-muted-foreground">Perda (clicks - hits)</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <Card>
