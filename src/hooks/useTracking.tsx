@@ -255,7 +255,13 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
 
   // Track start button click
   const trackStartClick = useCallback(async (buttonId: string) => {
-    await trackEvent("start_click", { buttonId });
+    // Dispara dois eventos semânticos:
+    // - "start_click": legado (mantido para compatibilidade do funil atual)
+    // - "click_outbound": clique no CTA que sai da landing (fonte da verdade de cliques internos)
+    await Promise.allSettled([
+      trackEvent("start_click", { buttonId }),
+      trackEvent("click_outbound", { buttonId, metadata: { destination: "/quiz", source: "landing_cta" } as Json }),
+    ]);
     await updateSession({
       started_quiz: true,
       start_button_id: buttonId,

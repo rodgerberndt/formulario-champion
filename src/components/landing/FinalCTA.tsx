@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ClipboardCheck, BarChart3, PhoneCall, Rocket } from "lucide-react";
+import { ArrowRight, ClipboardCheck, BarChart3, PhoneCall, Rocket, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTracking } from "@/hooks/useTracking";
 import { useReveal } from "@/hooks/useReveal";
+import { generateClickId } from "@/hooks/useLandingHit";
 import { ShimmerText, KeywordGlow, LineReveal } from "./TextEffects";
 
 const steps = [
@@ -17,8 +19,16 @@ export function FinalCTA() {
   const navigate = useNavigate();
   const { trackStartClick } = useTracking();
   const { ref, isVisible } = useReveal(0.08);
+  const [loading, setLoading] = useState(false);
+  const lastClickRef = useRef<number>(0);
 
   const handleCTA = async () => {
+    const now = Date.now();
+    if (loading) return;
+    if (now - lastClickRef.current < 1500) return;
+    lastClickRef.current = now;
+    setLoading(true);
+    try { generateClickId(); } catch { /* ignore */ }
     try { await trackStartClick("final_cta"); } catch {}
     await new Promise(r => setTimeout(r, 50));
     navigate("/quiz");
@@ -66,10 +76,20 @@ export function FinalCTA() {
             <Button
               size="lg"
               onClick={handleCTA}
+              disabled={loading}
               className="btn-shine glow-breathe w-full sm:w-auto h-14 px-8 sm:px-10 text-sm sm:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 transition-all active:scale-[0.98] min-h-[56px]"
             >
-              QUERO PREENCHER O FORMULÁRIO
-              <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  CARREGANDO...
+                </>
+              ) : (
+                <>
+                  QUERO PREENCHER O FORMULÁRIO
+                  <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
+                </>
+              )}
             </Button>
           </LineReveal>
         </div>
