@@ -334,13 +334,14 @@ export default function InsightsTab({ fetchAdminData }: Props) {
   const [previous, setPrevious] = useState<PeriodMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Single base range + automatic comparison
+  // Período base APLICADO (o que efetivamente roda no rules engine)
   const initial = computePresetRange("last_7");
   const [baseRange, setBaseRange] = useState<{ from?: Date; to?: Date }>({ from: initial.from, to: initial.to });
+  // Seleção pendente do calendário (só vira baseRange ao clicar Aplicar)
+  const [draftRange, setDraftRange] = useState<{ from?: Date; to?: Date }>({ from: initial.from, to: initial.to });
   const [activePreset, setActivePreset] = useState<PresetKey>("last_7");
   const [openCalendar, setOpenCalendar] = useState(false);
-  const [compareEnabled, setCompareEnabled] = useState(true);
-  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [comparisonMode, setComparisonMode] = useState<ComparisonMode>("previous");
 
   const fromMs = baseRange.from?.getTime();
   const toMs = baseRange.to?.getTime();
@@ -369,14 +370,28 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     };
   }, [fromMs, toMs]);
 
-  // Auto comparison: same length, immediately before
+  // Comparação dependente do modo selecionado
   const periodB = useMemo(() => {
-    if (!compareEnabled || !fromMs || !toMs) return null;
+    if (comparisonMode === "none" || !fromMs || !toMs) return null;
     const s = startOfDay(new Date(fromMs));
     const e = endOfDay(new Date(toMs));
-    const span = e.getTime() - s.getTime();
-    const compEnd = new Date(s.getTime() - 1);
-    const compStart = new Date(compEnd.getTime() - span);
+
+    let compStart: Date;
+    let compEnd: Date;
+
+    if (comparisonMode === "previous") {
+      const span = e.getTime() - s.getTime();
+      compEnd = new Date(s.getTime() - 1);
+      compStart = new Date(compEnd.getTime() - span);
+    } else if (comparisonMode === "last_week") {
+      compStart = new Date(s); compStart.setDate(compStart.getDate() - 7);
+      compEnd = new Date(e); compEnd.setDate(compEnd.getDate() - 7);
+    } else {
+      // last_month: subtrai 1 mês mantendo o mesmo dia
+      compStart = new Date(s); compStart.setMonth(compStart.getMonth() - 1);
+      compEnd = new Date(e); compEnd.setMonth(compEnd.getMonth() - 1);
+    }
+
     const compStartDay = startOfDay(compStart);
     const compEndDay = endOfDay(compEnd);
     const eExcl = new Date(compEndDay.getTime() + 1);
@@ -387,7 +402,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
       endDateOnly: format(compEndDay, "yyyy-MM-dd"),
       label: `${format(compStartDay, "dd/MM/yyyy")} → ${format(compEndDay, "dd/MM/yyyy")}`,
     };
-  }, [compareEnabled, fromMs, toMs]);
+  }, [comparisonMode, fromMs, toMs]);
 
   const periodLabel = periodA?.label ?? "(escolha o período)";
   const prevLabel = periodB?.label ?? "desativada";
@@ -424,13 +439,16 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     }
   }, [fetchAdminData, periodA, periodB, validation.valid]);
 
-  // Auto-refresh when period/comparison changes (only after first run)
+  // Auto-recalcular SEMPRE que o período base aplicado ou o modo de comparação
+  // mudar. UX "1 clique": presets/comparação aplicam imediatamente.
+  const loadRef = useRef(load);
+  useEffect(() => { loadRef.current = load; }, [load]);
   useEffect(() => {
-    if (!autoRefresh || !hasRun) return;
-    const t = setTimeout(() => { void load(); }, 250);
+    if (!periodA || !validation.valid) return;
+    const t = setTimeout(() => { void loadRef.current(); }, 150);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fromMs, toMs, compareEnabled, autoRefresh]);
+  }, [fromMs, toMs, comparisonMode]);
 
   const result = useMemo(() => {
     if (!current) return null;
