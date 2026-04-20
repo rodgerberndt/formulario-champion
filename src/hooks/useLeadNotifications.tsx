@@ -182,13 +182,6 @@ export function useLeadNotifications(
       const mqlLeads = newLeads.filter(isMqlLead);
       const normalLeads = newLeads.filter((l) => !isMqlLead(l));
 
-  const notifyNewLeads = useCallback(
-    (newLeads: NewLead[]) => {
-      if (newLeads.length === 0) return;
-
-      const mqlLeads = newLeads.filter(isMqlLead);
-      const normalLeads = newLeads.filter((l) => !isMqlLead(l));
-
       // Play victory sound for MQLs, normal chime for the rest
       if (mqlLeads.length > 0) playMqlSound();
       if (normalLeads.length > 0) playLeadSound();
