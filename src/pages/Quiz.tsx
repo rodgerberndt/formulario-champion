@@ -646,7 +646,7 @@ export default function Quiz() {
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
-              Em que mercado você trabalha?
+              Se você quer vender mais, então qual o seu mercado hoje?
             </label>
             <Select
               value={formData.mercado}
