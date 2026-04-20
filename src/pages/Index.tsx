@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -23,6 +23,46 @@ import { useLandingTracking } from "@/hooks/useLandingTracking";
 import { useLandingHit, generateClickId } from "@/hooks/useLandingHit";
 import { Loader2 } from "lucide-react";
 
+const AD_ENTRY_PARAMS = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+  "fbclid",
+  "gclid",
+  "ttclid",
+  "campaign_id",
+  "adset_id",
+  "ad_id",
+  "placement",
+  "site_source_name",
+];
+
+const AD_REFERRER_PATTERNS = [
+  /instagram\.com/i,
+  /l\.instagram\.com/i,
+  /facebook\.com/i,
+  /m\.facebook\.com/i,
+  /lm\.facebook\.com/i,
+];
+
+const forceScrollTop = () => {
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+};
+
+const isAdEntry = (search: string, referrer: string) => {
+  const params = new URLSearchParams(search);
+  const hasTrackedParam = AD_ENTRY_PARAMS.some((key) => {
+    const value = params.get(key);
+    return typeof value === "string" && value.trim().length > 0;
+  });
+
+  return hasTrackedParam || AD_REFERRER_PATTERNS.some((pattern) => pattern.test(referrer));
+};
+
 const Index = () => {
   const navigate = useNavigate();
   const { trackStartClick } = useTracking();
@@ -35,7 +75,64 @@ const Index = () => {
 
   const [loadingBtn, setLoadingBtn] = useState<string | null>(null);
   const lastClickRef = useRef<number>(0);
+  const landingGuardRef = useRef(false);
   const DEBOUNCE_MS = 1500;
+
+  useLayoutEffect(() => {
+    if (landingGuardRef.current || typeof window === "undefined") return;
+    landingGuardRef.current = true;
+
+    const previousHtmlScrollBehavior = document.documentElement.style.scrollBehavior;
+    const previousBodyScrollBehavior = document.body.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "auto";
+    document.body.style.scrollBehavior = "auto";
+
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    const trackedEntry = isAdEntry(window.location.search, document.referrer || "");
+    if (window.location.hash && trackedEntry) {
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    }
+
+    let rafPrimary = 0;
+    let rafSecondary = 0;
+    const delayedTop = window.setTimeout(forceScrollTop, 150);
+    const restoreBehavior = window.setTimeout(() => {
+      document.documentElement.style.scrollBehavior = previousHtmlScrollBehavior;
+      document.body.style.scrollBehavior = previousBodyScrollBehavior;
+    }, 220);
+
+    const forceTopSequence = () => {
+      forceScrollTop();
+      rafPrimary = window.requestAnimationFrame(() => {
+        forceScrollTop();
+        rafSecondary = window.requestAnimationFrame(forceScrollTop);
+      });
+    };
+
+    const handlePageShow = () => {
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "manual";
+      }
+      forceTopSequence();
+      window.setTimeout(forceScrollTop, 150);
+    };
+
+    forceTopSequence();
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+      window.cancelAnimationFrame(rafPrimary);
+      window.cancelAnimationFrame(rafSecondary);
+      window.clearTimeout(delayedTop);
+      window.clearTimeout(restoreBehavior);
+      document.documentElement.style.scrollBehavior = previousHtmlScrollBehavior;
+      document.body.style.scrollBehavior = previousBodyScrollBehavior;
+    };
+  }, []);
 
   const handleStartClick = async (buttonId: string) => {
     const now = Date.now();
