@@ -426,7 +426,7 @@ export function useLeadNotifications(
   }, [notificationsEnabled]);
 
   // Test function: fires notifications for existing sales/meetings without creating anything
-  const sendWebPush = useCallback(async (title: string, body: string) => {
+  const sendWebPush = useCallback(async (title: string, body: string, sound?: string) => {
     try {
       const pushUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/web-push/send`;
       await fetch(pushUrl, {
@@ -435,7 +435,7 @@ export function useLeadNotifications(
           "Content-Type": "application/json",
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ title, body }),
+        body: JSON.stringify({ title, body, sound }),
       });
     } catch (err) {
       console.warn("[Push] Failed to send web push:", err);

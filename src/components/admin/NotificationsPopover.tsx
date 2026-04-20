@@ -97,7 +97,7 @@ export function NotificationsPopover({
           />
           <span className="hidden sm:inline">Notificações</span>
           {notificationsEnabled && (
-            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-primary animate-pulse" />
           )}
         </Button>
       </PopoverTrigger>
