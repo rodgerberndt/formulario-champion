@@ -80,6 +80,7 @@ interface FunnelStep {
 
 interface ScrollDepth { milestone: number; users: number; pct: number; }
 interface TopClick { id: string; label: string; section: string | null; type: string; count: number; uniqueUsers: number; }
+interface ButtonClick { id: string; label: string; type: string; count: number; uniqueUsers: number; }
 
 interface PeriodData {
   totalVisitors: number;
@@ -87,6 +88,7 @@ interface PeriodData {
   scrollDepth: ScrollDepth[];
   clicksByType: Record<string, number>;
   clicksBySection: Record<string, number>;
+  clicksByButton?: Record<string, ButtonClick[]>;
   topClicks: TopClick[];
   totalClicks: number;
 }
@@ -110,7 +112,22 @@ const SECTION_LABELS: Record<string, string> = {
   metodo: "Método Champion",
   gancho_corpo: "Gancho & Corpo",
   como_funciona: "Como funciona",
+  faq: "FAQ",
   cta_final: "CTA final",
+};
+
+// Labels amigáveis das perguntas do FAQ (ordem deve bater com FAQSection.tsx)
+const FAQ_QUESTION_LABELS: Record<string, string> = {
+  faq_q1: "Criativo morre na escala?",
+  faq_q2: "Já tenho time/agência. Por que Champion?",
+  faq_q3: "Em quanto tempo vejo resultado?",
+  faq_q4: "Funciona pro meu nicho?",
+  faq_q5: "Qual o investimento?",
+  faq_q6: "Vocês produzem o criativo?",
+  faq_q7: "Como garantem performance?",
+  faq_q8: "Sprint vs Assessoria?",
+  faq_q9: "Por que responder o quiz antes?",
+  faq_q10: "E se eu não gostar dos criativos?",
 };
 
 // Section IDs to hide from the funnel list (tracked elsewhere)
@@ -128,6 +145,14 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
   const [data, setData] = useState<BehaviorResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const toggleExpanded = (id: string) => {
+    setExpanded((prev) => {
+      const n = new Set(prev);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -226,9 +251,16 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
               // heatmap color: more visitors = warmer (amber); less = cooler (blue)
               const heatBg = `hsl(${(1 - intensity) * 220 + intensity * 38}, 80%, ${20 + intensity * 25}%)`;
 
+              const buttons = cur.clicksByButton?.[f.section_id] || [];
+              const isOpen = expanded.has(f.section_id);
+              const canExpand = buttons.length > 0;
+
               return (
                 <div key={f.section_id} className="rounded-md border border-border/40 overflow-hidden">
-                  <div className="relative h-12">
+                  <div
+                    className={`relative h-12 ${canExpand ? "cursor-pointer hover:bg-muted/30" : ""}`}
+                    onClick={() => canExpand && toggleExpanded(f.section_id)}
+                  >
                     <div
                       className="absolute inset-y-0 left-0 transition-all"
                       style={{ width: `${widthPct}%`, background: heatBg, opacity: 0.55 }}
@@ -237,6 +269,11 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="text-[10px] font-mono text-muted-foreground w-5 flex-shrink-0">#{f.order}</span>
                         <span className="text-xs font-semibold truncate">{label}</span>
+                        {canExpand && (
+                          <span className="text-[9px] text-muted-foreground/60 flex-shrink-0">
+                            {isOpen ? "▾" : "▸"} {buttons.length} {buttons.length === 1 ? "botão" : "botões"}
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-3 text-[10px] flex-shrink-0">
                         <div className="text-right">
@@ -264,6 +301,28 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
                       </div>
                     </div>
                   </div>
+                  {isOpen && canExpand && (
+                    <div className="border-t border-border/40 bg-muted/10 px-3 py-2 space-y-1">
+                      <p className="text-[9px] uppercase tracking-wider text-muted-foreground/70 mb-1">
+                        Cliques nos botões/itens desta seção
+                      </p>
+                      {buttons.map((b) => {
+                        const friendly = FAQ_QUESTION_LABELS[b.id] || b.label || b.id;
+                        return (
+                          <div key={b.id} className="flex items-center justify-between gap-2 text-[10px] py-1 border-b border-border/20 last:border-0">
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate font-medium text-foreground">{friendly}</p>
+                              <p className="text-muted-foreground/60 text-[9px] font-mono">{b.id} · {b.type}</p>
+                            </div>
+                            <div className="flex items-center gap-3 flex-shrink-0">
+                              <span className="text-amber-300 font-bold">{b.count} cliques</span>
+                              <span className="text-cyan-300/80">{b.uniqueUsers} únicos</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}

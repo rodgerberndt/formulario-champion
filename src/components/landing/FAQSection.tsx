@@ -2,6 +2,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useReveal } from "@/hooks/useReveal";
 import { ShimmerText, KeywordGlow } from "./TextEffects";
 
+// slug curto e estável p/ tracking (NÃO mudar a ordem — referenciado no admin)
+const faqSlug = (i: number) => `faq_q${i + 1}`;
+
 const faqs = [
   {
     q: "Meu criativo performa no teste, mas morre quando escalo. Vocês resolvem isso?",
@@ -69,7 +72,12 @@ export function FAQSection() {
                 value={`item-${i}`}
                 className="gold-card !border-b !p-0 overflow-hidden"
               >
-                <AccordionTrigger className="px-5 py-4 md:px-6 md:py-5 text-left hover:no-underline group">
+                <AccordionTrigger
+                  className="px-5 py-4 md:px-6 md:py-5 text-left hover:no-underline group"
+                  data-track-click="faq_open"
+                  data-track-id={faqSlug(i)}
+                  aria-label={faq.q}
+                >
                   <span className="font-montserrat font-bold uppercase tracking-wide text-sm md:text-base text-foreground pr-4 group-hover:text-primary transition-colors">
                     {faq.q}
                   </span>
