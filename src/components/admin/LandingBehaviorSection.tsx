@@ -145,6 +145,14 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
   const [data, setData] = useState<BehaviorResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const toggleExpanded = (id: string) => {
+    setExpanded((prev) => {
+      const n = new Set(prev);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+  };
 
   useEffect(() => {
     let cancelled = false;
