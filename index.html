@@ -73,8 +73,21 @@
           var url = 'https://troqylihudenqjsxsnwy.supabase.co/functions/v1/landing-hit';
           var sp = new URLSearchParams(window.location.search);
           var get = function(k){ var v = sp.get(k); return (v && v.indexOf('{{') === -1) ? v : null; };
+          // Gera/recupera session_id (UUID v4) ANTES do React, para garantir unique_sessions correto
           var sid = null;
-          try { sid = localStorage.getItem('champion_session_id'); } catch(e){}
+          try {
+            sid = localStorage.getItem('champion_session_id');
+            if (!sid || !/^[0-9a-f-]{36}$/i.test(sid)) {
+              if (window.crypto && window.crypto.randomUUID) {
+                sid = window.crypto.randomUUID();
+              } else {
+                sid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
+                  var r = Math.random()*16|0, v = c=='x' ? r : (r&0x3|0x8); return v.toString(16);
+                });
+              }
+              localStorage.setItem('champion_session_id', sid);
+            }
+          } catch(e){}
           var cid = null;
           try {
             var raw = sessionStorage.getItem('champion_click_id');
