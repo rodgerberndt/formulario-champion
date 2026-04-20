@@ -11,6 +11,9 @@ import {
   Sparkles,
   CalendarDays,
 } from "lucide-react";
+import { useDateRange } from "@/context/DateRangeContext";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface DayMetric {
   date: string; // YYYY-MM-DD (local SP)
@@ -34,7 +37,7 @@ const DOW_SHORT = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
 // Ordem de exibição: Segunda → Domingo
 const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
-type RangeMode = "current" | "previous" | "last4" | "last7";
+type RangeMode = "global" | "current" | "previous" | "last4" | "last7";
 
 function ymdToDate(ymd: string): Date {
   const [y, m, d] = ymd.split("-").map((n) => parseInt(n, 10));
@@ -128,13 +131,29 @@ function totalsOf(days: DayMetric[]) {
 }
 
 export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
-  const [mode, setMode] = useState<RangeMode>("last7");
+  const [mode, setMode] = useState<RangeMode>("global");
   const [loading, setLoading] = useState(false);
   const [days, setDays] = useState<DayMetric[]>([]);
   const [prevDays, setPrevDays] = useState<DayMetric[]>([]);
+  const { start: globalStart, end: globalEnd } = useDateRange();
 
   // Compute date ranges based on mode
   const { primary, previous } = useMemo(() => {
+    if (mode === "global") {
+      const fmt = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Sao_Paulo",
+        year: "numeric", month: "2-digit", day: "2-digit",
+      });
+      const from = fmt.format(globalStart);
+      const to = fmt.format(globalEnd);
+      const fromD = ymdToDate(from);
+      const toD = ymdToDate(to);
+      const len = Math.round((toD.getTime() - fromD.getTime()) / 86400000) + 1;
+      return {
+        primary: { from, to },
+        previous: { from: addDays(from, -len), to: addDays(from, -1) },
+      };
+    }
     const cur = getCurrentWeekSP();
     if (mode === "current") {
       return {
@@ -164,7 +183,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
       primary: { from, to: todayYmd },
       previous: { from: addDays(from, -7), to: addDays(from, -1) },
     };
-  }, [mode]);
+  }, [mode, globalStart, globalEnd]);
 
   useEffect(() => {
     let cancelled = false;
@@ -284,6 +303,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
           </div>
           <div className="flex items-center gap-1 flex-wrap">
             {([
+              ["global", "Filtro global"],
               ["current", "Semana atual"],
               ["previous", "Semana passada"],
               ["last7", "Últimos 7 dias"],
@@ -435,7 +455,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
         )}
 
         <p className="text-[10px] text-muted-foreground/70">
-          Período analisado: {primary.from} → {primary.to} · Comparado com {previous.from} → {previous.to} (fuso America/São_Paulo)
+          Período analisado: <span className="font-semibold text-foreground/90">{format(ymdToDate(primary.from), "dd/MM/yyyy", { locale: ptBR })} → {format(ymdToDate(primary.to), "dd/MM/yyyy", { locale: ptBR })}</span> · Comparado com {format(ymdToDate(previous.from), "dd/MM/yyyy", { locale: ptBR })} → {format(ymdToDate(previous.to), "dd/MM/yyyy", { locale: ptBR })} (fuso America/São_Paulo)
         </p>
       </CardContent>
     </Card>
