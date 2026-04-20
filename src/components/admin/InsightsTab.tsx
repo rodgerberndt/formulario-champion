@@ -533,7 +533,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
             <h3 className="text-base font-bold">Insights — Rules Engine</h3>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Clique em um <strong>preset</strong> para aplicar imediatamente, ou escolha datas no calendário e clique em <strong>Aplicar</strong>. A comparação recalcula sozinha quando você muda o tipo.
+            O período é controlado pelo <strong>filtro de data no topo do admin</strong>. Mude o intervalo lá e os insights recalculam sozinhos. Use o seletor abaixo para escolher o tipo de comparação.
           </p>
           {PeriodControls}
         </CardContent>
