@@ -58,6 +58,7 @@ const CreativesTab = lazy(() => import("@/components/admin/CreativesTab"));
 const LeadReportsTab = lazy(() => import("@/components/admin/LeadReportsTab"));
 const DailyReportsTab = lazy(() => import("@/components/admin/DailyReportsTab"));
 const InsightsTab = lazy(() => import("@/components/admin/InsightsTab"));
+const TrackingTab = lazy(() => import("@/components/admin/TrackingTab"));
 import {
   Dialog,
   DialogContent,
@@ -1603,6 +1604,12 @@ export default function AdminAnalytics() {
                   className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
                 >
                   Insights (IA)
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="tracking" 
+                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  Tracking
                 </TabsTrigger>
               </TabsList>
             </div>
