@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -20,6 +21,7 @@ import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import { useSectionThemes } from "@/hooks/useSectionThemes";
 import { useLandingTracking } from "@/hooks/useLandingTracking";
 import { useLandingHit, generateClickId } from "@/hooks/useLandingHit";
+import { Loader2 } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -31,12 +33,21 @@ const Index = () => {
   useLandingTracking("/");
   useLandingHit();
 
+  const [loadingBtn, setLoadingBtn] = useState<string | null>(null);
+  const lastClickRef = useRef<number>(0);
+  const DEBOUNCE_MS = 1500;
+
   const handleStartClick = async (buttonId: string) => {
+    const now = Date.now();
+    if (loadingBtn) return;
+    if (now - lastClickRef.current < DEBOUNCE_MS) return;
+    lastClickRef.current = now;
+    setLoadingBtn(buttonId);
     try { generateClickId(); } catch { /* ignore */ }
     try { await trackStartClick(buttonId); } catch (error) {
       console.error("Error tracking start click:", error);
     }
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((r) => setTimeout(r, 50));
     navigate("/quiz");
   };
 
@@ -75,12 +86,22 @@ const Index = () => {
             <Button
               size="lg"
               onClick={() => handleStartClick("start_btn_2")}
+              disabled={loadingBtn === "start_btn_2"}
               data-track-click="cta_primary"
               data-track-id="cta_intermediario_btn"
               className="group h-12 md:h-14 px-6 md:px-10 text-sm md:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]"
             >
-              FAZER DIAGNÓSTICO (2 MIN)
-              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              {loadingBtn === "start_btn_2" ? (
+                <>
+                  <Loader2 className="w-4 h-4 md:w-5 md:h-5 mr-2 animate-spin" />
+                  CARREGANDO...
+                </>
+              ) : (
+                <>
+                  FAZER DIAGNÓSTICO (2 MIN)
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </Button>
           </div>
         </section>
@@ -114,10 +135,20 @@ const Index = () => {
           <Button
             size="sm"
             onClick={() => handleStartClick("mobile_sticky_cta")}
+            disabled={loadingBtn === "mobile_sticky_cta"}
             className="w-full h-11 text-xs font-semibold bg-primary/95 hover:bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/20 backdrop-blur-sm transition-all active:scale-[0.98]"
           >
-            FAZER DIAGNÓSTICO
-            <ArrowRight className="w-4 h-4 ml-1.5" />
+            {loadingBtn === "mobile_sticky_cta" ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                CARREGANDO...
+              </>
+            ) : (
+              <>
+                FAZER DIAGNÓSTICO
+                <ArrowRight className="w-4 h-4 ml-1.5" />
+              </>
+            )}
           </Button>
         </div>
       )}
