@@ -2804,6 +2804,12 @@ export default function AdminAnalytics() {
               </Suspense>
             </TabsContent>
 
+            <TabsContent value="tracking">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <TrackingTab fetchAdminData={fetchAdminData} />
+              </Suspense>
+            </TabsContent>
+
           </Tabs>
 
 
