@@ -664,7 +664,12 @@ export default function InsightsTab({ fetchAdminData }: Props) {
                 <h3 className="text-base font-bold">Insights — Rules Engine</h3>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Base: <span className="font-mono">{periodLabel}</span> {result.has_comparison ? <>vs Comparação: <span className="font-mono">{prevLabel}</span></> : <span className="text-amber-400">(sem comparação)</span>}
+                Base: <span className="font-mono">{periodLabel}</span>
+                {" | "}
+                {comparisonMode === "none" || !result.has_comparison
+                  ? <span className="text-amber-400">Comparação: desativada</span>
+                  : <>Comparação <span className="text-foreground/80">({COMPARISON_OPTIONS.find(o => o.value === comparisonMode)?.label})</span>: <span className="font-mono">{prevLabel}</span></>
+                }
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
