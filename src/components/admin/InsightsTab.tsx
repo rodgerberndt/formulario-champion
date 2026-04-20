@@ -476,72 +476,8 @@ export default function InsightsTab({ fetchAdminData }: Props) {
 
   const PeriodControls = (
     <div className="space-y-3">
-      {/* Preset buttons — aplicam imediatamente e auto-recalculam */}
-      <div className="flex flex-wrap gap-1.5">
-        {PRESETS.map((p) => (
-          <Button
-            key={p.key}
-            size="sm"
-            variant={activePreset === p.key ? "default" : "outline"}
-            onClick={() => applyPreset(p.key)}
-            className="h-7 text-[11px] px-2.5"
-          >
-            {p.label}
-          </Button>
-        ))}
-      </div>
-
-      {/* Calendário manual + seletor de comparação */}
+      {/* Seletor de comparação (período base vem do filtro global no topo) */}
       <div className="flex flex-wrap items-end gap-3">
-        <div className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Período base</span>
-          <div className="flex gap-2">
-            <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={cn("h-9 text-xs gap-2 justify-start font-normal w-[280px]", !baseRange.from && "text-muted-foreground")}
-                >
-                  <CalendarIcon className="w-3 h-3" />
-                  {baseRange.from && baseRange.to
-                    ? `${format(baseRange.from, "dd/MM/yyyy")} → ${format(baseRange.to, "dd/MM/yyyy")}`
-                    : "Escolher período"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="range"
-                  numberOfMonths={2}
-                  locale={ptBR}
-                  selected={{ from: draftRange.from, to: draftRange.to }}
-                  onSelect={(r) => setDraftRange({ from: r?.from, to: r?.to })}
-                  disabled={(d) => d > new Date()}
-                  className={cn("p-3 pointer-events-auto")}
-                />
-                <div className="flex justify-end gap-2 p-2 border-t border-border">
-                  <Button size="sm" variant="ghost" onClick={() => { setDraftRange({ from: baseRange.from, to: baseRange.to }); setOpenCalendar(false); }}>
-                    Cancelar
-                  </Button>
-                  <Button
-                    size="sm"
-                    disabled={!draftRange.from || !draftRange.to || !hasDraftChanges}
-                    onClick={applyDraft}
-                  >
-                    Aplicar
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
-            {/* Botão Aplicar visível fora do popover quando há rascunho não aplicado */}
-            {hasDraftChanges && !openCalendar && (
-              <Button size="sm" className="h-9" onClick={applyDraft}>
-                Aplicar
-              </Button>
-            )}
-          </div>
-        </div>
-
         <div className="flex flex-col gap-1">
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Comparação</span>
           <Select value={comparisonMode} onValueChange={(v) => setComparisonMode(v as ComparisonMode)}>
@@ -571,6 +507,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
       {/* Resumo do período */}
       <div className="text-[11px] text-muted-foreground">
         <span className="font-semibold text-foreground">Base:</span> <span className="font-mono">{periodLabel}</span>
+        <span className="ml-1 text-muted-foreground/60">(controlado pelo filtro de data no topo)</span>
         {" | "}
         <span className="font-semibold text-foreground">Comparação:</span>{" "}
         {comparisonMode === "none"
