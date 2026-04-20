@@ -77,6 +77,10 @@ interface Metrics {
   completed: number;
   conversion_rate: string | number;
   completion_rate: string | number;
+  landing_views?: number;
+  landing_hits_total?: number;
+  meta_clicks?: number;
+  loss_clicks_vs_views?: number;
   button_distribution: {
     start_btn_1: number;
     start_btn_2: number;
