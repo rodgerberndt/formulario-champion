@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -20,6 +21,7 @@ import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import { useSectionThemes } from "@/hooks/useSectionThemes";
 import { useLandingTracking } from "@/hooks/useLandingTracking";
 import { useLandingHit, generateClickId } from "@/hooks/useLandingHit";
+import { Loader2 } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -31,12 +33,21 @@ const Index = () => {
   useLandingTracking("/");
   useLandingHit();
 
+  const [loadingBtn, setLoadingBtn] = useState<string | null>(null);
+  const lastClickRef = useRef<number>(0);
+  const DEBOUNCE_MS = 1500;
+
   const handleStartClick = async (buttonId: string) => {
+    const now = Date.now();
+    if (loadingBtn) return;
+    if (now - lastClickRef.current < DEBOUNCE_MS) return;
+    lastClickRef.current = now;
+    setLoadingBtn(buttonId);
     try { generateClickId(); } catch { /* ignore */ }
     try { await trackStartClick(buttonId); } catch (error) {
       console.error("Error tracking start click:", error);
     }
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((r) => setTimeout(r, 50));
     navigate("/quiz");
   };
 
