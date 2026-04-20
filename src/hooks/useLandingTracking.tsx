@@ -2,175 +2,216 @@ import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const SESSION_KEY = "champion_session_id";
-const FLUSH_INTERVAL_MS = 8000; // envia tempos acumulados a cada 8s
+const FLUSH_INTERVAL_MS = 3000;
+const MAX_SINGLE_FLUSH_MS = 60_000;
 
-/**
- * Tracks landing page behavior:
- * - Section views (IntersectionObserver on every <section data-track-id="...">)
- * - Scroll depth milestones (25/50/75/100%)
- * - Click events on CTAs / WhatsApp / anchors / external links
- *
- * Reads session id from localStorage (set by useTracking).
- */
 export function useLandingTracking(page = "/") {
   const sessionIdRef = useRef<string | null>(null);
-  // Quando a seção entrou em vista (timestamp ms). null = não está visível.
   const sectionStartRef = useRef<Map<string, number>>(new Map());
-  // Ordem da seção (capturada do data-track-order)
   const sectionOrderRef = useRef<Map<string, number>>(new Map());
-  // Tempo acumulado pendente de flush para o servidor
-  const pendingTimeRef = useRef<Map<string, number>>(new Map());
   const sectionLoggedRef = useRef<Set<string>>(new Set());
   const scrollLoggedRef = useRef<Set<number>>(new Set());
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const intervalRef = useRef<number | null>(null);
+  const visibilityHandlerRef = useRef<(() => void) | null>(null);
+  const pageHideHandlerRef = useRef<(() => void) | null>(null);
+  const beforeUnloadHandlerRef = useRef<(() => void) | null>(null);
+  const clickHandlerRef = useRef<((e: MouseEvent) => void) | null>(null);
+  const scrollHandlerRef = useRef<(() => void) | null>(null);
+  const isFlushingRef = useRef(false);
 
   useEffect(() => {
-    // Wait a tick so useTracking has had a chance to write the session id
+    let cancelled = false;
+    let retryTimer: number | null = null;
+
+    const cleanup = () => {
+      if (retryTimer) window.clearTimeout(retryTimer);
+      flushAllSectionTimes();
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+      if (visibilityHandlerRef.current) {
+        document.removeEventListener("visibilitychange", visibilityHandlerRef.current);
+        visibilityHandlerRef.current = null;
+      }
+      if (pageHideHandlerRef.current) {
+        window.removeEventListener("pagehide", pageHideHandlerRef.current);
+        pageHideHandlerRef.current = null;
+      }
+      if (beforeUnloadHandlerRef.current) {
+        window.removeEventListener("beforeunload", beforeUnloadHandlerRef.current);
+        beforeUnloadHandlerRef.current = null;
+      }
+      if (clickHandlerRef.current) {
+        document.removeEventListener("click", clickHandlerRef.current, { capture: true } as EventListenerOptions);
+        clickHandlerRef.current = null;
+      }
+      if (scrollHandlerRef.current) {
+        window.removeEventListener("scroll", scrollHandlerRef.current);
+        scrollHandlerRef.current = null;
+      }
+      sectionStartRef.current.clear();
+      sectionOrderRef.current.clear();
+      sectionLoggedRef.current.clear();
+      scrollLoggedRef.current.clear();
+    };
+
     const init = () => {
       const sid = localStorage.getItem(SESSION_KEY);
       if (!sid) {
-        // try again shortly
-        setTimeout(init, 800);
+        retryTimer = window.setTimeout(init, 800);
         return;
       }
+      if (cancelled) return;
       sessionIdRef.current = sid;
       setupSectionTracking(sid);
       setupScrollTracking(sid);
       setupClickTracking(sid);
       setupTimeFlush(sid);
     };
-    init();
 
+    init();
     return () => {
-      // flush time spent for visible sections on unmount
-      flushAllSectionTimes();
+      cancelled = true;
+      cleanup();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
-  // --- SECTION TRACKING ---
   function setupSectionTracking(sessionId: string) {
     const sections = Array.from(
       document.querySelectorAll<HTMLElement>("section[data-track-id], [data-track-id]:not([data-track-click])")
     ).filter((el) => !el.hasAttribute("data-track-click"));
+
     if (sections.length === 0) {
-      // try again a bit later (sections may render after first paint)
-      setTimeout(() => setupSectionTracking(sessionId), 1500);
+      window.setTimeout(() => setupSectionTracking(sessionId), 1000);
       return;
     }
 
-    const observer = new IntersectionObserver(
+    observerRef.current?.disconnect();
+    observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const el = entry.target as HTMLElement;
-          const id = el.dataset.trackId!;
+          const id = el.dataset.trackId;
+          if (!id) return;
+
           const order = parseInt(el.dataset.trackOrder || "0", 10);
           sectionOrderRef.current.set(id, order);
 
           const visible = entry.isIntersecting && entry.intersectionRatio >= 0.2;
-
           if (visible) {
-            // Marca início somente se ainda não estava visível
             if (!sectionStartRef.current.has(id)) {
               sectionStartRef.current.set(id, Date.now());
             }
             if (!sectionLoggedRef.current.has(id)) {
               sectionLoggedRef.current.add(id);
-              insertSectionView(sessionId, id, order);
+              void ensureSectionRow(sessionId, id, order);
             }
-          } else if (sectionStartRef.current.has(id)) {
-            // Saiu da viewport: acumula o tempo localmente (NÃO envia ainda)
-            const start = sectionStartRef.current.get(id)!;
-            const elapsed = Date.now() - start;
-            sectionStartRef.current.delete(id);
-            const cur = pendingTimeRef.current.get(id) || 0;
-            pendingTimeRef.current.set(id, cur + Math.min(elapsed, 5 * 60 * 1000));
+            return;
+          }
+
+          if (sectionStartRef.current.has(id)) {
+            void flushSectionTime(sessionId, id, true);
           }
         });
       },
       { threshold: [0, 0.2, 0.5, 0.8] }
     );
 
-    sections.forEach((s) => observer.observe(s));
+    sections.forEach((section) => observerRef.current?.observe(section));
   }
 
-  async function insertSectionView(sessionId: string, sectionId: string, order: number) {
-    try {
-      // Garante linha base (ON CONFLICT DO NOTHING via .upsert seria ideal,
-      // mas tabela tem unique index e .insert ignora silenciosamente em caso de conflito).
-      await supabase.from("section_views").insert({
-        session_id: sessionId,
-        section_id: sectionId,
-        section_order: order,
-        page,
-        time_spent_ms: 0,
-      });
-    } catch (e) {
-      // ignore (likely duplicate -> unique index)
+  async function ensureSectionRow(sessionId: string, sectionId: string, order: number) {
+    const { error } = await supabase
+      .from("section_views")
+      .upsert(
+        {
+          session_id: sessionId,
+          section_id: sectionId,
+          section_order: order,
+          page,
+          time_spent_ms: 0,
+          last_seen_at: new Date().toISOString(),
+        },
+        { onConflict: "session_id,section_id,page", ignoreDuplicates: false }
+      );
+
+    if (error) {
+      console.error("ensureSectionRow error", { sectionId, error });
     }
   }
 
-  /**
-   * Para cada seção com tempo pendente OU visível, soma o tempo acumulado
-   * desde o último flush e chama a RPC atômica `increment_section_time`.
-   * Isto evita race conditions e garante que o tempo NUNCA seja zero.
-   */
-  function flushPendingTimes(sessionId: string, includeCurrentlyVisible: boolean) {
+  async function flushSectionTime(sessionId: string, sectionId: string, resetClock = false) {
+    const start = sectionStartRef.current.get(sectionId);
+    if (!start || isFlushingRef.current) return;
+
     const now = Date.now();
+    const elapsed = Math.min(Math.max(0, now - start), MAX_SINGLE_FLUSH_MS);
+    if (elapsed <= 0) return;
 
-    // Para seções ainda visíveis: capturar o tempo decorrido e reiniciar o relógio
-    if (includeCurrentlyVisible) {
-      sectionStartRef.current.forEach((start, id) => {
-        const elapsed = now - start;
-        if (elapsed > 0) {
-          const cur = pendingTimeRef.current.get(id) || 0;
-          pendingTimeRef.current.set(id, cur + Math.min(elapsed, 5 * 60 * 1000));
-          sectionStartRef.current.set(id, now); // reinicia o relógio
-        }
-      });
+    isFlushingRef.current = true;
+    const order = sectionOrderRef.current.get(sectionId) || 0;
+
+    const { error } = await supabase.rpc("increment_section_time", {
+      p_session_id: sessionId,
+      p_section_id: sectionId,
+      p_section_order: order,
+      p_page: page,
+      p_add_ms: Math.round(elapsed),
+    });
+
+    isFlushingRef.current = false;
+
+    if (error) {
+      console.error("increment_section_time error", { sectionId, error });
+      return;
     }
 
-    // Envia tudo o que está pendente
-    pendingTimeRef.current.forEach((ms, id) => {
-      if (ms <= 0) return;
-      const order = sectionOrderRef.current.get(id) || 0;
-      void supabase.rpc("increment_section_time", {
-        p_session_id: sessionId,
-        p_section_id: id,
-        p_section_order: order,
-        p_page: page,
-        p_add_ms: Math.round(ms),
-      });
-    });
-    pendingTimeRef.current.clear();
+    if (resetClock) {
+      sectionStartRef.current.delete(sectionId);
+    } else {
+      sectionStartRef.current.set(sectionId, now);
+    }
   }
 
-  /**
-   * Configura flush periódico (8s) e em eventos de saída de página.
-   */
-  function setupTimeFlush(sessionId: string) {
-    const interval = window.setInterval(() => {
-      flushPendingTimes(sessionId, true);
-    }, FLUSH_INTERVAL_MS);
-
-    const onHide = () => flushPendingTimes(sessionId, true);
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "hidden") onHide();
-    });
-    window.addEventListener("pagehide", onHide);
-    window.addEventListener("beforeunload", onHide);
-
-    (window as any).__landingTimeFlushCleanup = () => {
-      window.clearInterval(interval);
-    };
-  }
-
-  function flushAllSectionTimes() {
+  async function flushAllSectionTimes() {
     const sid = sessionIdRef.current;
     if (!sid) return;
-    flushPendingTimes(sid, true);
+    const visibleIds = Array.from(sectionStartRef.current.keys());
+    await Promise.all(visibleIds.map((sectionId) => flushSectionTime(sid, sectionId, false)));
   }
 
-  // --- SCROLL TRACKING ---
+  function setupTimeFlush(sessionId: string) {
+    intervalRef.current = window.setInterval(() => {
+      void flushAllSectionTimes();
+    }, FLUSH_INTERVAL_MS);
+
+    // flush precoce para capturar bounces/visitas curtas sem esperar 8s+
+    window.setTimeout(() => {
+      void flushAllSectionTimes();
+    }, 1200);
+
+    const onHidden = () => {
+      void flushAllSectionTimes();
+    };
+
+    visibilityHandlerRef.current = () => {
+      if (document.visibilityState === "hidden") onHidden();
+    };
+    pageHideHandlerRef.current = onHidden;
+    beforeUnloadHandlerRef.current = onHidden;
+
+    document.addEventListener("visibilitychange", visibilityHandlerRef.current);
+    window.addEventListener("pagehide", pageHideHandlerRef.current);
+    window.addEventListener("beforeunload", beforeUnloadHandlerRef.current);
+  }
+
   function setupScrollTracking(sessionId: string) {
     const milestones = [25, 50, 75, 100];
 
@@ -180,20 +221,20 @@ export function useLandingTracking(page = "/") {
       if (docHeight <= 0) return;
       const pct = Math.min(100, (scrollTop / docHeight) * 100);
 
-      milestones.forEach((m) => {
-        if (pct >= m && !scrollLoggedRef.current.has(m)) {
-          scrollLoggedRef.current.add(m);
+      milestones.forEach((milestone) => {
+        if (pct >= milestone && !scrollLoggedRef.current.has(milestone)) {
+          scrollLoggedRef.current.add(milestone);
           void supabase.from("scroll_milestones").insert({
             session_id: sessionId,
             page,
-            milestone: m,
-          }).then(() => {});
+            milestone,
+          });
         }
       });
     };
 
     let ticking = false;
-    const handler = () => {
+    scrollHandlerRef.current = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           onScroll();
@@ -203,38 +244,26 @@ export function useLandingTracking(page = "/") {
       }
     };
 
-    window.addEventListener("scroll", handler, { passive: true });
-    onScroll(); // initial check
-
-    // store cleanup on a global so React unmount can remove
-    (window as any).__landingScrollCleanup = () => {
-      window.removeEventListener("scroll", handler);
-    };
+    window.addEventListener("scroll", scrollHandlerRef.current, { passive: true });
+    onScroll();
   }
 
-  // --- CLICK TRACKING ---
   function setupClickTracking(sessionId: string) {
-    const onClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
+    clickHandlerRef.current = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
       if (!target) return;
 
-      // walk up to find an interactive element
-      const interactive = target.closest<HTMLElement>(
-        "a, button, [role='button'], [data-track-click]"
-      );
+      const interactive = target.closest<HTMLElement>("a, button, [role='button'], [data-track-click]");
       if (!interactive) return;
 
       const tag = interactive.tagName.toLowerCase();
       const href = (interactive as HTMLAnchorElement).href || null;
-      const text = (interactive.innerText || interactive.textContent || "")
-        .trim()
-        .slice(0, 80);
+      const text = (interactive.innerText || interactive.textContent || "").trim().slice(0, 80);
 
-      // detect type
       let clickType = "button";
       if (href) {
         if (href.includes("wa.me") || href.includes("whatsapp")) clickType = "whatsapp";
-        else if (href.startsWith(window.location.origin) === false && href.startsWith("http")) clickType = "external";
+        else if (!href.startsWith(window.location.origin) && href.startsWith("http")) clickType = "external";
         else if (href.includes("#")) clickType = "anchor";
         else clickType = "link";
       }
@@ -246,9 +275,6 @@ export function useLandingTracking(page = "/") {
         interactive.getAttribute("aria-label") ||
         text.slice(0, 40);
 
-      // find owning section — IMPORTANT: skip the interactive element itself
-      // (e.g. an AccordionTrigger that carries its own data-track-id like "faq_q1")
-      // so we attribute the click to the parent section ("faq"), not the button id.
       const sectionStart = interactive.parentElement || interactive;
       const section = sectionStart.closest<HTMLElement>("section[data-track-id], [data-track-id]:not([data-track-click])");
       const sectionId = section?.dataset.trackId || null;
@@ -262,12 +288,9 @@ export function useLandingTracking(page = "/") {
         href,
         label: text || null,
         metadata: { tag },
-      }).then(() => {});
+      });
     };
 
-    document.addEventListener("click", onClick, { capture: true, passive: true });
-    (window as any).__landingClickCleanup = () => {
-      document.removeEventListener("click", onClick, { capture: true } as any);
-    };
+    document.addEventListener("click", clickHandlerRef.current, { capture: true, passive: true });
   }
 }
