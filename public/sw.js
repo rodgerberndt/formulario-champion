@@ -1,4 +1,4 @@
-const CACHE_NAME = "champion-v1";
+const CACHE_NAME = "champion-v2";
 const STATIC_ASSETS = [
   "/",
   "/icons/icon-192.png",
