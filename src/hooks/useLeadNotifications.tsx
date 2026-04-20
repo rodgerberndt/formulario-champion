@@ -174,36 +174,69 @@ export function useLeadNotifications(
     }
   }, []);
 
-  // ── Notify new leads ──
+  // ── Notify new leads (split MQL vs non-MQL for distinct sounds) ──
+  const isMqlLead = useCallback((lead: NewLead): boolean => {
+    // MQL = faturamento >= R$ 10k
+    const mqlFaixas = new Set([
+      "De R$ 10 mil a R$ 20 mil",
+      "De R$ 20 mil a R$ 30 mil",
+      "De R$ 30 mil a R$ 50 mil",
+      "De R$ 50 mil a R$ 75 mil",
+      "De R$ 75 mil a R$ 100 mil",
+      "De R$ 100 mil a R$ 150 mil",
+      "De R$ 150 mil a R$ 200 mil",
+      "De R$ 200 mil a R$ 300 mil",
+      "De R$ 300 mil a R$ 500 mil",
+      "De R$ 500 mil a R$ 750 mil",
+      "De R$ 750 mil a R$ 1 milhão",
+      "De R$ 1 milhão a R$ 2 milhões",
+      "De R$ 2 milhões a R$ 3 milhões",
+      "De R$ 3 milhões a R$ 5 milhões",
+      "De R$ 5 milhões a R$ 10 milhões",
+      "Acima de R$ 10 milhões",
+    ]);
+    if (lead.investimento_faixa && mqlFaixas.has(lead.investimento_faixa)) return true;
+    // Fallback by tier (Large/Enterprise/Enterprise+ are always MQL)
+    const t = (lead.tier || "").toLowerCase();
+    return t === "large" || t.startsWith("enterprise");
+  }, []);
+
   const notifyNewLeads = useCallback(
     (newLeads: NewLead[]) => {
       if (newLeads.length === 0) return;
-      playLeadSound();
+
+      const mqlLeads = newLeads.filter(isMqlLead);
+      const normalLeads = newLeads.filter((l) => !isMqlLead(l));
+
+      // Play victory sound for MQLs, normal chime for the rest
+      if (mqlLeads.length > 0) playMqlSound();
+      if (normalLeads.length > 0) playLeadSound();
 
       if (newLeads.length === 1) {
         const lead = newLeads[0];
+        const isMql = mqlLeads.length === 1;
         toast({
-          title: "🔔 Novo lead!",
+          title: isMql ? "🏆 Novo MQL!" : "🔔 Novo lead!",
           description: `${lead.nome_completo} | ${lead.mercado} | ${lead.estagio_negocio}`,
         });
       } else {
         toast({
-          title: `🔔 +${newLeads.length} novos leads!`,
+          title: `🔔 +${newLeads.length} novos leads!${mqlLeads.length > 0 ? ` (${mqlLeads.length} MQL 🏆)` : ""}`,
           description: `Últimos: ${newLeads.slice(0, 3).map((l) => l.nome_completo).join(", ")}`,
         });
       }
 
       const title = newLeads.length === 1
-        ? "Novo lead no Champion"
-        : `+${newLeads.length} novos leads no Champion`;
+        ? (mqlLeads.length === 1 ? "🏆 Novo MQL no Champion" : "Novo lead no Champion")
+        : `+${newLeads.length} novos leads no Champion${mqlLeads.length > 0 ? ` (${mqlLeads.length} MQL)` : ""}`;
       const body = newLeads.length === 1
         ? `Nome: ${newLeads[0].nome_completo} | Etapa: ${newLeads[0].estagio_negocio}`
         : newLeads.slice(0, 3).map((l) => `${l.nome_completo} (${l.estagio_negocio})`).join("\n");
-      sendNativeNotification(title, body, "champion-new-lead");
+      sendNativeNotification(title, body, mqlLeads.length > 0 ? "champion-new-mql" : "champion-new-lead");
 
       onNewLead?.();
     },
-    [onNewLead, sendNativeNotification]
+    [onNewLead, sendNativeNotification, isMqlLead]
   );
 
   // ── Notify new sales ──
