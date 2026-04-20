@@ -2317,12 +2317,32 @@ Deno.serve(async (req: Request) => {
           .sort((a, b) => b.count - a.count)
           .slice(0, 15);
 
+        // Breakdown de cliques POR SEÇÃO + click_id (usado p/ ver cliques em cada item, ex: cada pergunta do FAQ)
+        const buttonAgg: Record<string, Record<string, { id: string; label: string; type: string; count: number; users: Set<string> }>> = {};
+        clicks.forEach((c: any) => {
+          if (!c.section_id) return;
+          const cid = c.click_id || c.label || "unknown";
+          if (!buttonAgg[c.section_id]) buttonAgg[c.section_id] = {};
+          if (!buttonAgg[c.section_id][cid]) {
+            buttonAgg[c.section_id][cid] = { id: cid, label: c.label || cid, type: c.click_type, count: 0, users: new Set() };
+          }
+          buttonAgg[c.section_id][cid].count += 1;
+          buttonAgg[c.section_id][cid].users.add(c.session_id);
+        });
+        const clicksByButton: Record<string, Array<{ id: string; label: string; type: string; count: number; uniqueUsers: number }>> = {};
+        Object.keys(buttonAgg).forEach((sid) => {
+          clicksByButton[sid] = Object.values(buttonAgg[sid])
+            .map((b) => ({ id: b.id, label: b.label, type: b.type, count: b.count, uniqueUsers: b.users.size }))
+            .sort((a, b) => b.count - a.count);
+        });
+
         return {
           totalVisitors,
           funnel,
           scrollDepth,
           clicksByType,
           clicksBySection,
+          clicksByButton,
           topClicks: topClicksArr,
           totalClicks: clicks.length,
         };
