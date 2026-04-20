@@ -65,6 +65,45 @@
            src="https://www.facebook.com/tr?id=2171667863227042&ev=PageView&noscript=1"/>
     </noscript>
     <div id="root"></div>
+    <!-- Early landing_hit (sendBeacon) — dispara ANTES do React/JS app, para capturar 100% das visitas -->
+    <script>
+      (function(){
+        try {
+          if (sessionStorage.getItem('champion_landing_hit_fired') === '1') return;
+          var url = 'https://troqylihudenqjsxsnwy.supabase.co/functions/v1/landing-hit';
+          var sp = new URLSearchParams(window.location.search);
+          var get = function(k){ var v = sp.get(k); return (v && v.indexOf('{{') === -1) ? v : null; };
+          var sid = null;
+          try { sid = localStorage.getItem('champion_session_id'); } catch(e){}
+          var cid = null;
+          try {
+            var raw = sessionStorage.getItem('champion_click_id');
+            if (raw) { var p = JSON.parse(raw); cid = p && p.id ? p.id : null; }
+          } catch(e){}
+          var payload = {
+            session_id: sid,
+            click_id: cid,
+            path: window.location.pathname + window.location.search,
+            referrer: document.referrer || null,
+            utm_source: get('utm_source'),
+            utm_medium: get('utm_medium'),
+            utm_campaign: get('utm_campaign'),
+            utm_content: get('utm_content'),
+            utm_term: get('utm_term'),
+            fbclid: get('fbclid'),
+            gclid: get('gclid'),
+            ttclid: get('ttclid')
+          };
+          var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+          var sent = false;
+          if (navigator.sendBeacon) { sent = navigator.sendBeacon(url, blob); }
+          if (!sent) {
+            fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload), keepalive: true }).catch(function(){});
+          }
+          sessionStorage.setItem('champion_landing_hit_fired', '1');
+        } catch(e) {}
+      })();
+    </script>
     <script>
       // Eagerly unregister service workers to prevent stale React runtime
       if ('serviceWorker' in navigator) {
