@@ -481,12 +481,25 @@ export default function InsightsTab({ fetchAdminData }: Props) {
   const applyPreset = (key: PresetKey) => {
     const r = computePresetRange(key);
     setBaseRange({ from: r.from, to: r.to });
+    setDraftRange({ from: r.from, to: r.to });
     setActivePreset(key);
+  };
+
+  // Há mudanças pendentes no calendário (draft != aplicado)?
+  const hasDraftChanges =
+    !!draftRange.from && !!draftRange.to &&
+    (draftRange.from.getTime() !== fromMs || draftRange.to.getTime() !== toMs);
+
+  const applyDraft = () => {
+    if (!draftRange.from || !draftRange.to) return;
+    setBaseRange({ from: draftRange.from, to: draftRange.to });
+    setActivePreset("custom");
+    setOpenCalendar(false);
   };
 
   const PeriodControls = (
     <div className="space-y-3">
-      {/* Preset buttons */}
+      {/* Preset buttons — aplicam imediatamente e auto-recalculam */}
       <div className="flex flex-wrap gap-1.5">
         {PRESETS.map((p) => (
           <Button
@@ -501,59 +514,81 @@ export default function InsightsTab({ fetchAdminData }: Props) {
         ))}
       </div>
 
-      {/* Single date picker + toggles + apply */}
+      {/* Calendário manual + seletor de comparação */}
       <div className="flex flex-wrap items-end gap-3">
         <div className="flex flex-col gap-1">
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Período base</span>
-          <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className={cn("h-9 text-xs gap-2 justify-start font-normal w-[280px]", !baseRange.from && "text-muted-foreground")}
-              >
-                <CalendarIcon className="w-3 h-3" />
-                {baseRange.from && baseRange.to
-                  ? `${format(baseRange.from, "dd/MM/yyyy")} → ${format(baseRange.to, "dd/MM/yyyy")}`
-                  : "Escolher período"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                numberOfMonths={2}
-                locale={ptBR}
-                selected={{ from: baseRange.from, to: baseRange.to }}
-                onSelect={(r) => {
-                  setBaseRange({ from: r?.from, to: r?.to });
-                  setActivePreset("custom");
-                }}
-                disabled={(d) => d > new Date()}
-                className={cn("p-3 pointer-events-auto")}
-              />
-              <div className="flex justify-end p-2 border-t border-border">
-                <Button size="sm" disabled={!baseRange.from || !baseRange.to} onClick={() => setOpenCalendar(false)}>
-                  Fechar
+          <div className="flex gap-2">
+            <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn("h-9 text-xs gap-2 justify-start font-normal w-[280px]", !baseRange.from && "text-muted-foreground")}
+                >
+                  <CalendarIcon className="w-3 h-3" />
+                  {baseRange.from && baseRange.to
+                    ? `${format(baseRange.from, "dd/MM/yyyy")} → ${format(baseRange.to, "dd/MM/yyyy")}`
+                    : "Escolher período"}
                 </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  numberOfMonths={2}
+                  locale={ptBR}
+                  selected={{ from: draftRange.from, to: draftRange.to }}
+                  onSelect={(r) => setDraftRange({ from: r?.from, to: r?.to })}
+                  disabled={(d) => d > new Date()}
+                  className={cn("p-3 pointer-events-auto")}
+                />
+                <div className="flex justify-end gap-2 p-2 border-t border-border">
+                  <Button size="sm" variant="ghost" onClick={() => { setDraftRange({ from: baseRange.from, to: baseRange.to }); setOpenCalendar(false); }}>
+                    Cancelar
+                  </Button>
+                  <Button
+                    size="sm"
+                    disabled={!draftRange.from || !draftRange.to || !hasDraftChanges}
+                    onClick={applyDraft}
+                  >
+                    Aplicar
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+            {/* Botão Aplicar visível fora do popover quando há rascunho não aplicado */}
+            {hasDraftChanges && !openCalendar && (
+              <Button size="sm" className="h-9" onClick={applyDraft}>
+                Aplicar
+              </Button>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 h-9">
-          <Switch id="compare-toggle" checked={compareEnabled} onCheckedChange={setCompareEnabled} />
-          <Label htmlFor="compare-toggle" className="text-xs cursor-pointer">Comparar com período anterior</Label>
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Comparação</span>
+          <Select value={comparisonMode} onValueChange={(v) => setComparisonMode(v as ComparisonMode)}>
+            <SelectTrigger className="h-9 text-xs w-[220px]">
+              <SelectValue placeholder="Comparação" />
+            </SelectTrigger>
+            <SelectContent>
+              {COMPARISON_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value} className="text-xs">
+                  <div className="flex flex-col">
+                    <span>{opt.label}</span>
+                    <span className="text-[10px] text-muted-foreground">{opt.hint}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <div className="flex items-center gap-2 h-9">
-          <Switch id="auto-toggle" checked={autoRefresh} onCheckedChange={setAutoRefresh} />
-          <Label htmlFor="auto-toggle" className="text-xs cursor-pointer">Auto-recalcular</Label>
-        </div>
-
-        <Button onClick={load} disabled={incomplete || !validation.valid || loading} size="sm" className="h-9">
-          {loading ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Play className="w-3 h-3 mr-1" />}
-          Aplicar
-        </Button>
+        {loading && (
+          <div className="flex items-center gap-1.5 h-9 text-[11px] text-muted-foreground">
+            <Loader2 className="w-3 h-3 animate-spin" /> recalculando…
+          </div>
+        )}
       </div>
 
       {/* Resumo do período */}
@@ -561,7 +596,13 @@ export default function InsightsTab({ fetchAdminData }: Props) {
         <span className="font-semibold text-foreground">Base:</span> <span className="font-mono">{periodLabel}</span>
         {" | "}
         <span className="font-semibold text-foreground">Comparação:</span>{" "}
-        {compareEnabled ? <span className="font-mono">{prevLabel}</span> : <span className="text-amber-400">desativada</span>}
+        {comparisonMode === "none"
+          ? <span className="text-amber-400">desativada</span>
+          : <>
+              <span className="text-foreground/80">({COMPARISON_LABEL_SHORT[comparisonMode]})</span>{" "}
+              <span className="font-mono">{prevLabel}</span>
+            </>
+        }
         {validation.warn && <span className="ml-2 text-amber-400">⚠ {validation.warn}</span>}
         {!validation.valid && <span className="ml-2 text-rose-400">⚠ {validation.msg}</span>}
       </div>
