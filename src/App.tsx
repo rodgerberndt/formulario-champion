@@ -48,46 +48,46 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <TrackingProvider>
-          <DateRangeProvider>
-            <AppInitializer />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route 
-                path="/quiz" 
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <Quiz />
-                  </Suspense>
-                } 
-              />
-              <Route 
-                path="/obrigado" 
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <Obrigado />
-                  </Suspense>
-                } 
-              />
-              <Route 
-                path="/obrigadomql" 
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <ObrigadoMql />
-                  </Suspense>
-                } 
-              />
-              <Route
-                path={`/${ADMIN_ANALYTICS_SLUG}`}
-                element={
-                  <Suspense fallback={<PageLoader />}>
+          <AppInitializer />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route 
+              path="/quiz" 
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <Quiz />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path="/obrigado" 
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <Obrigado />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path="/obrigadomql" 
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ObrigadoMql />
+                </Suspense>
+              } 
+            />
+            <Route
+              path={`/${ADMIN_ANALYTICS_SLUG}`}
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <DateRangeProvider>
                     <AdminAnalytics />
-                  </Suspense>
-                } 
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </DateRangeProvider>
+                  </DateRangeProvider>
+                </Suspense>
+              } 
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </TrackingProvider>
       </BrowserRouter>
     </TooltipProvider>
