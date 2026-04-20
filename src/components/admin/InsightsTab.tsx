@@ -337,23 +337,21 @@ const COMPARISON_OPTIONS: { value: ComparisonMode; label: string; hint: string }
 ];
 
 export default function InsightsTab({ fetchAdminData }: Props) {
+  // Período base agora vem do filtro GLOBAL no topo do admin (mesma fonte
+  // usada pelo "Comportamento na Landing Page" e demais seções).
+  const { start: globalStart, end: globalEnd } = useDateRange();
+
   const [loading, setLoading] = useState(false);
   const [hasRun, setHasRun] = useState(false);
   const [current, setCurrent] = useState<PeriodMetrics | null>(null);
   const [previous, setPrevious] = useState<PeriodMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Período base APLICADO (o que efetivamente roda no rules engine)
-  const initial = computePresetRange("last_7");
-  const [baseRange, setBaseRange] = useState<{ from?: Date; to?: Date }>({ from: initial.from, to: initial.to });
-  // Seleção pendente do calendário (só vira baseRange ao clicar Aplicar)
-  const [draftRange, setDraftRange] = useState<{ from?: Date; to?: Date }>({ from: initial.from, to: initial.to });
-  const [activePreset, setActivePreset] = useState<PresetKey>("last_7");
-  const [openCalendar, setOpenCalendar] = useState(false);
+  // Comparação é local (independente do filtro global, é uma escolha de análise)
   const [comparisonMode, setComparisonMode] = useState<ComparisonMode>("previous");
 
-  const fromMs = baseRange.from?.getTime();
-  const toMs = baseRange.to?.getTime();
+  const fromMs = globalStart?.getTime();
+  const toMs = globalEnd?.getTime();
   const incomplete = !fromMs || !toMs;
 
   // Validation
@@ -396,7 +394,6 @@ export default function InsightsTab({ fetchAdminData }: Props) {
       compStart = new Date(s); compStart.setDate(compStart.getDate() - 7);
       compEnd = new Date(e); compEnd.setDate(compEnd.getDate() - 7);
     } else {
-      // last_month: subtrai 1 mês mantendo o mesmo dia
       compStart = new Date(s); compStart.setMonth(compStart.getMonth() - 1);
       compEnd = new Date(e); compEnd.setMonth(compEnd.getMonth() - 1);
     }
@@ -448,8 +445,7 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     }
   }, [fetchAdminData, periodA, periodB, validation.valid]);
 
-  // Auto-recalcular SEMPRE que o período base aplicado ou o modo de comparação
-  // mudar. UX "1 clique": presets/comparação aplicam imediatamente.
+  // Auto-recalcular sempre que o período global ou o modo de comparação mudar
   const loadRef = useRef(load);
   useEffect(() => { loadRef.current = load; }, [load]);
   useEffect(() => {
@@ -476,25 +472,6 @@ export default function InsightsTab({ fetchAdminData }: Props) {
     } catch {
       toast({ title: "Erro", description: "Não foi possível copiar.", variant: "destructive" });
     }
-  };
-
-  const applyPreset = (key: PresetKey) => {
-    const r = computePresetRange(key);
-    setBaseRange({ from: r.from, to: r.to });
-    setDraftRange({ from: r.from, to: r.to });
-    setActivePreset(key);
-  };
-
-  // Há mudanças pendentes no calendário (draft != aplicado)?
-  const hasDraftChanges =
-    !!draftRange.from && !!draftRange.to &&
-    (draftRange.from.getTime() !== fromMs || draftRange.to.getTime() !== toMs);
-
-  const applyDraft = () => {
-    if (!draftRange.from || !draftRange.to) return;
-    setBaseRange({ from: draftRange.from, to: draftRange.to });
-    setActivePreset("custom");
-    setOpenCalendar(false);
   };
 
   const PeriodControls = (
