@@ -19,6 +19,7 @@ import { useUtmCapture } from "@/hooks/useUtmCapture";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import { useSectionThemes } from "@/hooks/useSectionThemes";
 import { useLandingTracking } from "@/hooks/useLandingTracking";
+import { useLandingHit, generateClickId } from "@/hooks/useLandingHit";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -28,8 +29,10 @@ const Index = () => {
   useSmoothScroll();
   useSectionThemes();
   useLandingTracking("/");
+  useLandingHit();
 
   const handleStartClick = async (buttonId: string) => {
+    try { generateClickId(); } catch { /* ignore */ }
     try { await trackStartClick(buttonId); } catch (error) {
       console.error("Error tracking start click:", error);
     }
