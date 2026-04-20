@@ -771,37 +771,58 @@ export default function AdminAnalytics() {
     // Use fetch directly for proper path handling
     const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data${path}${queryString}`;
     
-    try {
-      const fetchResponse = await fetch(url, {
-        headers: {
-          "x-admin-token": token,
-          "Content-Type": "application/json",
-          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-      });
+    const headers = {
+      "x-admin-token": token,
+      "Content-Type": "application/json",
+      "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    };
 
-      if (!fetchResponse.ok) {
-        const error = await fetchResponse.json().catch(() => ({ error: "Erro desconhecido" }));
-        if (fetchResponse.status === 401 && !logoutFiredRef.current) {
-          // Token expired or invalid - force logout (only once)
-          logoutFiredRef.current = true;
-          console.log("Token expirado, fazendo logout...");
-          handleLogout();
-          toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
-          throw new Error("Sessão expirada");
+    // Retry on transient boot errors (503/504) up to 3 attempts with backoff
+    const MAX_RETRIES = 3;
+    let lastError: Error | null = null;
+
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        const fetchResponse = await fetch(url, { headers });
+
+        // Retry on transient errors (cold-start boot errors, gateway timeouts)
+        if ((fetchResponse.status === 503 || fetchResponse.status === 504) && attempt < MAX_RETRIES - 1) {
+          const delay = 400 * Math.pow(2, attempt) + Math.random() * 200;
+          console.warn(`[admin-data] ${fetchResponse.status} on ${path}, retrying in ${Math.round(delay)}ms (attempt ${attempt + 1}/${MAX_RETRIES})`);
+          await new Promise((r) => setTimeout(r, delay));
+          continue;
         }
-        throw new Error(error.error || "Erro ao carregar dados");
-      }
 
-      return fetchResponse.json();
-    } catch (error) {
-      // Network error or other issue
-      if (error instanceof Error && error.message === "Sessão expirada") {
+        if (!fetchResponse.ok) {
+          const error = await fetchResponse.json().catch(() => ({ error: "Erro desconhecido" }));
+          if (fetchResponse.status === 401 && !logoutFiredRef.current) {
+            logoutFiredRef.current = true;
+            console.log("Token expirado, fazendo logout...");
+            handleLogout();
+            toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
+            throw new Error("Sessão expirada");
+          }
+          throw new Error(error.error || "Erro ao carregar dados");
+        }
+
+        return fetchResponse.json();
+      } catch (error) {
+        if (error instanceof Error && error.message === "Sessão expirada") {
+          throw error;
+        }
+        // Retry on network errors too
+        if (attempt < MAX_RETRIES - 1) {
+          lastError = error as Error;
+          const delay = 400 * Math.pow(2, attempt) + Math.random() * 200;
+          console.warn(`[admin-data] network error on ${path}, retrying in ${Math.round(delay)}ms`);
+          await new Promise((r) => setTimeout(r, delay));
+          continue;
+        }
+        console.error("Fetch error:", error);
         throw error;
       }
-      console.error("Fetch error:", error);
-      throw error;
     }
+    throw lastError || new Error("Falha após múltiplas tentativas");
   };
 
   const loadMetrics = async () => {
