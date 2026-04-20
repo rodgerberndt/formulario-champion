@@ -254,6 +254,66 @@ export type Database = {
         }
         Relationships: []
       }
+      landing_hits: {
+        Row: {
+          click_id: string | null
+          created_at: string
+          device_type: string | null
+          fbclid: string | null
+          gclid: string | null
+          id: string
+          ip_address: string | null
+          path: string
+          referrer: string | null
+          session_id: string | null
+          ttclid: string | null
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          click_id?: string | null
+          created_at?: string
+          device_type?: string | null
+          fbclid?: string | null
+          gclid?: string | null
+          id?: string
+          ip_address?: string | null
+          path?: string
+          referrer?: string | null
+          session_id?: string | null
+          ttclid?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          click_id?: string | null
+          created_at?: string
+          device_type?: string | null
+          fbclid?: string | null
+          gclid?: string | null
+          id?: string
+          ip_address?: string | null
+          path?: string
+          referrer?: string | null
+          session_id?: string | null
+          ttclid?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: []
+      }
       lead_events: {
         Row: {
           button_id: string | null
