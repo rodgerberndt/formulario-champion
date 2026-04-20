@@ -1825,6 +1825,13 @@ Deno.serve(async (req: Request) => {
         const internalSecret = Deno.env.get("INTERNAL_WEBHOOK_SECRET");
         const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
         try {
+          // Dedup: skip if Meeting event was already sent for this lead
+          const { data: leadCheck } = await supabase.from("leads").select("capi_events_sent").eq("id", leadId).maybeSingle();
+          const alreadySent = ((leadCheck?.capi_events_sent as Record<string, boolean>) || {})["Meeting"];
+          if (alreadySent) {
+            console.log(`[admin-data] CAPI Meeting skipped (dedup) for lead ${leadId}`);
+            return new Response(JSON.stringify(data), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+          }
           const resp = await fetch(`${supabaseUrl}/functions/v1/meta-capi`, {
             method: "POST",
             headers: {
