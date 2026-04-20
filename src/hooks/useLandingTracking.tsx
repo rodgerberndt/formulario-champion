@@ -2,8 +2,9 @@ import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const SESSION_KEY = "champion_session_id";
-const FLUSH_INTERVAL_MS = 3000;
-const MAX_SINGLE_FLUSH_MS = 60_000;
+// PERF: flush a cada 30s em vez de 3s — reduz 10x as requisições de rede
+const FLUSH_INTERVAL_MS = 30_000;
+const MAX_SINGLE_FLUSH_MS = 5 * 60_000;
 
 export function useLandingTracking(page = "/") {
   const sessionIdRef = useRef<string | null>(null);
