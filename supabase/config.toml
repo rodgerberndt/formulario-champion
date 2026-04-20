@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.meta-ads-cron]
 verify_jwt = false
+
+[functions.landing-hit]
+verify_jwt = false
