@@ -9,6 +9,7 @@ import { TrackingProvider } from "@/hooks/useTracking";
 import { usePresence } from "@/hooks/usePresence";
 import { useServiceWorker } from "@/hooks/useServiceWorker";
 import { DateRangeProvider } from "@/context/DateRangeContext";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -45,6 +46,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <TrackingProvider>
           <DateRangeProvider>
             <AppInitializer />
