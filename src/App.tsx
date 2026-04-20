@@ -8,7 +8,6 @@ import { Suspense, lazy } from "react";
 import { TrackingProvider } from "@/hooks/useTracking";
 import { usePresence } from "@/hooks/usePresence";
 import { useServiceWorker } from "@/hooks/useServiceWorker";
-import { DateRangeProvider } from "@/context/DateRangeContext";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -48,46 +47,44 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <TrackingProvider>
-          <DateRangeProvider>
-            <AppInitializer />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route 
-                path="/quiz" 
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <Quiz />
-                  </Suspense>
-                } 
-              />
-              <Route 
-                path="/obrigado" 
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <Obrigado />
-                  </Suspense>
-                } 
-              />
-              <Route 
-                path="/obrigadomql" 
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <ObrigadoMql />
-                  </Suspense>
-                } 
-              />
-              <Route
-                path={`/${ADMIN_ANALYTICS_SLUG}`}
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <AdminAnalytics />
-                  </Suspense>
-                } 
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </DateRangeProvider>
+          <AppInitializer />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route 
+              path="/quiz" 
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <Quiz />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path="/obrigado" 
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <Obrigado />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path="/obrigadomql" 
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ObrigadoMql />
+                </Suspense>
+              } 
+            />
+            <Route
+              path={`/${ADMIN_ANALYTICS_SLUG}`}
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminAnalytics />
+                </Suspense>
+              } 
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </TrackingProvider>
       </BrowserRouter>
     </TooltipProvider>
