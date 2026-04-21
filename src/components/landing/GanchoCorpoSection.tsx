@@ -244,7 +244,7 @@ export function GanchoCorpoSection() {
           {/* Mobile-only: proof image right after subheadline */}
           <div className="block lg:hidden mt-8">
             <ProofCard
-              src="/proofs/depoimento-ganchos.png?v=2"
+              src="/proofs/depoimento-ganchos.webp"
               alt="Print mostrando ROAS diferente apenas mudando o gancho do criativo"
               caption="Mesma estrutura. Só muda o GANCHO. Olha a diferença de ROAS."
               delay={600}
@@ -276,7 +276,7 @@ export function GanchoCorpoSection() {
           <div className="space-y-6">
             <div className="hidden lg:block">
               <ProofCard
-                src="/proofs/depoimento-ganchos.png?v=2"
+                src="/proofs/depoimento-ganchos.webp"
                 alt="Print mostrando ROAS diferente apenas mudando o gancho do criativo"
                 caption="Mesma estrutura. Só muda o GANCHO. Olha a diferença de ROAS."
                 delay={800}
@@ -284,7 +284,7 @@ export function GanchoCorpoSection() {
               />
             </div>
             <ProofCard
-              src="/proofs/feedback-matheus.png?v=2"
+              src="/proofs/feedback-matheus.webp"
               alt="Planilha com métricas de conjuntos, vendas, IC, CPI e CPA"
               caption="Formatos e ângulos diferentes = leitura diferente do Meta."
               delay={1100}
