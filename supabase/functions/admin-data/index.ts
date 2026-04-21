@@ -370,7 +370,7 @@ Deno.serve(async (req: Request) => {
       // Fetch sessions in range
       const rawSessions = await fetchAllPaged<any>(
         "lead_sessions",
-        "id, ip_address, created_at, referrer, first_page",
+        "id, ip_address, created_at, referrer, first_page, completed",
         (q: any) => {
           if (from) q = q.gte("created_at", from);
           if (toEnd) q = q.lte("created_at", toEnd);
@@ -404,16 +404,15 @@ Deno.serve(async (req: Request) => {
           .map((e: any) => e.session_id)
       );
 
-      // Fetch leads (completions ground truth)
-      const leads = await fetchAllPaged<any>(
-        "leads",
-        "id, created_at",
-        (q: any) => {
-          if (from) q = q.gte("created_at", from);
-          if (toEnd) q = q.lte("created_at", toEnd);
-          return q;
-        }
+      // Completions = sessões com event submit OU completed=true (ground truth coerente
+      // com visitantes/entradas, evitando taxa de conclusão > 100% causada por leads
+      // sem sessão na tabela `leads`).
+      const submittedSessionIds = new Set(
+        events
+          .filter((e: any) => e.event_name === "submit" && sessionIds.has(e.session_id))
+          .map((e: any) => e.session_id)
       );
+      sessions.forEach((s: any) => { if (s.completed) submittedSessionIds.add(s.id); });
 
       // Fetch ad_spend in range. ad_spend.date is a DATE column already in
       // local calendar (no timezone conversion needed) — query as YYYY-MM-DD.
@@ -490,9 +489,12 @@ Deno.serve(async (req: Request) => {
         ensure(ymd).entered_quiz += 1;
       });
 
-      leads.forEach((l: any) => {
-        const ymd = toLocalDate(l.created_at);
-        ensure(ymd).completed += 1;
+      submittedSessionIds.forEach((sid) => {
+        const ymd = sessionDate.get(sid as string);
+        if (!ymd) return;
+        const b = ensure(ymd);
+        // Garantir monotonicidade: completed <= entered_quiz <= sessions
+        b.completed += 1;
       });
 
       // ad_spend.date is already a YYYY-MM-DD string aligned to São Paulo
@@ -549,7 +551,7 @@ Deno.serve(async (req: Request) => {
       }
 
       // Fetch ALL sessions (paginated) - include referrer & first_page for filtering
-      const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, referrer, first_page", (q: any) => {
+      const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, referrer, first_page, completed, started_quiz", (q: any) => {
         if (from) q = q.gte("created_at", from);
         if (toEnd) q = q.lte("created_at", toEnd);
         return q;
@@ -593,12 +595,25 @@ Deno.serve(async (req: Request) => {
       // Filter to only sessions in our range
       const filteredEvents = allEvents.filter((e: any) => sessionIds.has(e.session_id));
 
-      // Get total leads (ground truth for completed)
+      // Ground truth for "completed" = sessões que efetivamente concluíram o quiz
+      // (event submit OU session.completed=true), restritas às sessões NÃO filtradas (sem ruído interno).
+      // Usar leads.count diretamente inflava o número porque inclui leads sem sessão (importações,
+      // duplicatas, bio recovery), gerando taxas > 100%.
+      const sessionsWithSubmitGround = new Set(
+        allEvents
+          .filter((e: any) => e.event_name === "submit" && sessionIds.has(e.session_id))
+          .map((e: any) => e.session_id)
+      );
+      const completedSessionIds = new Set<string>(sessionsWithSubmitGround);
+      sessions.forEach((s: any) => { if (s.completed) completedSessionIds.add(s.id); });
+      const completed = completedSessionIds.size;
+
+      // Total de leads (mantido para exibição separada / KPIs de volume real)
       let leadsQuery = supabase.from("leads").select("*", { count: "exact", head: true });
       if (from) leadsQuery = leadsQuery.gte("created_at", from);
       if (toEnd) leadsQuery = leadsQuery.lte("created_at", toEnd);
       const { count: leadsCount } = await leadsQuery;
-      const completed = leadsCount || 0;
+      const totalLeads = leadsCount || 0;
 
       // ===== Landing Views (fonte da verdade) =====
       // Conta hits únicos por session_id; se session_id null, dedup por (ip + user_agent) janela de 30min
@@ -646,9 +661,11 @@ Deno.serve(async (req: Request) => {
         filteredEvents.filter((e: any) => e.event_name === "step_view").map((e: any) => e.session_id)
       );
 
-      // Ensure funnel is monotonically decreasing
-      const enteredQuiz = Math.max(sessionsWithQuizView.size, completed);
-      const startedQuiz = Math.max(sessionsWithStepView.size, completed);
+      // Funil monotônico: completed <= startedQuiz <= enteredQuiz <= uniqueVisitors
+      const enteredQuizRaw = Math.max(sessionsWithQuizView.size, completed);
+      const startedQuizRaw = Math.max(sessionsWithStepView.size, completed);
+      const enteredQuiz = Math.min(enteredQuizRaw, uniqueVisitors);
+      const startedQuiz = Math.min(startedQuizRaw, enteredQuiz);
 
       // Button distribution
       const buttonEventCounts: Record<string, Set<string>> = {
