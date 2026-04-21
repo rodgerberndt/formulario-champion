@@ -159,10 +159,10 @@ export function SocialProofCarousel() {
       <div className="container mx-auto px-5 max-w-6xl">
         <div className="text-center mb-6">
           <h2 className="text-foreground mb-1">
-            RESULTADOS <span className="gold-text">REAIS</span>
+            PORTFÓLIO <span className="gold-text">DE ADS</span>
           </h2>
           <p className="text-sm text-muted-foreground">
-            Feedbacks de clientes da Champion.
+            Alguns dos ads que a Champion já fez para seus clientes.
           </p>
         </div>
 
