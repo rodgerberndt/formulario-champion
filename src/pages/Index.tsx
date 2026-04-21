@@ -66,11 +66,15 @@ const Index = () => {
           <Hero onStartClick={() => handleStartClick("start_btn_1")} />
         </section>
 
-        <section data-theme="void" data-track-id="social_proof" data-track-order="2">
+        <section data-theme="blue-temple" data-track-id="portfolio" data-track-order="2">
+          <PortfolioSection />
+        </section>
+
+        <section data-theme="void" data-track-id="social_proof" data-track-order="3">
           <SocialProofCarousel />
         </section>
 
-        <section data-theme="cave" data-track-id="cta_intermediario" data-track-order="3" className="py-10 md:py-16">
+        <section data-theme="cave" data-track-id="cta_intermediario" data-track-order="4" className="py-10 md:py-16">
           <div className="container mx-auto px-5 text-center max-w-md">
             <p className="text-sm md:text-base text-muted-foreground mb-6">
               Responda o formulário rápido para que o próximo feedback seja você!
@@ -100,10 +104,6 @@ const Index = () => {
 
         <section data-theme="ember" data-track-id="dor" data-track-order="4">
           <PainSection />
-        </section>
-
-        <section data-theme="blue-temple" data-track-id="portfolio" data-track-order="5">
-          <PortfolioSection />
         </section>
 
         <section data-theme="cave" data-track-id="metodo" data-track-order="6">
