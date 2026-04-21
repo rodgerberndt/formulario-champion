@@ -489,9 +489,12 @@ Deno.serve(async (req: Request) => {
         ensure(ymd).entered_quiz += 1;
       });
 
-      leads.forEach((l: any) => {
-        const ymd = toLocalDate(l.created_at);
-        ensure(ymd).completed += 1;
+      submittedSessionIds.forEach((sid) => {
+        const ymd = sessionDate.get(sid as string);
+        if (!ymd) return;
+        const b = ensure(ymd);
+        // Garantir monotonicidade: completed <= entered_quiz <= sessions
+        b.completed += 1;
       });
 
       // ad_spend.date is already a YYYY-MM-DD string aligned to São Paulo
