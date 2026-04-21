@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { useReveal } from "@/hooks/useReveal";
@@ -109,6 +109,43 @@ export function PortfolioSection() {
   const { ref, isVisible } = useReveal(0.08);
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
   const isMobile = useIsMobile();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const updateScrollButtons = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    const children = Array.from(el.children) as HTMLElement[];
+    if (children.length === 0) return;
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let closest = 0;
+    let minDist = Infinity;
+    children.forEach((child, i) => {
+      const c = child.offsetLeft + child.offsetWidth / 2;
+      const d = Math.abs(center - c);
+      if (d < minDist) { minDist = d; closest = i; }
+    });
+    setActiveIndex(closest);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateScrollButtons, { passive: true });
+    updateScrollButtons();
+    return () => el.removeEventListener("scroll", updateScrollButtons);
+  }, [updateScrollButtons]);
+
+  const scrollDir = (dir: "left" | "right") => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cardWidth = el.querySelector<HTMLElement>(":scope > div")?.offsetWidth ?? 200;
+    el.scrollBy({ left: dir === "left" ? -cardWidth * 2 : cardWidth * 2, behavior: "smooth" });
+  };
 
   return (
     <section id="portfolio" className="py-12 md:py-20 relative" ref={ref}>
@@ -125,18 +162,20 @@ export function PortfolioSection() {
         {/* Carousel wrapper */}
         <div className="relative group/carousel">
           {/* Navigation arrows - desktop only */}
-          {!isMobile && (
+          {!isMobile && canScrollLeft && (
             <button
               type="button"
+              onClick={() => scrollDir("left")}
               className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-card/80 backdrop-blur border border-border/40 flex items-center justify-center text-foreground hover:bg-card transition-colors shadow-lg opacity-0 group-hover/carousel:opacity-100"
               aria-label="Anterior"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
           )}
-          {!isMobile && (
+          {!isMobile && canScrollRight && (
             <button
               type="button"
+              onClick={() => scrollDir("right")}
               className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-card/80 backdrop-blur border border-border/40 flex items-center justify-center text-foreground hover:bg-card transition-colors shadow-lg opacity-0 group-hover/carousel:opacity-100"
               aria-label="Próximo"
             >
@@ -146,6 +185,7 @@ export function PortfolioSection() {
 
           {/* Scrollable carousel */}
           <div
+            ref={scrollRef}
             className="flex gap-3 md:gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
             style={{ WebkitOverflowScrolling: "touch" }}
           >
@@ -167,11 +207,17 @@ export function PortfolioSection() {
                 key={i}
                 aria-label={`Ir para item ${i + 1}`}
                 type="button"
+                onClick={() => {
+                  const el = scrollRef.current;
+                  if (!el) return;
+                  const child = el.children[i] as HTMLElement | undefined;
+                  if (child) el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.offsetWidth) / 2, behavior: "smooth" });
+                }}
                 className="p-0.5"
               >
                 <div
                   className={`rounded-full transition-all duration-300 ease-out ${
-                    i === 0
+                    i === activeIndex
                       ? "w-2.5 h-2.5 bg-secondary scale-100"
                       : "w-2 h-2 bg-transparent border border-muted-foreground/40 scale-90"
                   }`}
