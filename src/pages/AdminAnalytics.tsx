@@ -1021,7 +1021,6 @@ export default function AdminAnalytics() {
                   placeholder="Digite a senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  autoFocus
                 />
                 <p className="text-xs text-muted-foreground">
                   Digite a senha em texto (não cole o hash SHA-256 aqui).
