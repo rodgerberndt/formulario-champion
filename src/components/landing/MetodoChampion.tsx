@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
 import { ShimmerText, KeywordGlow } from "./TextEffects";
@@ -69,25 +69,9 @@ function CurvedArrow({ angle1, angle2, radius, isActive }: { angle1: number; ang
 
 export function MetodoChampion() {
   const { ref, isVisible } = useReveal(0.1);
-  const sectionRef = useRef<HTMLDivElement>(null);
   const mobileRef = useRef<HTMLDivElement>(null);
-  const [activePillars, setActivePillars] = useState(0);
+  const [activePillars] = useState(6);
   const isMobile = useIsMobile();
-
-  // Desktop scroll-driven pillar activation
-  useEffect(() => {
-    if (!isVisible) return;
-    const handleScroll = () => {
-      const el = sectionRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (rect.height + window.innerHeight * 0.2)));
-      setActivePillars(Math.min(6, Math.floor(progress * 8)));
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isVisible]);
 
   // Mobile cascade glow cycle
   const [litIndex, setLitIndex] = useState(-1); // -1 = all off, 0-5 = lighting step i, 6 = all lit hold
@@ -147,10 +131,6 @@ export function MetodoChampion() {
     return () => { cancelled = true; };
   }, [isMobile, mobileVisible]);
 
-  const scrollToCTA = () => {
-    document.querySelector("#cta-final")?.scrollIntoView({ behavior: "smooth" });
-  };
-
   const desktopRadius = 190;
   const svgSize = (desktopRadius + 80) * 2;
   const svgCenter = svgSize / 2;
@@ -158,7 +138,7 @@ export function MetodoChampion() {
 
   return (
     <section id="metodo" className="py-16 md:py-28 relative" ref={ref}>
-      <div ref={sectionRef} className="container mx-auto px-5 max-w-5xl">
+      <div className="container mx-auto px-5 max-w-5xl">
         <div className={`text-center mb-12 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-3 max-w-3xl mx-auto">
             <ShimmerText isVisible={isVisible}>
@@ -335,8 +315,8 @@ export function MetodoChampion() {
           </div>
         </div>
 
-        <div className={`text-center mt-10 md:mt-16 transition-all duration-500 ${activePillars >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <button onClick={scrollToCTA} className="text-secondary hover:text-secondary/80 text-sm font-semibold underline underline-offset-4 transition-colors min-h-[44px]">
+        <div className="text-center mt-10 md:mt-16 transition-all duration-500 opacity-100 translate-y-0">
+          <button type="button" className="text-secondary/70 text-sm font-semibold underline underline-offset-4 transition-colors min-h-[44px] cursor-default">
             Quero o diagnóstico →
           </button>
         </div>
