@@ -1311,13 +1311,108 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           {/* Row 3: Reuniões */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Reuniões</p>
+              <div className="flex items-center justify-between mb-3 border-b border-border/50 pb-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Reuniões</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => {
+                    setShowMeetingsList(!showMeetingsList);
+                    if (!showMeetingsList) loadMeetings();
+                  }}
+                >
+                  {showMeetingsList ? <ChevronUp className="w-3 h-3 mr-1" /> : <ChevronDown className="w-3 h-3 mr-1" />}
+                  {showMeetingsList ? "Ocultar" : "Ver reuniões"}
+                </Button>
+              </div>
               <div className="grid grid-cols-4 gap-4">
                 <MetricItem label="Taxa Agendamento" value={scheduleRate !== null ? `${scheduleRate.toFixed(1)}%` : "—"} color="text-yellow-400" sub="MQL → Reuniões" />
                 <MetricItem label="Agendadas" value={formatNumber(totals.meetings)} color="text-orange-400" sub={formatCurrency(totals.cp_meeting) || undefined} />
                 <MetricItem label="Realizadas" value={formatNumber(totals.meetings_attended || 0)} color="text-emerald-400" sub={totals.meetings > 0 ? `${((totals.meetings_attended || 0) / totals.meetings * 100).toFixed(0)}% show rate` : "—"} />
                 <MetricItem label="Conversão Call" value={callConversion !== null ? `${callConversion.toFixed(1)}%` : "—"} color="text-cyan-400" sub="Realizadas → Assessoria" />
               </div>
+              {showMeetingsList && (
+                <div className="mt-4 border-t border-border/50 pt-4">
+                  {meetingsLoading ? (
+                    <div className="flex justify-center py-6">
+                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    </div>
+                  ) : meetingsList.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-6">Nenhuma reunião registrada no período.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Data</TableHead>
+                          <TableHead>Criativo</TableHead>
+                          <TableHead>Observação</TableHead>
+                          <TableHead>Realizada</TableHead>
+                          <TableHead className="w-20"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {meetingsList.map((meeting) => (
+                          <TableRow key={meeting.id}>
+                            <TableCell>{format(new Date(meeting.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}</TableCell>
+                            <TableCell>
+                              {meeting.utm_content || meeting.creative_key ? (
+                                <Badge variant="outline" className="text-xs">{meeting.utm_content || meeting.creative_key}</Badge>
+                              ) : (
+                                <span className="text-muted-foreground text-xs">—</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{meeting.notes || "—"}</TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleToggleAttended(meeting)}
+                                disabled={togglingAttendedId === meeting.id}
+                                className={meeting.attended ? "text-emerald-400" : "text-muted-foreground"}
+                              >
+                                {togglingAttendedId === meeting.id ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : meeting.attended ? (
+                                  <><Check className="w-4 h-4 mr-1" /> Sim</>
+                                ) : (
+                                  <><X className="w-4 h-4 mr-1" /> Não</>
+                                )}
+                              </Button>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setEditingMeeting(meeting);
+                                    setEditMeetingForm({ notes: meeting.notes || "", attended: !!meeting.attended });
+                                  }}
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteMeeting(meeting.id)}
+                                  disabled={deletingMeetingId === meeting.id}
+                                >
+                                  {deletingMeetingId === meeting.id ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="w-4 h-4 text-destructive" />
+                                  )}
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 
