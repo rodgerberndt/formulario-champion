@@ -11,14 +11,12 @@ export function useLandingTracking(page = "/") {
   const sectionStartRef = useRef<Map<string, number>>(new Map());
   const sectionOrderRef = useRef<Map<string, number>>(new Map());
   const sectionLoggedRef = useRef<Set<string>>(new Set());
-  const scrollLoggedRef = useRef<Set<number>>(new Set());
   const observerRef = useRef<IntersectionObserver | null>(null);
   const intervalRef = useRef<number | null>(null);
   const visibilityHandlerRef = useRef<(() => void) | null>(null);
   const pageHideHandlerRef = useRef<(() => void) | null>(null);
   const beforeUnloadHandlerRef = useRef<(() => void) | null>(null);
   const clickHandlerRef = useRef<((e: MouseEvent) => void) | null>(null);
-  const scrollHandlerRef = useRef<(() => void) | null>(null);
   const isFlushingRef = useRef(false);
 
   useEffect(() => {
@@ -52,14 +50,9 @@ export function useLandingTracking(page = "/") {
         document.removeEventListener("click", clickHandlerRef.current, { capture: true } as EventListenerOptions);
         clickHandlerRef.current = null;
       }
-      if (scrollHandlerRef.current) {
-        window.removeEventListener("scroll", scrollHandlerRef.current);
-        scrollHandlerRef.current = null;
-      }
       sectionStartRef.current.clear();
       sectionOrderRef.current.clear();
       sectionLoggedRef.current.clear();
-      scrollLoggedRef.current.clear();
     };
 
     const init = () => {
@@ -71,7 +64,6 @@ export function useLandingTracking(page = "/") {
       if (cancelled) return;
       sessionIdRef.current = sid;
       setupSectionTracking(sid);
-      setupScrollTracking(sid);
       setupClickTracking(sid);
       setupTimeFlush(sid);
     };
@@ -200,42 +192,6 @@ export function useLandingTracking(page = "/") {
       void flushAllSectionTimes();
     };
     window.addEventListener("pagehide", pageHideHandlerRef.current);
-  }
-
-  function setupScrollTracking(sessionId: string) {
-    const milestones = [25, 50, 75, 100];
-
-    const onScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (docHeight <= 0) return;
-      const pct = Math.min(100, (scrollTop / docHeight) * 100);
-
-      milestones.forEach((milestone) => {
-        if (pct >= milestone && !scrollLoggedRef.current.has(milestone)) {
-          scrollLoggedRef.current.add(milestone);
-          void supabase.from("scroll_milestones").insert({
-            session_id: sessionId,
-            page,
-            milestone,
-          });
-        }
-      });
-    };
-
-    let ticking = false;
-    scrollHandlerRef.current = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          onScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", scrollHandlerRef.current, { passive: true });
-    onScroll();
   }
 
   function setupClickTracking(sessionId: string) {

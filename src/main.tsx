@@ -1,7 +1,6 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { installLandingInitialScrollGuard } from "./lib/landingInitialScrollGuard";
 
 async function cleanupPreviewServiceWorkers() {
   if (typeof window === "undefined") return;
@@ -31,18 +30,9 @@ async function cleanupPreviewServiceWorkers() {
 }
 
 async function bootstrap() {
-  const cleanupInitialScrollGuard = installLandingInitialScrollGuard();
   createRoot(document.getElementById("root")!).render(<App />);
 
   void cleanupPreviewServiceWorkers();
-
-  window.addEventListener(
-    "pagehide",
-    () => {
-      cleanupInitialScrollGuard();
-    },
-    { once: true },
-  );
 }
 
 bootstrap();

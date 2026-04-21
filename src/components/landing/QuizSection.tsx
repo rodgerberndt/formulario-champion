@@ -92,12 +92,7 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
 
   // Expose scrollIntoView method
   useImperativeHandle(ref, () => ({
-    scrollIntoView: () => {
-      const element = document.getElementById("quiz-section");
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    },
+    scrollIntoView: () => {},
   }));
 
   const updateField = (field: keyof QuizFormData, value: string | boolean) => {
@@ -347,7 +342,6 @@ Fico no aguardo.`;
               placeholder="Digite seu nome"
               value={formData.nome_completo}
               onChange={(e) => updateField("nome_completo", e.target.value)}
-              autoFocus
             />
           </div>
         );
@@ -363,7 +357,6 @@ Fico no aguardo.`;
               value={formData.whatsapp}
               onChange={(e) => updateField("whatsapp", formatWhatsApp(e.target.value))}
               maxLength={16}
-              autoFocus
             />
             <div className="flex items-center gap-2 pt-3">
               <Checkbox
@@ -389,7 +382,6 @@ Fico no aguardo.`;
               placeholder="@seuinstagram"
               value={formData.instagram}
               onChange={(e) => updateField("instagram", e.target.value)}
-              autoFocus
             />
           </div>
         );
@@ -461,7 +453,6 @@ Fico no aguardo.`;
               placeholder="Conte-nos o que você quer resolver..."
               value={formData.dor_desejo}
               onChange={(e) => updateField("dor_desejo", e.target.value)}
-              autoFocus
             />
           </div>
         );

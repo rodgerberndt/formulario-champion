@@ -157,7 +157,6 @@ export function LeadForm() {
               placeholder="Digite seu nome completo"
               value={formData.nome_completo}
               onChange={(e) => updateField("nome_completo", e.target.value)}
-              autoFocus
             />
           </div>
         );
@@ -172,7 +171,6 @@ export function LeadForm() {
               placeholder="(00) 00000-0000"
               value={formData.whatsapp}
               onChange={(e) => updateField("whatsapp", e.target.value)}
-              autoFocus
             />
           </div>
         );
@@ -187,7 +185,6 @@ export function LeadForm() {
               placeholder="@seuinstagram"
               value={formData.instagram}
               onChange={(e) => updateField("instagram", e.target.value)}
-              autoFocus
             />
           </div>
         );
@@ -256,7 +253,6 @@ export function LeadForm() {
               placeholder="Conte-nos sobre seus objetivos e desafios..."
               value={formData.dor_desejo}
               onChange={(e) => updateField("dor_desejo", e.target.value)}
-              autoFocus
             />
           </div>
         );

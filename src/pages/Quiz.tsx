@@ -559,8 +559,7 @@ export default function Quiz() {
               className={inputClasses}
               placeholder="Digite seu nome"
               value={formData.nome_completo}
-              onChange={(e) => updateField("nome_completo", e.target.value)}
-              autoFocus />
+              onChange={(e) => updateField("nome_completo", e.target.value)} />
 
           </div>);
 
@@ -576,8 +575,7 @@ export default function Quiz() {
               value={formData.whatsapp}
               onChange={(e) => updateField("whatsapp", formatWhatsApp(e.target.value))}
               inputMode="tel"
-              maxLength={16}
-              autoFocus />
+              maxLength={16} />
             {(() => {
               const digits = formData.whatsapp.replace(/\D/g, '');
               if (digits.length > 0 && digits.length < 10) {
@@ -621,8 +619,7 @@ export default function Quiz() {
               className={inputClasses}
               placeholder="@seuinstagram"
               value={formData.instagram}
-              onChange={(e) => updateField("instagram", e.target.value)}
-              autoFocus />
+              onChange={(e) => updateField("instagram", e.target.value)} />
 
           </div>);
 
@@ -638,8 +635,7 @@ export default function Quiz() {
               placeholder="seu@email.com"
               type="email"
               value={formData.email}
-              onChange={(e) => updateField("email", e.target.value)}
-              autoFocus />
+              onChange={(e) => updateField("email", e.target.value)} />
           </div>);
 
       case 2:
@@ -749,8 +745,7 @@ export default function Quiz() {
               className="w-full text-sm sm:text-base min-h-[90px] sm:min-h-[110px] resize-none bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200"
               placeholder="Ex: Quero escalar meu tráfego mas não consigo manter o ROAS..."
               value={formData.dor_desejo}
-              onChange={(e) => updateField("dor_desejo", e.target.value)}
-              autoFocus />
+              onChange={(e) => updateField("dor_desejo", e.target.value)} />
 
           </div>);
 
