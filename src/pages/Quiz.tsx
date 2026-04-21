@@ -566,27 +566,15 @@ export default function Quiz() {
             </label>
             <Input
               className={inputClasses}
-              placeholder="(00) 00000-0000"
+              placeholder="+55 (00) 00000-0000 ou internacional"
               value={formData.whatsapp}
               onChange={(e) => updateField("whatsapp", formatWhatsApp(e.target.value))}
               inputMode="tel"
-              maxLength={16} />
+              maxLength={20} />
             {(() => {
               const digits = formData.whatsapp.replace(/\D/g, '');
-              if (digits.length > 0 && digits.length < 10) {
-                return <p className="text-xs text-destructive">Digite um número completo com DDD</p>;
-              }
-              if (digits.length >= 10) {
-                const ddd = parseInt(digits.slice(0, 2));
-                if (ddd < 11 || ddd > 99) {
-                  return <p className="text-xs text-destructive">DDD inválido</p>;
-                }
-                if (digits.length === 11 && digits[2] !== '9') {
-                  return <p className="text-xs text-destructive">Celular deve começar com 9 após o DDD</p>;
-                }
-                if (digits.length === 10 && digits[2] === '9') {
-                  return <p className="text-xs text-destructive">Número incompleto — falta um dígito</p>;
-                }
+              if (digits.length > 0 && digits.length < 8) {
+                return <p className="text-xs text-destructive">Digite um número de telefone válido</p>;
               }
               return null;
             })()}
