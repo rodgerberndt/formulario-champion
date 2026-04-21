@@ -66,20 +66,20 @@ const Index = () => {
           <Hero onStartClick={() => handleStartClick("start_btn_1")} />
         </section>
 
-        <section data-theme="blue-temple" data-track-id="portfolio" data-track-order="2">
-          <PortfolioSection />
+        <section data-theme="void" data-track-id="social_proof" data-track-order="2">
+          <SocialProofCarousel />
         </section>
 
         <section data-theme="ember" data-track-id="dor" data-track-order="3">
           <PainSection />
         </section>
 
-        <section data-theme="cave" data-track-id="metodo" data-track-order="4">
-          <MetodoChampion />
+        <section data-theme="blue-temple" data-track-id="portfolio" data-track-order="4">
+          <PortfolioSection />
         </section>
 
-        <section data-theme="void" data-track-id="social_proof" data-track-order="5">
-          <SocialProofCarousel />
+        <section data-theme="cave" data-track-id="metodo" data-track-order="5">
+          <MetodoChampion />
         </section>
 
         <section data-theme="cave" data-track-id="cta_intermediario" data-track-order="6" className="py-10 md:py-16">
