@@ -32,8 +32,9 @@ async function cleanupPreviewServiceWorkers() {
 
 async function bootstrap() {
   const cleanupInitialScrollGuard = installLandingInitialScrollGuard();
-  await cleanupPreviewServiceWorkers();
   createRoot(document.getElementById("root")!).render(<App />);
+
+  void cleanupPreviewServiceWorkers();
 
   window.setTimeout(() => {
     cleanupInitialScrollGuard();
