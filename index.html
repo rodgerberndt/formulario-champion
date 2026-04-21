@@ -13,6 +13,53 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://troqylihudenqjsxsnwy.supabase.co" crossorigin />
+    <script>
+      // ANTI auto-scroll (Instagram WebView fix) — roda ANTES de qualquer coisa
+      (function(){
+        try {
+          if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+          // Remove hash que possa causar jump para âncora
+          if (window.location.hash) {
+            try {
+              history.replaceState(null, '', window.location.pathname + window.location.search);
+            } catch(e){}
+          }
+          // Força topo imediatamente
+          window.scrollTo(0, 0);
+          // Lock visual: trava o scroll para esconder qualquer "pulo"
+          var style = document.createElement('style');
+          style.id = '__scroll_lock__';
+          style.textContent = 'html.__locked__,body.__locked__{overflow:hidden!important;height:100%!important;}';
+          document.documentElement.appendChild(style);
+          document.documentElement.classList.add('__locked__');
+          var applyBodyLock = function(){
+            if (document.body) document.body.classList.add('__locked__');
+          };
+          if (document.body) applyBodyLock();
+          else document.addEventListener('DOMContentLoaded', applyBodyLock, { once: true });
+
+          var released = false;
+          var release = function(){
+            if (released) return;
+            released = true;
+            window.scrollTo(0, 0);
+            document.documentElement.classList.remove('__locked__');
+            if (document.body) document.body.classList.remove('__locked__');
+          };
+          // Reforça topo durante o lock
+          var ticks = 0;
+          var pin = setInterval(function(){
+            window.scrollTo(0, 0);
+            if (++ticks > 12) clearInterval(pin);
+          }, 50);
+          window.addEventListener('load', function(){
+            setTimeout(release, 100);
+          });
+          // Fallback caso load demore
+          setTimeout(release, 600);
+        } catch(e) {}
+      })();
+    </script>
     <link rel="dns-prefetch" href="https://connect.facebook.net" />
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@400;600;700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
