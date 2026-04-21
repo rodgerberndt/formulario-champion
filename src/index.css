@@ -554,9 +554,18 @@ html, body { overflow-x: hidden; }
 .hero-sparkle-2 { animation: hero-sparkle 3s ease-in-out infinite; animation-delay: 0.7s; }
 .hero-sparkle-3 { animation: hero-sparkle 3.5s ease-in-out infinite; animation-delay: 1.4s; }
 
+@keyframes hero-sparkle-soft {
+  0%, 100% { opacity: 0.15; transform: scale(0.85); }
+  50%      { opacity: 0.6;  transform: scale(1.05); }
+}
+.hero-sparkle-slow   { animation: hero-sparkle-soft 7s ease-in-out infinite; }
+.hero-sparkle-slow-2 { animation: hero-sparkle-soft 8s ease-in-out infinite; animation-delay: 1.5s; }
+.hero-sparkle-slow-3 { animation: hero-sparkle-soft 9s ease-in-out infinite; animation-delay: 3s; }
+
 @media (prefers-reduced-motion: reduce) {
   .hero-logo-3d,
   .hero-logo-glow-bg,
   .hero-logo-shimmer-wrap::after,
-  .hero-sparkle, .hero-sparkle-2, .hero-sparkle-3 { animation: none; }
+  .hero-sparkle, .hero-sparkle-2, .hero-sparkle-3,
+  .hero-sparkle-slow, .hero-sparkle-slow-2, .hero-sparkle-slow-3 { animation: none; }
 }
