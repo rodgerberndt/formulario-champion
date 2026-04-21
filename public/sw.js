@@ -3,8 +3,7 @@ const STATIC_ASSETS = [
   "/",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
-  "/champion-logo.png",
-  "/favicon.png",
+  "/champion-logo.webp",
 ];
 
 // Install - cache static assets
