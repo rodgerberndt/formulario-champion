@@ -58,10 +58,8 @@ export function LeadForm() {
         return formData.nome_completo.trim().length >= 3;
       case 2: {
         const digits = formData.whatsapp.replace(/\D/g, '');
-        const validDDD = digits.length >= 2 && parseInt(digits.slice(0, 2)) >= 11 && parseInt(digits.slice(0, 2)) <= 99;
-        const validMobile = digits.length === 11 && digits[2] === '9';
-        const validLandline = digits.length === 10;
-        return validDDD && (validMobile || validLandline);
+        // Aceita números nacionais e internacionais (mín. 8 dígitos, máx. 15 conforme E.164)
+        return digits.length >= 8 && digits.length <= 15;
       }
       case 3:
         return formData.instagram.trim().length >= 2;
