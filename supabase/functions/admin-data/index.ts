@@ -549,7 +549,7 @@ Deno.serve(async (req: Request) => {
       }
 
       // Fetch ALL sessions (paginated) - include referrer & first_page for filtering
-      const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, referrer, first_page", (q: any) => {
+      const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, referrer, first_page, completed, started_quiz", (q: any) => {
         if (from) q = q.gte("created_at", from);
         if (toEnd) q = q.lte("created_at", toEnd);
         return q;
