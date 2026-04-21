@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Sparkles, TrendingUp, Star } from "lucide-react";
+import { ArrowRight, Users, Sparkles, TrendingUp, Trophy } from "lucide-react";
 import championHeroLogo from "@/assets/champion-hero-logo.png";
 import { ShimmerText, KeywordGlow, LineReveal } from "@/components/landing/TextEffects";
 import { useReveal } from "@/hooks/useReveal";
@@ -79,16 +79,17 @@ export function Hero({
             {/* Photo - Simplified glow */}
             <div className="flex justify-center md:justify-end order-1 md:order-2">
               <div className="relative" style={{ perspective: "1200px" }}>
-                {/* Pulsing gold glow background */}
-                <div className="hero-logo-glow-bg absolute inset-0 bg-secondary/35 blur-3xl rounded-full" />
-                <div className="absolute -inset-8 bg-secondary/20 blur-3xl rounded-full" />
+                {/* Subtle gold glow background */}
+                <div className="hero-logo-glow-bg absolute inset-0 bg-secondary/10 blur-3xl rounded-full" />
 
-                {/* Sparkles around logo */}
-                <Star className="hero-sparkle absolute top-4 -left-2 w-4 h-4 text-secondary fill-secondary z-20" />
-                <Sparkles className="hero-sparkle-2 absolute top-1/3 -right-4 w-5 h-5 text-secondary z-20" />
-                <Star className="hero-sparkle-3 absolute bottom-8 left-4 w-3 h-3 text-secondary fill-secondary z-20" />
-                <Sparkles className="hero-sparkle absolute -top-2 right-8 w-4 h-4 text-secondary z-20" />
-                <Star className="hero-sparkle-2 absolute bottom-4 -right-2 w-4 h-4 text-secondary fill-secondary z-20" />
+                {/* Mini logos floating around (faded) */}
+                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle absolute top-2 -left-2 w-8 h-8 object-contain opacity-20 z-20" />
+                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-3 absolute bottom-10 left-2 w-6 h-6 object-contain opacity-15 z-20" />
+                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-2 absolute bottom-2 -right-2 w-7 h-7 object-contain opacity-20 z-20" />
+
+                {/* Trophy accents */}
+                <Trophy className="hero-sparkle-2 absolute top-1/3 -right-3 w-5 h-5 text-secondary/60 z-20" />
+                <Trophy className="hero-sparkle absolute -top-1 right-10 w-4 h-4 text-secondary/50 z-20" />
 
                 {/* 3D floating logo */}
                 <img
