@@ -14,50 +14,119 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://troqylihudenqjsxsnwy.supabase.co" crossorigin />
     <script>
-      // ANTI auto-scroll (Instagram WebView fix) — roda ANTES de qualquer coisa
-      (function(){
+      (function () {
         try {
-          if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-          // Remove hash que possa causar jump para âncora
-          if (window.location.hash) {
-            try {
-              history.replaceState(null, '', window.location.pathname + window.location.search);
-            } catch(e){}
-          }
-          // Força topo imediatamente
-          window.scrollTo(0, 0);
-          // Lock visual: trava o scroll para esconder qualquer "pulo"
-          var style = document.createElement('style');
-          style.id = '__scroll_lock__';
-          style.textContent = 'html.__locked__,body.__locked__{overflow:hidden!important;height:100%!important;}';
-          document.documentElement.appendChild(style);
-          document.documentElement.classList.add('__locked__');
-          var applyBodyLock = function(){
-            if (document.body) document.body.classList.add('__locked__');
-          };
-          if (document.body) applyBodyLock();
-          else document.addEventListener('DOMContentLoaded', applyBodyLock, { once: true });
-
+          var LOCK_CLASS = '__locked__';
+          var STYLE_ID = '__scroll_lock__';
+          var SESSION_KEY = 'champion_scroll_bootstrap_v3';
+          var LOCK_TIMEOUT_MS = 550;
+          var releaseTimer = null;
+          var pinTimer = null;
+          var rafId = null;
           var released = false;
-          var release = function(){
+          var firstLoadInTab = false;
+
+          try {
+            firstLoadInTab = sessionStorage.getItem(SESSION_KEY) !== '1';
+            sessionStorage.setItem(SESSION_KEY, '1');
+          } catch (e) {}
+
+          var ensureStyle = function () {
+            if (document.getElementById(STYLE_ID)) return;
+            var style = document.createElement('style');
+            style.id = STYLE_ID;
+            style.textContent =
+              'html.' + LOCK_CLASS + ',body.' + LOCK_CLASS + '{overflow:hidden!important;height:100%!important;}' +
+              'body.' + LOCK_CLASS + '{position:fixed!important;inset:0!important;width:100%!important;touch-action:none!important;}';
+            document.documentElement.appendChild(style);
+          };
+
+          var resetToTop = function () {
+            try {
+              if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+              if (window.location.hash) {
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+              }
+              window.scrollTo(0, 0);
+              if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+              document.documentElement.scrollTop = 0;
+              if (document.body) document.body.scrollTop = 0;
+            } catch (e) {}
+          };
+
+          var applyLock = function () {
+            ensureStyle();
+            document.documentElement.classList.add(LOCK_CLASS);
+            if (document.body) document.body.classList.add(LOCK_CLASS);
+          };
+
+          var clearLock = function () {
+            document.documentElement.classList.remove(LOCK_CLASS);
+            if (document.body) document.body.classList.remove(LOCK_CLASS);
+          };
+
+          var stopPinning = function () {
+            if (pinTimer) {
+              clearInterval(pinTimer);
+              pinTimer = null;
+            }
+            if (rafId) {
+              cancelAnimationFrame(rafId);
+              rafId = null;
+            }
+          };
+
+          var startPinning = function () {
+            stopPinning();
+            var tick = function () {
+              if (released) return;
+              resetToTop();
+              rafId = requestAnimationFrame(tick);
+            };
+            pinTimer = setInterval(resetToTop, 50);
+            tick();
+          };
+
+          var release = function () {
             if (released) return;
             released = true;
-            window.scrollTo(0, 0);
-            document.documentElement.classList.remove('__locked__');
-            if (document.body) document.body.classList.remove('__locked__');
+            stopPinning();
+            clearLock();
+            resetToTop();
           };
-          // Reforça topo durante o lock
-          var ticks = 0;
-          var pin = setInterval(function(){
-            window.scrollTo(0, 0);
-            if (++ticks > 12) clearInterval(pin);
-          }, 50);
-          window.addEventListener('load', function(){
-            setTimeout(release, 100);
+
+          var scheduleRelease = function (delay) {
+            if (releaseTimer) clearTimeout(releaseTimer);
+            releaseTimer = setTimeout(release, delay);
+          };
+
+          var boot = function () {
+            released = false;
+            applyLock();
+            resetToTop();
+            startPinning();
+            scheduleRelease(LOCK_TIMEOUT_MS);
+          };
+
+          boot();
+
+          if (!document.body) {
+            document.addEventListener('DOMContentLoaded', function () {
+              if (!released) document.body.classList.add(LOCK_CLASS);
+              resetToTop();
+            }, { once: true });
+          }
+
+          window.addEventListener('load', function () {
+            scheduleRelease(firstLoadInTab ? 120 : 80);
+          }, { once: true });
+
+          window.addEventListener('pageshow', function (event) {
+            if (!event.persisted) return;
+            boot();
+            scheduleRelease(120);
           });
-          // Fallback caso load demore
-          setTimeout(release, 600);
-        } catch(e) {}
+        } catch (e) {}
       })();
     </script>
     <link rel="dns-prefetch" href="https://connect.facebook.net" />
