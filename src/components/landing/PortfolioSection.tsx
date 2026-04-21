@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { useReveal } from "@/hooks/useReveal";
@@ -109,7 +109,6 @@ export function PortfolioSection() {
   const { ref, isVisible } = useReveal(0.08);
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
   const isMobile = useIsMobile();
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   return (
     <section id="portfolio" className="py-12 md:py-20 relative" ref={ref}>
