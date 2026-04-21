@@ -71,6 +71,9 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
         if (parsed.step && parsed.step <= totalSteps) {
           setStep(parsed.step);
         }
+        if (parsed.formData?.whatsapp) {
+          setPhoneValid(isPhoneE164Valid(parsed.formData.whatsapp));
+        }
       } catch {
         // Invalid saved data, ignore
       }
