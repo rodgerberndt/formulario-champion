@@ -502,3 +502,61 @@ html, body { overflow-x: hidden; }
 /* Hide scrollbar utility */
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* Hero logo 3D float effects */
+@keyframes hero-logo-float {
+  0%, 100% { transform: perspective(1000px) translateY(0) rotateX(0deg) rotateY(-6deg); }
+  25%      { transform: perspective(1000px) translateY(-14px) rotateX(4deg) rotateY(2deg); }
+  50%      { transform: perspective(1000px) translateY(-22px) rotateX(2deg) rotateY(8deg); }
+  75%      { transform: perspective(1000px) translateY(-10px) rotateX(-3deg) rotateY(4deg); }
+}
+@keyframes hero-logo-glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%      { opacity: 0.95; transform: scale(1.18); }
+}
+@keyframes hero-logo-shimmer {
+  0%   { transform: translateX(-150%) skewX(-20deg); opacity: 0; }
+  40%  { opacity: 0.8; }
+  100% { transform: translateX(220%) skewX(-20deg); opacity: 0; }
+}
+@keyframes hero-sparkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50%      { opacity: 1; transform: scale(1.4); }
+}
+.hero-logo-3d {
+  animation: hero-logo-float 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+  will-change: transform;
+  filter: drop-shadow(0 25px 40px hsl(var(--champion-gold) / 0.55))
+          drop-shadow(0 12px 18px hsl(var(--champion-gold) / 0.35));
+}
+.hero-logo-3d:hover {
+  animation-play-state: paused;
+}
+.hero-logo-glow-bg {
+  animation: hero-logo-glow-pulse 4s ease-in-out infinite;
+}
+.hero-logo-shimmer-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px;
+}
+.hero-logo-shimmer-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, hsl(var(--champion-gold-light) / 0.35) 50%, transparent 70%);
+  animation: hero-logo-shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+.hero-sparkle { animation: hero-sparkle 2.5s ease-in-out infinite; }
+.hero-sparkle-2 { animation: hero-sparkle 3s ease-in-out infinite; animation-delay: 0.7s; }
+.hero-sparkle-3 { animation: hero-sparkle 3.5s ease-in-out infinite; animation-delay: 1.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-logo-3d,
+  .hero-logo-glow-bg,
+  .hero-logo-shimmer-wrap::after,
+  .hero-sparkle, .hero-sparkle-2, .hero-sparkle-3 { animation: none; }
+}

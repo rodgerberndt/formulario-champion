@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, Users, Sparkles, TrendingUp, Star } from "lucide-react";
 import championHeroLogo from "@/assets/champion-hero-logo.png";
 import { ShimmerText, KeywordGlow, LineReveal } from "@/components/landing/TextEffects";
 import { useReveal } from "@/hooks/useReveal";
@@ -78,14 +78,25 @@ export function Hero({
 
             {/* Photo - Simplified glow */}
             <div className="flex justify-center md:justify-end order-1 md:order-2">
-              <div className="relative">
-                <div className="hidden md:block absolute -inset-4 bg-secondary/15 blur-2xl rounded-full" />
+              <div className="relative" style={{ perspective: "1200px" }}>
+                {/* Pulsing gold glow background */}
+                <div className="hero-logo-glow-bg absolute inset-0 bg-secondary/35 blur-3xl rounded-full" />
+                <div className="absolute -inset-8 bg-secondary/20 blur-3xl rounded-full" />
+
+                {/* Sparkles around logo */}
+                <Star className="hero-sparkle absolute top-4 -left-2 w-4 h-4 text-secondary fill-secondary z-20" />
+                <Sparkles className="hero-sparkle-2 absolute top-1/3 -right-4 w-5 h-5 text-secondary z-20" />
+                <Star className="hero-sparkle-3 absolute bottom-8 left-4 w-3 h-3 text-secondary fill-secondary z-20" />
+                <Sparkles className="hero-sparkle absolute -top-2 right-8 w-4 h-4 text-secondary z-20" />
+                <Star className="hero-sparkle-2 absolute bottom-4 -right-2 w-4 h-4 text-secondary fill-secondary z-20" />
+
+                {/* 3D floating logo */}
                 <img
                   src={championHeroLogo}
                   alt="Champion"
-                  width={384}
-                  height={384}
-                  className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain"
+                  width={512}
+                  height={512}
+                  className="hero-logo-3d relative w-72 h-72 sm:w-80 sm:h-80 md:w-[26rem] md:h-[26rem] lg:w-[32rem] lg:h-[32rem] object-contain z-10"
                   loading="eager"
                   decoding="async"
                   fetchPriority="high"
