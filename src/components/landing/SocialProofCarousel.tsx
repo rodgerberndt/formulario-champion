@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -116,7 +116,6 @@ function VideoModal({ video, onClose }: { video: string; onClose: () => void }) 
 export function SocialProofCarousel() {
   const isMobile = useIsMobile();
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   return (
     <section className="py-8 md:py-12 overflow-hidden">
