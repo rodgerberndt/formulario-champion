@@ -19,6 +19,7 @@
           var LOCK_CLASS = '__locked__';
           var STYLE_ID = '__scroll_lock__';
           var SESSION_KEY = 'champion_scroll_bootstrap_v3';
+          var RELOAD_KEY = 'champion_post_load_reload_v1';
           var LOCK_TIMEOUT_MS = 550;
           var releaseTimer = null;
           var pinTimer = null;
@@ -119,6 +120,15 @@
 
           window.addEventListener('load', function () {
             scheduleRelease(firstLoadInTab ? 120 : 80);
+            try {
+              var isLanding = window.location.pathname === '/' || window.location.pathname === '/index.html';
+              if (isLanding && sessionStorage.getItem(RELOAD_KEY) !== '1') {
+                sessionStorage.setItem(RELOAD_KEY, '1');
+                setTimeout(function () {
+                  window.location.reload();
+                }, 1);
+              }
+            } catch (e) {}
           }, { once: true });
 
           window.addEventListener('pageshow', function (event) {
