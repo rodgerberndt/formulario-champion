@@ -11,7 +11,7 @@ export function Hero({
   onStartClick
 }: HeroProps) {
   const { ref: sectionRef, isVisible } = useReveal();
-  return <section ref={sectionRef} className="min-h-[80vh] md:min-h-screen flex items-center justify-center pt-16 pb-16 md:pb-12 relative overflow-hidden">
+  return <section ref={sectionRef} className="min-h-[70vh] md:min-h-[90vh] flex items-center justify-center pt-16 pb-6 md:pb-8 relative overflow-hidden">
       {/* Simplified Background - Remove heavy effects on mobile */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="hero-glow top-1/4 left-1/2 -translate-x-1/2" />
