@@ -82,14 +82,14 @@ export function Hero({
                 {/* Subtle gold glow background */}
                 <div className="hero-logo-glow-bg absolute inset-0 bg-secondary/10 blur-3xl rounded-full" />
 
-                {/* Mini logos floating around (bigger, more visible) */}
-                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle absolute -top-2 -left-4 w-16 h-16 sm:w-20 sm:h-20 object-contain opacity-40 z-20" />
-                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-3 absolute bottom-8 -left-2 w-12 h-12 sm:w-14 sm:h-14 object-contain opacity-30 z-20" />
-                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-2 absolute -bottom-2 -right-4 w-14 h-14 sm:w-16 sm:h-16 object-contain opacity-40 z-20" />
+                {/* Mini logos floating around (small, subtle, slow) */}
+                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-slow absolute top-0 -left-2 w-8 h-8 sm:w-10 sm:h-10 object-contain opacity-20 z-20" />
+                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-slow-3 absolute bottom-10 left-0 w-6 h-6 sm:w-8 sm:h-8 object-contain opacity-15 z-20" />
+                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-slow-2 absolute bottom-2 -right-2 w-7 h-7 sm:w-9 sm:h-9 object-contain opacity-20 z-20" />
 
                 {/* Apple-style trophy emojis */}
-                <span className="hero-sparkle-2 absolute top-1/3 -right-5 text-3xl sm:text-4xl z-20 select-none" aria-hidden="true">🏆</span>
-                <span className="hero-sparkle absolute -top-2 right-12 text-2xl sm:text-3xl z-20 select-none" aria-hidden="true">🏆</span>
+                <span className="hero-sparkle-slow-2 absolute top-1/3 -right-3 text-xl sm:text-2xl z-20 select-none opacity-80" aria-hidden="true">🏆</span>
+                <span className="hero-sparkle-slow absolute -top-1 right-10 text-lg sm:text-xl z-20 select-none opacity-70" aria-hidden="true">🏆</span>
 
                 {/* 3D floating logo */}
                 <img
