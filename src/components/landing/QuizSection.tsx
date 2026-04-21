@@ -20,6 +20,7 @@ import {
   ESTAGIO_OPTIONS,
 } from "@/lib/leadScoring";
 import { QuizResult } from "./QuizResult";
+import { PhoneField, isPhoneE164Valid } from "@/components/PhoneField";
 
 const WHATSAPP_NUMBER = "[INSERIR_NUMERO]"; // Ex: 5511999999999
 
@@ -44,6 +45,7 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [phoneValid, setPhoneValid] = useState(false);
   const [scoreResult, setScoreResult] = useState<{ score: number; tier: string } | null>(null);
   const [formData, setFormData] = useState<QuizFormData>({
     nome_completo: "",
@@ -68,6 +70,9 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
         setFormData(prev => ({ ...prev, ...parsed.formData }));
         if (parsed.step && parsed.step <= totalSteps) {
           setStep(parsed.step);
+        }
+        if (parsed.formData?.whatsapp) {
+          setPhoneValid(isPhoneE164Valid(parsed.formData.whatsapp));
         }
       } catch {
         // Invalid saved data, ignore
@@ -99,18 +104,12 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const formatWhatsApp = (value: string) => {
-    // Permite números nacionais e internacionais
-    return value.replace(/[^\d+\-\s()]/g, '').slice(0, 20);
-  };
-
   const canProceed = () => {
     switch (step) {
       case 1:
         return formData.nome_completo.trim().length >= 3;
       case 2: {
-        const digits = formData.whatsapp.replace(/\D/g, '');
-        return digits.length >= 8 && digits.length <= 15 && formData.lgpd;
+        return phoneValid && isPhoneE164Valid(formData.whatsapp) && formData.lgpd;
       }
       case 3:
         return formData.instagram.trim().length >= 1;
@@ -350,12 +349,13 @@ Fico no aguardo.`;
             <label className="block text-base md:text-lg font-medium text-foreground mb-4">
               Qual é o seu WhatsApp?
             </label>
-            <Input
-              className={inputClasses}
-              placeholder="+55 (00) 00000-0000 ou internacional"
+            <PhoneField
               value={formData.whatsapp}
-              onChange={(e) => updateField("whatsapp", formatWhatsApp(e.target.value))}
-              maxLength={20}
+              onChange={(e164, valid) => {
+                updateField("whatsapp", e164);
+                setPhoneValid(valid);
+              }}
+              placeholder="Seu número de WhatsApp"
             />
             <div className="flex items-center gap-2 pt-3">
               <Checkbox

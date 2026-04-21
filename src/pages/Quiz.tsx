@@ -22,6 +22,7 @@ import {
 "@/lib/leadScoring";
 import { useTracking } from "@/hooks/useTracking";
 import { useUtmCapture, getUtmForDb, getAttributionSource } from "@/hooks/useUtmCapture";
+import { PhoneField, isPhoneE164Valid } from "@/components/PhoneField";
 
 const env = import.meta.env as Record<string, string | undefined>;
 const externalSupabaseUrl = env.SUPABASE_URL ?? env.VITE_SUPABASE_URL;
@@ -178,6 +179,7 @@ export default function Quiz() {
     return () => clearTimeout(t);
   }, []);
   const formDataRef = useRef<QuizFormData | null>(null);
+  const [phoneValid, setPhoneValid] = useState(false);
   const [formData, setFormData] = useState<QuizFormData>({
     nome_completo: "",
     whatsapp: "",
@@ -221,6 +223,9 @@ export default function Quiz() {
         if (parsed.step && parsed.step <= totalSteps) {
           setStep(parsed.step);
         }
+        if (parsed.formData?.whatsapp) {
+          setPhoneValid(isPhoneE164Valid(parsed.formData.whatsapp));
+        }
       } catch {
 
         // Invalid saved data
@@ -240,11 +245,6 @@ export default function Quiz() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }, []);
 
-  const formatWhatsApp = (value: string) => {
-    // Permite números nacionais e internacionais — mantém apenas dígitos, espaços, + e -
-    return value.replace(/[^\d+\-\s()]/g, '').slice(0, 20);
-  };
-
   const canProceed = useCallback(() => {
     switch (step) {
       case 1:
@@ -256,9 +256,7 @@ export default function Quiz() {
       case 4:
         return formData.nome_completo.trim().length >= 3;
       case 5: {
-        const digits = formData.whatsapp.replace(/\D/g, '');
-        // Aceita números nacionais e internacionais (E.164: 8–15 dígitos)
-        return digits.length >= 8 && digits.length <= 15 && formData.lgpd;
+        return phoneValid && isPhoneE164Valid(formData.whatsapp) && formData.lgpd;
       }
       case 6:
         return formData.instagram.trim().length >= 1;
@@ -273,7 +271,7 @@ export default function Quiz() {
       default:
         return false;
     }
-  }, [step, formData]);
+  }, [step, formData, phoneValid]);
 
   const handleSubmit = async () => {
     if (!canProceed() || isSubmitting) return;
@@ -564,20 +562,14 @@ export default function Quiz() {
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
               Qual é o seu WhatsApp?
             </label>
-            <Input
-              className={inputClasses}
-              placeholder="+55 (00) 00000-0000 ou internacional"
+            <PhoneField
               value={formData.whatsapp}
-              onChange={(e) => updateField("whatsapp", formatWhatsApp(e.target.value))}
-              inputMode="tel"
-              maxLength={20} />
-            {(() => {
-              const digits = formData.whatsapp.replace(/\D/g, '');
-              if (digits.length > 0 && digits.length < 8) {
-                return <p className="text-xs text-destructive">Digite um número de telefone válido</p>;
-              }
-              return null;
-            })()}
+              onChange={(e164, valid) => {
+                updateField("whatsapp", e164);
+                setPhoneValid(valid);
+              }}
+              placeholder="Seu número de WhatsApp"
+            />
 
             <div className="flex items-start gap-2.5 pt-1">
               <Checkbox

@@ -12,6 +12,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { ChevronRight, ChevronLeft, Check, Loader2 } from "lucide-react";
+import { PhoneField, isPhoneE164Valid } from "@/components/PhoneField";
 
 const MERCADOS = [
   "Infoproduto",
@@ -37,6 +38,7 @@ export function LeadForm() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [phoneValid, setPhoneValid] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     nome_completo: "",
     whatsapp: "",
@@ -57,9 +59,7 @@ export function LeadForm() {
       case 1:
         return formData.nome_completo.trim().length >= 3;
       case 2: {
-        const digits = formData.whatsapp.replace(/\D/g, '');
-        // Aceita números nacionais e internacionais (mín. 8 dígitos, máx. 15 conforme E.164)
-        return digits.length >= 8 && digits.length <= 15;
+        return phoneValid && isPhoneE164Valid(formData.whatsapp);
       }
       case 3:
         return formData.instagram.trim().length >= 2;
@@ -164,11 +164,13 @@ export function LeadForm() {
             <label className="block text-lg font-medium text-foreground">
               Qual é o seu WhatsApp?
             </label>
-            <Input
-              className={inputClasses}
-              placeholder="(00) 00000-0000"
+            <PhoneField
               value={formData.whatsapp}
-              onChange={(e) => updateField("whatsapp", e.target.value)}
+              onChange={(e164, valid) => {
+                updateField("whatsapp", e164);
+                setPhoneValid(valid);
+              }}
+              placeholder="Seu número de WhatsApp"
             />
           </div>
         );
