@@ -100,19 +100,18 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
   };
 
   const formatWhatsApp = (value: string) => {
-    const digits = value.replace(/\D/g, '');
-    if (digits.length <= 2) return digits;
-    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-    if (digits.length <= 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+    // Permite números nacionais e internacionais
+    return value.replace(/[^\d+\-\s()]/g, '').slice(0, 20);
   };
 
   const canProceed = () => {
     switch (step) {
       case 1:
         return formData.nome_completo.trim().length >= 3;
-      case 2:
-        return formData.whatsapp.replace(/\D/g, '').length >= 10 && formData.lgpd;
+      case 2: {
+        const digits = formData.whatsapp.replace(/\D/g, '');
+        return digits.length >= 8 && digits.length <= 15 && formData.lgpd;
+      }
       case 3:
         return formData.instagram.trim().length >= 1;
       case 4:
