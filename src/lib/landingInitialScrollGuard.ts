@@ -9,35 +9,12 @@ const forceScrollTop = () => {
 
 const isLandingPath = () => window.location.pathname === "/";
 
-const RELOAD_FLAG_KEY = "landing_reloaded_once";
-
-const maybeReloadOnce = () => {
-  if (typeof window === "undefined") return false;
-  if (!isLandingPath()) return false;
-  try {
-    const navEntries = performance.getEntriesByType?.("navigation") as PerformanceNavigationTiming[] | undefined;
-    const navType = navEntries?.[0]?.type;
-    // Only auto-reload on first navigation (not on reload/back-forward)
-    if (navType && navType !== "navigate") return false;
-    if (sessionStorage.getItem(RELOAD_FLAG_KEY)) return false;
-    sessionStorage.setItem(RELOAD_FLAG_KEY, "1");
-    window.location.reload();
-    return true;
-  } catch {
-    return false;
-  }
-};
-
 export function installLandingInitialScrollGuard() {
   if (typeof window === "undefined" || typeof document === "undefined") {
     return () => {};
   }
 
   if (!isLandingPath() || !document.body) {
-    return () => {};
-  }
-
-  if (maybeReloadOnce()) {
     return () => {};
   }
 
