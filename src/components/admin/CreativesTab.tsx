@@ -1311,13 +1311,108 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           {/* Row 3: Reuniões */}
           <Card>
             <CardContent className="pt-4">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Reuniões</p>
+              <div className="flex items-center justify-between mb-3 border-b border-border/50 pb-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Reuniões</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => {
+                    setShowMeetingsList(!showMeetingsList);
+                    if (!showMeetingsList) loadMeetings();
+                  }}
+                >
+                  {showMeetingsList ? <ChevronUp className="w-3 h-3 mr-1" /> : <ChevronDown className="w-3 h-3 mr-1" />}
+                  {showMeetingsList ? "Ocultar" : "Ver reuniões"}
+                </Button>
+              </div>
               <div className="grid grid-cols-4 gap-4">
                 <MetricItem label="Taxa Agendamento" value={scheduleRate !== null ? `${scheduleRate.toFixed(1)}%` : "—"} color="text-yellow-400" sub="MQL → Reuniões" />
                 <MetricItem label="Agendadas" value={formatNumber(totals.meetings)} color="text-orange-400" sub={formatCurrency(totals.cp_meeting) || undefined} />
                 <MetricItem label="Realizadas" value={formatNumber(totals.meetings_attended || 0)} color="text-emerald-400" sub={totals.meetings > 0 ? `${((totals.meetings_attended || 0) / totals.meetings * 100).toFixed(0)}% show rate` : "—"} />
                 <MetricItem label="Conversão Call" value={callConversion !== null ? `${callConversion.toFixed(1)}%` : "—"} color="text-cyan-400" sub="Realizadas → Assessoria" />
               </div>
+              {showMeetingsList && (
+                <div className="mt-4 border-t border-border/50 pt-4">
+                  {meetingsLoading ? (
+                    <div className="flex justify-center py-6">
+                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    </div>
+                  ) : meetingsList.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-6">Nenhuma reunião registrada no período.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Data</TableHead>
+                          <TableHead>Criativo</TableHead>
+                          <TableHead>Observação</TableHead>
+                          <TableHead>Realizada</TableHead>
+                          <TableHead className="w-20"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {meetingsList.map((meeting) => (
+                          <TableRow key={meeting.id}>
+                            <TableCell>{format(new Date(meeting.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}</TableCell>
+                            <TableCell>
+                              {meeting.utm_content || meeting.creative_key ? (
+                                <Badge variant="outline" className="text-xs">{meeting.utm_content || meeting.creative_key}</Badge>
+                              ) : (
+                                <span className="text-muted-foreground text-xs">—</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{meeting.notes || "—"}</TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleToggleAttended(meeting)}
+                                disabled={togglingAttendedId === meeting.id}
+                                className={meeting.attended ? "text-emerald-400" : "text-muted-foreground"}
+                              >
+                                {togglingAttendedId === meeting.id ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : meeting.attended ? (
+                                  <><Check className="w-4 h-4 mr-1" /> Sim</>
+                                ) : (
+                                  <><X className="w-4 h-4 mr-1" /> Não</>
+                                )}
+                              </Button>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setEditingMeeting(meeting);
+                                    setEditMeetingForm({ notes: meeting.notes || "", attended: !!meeting.attended });
+                                  }}
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteMeeting(meeting.id)}
+                                  disabled={deletingMeetingId === meeting.id}
+                                >
+                                  {deletingMeetingId === meeting.id ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="w-4 h-4 text-destructive" />
+                                  )}
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -1356,7 +1451,21 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             {/* Totais */}
             <Card className="border-emerald-500/20">
               <CardContent className="pt-4">
-                <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-3 border-b border-emerald-500/20 pb-2">Total</p>
+                <div className="flex items-center justify-between mb-3 border-b border-emerald-500/20 pb-2">
+                  <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Total</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => {
+                      setShowSalesList(!showSalesList);
+                      if (!showSalesList) loadSales();
+                    }}
+                  >
+                    {showSalesList ? <ChevronUp className="w-3 h-3 mr-1" /> : <ChevronDown className="w-3 h-3 mr-1" />}
+                    {showSalesList ? "Ocultar" : "Ver vendas"}
+                  </Button>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <MetricItem
                     label="Vendas"
@@ -1369,6 +1478,81 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               </CardContent>
             </Card>
           </div>
+
+          {/* Sales table inline (expanded under Total card) */}
+          {showSalesList && (
+            <Card>
+              <CardContent className="pt-4">
+                {salesLoading ? (
+                  <div className="flex justify-center py-6">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  </div>
+                ) : salesList.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-6">Nenhuma venda registrada no período.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Data</TableHead>
+                        <TableHead>Tipo</TableHead>
+                        <TableHead className="text-right">Receita</TableHead>
+                        <TableHead>Criativo</TableHead>
+                        <TableHead>Notas</TableHead>
+                        <TableHead className="w-20"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {salesList.map((sale) => (
+                        <TableRow key={sale.id}>
+                          <TableCell>{format(new Date(sale.sale_date + "T12:00:00"), "dd/MM/yyyy", { locale: ptBR })}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className={`text-[10px] ${sale.sale_type === "assessoria" ? "border-teal-500/50 text-teal-400" : "border-violet-500/50 text-violet-400"}`}>
+                              {sale.sale_type === "assessoria" ? "Assessoria" : "Sprint"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right font-semibold">{formatCurrency(sale.revenue)}</TableCell>
+                          <TableCell>
+                            {sale.utm_content || sale.creative_key ? (
+                              <Badge variant="outline" className="text-xs">{sale.utm_content || sale.creative_key}</Badge>
+                            ) : (
+                              <span className="text-muted-foreground text-xs">—</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{sale.notes || "—"}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setEditingSale(sale);
+                                  setEditSaleForm({ revenue: String(sale.revenue), sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria", notes: sale.notes || "" });
+                                }}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteSale(sale.id)}
+                                disabled={deletingSaleId === sale.id}
+                              >
+                                {deletingSaleId === sale.id ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="w-4 h-4 text-destructive" />
+                                )}
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Row 5: Performance */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -1689,99 +1873,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         </Card>
       )}
 
-      {/* Sales Listing */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <DollarSign className="w-5 h-5" />
-              Vendas Registradas
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setShowSalesList(!showSalesList);
-                if (!showSalesList) loadSales();
-              }}
-            >
-              {showSalesList ? <ChevronUp className="w-4 h-4 mr-1" /> : <ChevronDown className="w-4 h-4 mr-1" />}
-              {showSalesList ? "Ocultar" : "Ver vendas"}
-            </Button>
-          </CardTitle>
-        </CardHeader>
-        {showSalesList && (
-          <CardContent>
-            {salesLoading ? (
-              <div className="flex justify-center py-6">
-                <Loader2 className="w-6 h-6 animate-spin text-primary" />
-              </div>
-            ) : salesList.length === 0 ? (
-              <p className="text-center text-muted-foreground py-6">Nenhuma venda registrada no período.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead className="text-right">Receita</TableHead>
-                    <TableHead>Criativo</TableHead>
-                    <TableHead>Notas</TableHead>
-                    <TableHead className="w-20"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {salesList.map((sale) => (
-                    <TableRow key={sale.id}>
-                      <TableCell>{format(new Date(sale.sale_date + "T12:00:00"), "dd/MM/yyyy", { locale: ptBR })}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={`text-[10px] ${sale.sale_type === "assessoria" ? "border-teal-500/50 text-teal-400" : "border-violet-500/50 text-violet-400"}`}>
-                          {sale.sale_type === "assessoria" ? "Assessoria" : "Sprint"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-semibold">{formatCurrency(sale.revenue)}</TableCell>
-                      <TableCell>
-                        {sale.utm_content || sale.creative_key ? (
-                          <Badge variant="outline" className="text-xs">{sale.utm_content || sale.creative_key}</Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-xs">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{sale.notes || "—"}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setEditingSale(sale);
-                              setEditSaleForm({ revenue: String(sale.revenue), sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria", notes: sale.notes || "" });
-                            }}
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteSale(sale.id)}
-                            disabled={deletingSaleId === sale.id}
-                          >
-                            {deletingSaleId === sale.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            )}
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        )}
-      </Card>
 
       {/* Drill-down Dialog */}
       <Dialog open={!!drillCreative} onOpenChange={(open) => !open && setDrillCreative(null)}>
@@ -2062,109 +2153,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         </DialogContent>
       </Dialog>
 
-      {/* Meetings Listing */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              Reuniões Registradas
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setShowMeetingsList(!showMeetingsList);
-                if (!showMeetingsList) loadMeetings();
-              }}
-            >
-              {showMeetingsList ? <ChevronUp className="w-4 h-4 mr-1" /> : <ChevronDown className="w-4 h-4 mr-1" />}
-              {showMeetingsList ? "Ocultar" : "Ver reuniões"}
-            </Button>
-          </CardTitle>
-        </CardHeader>
-        {showMeetingsList && (
-          <CardContent>
-            {meetingsLoading ? (
-              <div className="flex justify-center py-6">
-                <Loader2 className="w-6 h-6 animate-spin text-primary" />
-              </div>
-            ) : meetingsList.length === 0 ? (
-              <p className="text-center text-muted-foreground py-6">Nenhuma reunião registrada no período.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Criativo</TableHead>
-                    <TableHead>Observação</TableHead>
-                    <TableHead>Realizada</TableHead>
-                    <TableHead className="w-20"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {meetingsList.map((meeting) => (
-                    <TableRow key={meeting.id}>
-                      <TableCell>{format(new Date(meeting.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}</TableCell>
-                      <TableCell>
-                        {meeting.utm_content || meeting.creative_key ? (
-                          <Badge variant="outline" className="text-xs">{meeting.utm_content || meeting.creative_key}</Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-xs">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{meeting.notes || "—"}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleToggleAttended(meeting)}
-                          disabled={togglingAttendedId === meeting.id}
-                          className={meeting.attended ? "text-emerald-400" : "text-muted-foreground"}
-                        >
-                          {togglingAttendedId === meeting.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : meeting.attended ? (
-                            <><Check className="w-4 h-4 mr-1" /> Sim</>
-                          ) : (
-                            <><X className="w-4 h-4 mr-1" /> Não</>
-                          )}
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setEditingMeeting(meeting);
-                              setEditMeetingForm({ notes: meeting.notes || "", attended: !!meeting.attended });
-                            }}
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteMeeting(meeting.id)}
-                            disabled={deletingMeetingId === meeting.id}
-                          >
-                            {deletingMeetingId === meeting.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            )}
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        )}
-      </Card>
 
       {/* Edit Sale Dialog */}
       <Dialog open={!!editingSale} onOpenChange={(open) => !open && setEditingSale(null)}>
