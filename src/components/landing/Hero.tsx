@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Sparkles, TrendingUp, Trophy } from "lucide-react";
+import { ArrowRight, Users, Sparkles, TrendingUp } from "lucide-react";
 import championHeroLogo from "@/assets/champion-hero-logo.png";
 import { ShimmerText, KeywordGlow, LineReveal } from "@/components/landing/TextEffects";
 import { useReveal } from "@/hooks/useReveal";
@@ -82,14 +82,14 @@ export function Hero({
                 {/* Subtle gold glow background */}
                 <div className="hero-logo-glow-bg absolute inset-0 bg-secondary/10 blur-3xl rounded-full" />
 
-                {/* Mini logos floating around (faded) */}
-                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle absolute top-2 -left-2 w-8 h-8 object-contain opacity-20 z-20" />
-                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-3 absolute bottom-10 left-2 w-6 h-6 object-contain opacity-15 z-20" />
-                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-2 absolute bottom-2 -right-2 w-7 h-7 object-contain opacity-20 z-20" />
+                {/* Mini logos floating around (bigger, more visible) */}
+                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle absolute -top-2 -left-4 w-16 h-16 sm:w-20 sm:h-20 object-contain opacity-40 z-20" />
+                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-3 absolute bottom-8 -left-2 w-12 h-12 sm:w-14 sm:h-14 object-contain opacity-30 z-20" />
+                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-2 absolute -bottom-2 -right-4 w-14 h-14 sm:w-16 sm:h-16 object-contain opacity-40 z-20" />
 
-                {/* Trophy accents */}
-                <Trophy className="hero-sparkle-2 absolute top-1/3 -right-3 w-5 h-5 text-secondary/60 z-20" />
-                <Trophy className="hero-sparkle absolute -top-1 right-10 w-4 h-4 text-secondary/50 z-20" />
+                {/* Apple-style trophy emojis */}
+                <span className="hero-sparkle-2 absolute top-1/3 -right-5 text-3xl sm:text-4xl z-20 select-none" aria-hidden="true">🏆</span>
+                <span className="hero-sparkle absolute -top-2 right-12 text-2xl sm:text-3xl z-20 select-none" aria-hidden="true">🏆</span>
 
                 {/* 3D floating logo */}
                 <img
