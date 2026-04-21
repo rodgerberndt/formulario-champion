@@ -241,11 +241,8 @@ export default function Quiz() {
   }, []);
 
   const formatWhatsApp = (value: string) => {
-    const digits = value.replace(/\D/g, '');
-    if (digits.length <= 2) return digits;
-    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-    if (digits.length <= 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+    // Permite números nacionais e internacionais — mantém apenas dígitos, espaços, + e -
+    return value.replace(/[^\d+\-\s()]/g, '').slice(0, 20);
   };
 
   const canProceed = useCallback(() => {
@@ -260,10 +257,8 @@ export default function Quiz() {
         return formData.nome_completo.trim().length >= 3;
       case 5: {
         const digits = formData.whatsapp.replace(/\D/g, '');
-        const validDDD = digits.length >= 2 && parseInt(digits.slice(0, 2)) >= 11 && parseInt(digits.slice(0, 2)) <= 99;
-        const validMobile = digits.length === 11 && digits[2] === '9';
-        const validLandline = digits.length === 10;
-        return (validDDD && (validMobile || validLandline)) && formData.lgpd;
+        // Aceita números nacionais e internacionais (E.164: 8–15 dígitos)
+        return digits.length >= 8 && digits.length <= 15 && formData.lgpd;
       }
       case 6:
         return formData.instagram.trim().length >= 1;
@@ -571,27 +566,15 @@ export default function Quiz() {
             </label>
             <Input
               className={inputClasses}
-              placeholder="(00) 00000-0000"
+              placeholder="+55 (00) 00000-0000 ou internacional"
               value={formData.whatsapp}
               onChange={(e) => updateField("whatsapp", formatWhatsApp(e.target.value))}
               inputMode="tel"
-              maxLength={16} />
+              maxLength={20} />
             {(() => {
               const digits = formData.whatsapp.replace(/\D/g, '');
-              if (digits.length > 0 && digits.length < 10) {
-                return <p className="text-xs text-destructive">Digite um número completo com DDD</p>;
-              }
-              if (digits.length >= 10) {
-                const ddd = parseInt(digits.slice(0, 2));
-                if (ddd < 11 || ddd > 99) {
-                  return <p className="text-xs text-destructive">DDD inválido</p>;
-                }
-                if (digits.length === 11 && digits[2] !== '9') {
-                  return <p className="text-xs text-destructive">Celular deve começar com 9 após o DDD</p>;
-                }
-                if (digits.length === 10 && digits[2] === '9') {
-                  return <p className="text-xs text-destructive">Número incompleto — falta um dígito</p>;
-                }
+              if (digits.length > 0 && digits.length < 8) {
+                return <p className="text-xs text-destructive">Digite um número de telefone válido</p>;
               }
               return null;
             })()}
