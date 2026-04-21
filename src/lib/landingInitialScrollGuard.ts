@@ -40,6 +40,13 @@ export function installLandingInitialScrollGuard() {
   let rafPrimary = 0;
   let rafSecondary = 0;
 
+  const enforceTopWhileLocked = () => {
+    if (released) return;
+    if (window.scrollY !== 0 || document.documentElement.scrollTop !== 0 || document.body.scrollTop !== 0) {
+      forceScrollTop();
+    }
+  };
+
   const clearPending = () => {
     window.clearTimeout(releaseTimer);
     window.clearTimeout(safetyTimer);
@@ -117,12 +124,14 @@ export function installLandingInitialScrollGuard() {
     loadReleaseTimer = window.setTimeout(release, 120);
   };
 
-  const handlePageShow = () => {
+  const handlePageShow = (event: PageTransitionEvent) => {
     if (!isLandingPath()) return;
+    if (!event.persisted) return;
     runGuardCycle();
   };
 
   runGuardCycle();
+  window.addEventListener("scroll", enforceTopWhileLocked, { passive: true });
 
   if (document.readyState !== "complete") {
     window.addEventListener("load", handleWindowLoad, { once: true });
@@ -134,6 +143,7 @@ export function installLandingInitialScrollGuard() {
     clearPending();
     window.removeEventListener("load", handleWindowLoad);
     window.removeEventListener("pageshow", handlePageShow);
+    window.removeEventListener("scroll", enforceTopWhileLocked);
     restoreStyles();
   };
 }
