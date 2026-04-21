@@ -370,7 +370,7 @@ Deno.serve(async (req: Request) => {
       // Fetch sessions in range
       const rawSessions = await fetchAllPaged<any>(
         "lead_sessions",
-        "id, ip_address, created_at, referrer, first_page",
+        "id, ip_address, created_at, referrer, first_page, completed",
         (q: any) => {
           if (from) q = q.gte("created_at", from);
           if (toEnd) q = q.lte("created_at", toEnd);
