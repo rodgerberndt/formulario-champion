@@ -1,9 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Sparkles, TrendingUp } from "lucide-react";
-import founderPhoto from "@/assets/founder-photo.webp";
-import founderPhoto256 from "@/assets/founder-photo-256.webp";
-import founderPhoto384 from "@/assets/founder-photo-384.webp";
-import founderPhoto512 from "@/assets/founder-photo-512.webp";
+import championHeroLogo from "@/assets/champion-hero-logo.png";
 import { ShimmerText, KeywordGlow, LineReveal } from "@/components/landing/TextEffects";
 import { useReveal } from "@/hooks/useReveal";
 
@@ -84,10 +81,8 @@ export function Hero({
               <div className="relative">
                 <div className="hidden md:block absolute -inset-4 bg-secondary/15 blur-2xl rounded-full" />
                 <img
-                  src={founderPhoto256}
-                  srcSet={`${founderPhoto256} 256w, ${founderPhoto384} 384w, ${founderPhoto512} 512w`}
-                  sizes="(min-width: 1024px) 384px, (min-width: 768px) 320px, (min-width: 640px) 256px, 224px"
-                  alt="Founder"
+                  src={championHeroLogo}
+                  alt="Champion"
                   width={384}
                   height={384}
                   className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain"
