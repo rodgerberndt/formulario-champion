@@ -36,9 +36,13 @@ async function bootstrap() {
 
   void cleanupPreviewServiceWorkers();
 
-  window.setTimeout(() => {
-    cleanupInitialScrollGuard();
-  }, 1200);
+  window.addEventListener(
+    "pagehide",
+    () => {
+      cleanupInitialScrollGuard();
+    },
+    { once: true },
+  );
 }
 
 bootstrap();
