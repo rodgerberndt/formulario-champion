@@ -28,7 +28,7 @@ export function Hero({
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/12 border border-secondary/25 mb-5">
                 <Sparkles className="w-3.5 h-3.5 text-secondary" />
                 <span className="text-xs text-secondary font-medium">
-                  Diagnóstico gratuito de 2 minutos
+                  Formulário gratuito de 2 minutos
                 </span>
               </div>
 
