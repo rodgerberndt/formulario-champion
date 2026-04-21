@@ -352,10 +352,10 @@ Fico no aguardo.`;
             </label>
             <Input
               className={inputClasses}
-              placeholder="(00) 00000-0000"
+              placeholder="+55 (00) 00000-0000 ou internacional"
               value={formData.whatsapp}
               onChange={(e) => updateField("whatsapp", formatWhatsApp(e.target.value))}
-              maxLength={16}
+              maxLength={20}
             />
             <div className="flex items-center gap-2 pt-3">
               <Checkbox
