@@ -97,7 +97,7 @@ export function Hero({
                   alt="Champion"
                   width={512}
                   height={512}
-                  className="hero-logo-3d relative w-72 h-72 sm:w-80 sm:h-80 md:w-[26rem] md:h-[26rem] lg:w-[32rem] lg:h-[32rem] object-contain z-10"
+                  className="hero-logo-3d relative w-80 h-80 sm:w-96 sm:h-96 md:w-[30rem] md:h-[30rem] lg:w-[36rem] lg:h-[36rem] object-contain z-10"
                   loading="eager"
                   decoding="async"
                   fetchPriority="high"
