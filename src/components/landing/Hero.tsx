@@ -82,11 +82,6 @@ export function Hero({
                 {/* Subtle gold glow background */}
                 <div className="hero-logo-glow-bg absolute inset-0 bg-secondary/10 blur-3xl rounded-full" />
 
-                {/* Mini logos floating around (small, subtle, slow) */}
-                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-slow absolute top-0 -left-2 w-8 h-8 sm:w-10 sm:h-10 object-contain opacity-20 z-20" />
-                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-slow-3 absolute bottom-10 left-0 w-6 h-6 sm:w-8 sm:h-8 object-contain opacity-15 z-20" />
-                <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-slow-2 absolute bottom-2 -right-2 w-7 h-7 sm:w-9 sm:h-9 object-contain opacity-20 z-20" />
-
 
                 {/* 3D floating logo */}
                 <img
