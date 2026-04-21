@@ -404,16 +404,15 @@ Deno.serve(async (req: Request) => {
           .map((e: any) => e.session_id)
       );
 
-      // Fetch leads (completions ground truth)
-      const leads = await fetchAllPaged<any>(
-        "leads",
-        "id, created_at",
-        (q: any) => {
-          if (from) q = q.gte("created_at", from);
-          if (toEnd) q = q.lte("created_at", toEnd);
-          return q;
-        }
+      // Completions = sessões com event submit OU completed=true (ground truth coerente
+      // com visitantes/entradas, evitando taxa de conclusão > 100% causada por leads
+      // sem sessão na tabela `leads`).
+      const submittedSessionIds = new Set(
+        events
+          .filter((e: any) => e.event_name === "submit" && sessionIds.has(e.session_id))
+          .map((e: any) => e.session_id)
       );
+      sessions.forEach((s: any) => { if (s.completed) submittedSessionIds.add(s.id); });
 
       // Fetch ad_spend in range. ad_spend.date is a DATE column already in
       // local calendar (no timezone conversion needed) — query as YYYY-MM-DD.
