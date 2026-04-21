@@ -87,9 +87,6 @@ export function Hero({
                 <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-slow-3 absolute bottom-10 left-0 w-6 h-6 sm:w-8 sm:h-8 object-contain opacity-15 z-20" />
                 <img src={championHeroLogo} alt="" aria-hidden="true" className="hero-sparkle-slow-2 absolute bottom-2 -right-2 w-7 h-7 sm:w-9 sm:h-9 object-contain opacity-20 z-20" />
 
-                {/* Apple-style trophy emojis */}
-                <span className="hero-sparkle-slow-2 absolute top-1/3 -right-3 text-xl sm:text-2xl z-20 select-none opacity-80" aria-hidden="true">🏆</span>
-                <span className="hero-sparkle-slow absolute -top-1 right-10 text-lg sm:text-xl z-20 select-none opacity-70" aria-hidden="true">🏆</span>
 
                 {/* 3D floating logo */}
                 <img
