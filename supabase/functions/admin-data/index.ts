@@ -659,9 +659,11 @@ Deno.serve(async (req: Request) => {
         filteredEvents.filter((e: any) => e.event_name === "step_view").map((e: any) => e.session_id)
       );
 
-      // Ensure funnel is monotonically decreasing
-      const enteredQuiz = Math.max(sessionsWithQuizView.size, completed);
-      const startedQuiz = Math.max(sessionsWithStepView.size, completed);
+      // Funil monotônico: completed <= startedQuiz <= enteredQuiz <= uniqueVisitors
+      const enteredQuizRaw = Math.max(sessionsWithQuizView.size, completed);
+      const startedQuizRaw = Math.max(sessionsWithStepView.size, completed);
+      const enteredQuiz = Math.min(enteredQuizRaw, uniqueVisitors);
+      const startedQuiz = Math.min(startedQuizRaw, enteredQuiz);
 
       // Button distribution
       const buttonEventCounts: Record<string, Set<string>> = {
