@@ -152,10 +152,10 @@ export function PortfolioSection() {
       <div className="container mx-auto px-5 max-w-6xl">
         <div className={`text-center mb-8 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-2">
-            PORTFÓLIO <span className="gold-text">DE ADS</span>
+            RESULTADOS <span className="gold-text">REAIS</span>
           </h2>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            Alguns dos ads que a Champion já fez para seus clientes.
+            Feedbacks de clientes da Champion.
           </p>
         </div>
 
