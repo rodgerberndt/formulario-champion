@@ -593,12 +593,25 @@ Deno.serve(async (req: Request) => {
       // Filter to only sessions in our range
       const filteredEvents = allEvents.filter((e: any) => sessionIds.has(e.session_id));
 
-      // Get total leads (ground truth for completed)
+      // Ground truth for "completed" = sessões que efetivamente concluíram o quiz
+      // (event submit OU session.completed=true), restritas às sessões NÃO filtradas (sem ruído interno).
+      // Usar leads.count diretamente inflava o número porque inclui leads sem sessão (importações,
+      // duplicatas, bio recovery), gerando taxas > 100%.
+      const sessionsWithSubmitGround = new Set(
+        allEvents
+          .filter((e: any) => e.event_name === "submit" && sessionIds.has(e.session_id))
+          .map((e: any) => e.session_id)
+      );
+      const completedSessionIds = new Set<string>(sessionsWithSubmitGround);
+      sessions.forEach((s: any) => { if (s.completed) completedSessionIds.add(s.id); });
+      const completed = completedSessionIds.size;
+
+      // Total de leads (mantido para exibição separada / KPIs de volume real)
       let leadsQuery = supabase.from("leads").select("*", { count: "exact", head: true });
       if (from) leadsQuery = leadsQuery.gte("created_at", from);
       if (toEnd) leadsQuery = leadsQuery.lte("created_at", toEnd);
       const { count: leadsCount } = await leadsQuery;
-      const completed = leadsCount || 0;
+      const totalLeads = leadsCount || 0;
 
       // ===== Landing Views (fonte da verdade) =====
       // Conta hits únicos por session_id; se session_id null, dedup por (ip + user_agent) janela de 30min
