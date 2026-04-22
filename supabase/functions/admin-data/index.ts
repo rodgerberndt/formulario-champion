@@ -404,15 +404,19 @@ Deno.serve(async (req: Request) => {
           .map((e: any) => e.session_id)
       );
 
-      // Completions = sessões com event submit OU completed=true (ground truth coerente
-      // com visitantes/entradas, evitando taxa de conclusão > 100% causada por leads
-      // sem sessão na tabela `leads`).
+      // Completions = submits do período + fallback para sessões criadas no período
+      // que terminaram com completed=true mas ficaram sem event submit.
       const submittedSessionIds = new Set(
         events
           .filter((e: any) => e.event_name === "submit" && sessionIds.has(e.session_id))
           .map((e: any) => e.session_id)
       );
-      sessions.forEach((s: any) => { if (s.completed) submittedSessionIds.add(s.id); });
+      sessions.forEach((s: any) => {
+        const createdAt = new Date(s.created_at).getTime();
+        const fromMs = from ? new Date(from).getTime() : Number.NEGATIVE_INFINITY;
+        const toMs = toEnd ? new Date(toEnd).getTime() : Number.POSITIVE_INFINITY;
+        if (s.completed && createdAt >= fromMs && createdAt <= toMs) submittedSessionIds.add(s.id);
+      });
 
       // Fetch ad_spend in range. ad_spend.date is a DATE column already in
       // local calendar (no timezone conversion needed) — query as YYYY-MM-DD.
