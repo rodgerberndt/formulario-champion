@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, AlertTriangle, TrendingDown, MousePointer, Eye, Smartphone, Monitor, RefreshCw } from "lucide-react";
+import { Loader2, AlertTriangle, MousePointer, Eye, Smartphone, Monitor, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDateRange } from "@/context/DateRangeContext";
 
@@ -132,39 +132,6 @@ export default function TrackingTab({ fetchAdminData }: Props) {
           icon={MousePointer}
         />
       </div>
-
-      {/* Perda de carregamento */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingDown className="w-5 h-5" />
-            Perda de Carregamento (Meta → Landing)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Cliques perdidos</p>
-              <p className={`text-3xl font-bold ${lossAccent}`}>
-                {data.comparisons.meta_vs_hits_loss.toLocaleString("pt-BR")}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">% de perda</p>
-              <p className={`text-3xl font-bold ${lossAccent}`}>{lossPct.toFixed(1)}%</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Connect rate</p>
-              <p className="text-3xl font-bold">
-                {data.meta.clicks > 0
-                  ? ((data.landing_hits.total / data.meta.clicks) * 100).toFixed(1)
-                  : "0"}
-                %
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Segmentações */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
