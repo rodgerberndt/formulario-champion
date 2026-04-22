@@ -2823,7 +2823,7 @@ export default function AdminAnalytics() {
                     visitors: metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors,
                     sessions: metrics.total_visitors,
                     entered_quiz: metrics.entered_quiz,
-                    completed: leads.length,
+                    completed: metrics.completed,
                     conversion_rate: Number(metrics.conversion_rate) || 0,
                     step_funnel: metrics.step_funnel || [],
                   } : null}
