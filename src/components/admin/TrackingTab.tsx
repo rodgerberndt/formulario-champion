@@ -86,9 +86,6 @@ export default function TrackingTab({ fetchAdminData }: Props) {
   if (error) return <div className="text-red-500 p-4">{error}</div>;
   if (!data) return null;
 
-  const lossPct = data.comparisons.meta_vs_hits_loss_pct;
-  const lossAccent = lossPct > 30 ? "text-red-500" : lossPct > 15 ? "text-yellow-500" : "text-green-500";
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
