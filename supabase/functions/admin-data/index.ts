@@ -367,13 +367,13 @@ Deno.serve(async (req: Request) => {
         return all;
       }
 
-      // Fetch sessions in range
+      // Fetch sessions active in range
       const rawSessions = await fetchAllPaged<any>(
         "lead_sessions",
-        "id, ip_address, created_at, referrer, first_page, completed",
+        "id, ip_address, created_at, last_seen_at, referrer, first_page, completed",
         (q: any) => {
-          if (from) q = q.gte("created_at", from);
-          if (toEnd) q = q.lte("created_at", toEnd);
+          if (from) q = q.gte("last_seen_at", from);
+          if (toEnd) q = q.lte("last_seen_at", toEnd);
           return q;
         }
       );
@@ -404,15 +404,19 @@ Deno.serve(async (req: Request) => {
           .map((e: any) => e.session_id)
       );
 
-      // Completions = sessões com event submit OU completed=true (ground truth coerente
-      // com visitantes/entradas, evitando taxa de conclusão > 100% causada por leads
-      // sem sessão na tabela `leads`).
+      // Completions = submits do período + fallback para sessões criadas no período
+      // que terminaram com completed=true mas ficaram sem event submit.
       const submittedSessionIds = new Set(
         events
           .filter((e: any) => e.event_name === "submit" && sessionIds.has(e.session_id))
           .map((e: any) => e.session_id)
       );
-      sessions.forEach((s: any) => { if (s.completed) submittedSessionIds.add(s.id); });
+      sessions.forEach((s: any) => {
+        const createdAt = new Date(s.created_at).getTime();
+        const fromMs = from ? new Date(from).getTime() : Number.NEGATIVE_INFINITY;
+        const toMs = toEnd ? new Date(toEnd).getTime() : Number.POSITIVE_INFINITY;
+        if (s.completed && createdAt >= fromMs && createdAt <= toMs) submittedSessionIds.add(s.id);
+      });
 
       // Fetch ad_spend in range. ad_spend.date is a DATE column already in
       // local calendar (no timezone conversion needed) — query as YYYY-MM-DD.
@@ -472,10 +476,10 @@ Deno.serve(async (req: Request) => {
         return b;
       };
 
-      // Per-session -> earliest event date (use session created_at)
+      // Per-session -> active date inside the selected range
       const sessionDate = new Map<string, string>();
       sessions.forEach((s: any) => {
-        const ymd = toLocalDate(s.created_at);
+        const ymd = toLocalDate(s.last_seen_at || s.created_at);
         sessionDate.set(s.id, ymd);
         const b = ensure(ymd);
         b.sessions += 1;
@@ -483,18 +487,29 @@ Deno.serve(async (req: Request) => {
         b.visitors.add(visitorKey);
       });
 
-      enteredQuizSessionIds.forEach((sid) => {
-        const ymd = sessionDate.get(sid as string);
-        if (!ymd) return;
+      const enteredQuizByDay = new Set<string>();
+      events.forEach((e: any) => {
+        if (e.event_name !== "quiz_view" || !sessionIds.has(e.session_id)) return;
+        enteredQuizByDay.add(`${e.session_id}|${toLocalDate(e.created_at)}`);
+      });
+      enteredQuizByDay.forEach((key) => {
+        const [, ymd] = key.split("|");
         ensure(ymd).entered_quiz += 1;
       });
 
+      const completedByDay = new Set<string>();
+      events.forEach((e: any) => {
+        if (e.event_name !== "submit" || !sessionIds.has(e.session_id)) return;
+        completedByDay.add(`${e.session_id}|${toLocalDate(e.created_at)}`);
+      });
       submittedSessionIds.forEach((sid) => {
         const ymd = sessionDate.get(sid as string);
         if (!ymd) return;
-        const b = ensure(ymd);
-        // Garantir monotonicidade: completed <= entered_quiz <= sessions
-        b.completed += 1;
+        completedByDay.add(`${sid}|${ymd}`);
+      });
+      completedByDay.forEach((key) => {
+        const [, ymd] = key.split("|");
+        ensure(ymd).completed += 1;
       });
 
       // ad_spend.date is already a YYYY-MM-DD string aligned to São Paulo
