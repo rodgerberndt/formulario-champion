@@ -242,7 +242,7 @@ Deno.serve(async (req: Request) => {
       let query = supabase
         .from("lead_sessions")
         .select("*", { count: "exact" })
-        .order("created_at", { ascending: false })
+        .order("last_seen_at", { ascending: false })
         .range(offset, offset + limit - 1);
 
       // Filter out internal/noise sessions by default
@@ -257,11 +257,11 @@ Deno.serve(async (req: Request) => {
 
       // Apply filters
       if (from) {
-        query = query.gte("created_at", from);
+        query = query.gte("last_seen_at", from);
       }
       if (to) {
         const toEnd = to.includes("T") ? to : to + "T23:59:59.999Z";
-        query = query.lte("created_at", toEnd);
+        query = query.lte("last_seen_at", toEnd);
       }
       if (buttonId) {
         query = query.eq("start_button_id", buttonId);
@@ -404,7 +404,7 @@ Deno.serve(async (req: Request) => {
           .map((e: any) => e.session_id)
       );
 
-      // Completions = submits do período + fallback para sessões criadas no período
+      // Completions = submits do período + fallback para sessões ativas no período
       // que terminaram com completed=true mas ficaram sem event submit.
       const submittedSessionIds = new Set(
         events
@@ -412,10 +412,7 @@ Deno.serve(async (req: Request) => {
           .map((e: any) => e.session_id)
       );
       sessions.forEach((s: any) => {
-        const createdAt = new Date(s.created_at).getTime();
-        const fromMs = from ? new Date(from).getTime() : Number.NEGATIVE_INFINITY;
-        const toMs = toEnd ? new Date(toEnd).getTime() : Number.POSITIVE_INFINITY;
-        if (s.completed && createdAt >= fromMs && createdAt <= toMs) submittedSessionIds.add(s.id);
+        if (s.completed && !submittedSessionIds.has(s.id)) submittedSessionIds.add(s.id);
       });
 
       // Fetch ad_spend in range. ad_spend.date is a DATE column already in
@@ -566,9 +563,9 @@ Deno.serve(async (req: Request) => {
       }
 
       // Fetch ALL sessions (paginated) - include referrer & first_page for filtering
-      const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, referrer, first_page, completed, started_quiz", (q: any) => {
-        if (from) q = q.gte("created_at", from);
-        if (toEnd) q = q.lte("created_at", toEnd);
+      const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, last_seen_at, referrer, first_page, completed, started_quiz", (q: any) => {
+        if (from) q = q.gte("last_seen_at", from);
+        if (toEnd) q = q.lte("last_seen_at", toEnd);
         return q;
       });
 
@@ -620,7 +617,9 @@ Deno.serve(async (req: Request) => {
           .map((e: any) => e.session_id)
       );
       const completedSessionIds = new Set<string>(sessionsWithSubmitGround);
-      sessions.forEach((s: any) => { if (s.completed) completedSessionIds.add(s.id); });
+      sessions.forEach((s: any) => {
+        if (s.completed && !completedSessionIds.has(s.id)) completedSessionIds.add(s.id);
+      });
       const completed = completedSessionIds.size;
 
       // Total de leads (mantido para exibição separada / KPIs de volume real)
