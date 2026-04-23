@@ -1730,7 +1730,9 @@ Deno.serve(async (req: Request) => {
 
       // Totals
       const totalSpend = creatives.reduce((s, c) => s + c.spend, 0) + (spendTotal - spendMapped);
-      const totalLeads = allLeads.length;
+      const totalLeads = campaignFilter
+        ? creatives.reduce((s, c) => s + c.leads_count, 0)
+        : allLeads.length;
       const totalMql = creatives.reduce((s, c) => s + c.mql_count, 0);
       const totalTierSmall = creatives.reduce((s, c) => s + c.tier_small_count, 0);
       const totalTierMedium = creatives.reduce((s, c) => s + c.tier_medium_count, 0);
