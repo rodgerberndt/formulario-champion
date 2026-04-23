@@ -17,19 +17,19 @@ type Case = {
 
 const cases: Case[] = [
   {
-    name: "DANIEL MENDES",
-    instagram: "@MENDESS.DANIELL",
-    role: "CEO Imperial Pay & Bestseller Tribopay 2024",
-    image: danielMendes,
+    name: "NATHAN (TEBULOZO)",
+    instagram: "@TEBULOZO",
+    role: "Infoprodutor • Múltiplos 6 dígitos de faturamento",
+    image: natanTebulozo,
     body: (
       <>
-        Quando o Daniel chegou até nós, sofria muito com a{" "}
-        <strong className="text-foreground">reprovação constante de criativos</strong>, já que atuava em{" "}
-        <strong className="text-foreground">nichos mais pesados e black no Meta</strong>. Aplicamos uma{" "}
-        <strong className="text-foreground">estratégia de criativos sob medida</strong> para esse cenário
-        e elevamos drasticamente a <strong className="text-foreground">assertividade</strong> e a{" "}
-        <strong className="text-foreground">taxa de aprovação</strong>, eliminando essa dor da operação e
-        destravando a escala contínua e saudável.
+        Conhecido como <strong className="text-foreground">Tebulozo</strong> no mercado, Nathan é{" "}
+        <strong className="text-foreground">infoprodutor</strong> e já ultrapassa{" "}
+        <strong className="text-foreground">800k</strong> de faturamento. Nathan iniciou com a gente com
+        a dor de que precisava de alguém para realmente conseguir delegar os criativos, e poder focar em
+        novas operações, gerando mais escala para todas... e foi exatamente isso que aconteceu. No nosso
+        primeiro mês faturamos <strong className="text-foreground">94k</strong>, faltou pouco para a
+        plaquinha.
       </>
     ),
   },
@@ -48,19 +48,19 @@ const cases: Case[] = [
     ),
   },
   {
-    name: "NATHAN (TEBULOZO)",
-    instagram: "@TEBULOZO",
-    role: "Infoprodutor • Múltiplos 6 dígitos de faturamento",
-    image: natanTebulozo,
+    name: "DANIEL MENDES",
+    instagram: "@MENDESS.DANIELL",
+    role: "CEO Imperial Pay & Bestseller Tribopay 2024",
+    image: danielMendes,
     body: (
       <>
-        Conhecido como <strong className="text-foreground">Tebulozo</strong> no mercado, Nathan é{" "}
-        <strong className="text-foreground">infoprodutor</strong> e já ultrapassa{" "}
-        <strong className="text-foreground">800k</strong> de faturamento. Nathan iniciou com a gente com
-        a dor de que precisava de alguém para realmente conseguir delegar os criativos, e poder focar em
-        novas operações, gerando mais escala para todas... e foi exatamente isso que aconteceu. No nosso
-        primeiro mês faturamos <strong className="text-foreground">94k</strong>, faltou pouco para a
-        plaquinha.
+        Quando o Daniel chegou até nós, sofria muito com a{" "}
+        <strong className="text-foreground">reprovação constante de criativos</strong>, já que atuava em{" "}
+        <strong className="text-foreground">nichos mais pesados e black no Meta</strong>. Aplicamos uma{" "}
+        <strong className="text-foreground">estratégia de criativos sob medida</strong> para esse cenário
+        e elevamos drasticamente a <strong className="text-foreground">assertividade</strong> e a{" "}
+        <strong className="text-foreground">taxa de aprovação</strong>, eliminando essa dor da operação e
+        destravando a escala contínua e saudável.
       </>
     ),
   },
