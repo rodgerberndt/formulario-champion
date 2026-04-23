@@ -4,6 +4,7 @@ import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
+import { SuccessCases } from "@/components/landing/SuccessCases";
 import { PainSection } from "@/components/landing/PainSection";
 import { PortfolioSection } from "@/components/landing/PortfolioSection";
 import { MetodoChampion } from "@/components/landing/MetodoChampion";
@@ -68,6 +69,10 @@ const Index = () => {
 
         <section data-theme="void" data-track-id="social_proof" data-track-order="2">
           <SocialProofCarousel />
+        </section>
+
+        <section data-theme="void" data-track-id="success_cases" data-track-order="2.5">
+          <SuccessCases />
         </section>
 
         <section data-theme="ember" data-track-id="dor" data-track-order="3">
