@@ -1,4 +1,4 @@
-const CACHE_NAME = "champion-v2";
+const CACHE_NAME = "champion-v3";
 const STATIC_ASSETS = [
   "/",
   "/icons/icon-192.png",
@@ -45,6 +45,11 @@ self.addEventListener("fetch", (event) => {
     url.pathname.startsWith("/rest/") ||
     url.pathname.startsWith("/auth/")
   ) {
+    return;
+  }
+
+  // NEVER cache the admin route — must always be fresh for the team
+  if (url.pathname.startsWith("/admin")) {
     return;
   }
 
