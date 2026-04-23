@@ -48,6 +48,7 @@ import { Badge } from "@/components/ui/badge";
 import { PwaInstallButton } from "@/components/PwaInstallButton";
 import { useLeadNotifications } from "@/hooks/useLeadNotifications";
 import { NotificationsPopover } from "@/components/admin/NotificationsPopover";
+import { DailyReportReminder } from "@/components/admin/DailyReportReminder";
 
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -1450,6 +1451,9 @@ export default function AdminAnalytics() {
           <div className="flex flex-wrap gap-4 mb-6">
             <UniversalDateRangePicker />
           </div>
+
+          {/* Alerta de relatório diário pendente (Caio/Dara) — após 9h */}
+          <DailyReportReminder enabled={isAuthenticated} />
 
           {/* Active Users Card - Expandable */}
           <Card className="mb-4 border-green-500/50 bg-green-500/5">
