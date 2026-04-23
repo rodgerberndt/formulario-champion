@@ -359,7 +359,6 @@ export function useLeadNotifications(
           clearInterval(pollIntervalRef.current);
           pollIntervalRef.current = null;
         }
-        onAuthError?.();
         return;
       }
       console.error("[Notifications] Poll error:", err);

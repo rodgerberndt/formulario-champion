@@ -482,7 +482,10 @@ export default function AdminAnalytics() {
     const handleExpired = () => {
       if (!logoutFiredRef.current) {
         logoutFiredRef.current = true;
-        handleLogout();
+        clearAdminToken();
+        setIsAuthenticated(false);
+        setMetrics(null);
+        setSessions([]);
         toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
       }
     };
@@ -493,7 +496,7 @@ export default function AdminAnalytics() {
       window.removeEventListener(ADMIN_AUTH_EXPIRED_EVENT, handleExpired as EventListener);
     };
     setIsLoading(false);
-  }, [handleLogout]);
+  }, []);
 
   // Load data when authenticated or global date range changes
   useEffect(() => {
@@ -770,8 +773,11 @@ export default function AdminAnalytics() {
 
   // Wire up the auth error ref after handleLogout is defined
   handleAuthErrorRef.current = () => {
-    handleLogout();
-    toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
+    if (!logoutFiredRef.current) {
+      logoutFiredRef.current = true;
+      handleLogout();
+      toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
+    }
   };
 
   const logoutFiredRef = useRef(false);
