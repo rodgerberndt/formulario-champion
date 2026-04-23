@@ -63,6 +63,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
+import { fetchAdmin, getAdminToken } from "@/lib/adminAuth";
 import WeeklyAnalysisSection from "./WeeklyAnalysisSection";
 import LandingBehaviorSection from "./LandingBehaviorSection";
 import { AnimatedNumber } from "./AnimatedNumber";
@@ -428,11 +429,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const handleDeleteSale = async (saleId: string) => {
     setDeletingSaleId(saleId);
     try {
-      const token = sessionStorage.getItem("admin_analytics_token");
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      await fetch(`${supabaseUrl}/functions/v1/admin-data/manual-sales/${saleId}`, {
+      await fetchAdmin(`${supabaseUrl}/functions/v1/admin-data/manual-sales/${saleId}`, {
         method: "DELETE",
-        headers: { "x-admin-token": token || "" },
+        headers: { "x-admin-token": getAdminToken() || "" },
       });
       toast({ title: "Venda removida!" });
       setSalesList(prev => prev.filter(s => s.id !== saleId));
@@ -553,11 +553,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const handleDeleteMeeting = async (meetingId: string) => {
     setDeletingMeetingId(meetingId);
     try {
-      const token = sessionStorage.getItem("admin_analytics_token");
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      await fetch(`${supabaseUrl}/functions/v1/admin-data/meetings/${meetingId}`, {
+      await fetchAdmin(`${supabaseUrl}/functions/v1/admin-data/meetings/${meetingId}`, {
         method: "DELETE",
-        headers: { "x-admin-token": token || "" },
+        headers: { "x-admin-token": getAdminToken() || "" },
       });
       toast({ title: "Reunião removida!" });
       setMeetingsList(prev => prev.filter(m => m.id !== meetingId));
@@ -573,11 +572,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     if (!editingSale) return;
     setSavingEditSale(true);
     try {
-      const token = sessionStorage.getItem("admin_analytics_token");
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      await fetch(`${supabaseUrl}/functions/v1/admin-data/manual-sales/${editingSale.id}`, {
+      await fetchAdmin(`${supabaseUrl}/functions/v1/admin-data/manual-sales/${editingSale.id}`, {
         method: "PUT",
-        headers: { "x-admin-token": token || "", "Content-Type": "application/json" },
+        headers: { "x-admin-token": getAdminToken() || "", "Content-Type": "application/json" },
         body: JSON.stringify({ revenue: editSaleForm.revenue, sale_type: editSaleForm.sale_type, notes: editSaleForm.notes }),
       });
       toast({ title: "Venda atualizada!" });
@@ -595,11 +593,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     if (!editingMeeting) return;
     setSavingEditMeeting(true);
     try {
-      const token = sessionStorage.getItem("admin_analytics_token");
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      await fetch(`${supabaseUrl}/functions/v1/admin-data/meetings/${editingMeeting.id}`, {
+      await fetchAdmin(`${supabaseUrl}/functions/v1/admin-data/meetings/${editingMeeting.id}`, {
         method: "PUT",
-        headers: { "x-admin-token": token || "", "Content-Type": "application/json" },
+        headers: { "x-admin-token": getAdminToken() || "", "Content-Type": "application/json" },
         body: JSON.stringify({ notes: editMeetingForm.notes, attended: editMeetingForm.attended }),
       });
       toast({ title: "Reunião atualizada!" });
@@ -616,11 +613,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const handleToggleAttended = async (meeting: Meeting) => {
     setTogglingAttendedId(meeting.id);
     try {
-      const token = sessionStorage.getItem("admin_analytics_token");
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      await fetch(`${supabaseUrl}/functions/v1/admin-data/meetings/${meeting.id}`, {
+      await fetchAdmin(`${supabaseUrl}/functions/v1/admin-data/meetings/${meeting.id}`, {
         method: "PUT",
-        headers: { "x-admin-token": token || "", "Content-Type": "application/json" },
+        headers: { "x-admin-token": getAdminToken() || "", "Content-Type": "application/json" },
         body: JSON.stringify({ attended: !meeting.attended }),
       });
       setMeetingsList(prev => prev.map(m => m.id === meeting.id ? { ...m, attended: !m.attended } : m));
@@ -664,13 +660,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const handleMetaSync = async () => {
     setSyncing(true);
     try {
-      const token = sessionStorage.getItem("admin_analytics_token");
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const res = await fetch(`${supabaseUrl}/functions/v1/meta-ads-sync`, {
+      const res = await fetchAdmin(`${supabaseUrl}/functions/v1/meta-ads-sync`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-token": token || "",
+          "x-admin-token": getAdminToken() || "",
         },
         body: JSON.stringify({ date_from: startDateOnly, date_to: endDateOnly }),
       });
