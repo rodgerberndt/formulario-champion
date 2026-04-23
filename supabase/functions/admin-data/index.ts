@@ -1313,6 +1313,17 @@ Deno.serve(async (req: Request) => {
       const toDate = url.searchParams.get("to_date") || (to && !to.includes("T") ? to : null);
       const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
       const campaignType = url.searchParams.get("campaign_type"); // "mql" | "lead" | null (all)
+      // Filter by specific campaign names (comma-separated). When set, ALL aggregations
+      // (leads, spend, sales, meetings) are restricted to rows matching those campaigns.
+      const campaignsParam = url.searchParams.get("campaigns");
+      const campaignFilter: Set<string> | null = campaignsParam
+        ? new Set(campaignsParam.split("|||").map(c => c.trim()).filter(Boolean))
+        : null;
+      const matchesCampaignFilter = (name: string | null | undefined): boolean => {
+        if (!campaignFilter) return true;
+        if (!name) return false;
+        return campaignFilter.has(name);
+      };
 
       // Helper to check if a campaign name is an MQL campaign
       function isMqlCampaign(campaignName: string | null): boolean {
@@ -1538,6 +1549,8 @@ Deno.serve(async (req: Request) => {
         // Campaign type filter
         if (campaignType === "mql" && !isMqlCampaign(lead.utm_campaign)) continue;
         if (campaignType === "lead" && isMqlCampaign(lead.utm_campaign)) continue;
+        // Specific campaign-name filter
+        if (campaignFilter && !matchesCampaignFilter(lead.utm_campaign)) continue;
 
         const rawKey = lead.utm_content;
         let ck: string;
@@ -1577,6 +1590,8 @@ Deno.serve(async (req: Request) => {
         // Campaign type filter for spend
         if (campaignType === "mql" && !isMqlCampaign(s.campaign_name)) continue;
         if (campaignType === "lead" && isMqlCampaign(s.campaign_name)) continue;
+        // Specific campaign-name filter
+        if (campaignFilter && !matchesCampaignFilter(s.campaign_name)) continue;
         const amount = Number(s.spend) || 0;
         spendTotal += amount;
         const rawKey = s.utm_content || s.ad_name;
