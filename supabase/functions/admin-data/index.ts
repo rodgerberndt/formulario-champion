@@ -346,8 +346,24 @@ Deno.serve(async (req: Request) => {
 
     // GET /weekly-metrics - Aggregate visitors / quiz entries / completions per calendar day (America/Sao_Paulo)
     if (path === "/weekly-metrics" && req.method === "GET") {
-      const from = url.searchParams.get("from");
-      const to = url.searchParams.get("to");
+      let from = url.searchParams.get("from");
+      let to = url.searchParams.get("to");
+
+      // Clamp range to a maximum of 90 days to avoid worker resource limits.
+      // The weekly-analysis section only renders day-of-week aggregates, so
+      // ranges longer than ~3 months provide no extra signal but easily OOM.
+      const MAX_DAYS = 90;
+      if (from && to) {
+        const fromMs = new Date(from).getTime();
+        const toMs = new Date(to).getTime();
+        if (Number.isFinite(fromMs) && Number.isFinite(toMs) && toMs > fromMs) {
+          const spanDays = (toMs - fromMs) / 86400000;
+          if (spanDays > MAX_DAYS) {
+            const clampedFromMs = toMs - MAX_DAYS * 86400000;
+            from = new Date(clampedFromMs).toISOString();
+          }
+        }
+      }
       const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
 
       async function fetchAllPaged<T>(table: string, select: string, filters: (q: any) => any): Promise<T[]> {
