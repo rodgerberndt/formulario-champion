@@ -245,16 +245,20 @@
     </script>
     <script>
       // Eagerly unregister service workers to prevent stale React runtime
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(regs) {
-          regs.forEach(function(r) { r.unregister(); });
-        });
-      }
-      if (typeof caches !== 'undefined') {
-        caches.keys().then(function(keys) {
-          keys.forEach(function(k) { caches.delete(k); });
-        });
-      }
+      try {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            regs.forEach(function(r) { r.unregister(); });
+          }).catch(function(){});
+        }
+      } catch(e) {}
+      try {
+        if (typeof caches !== 'undefined') {
+          caches.keys().then(function(keys) {
+            keys.forEach(function(k) { caches.delete(k); });
+          }).catch(function(){});
+        }
+      } catch(e) {}
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
