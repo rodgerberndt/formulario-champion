@@ -842,9 +842,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           <Button variant="outline" size="sm" onClick={() => setShowAddSpend(true)}>
             <Plus className="w-4 h-4 mr-1" /> Gasto
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowAddSale(true)}>
-            <Plus className="w-4 h-4 mr-1" /> Venda
-          </Button>
           <Button variant="outline" size="sm" onClick={() => setShowAddMeeting(true)}>
             <Calendar className="w-4 h-4 mr-1" /> Reunião
           </Button>
