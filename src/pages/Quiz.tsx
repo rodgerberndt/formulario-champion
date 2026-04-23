@@ -713,7 +713,7 @@ export default function Quiz() {
             </div>
 
             <label className="block text-base sm:text-lg font-medium text-foreground">
-              Em poucas palavras, descreva exatamente sua maior dor hoje na sua operação
+              O que você quer resolver hoje com a Champion?
             </label>
 
             <Textarea
