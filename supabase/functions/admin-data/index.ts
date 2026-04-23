@@ -1313,6 +1313,17 @@ Deno.serve(async (req: Request) => {
       const toDate = url.searchParams.get("to_date") || (to && !to.includes("T") ? to : null);
       const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
       const campaignType = url.searchParams.get("campaign_type"); // "mql" | "lead" | null (all)
+      // Filter by specific campaign names (comma-separated). When set, ALL aggregations
+      // (leads, spend, sales, meetings) are restricted to rows matching those campaigns.
+      const campaignsParam = url.searchParams.get("campaigns");
+      const campaignFilter: Set<string> | null = campaignsParam
+        ? new Set(campaignsParam.split("|||").map(c => c.trim()).filter(Boolean))
+        : null;
+      const matchesCampaignFilter = (name: string | null | undefined): boolean => {
+        if (!campaignFilter) return true;
+        if (!name) return false;
+        return campaignFilter.has(name);
+      };
 
       // Helper to check if a campaign name is an MQL campaign
       function isMqlCampaign(campaignName: string | null): boolean {
@@ -1538,6 +1549,8 @@ Deno.serve(async (req: Request) => {
         // Campaign type filter
         if (campaignType === "mql" && !isMqlCampaign(lead.utm_campaign)) continue;
         if (campaignType === "lead" && isMqlCampaign(lead.utm_campaign)) continue;
+        // Specific campaign-name filter
+        if (campaignFilter && !matchesCampaignFilter(lead.utm_campaign)) continue;
 
         const rawKey = lead.utm_content;
         let ck: string;
@@ -1577,6 +1590,8 @@ Deno.serve(async (req: Request) => {
         // Campaign type filter for spend
         if (campaignType === "mql" && !isMqlCampaign(s.campaign_name)) continue;
         if (campaignType === "lead" && isMqlCampaign(s.campaign_name)) continue;
+        // Specific campaign-name filter
+        if (campaignFilter && !matchesCampaignFilter(s.campaign_name)) continue;
         const amount = Number(s.spend) || 0;
         spendTotal += amount;
         const rawKey = s.utm_content || s.ad_name;
@@ -1601,9 +1616,21 @@ Deno.serve(async (req: Request) => {
         }
       }
 
+      // When filtering by campaign names, only sales/meetings whose linked lead matches
+      // the campaign filter should be aggregated. Build the allowed-lead set.
+      const campaignFilteredLeadIds: Set<string> | null = campaignFilter
+        ? new Set(
+            allLeads
+              .filter(l => matchesCampaignFilter(l.utm_campaign))
+              .map(l => l.id)
+          )
+        : null;
+
       // Process sales - resolve creative from linked lead if needed
       let salesWithoutCreative = 0;
       for (const sale of (salesData || [])) {
+        // When campaign filter is active, drop sales not linked to a matching lead
+        if (campaignFilteredLeadIds && (!sale.lead_id || !campaignFilteredLeadIds.has(sale.lead_id))) continue;
         let rawKey = sale.creative_key || sale.utm_content;
         // If no creative but has lead_id, try to get it from the lead
         if ((!rawKey || rawKey === '{{ad.name}}' || DIRECT_KEYS.has(normalizeKey(rawKey) || "")) && sale.lead_id) {
@@ -1639,6 +1666,8 @@ Deno.serve(async (req: Request) => {
       let totalMeetingsCount = 0;
       let totalMeetingsAttendedCount = 0;
       for (const meeting of (meetingsData || [])) {
+        // When campaign filter is active, drop meetings not linked to a matching lead
+        if (campaignFilteredLeadIds && (!meeting.lead_id || !campaignFilteredLeadIds.has(meeting.lead_id))) continue;
         let rawKey = meeting.creative_key || meeting.utm_content;
         if ((!rawKey || rawKey === '{{ad.name}}' || DIRECT_KEYS.has(normalizeKey(rawKey) || "")) && meeting.lead_id) {
           const leadCreative = leadUtmMap.get(meeting.lead_id);
@@ -1701,7 +1730,9 @@ Deno.serve(async (req: Request) => {
 
       // Totals
       const totalSpend = creatives.reduce((s, c) => s + c.spend, 0) + (spendTotal - spendMapped);
-      const totalLeads = allLeads.length;
+      const totalLeads = campaignFilter
+        ? creatives.reduce((s, c) => s + c.leads_count, 0)
+        : allLeads.length;
       const totalMql = creatives.reduce((s, c) => s + c.mql_count, 0);
       const totalTierSmall = creatives.reduce((s, c) => s + c.tier_small_count, 0);
       const totalTierMedium = creatives.reduce((s, c) => s + c.tier_medium_count, 0);
