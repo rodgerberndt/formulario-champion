@@ -51,6 +51,7 @@ import { NotificationsPopover } from "@/components/admin/NotificationsPopover";
 
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ADMIN_AUTH_EXPIRED_EVENT, ADMIN_TOKEN_KEY, clearAdminToken, fetchAdmin, getAdminToken } from "@/lib/adminAuth";
 
 const KommoLogsPanel = lazy(() => import("@/components/admin/KommoLogsPanel"));
 
@@ -64,8 +65,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-const ADMIN_TOKEN_KEY = "admin_analytics_token";
 
 interface Metrics {
   total_visitors: number;
@@ -383,14 +382,13 @@ export default function AdminAnalytics() {
     setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, sdr_override: newSdr } : l));
     
     try {
-      const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+      const token = getAdminToken();
+      if (!token) throw new Error("Sessão expirada");
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${lead.id}`;
-      const res = await fetch(url, {
+      const res = await fetchAdmin(url, {
         method: "PUT",
         headers: {
-          "x-admin-token": token || "",
           "Content-Type": "application/json",
-          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
         body: JSON.stringify({ sdr_override: newSdr }),
       });

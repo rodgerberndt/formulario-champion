@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { fetchAdmin, getAdminToken } from "@/lib/adminAuth";
 
 const NOTIFY_PREF_KEY = "champion_notify_enabled";
 const POLL_INTERVAL_MS = 15_000; // Poll every 15 seconds
@@ -171,9 +172,7 @@ export function useLeadNotifications(
   const notificationsEnabledRef = useRef(notificationsEnabled);
   notificationsEnabledRef.current = notificationsEnabled;
 
-  const getToken = useCallback(() => {
-    return sessionStorage.getItem("admin_analytics_token");
-  }, []);
+  const getToken = useCallback(() => getAdminToken(), []);
 
   const sendNativeNotification = useCallback((title: string, body: string, tag: string) => {
     if (
@@ -311,20 +310,10 @@ export function useLeadNotifications(
 
       // Fetch leads, sales, and meetings in parallel
       const [leadsRes, salesRes, meetingsRes] = await Promise.all([
-        fetch(`${baseUrl}/leads?from=${today}&to=${today}`, { headers }),
-        fetch(`${baseUrl}/manual-sales?from=${today}&to=${today}`, { headers }),
-        fetch(`${baseUrl}/meetings?from=${today}&to=${today}`, { headers }),
+        fetchAdmin(`${baseUrl}/leads?from=${today}&to=${today}`, { headers }),
+        fetchAdmin(`${baseUrl}/manual-sales?from=${today}&to=${today}`, { headers }),
+        fetchAdmin(`${baseUrl}/meetings?from=${today}&to=${today}`, { headers }),
       ]);
-
-      if (!leadsRes.ok && leadsRes.status === 401) {
-        console.log("[Notifications] Token expired, stopping polling");
-        if (pollIntervalRef.current) {
-          clearInterval(pollIntervalRef.current);
-          pollIntervalRef.current = null;
-        }
-        onAuthError?.();
-        return;
-      }
 
       const leads: NewLead[] = leadsRes.ok ? await leadsRes.json() : [];
       const sales: SaleRecord[] = salesRes.ok ? await salesRes.json() : [];
@@ -455,8 +444,8 @@ export function useLeadNotifications(
 
     try {
       const [salesRes, meetingsRes] = await Promise.all([
-        fetch(`${baseUrl}/manual-sales?from=2026-04-01&to=2026-04-13`, { headers }),
-        fetch(`${baseUrl}/meetings?from=2026-04-01T00:00:00Z&to=2026-04-13T23:59:59Z`, { headers }),
+        fetchAdmin(`${baseUrl}/manual-sales?from=2026-04-01&to=2026-04-13`, { headers }),
+        fetchAdmin(`${baseUrl}/meetings?from=2026-04-01T00:00:00Z&to=2026-04-13T23:59:59Z`, { headers }),
       ]);
 
       const sales: SaleRecord[] = salesRes.ok ? await salesRes.json() : [];
