@@ -457,6 +457,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       if (campaignTypeFilter !== "all") {
         params.campaign_type = campaignTypeFilter === "mql" ? "mql" : "lead";
       }
+      if (selectedCampaigns.length > 0) {
+        params.campaigns = selectedCampaigns.join("|||");
+      }
       const result = await fetchAdminData("/creatives", params);
       setData(result);
     } catch (err) {
@@ -464,7 +467,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     } finally {
       setLoading(false);
     }
-  }, [fetchAdminData, startDateOnly, endDateOnly, attribution, campaignTypeFilter]);
+  }, [fetchAdminData, startDateOnly, endDateOnly, attribution, campaignTypeFilter, selectedCampaigns]);
 
   // Load leads when date range changes
   useEffect(() => {
