@@ -37,9 +37,8 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
+import { fetchAdmin, getAdminToken } from "@/lib/adminAuth";
 import { cn } from "@/lib/utils";
-
-const ADMIN_TOKEN_KEY = "admin_analytics_token";
 
 interface DailyReport {
   id?: string;
@@ -360,15 +359,14 @@ export default function DailyReportsTab() {
   const [historyReports, setHistoryReports] = useState<DailyReport[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
-  const getToken = () => sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
   const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
 
   const fetchReport = useCallback(async (date: string, sdr: string) => {
     setLoading(true);
     try {
-      const res = await fetch(
+      const res = await fetchAdmin(
         `${supabaseUrl}/functions/v1/admin-data/daily-reports?sdr=${sdr}&month=${date.slice(0, 7)}`,
-        { headers: { "x-admin-token": getToken() } }
+        { headers: { "x-admin-token": getAdminToken() || "" } }
       );
       if (!res.ok) throw new Error("Fetch failed");
       const data: DailyReport[] = await res.json();
@@ -384,9 +382,9 @@ export default function DailyReportsTab() {
   const fetchMonthReports = useCallback(async (month: Date, sdr: string) => {
     try {
       const monthStr = format(month, "yyyy-MM");
-      const res = await fetch(
+      const res = await fetchAdmin(
         `${supabaseUrl}/functions/v1/admin-data/daily-reports?sdr=${sdr}&month=${monthStr}`,
-        { headers: { "x-admin-token": getToken() } }
+        { headers: { "x-admin-token": getAdminToken() || "" } }
       );
       if (res.ok) setMonthReports(await res.json());
     } catch { /* silent */ }
@@ -404,11 +402,11 @@ export default function DailyReportsTab() {
       const url = report.id
         ? `${supabaseUrl}/functions/v1/admin-data/daily-reports/${report.id}`
         : `${supabaseUrl}/functions/v1/admin-data/daily-reports`;
-      const res = await fetch(url, {
+      const res = await fetchAdmin(url, {
         method,
         headers: {
           "Content-Type": "application/json",
-          "x-admin-token": getToken(),
+          "x-admin-token": getAdminToken() || "",
         },
         body: JSON.stringify({
           ...report,
@@ -432,9 +430,9 @@ export default function DailyReportsTab() {
     setHistoryLoading(true);
     try {
       const monthStr = format(month, "yyyy-MM");
-      const res = await fetch(
+      const res = await fetchAdmin(
         `${supabaseUrl}/functions/v1/admin-data/daily-reports?month=${monthStr}`,
-        { headers: { "x-admin-token": getToken() } }
+        { headers: { "x-admin-token": getAdminToken() || "" } }
       );
       if (res.ok) setHistoryReports(await res.json());
     } catch { /* silent */ }
@@ -486,9 +484,9 @@ export default function DailyReportsTab() {
   const handleDeleteReport = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este relatório?")) return;
     try {
-      const res = await fetch(
+      const res = await fetchAdmin(
         `${supabaseUrl}/functions/v1/admin-data/daily-reports/${id}`,
-        { method: "DELETE", headers: { "x-admin-token": getToken() } }
+        { method: "DELETE", headers: { "x-admin-token": getAdminToken() || "" } }
       );
       if (!res.ok) throw new Error("Delete failed");
       setHistoryReports((prev) => prev.filter((r) => r.id !== id));

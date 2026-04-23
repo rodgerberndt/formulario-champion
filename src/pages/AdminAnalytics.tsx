@@ -51,6 +51,7 @@ import { NotificationsPopover } from "@/components/admin/NotificationsPopover";
 
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ADMIN_AUTH_EXPIRED_EVENT, ADMIN_TOKEN_KEY, clearAdminToken, fetchAdmin, getAdminToken, isAdminTokenExpired } from "@/lib/adminAuth";
 
 const KommoLogsPanel = lazy(() => import("@/components/admin/KommoLogsPanel"));
 
@@ -64,8 +65,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-const ADMIN_TOKEN_KEY = "admin_analytics_token";
 
 interface Metrics {
   total_visitors: number;
@@ -383,14 +382,13 @@ export default function AdminAnalytics() {
     setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, sdr_override: newSdr } : l));
     
     try {
-      const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+      const token = getAdminToken();
+      if (!token) throw new Error("Sessão expirada");
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${lead.id}`;
-      const res = await fetch(url, {
+      const res = await fetchAdmin(url, {
         method: "PUT",
         headers: {
-          "x-admin-token": token || "",
           "Content-Type": "application/json",
-          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
         body: JSON.stringify({ sdr_override: newSdr }),
       });
@@ -475,9 +473,28 @@ export default function AdminAnalytics() {
   // Check for existing token on mount
   useEffect(() => {
     const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
-    if (token) {
+    if (token && !isAdminTokenExpired(token)) {
       setIsAuthenticated(true);
+    } else if (token) {
+      clearAdminToken();
     }
+
+    const handleExpired = () => {
+      if (!logoutFiredRef.current) {
+        logoutFiredRef.current = true;
+        clearAdminToken();
+        setIsAuthenticated(false);
+        setMetrics(null);
+        setSessions([]);
+        toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
+      }
+    };
+
+    window.addEventListener(ADMIN_AUTH_EXPIRED_EVENT, handleExpired as EventListener);
+
+    return () => {
+      window.removeEventListener(ADMIN_AUTH_EXPIRED_EVENT, handleExpired as EventListener);
+    };
     setIsLoading(false);
   }, []);
 
@@ -748,7 +765,7 @@ export default function AdminAnalytics() {
   };
 
   const handleLogout = useCallback(() => {
-    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+    clearAdminToken();
     setIsAuthenticated(false);
     setMetrics(null);
     setSessions([]);
@@ -756,17 +773,17 @@ export default function AdminAnalytics() {
 
   // Wire up the auth error ref after handleLogout is defined
   handleAuthErrorRef.current = () => {
-    handleLogout();
-    toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
+    if (!logoutFiredRef.current) {
+      logoutFiredRef.current = true;
+      handleLogout();
+      toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
+    }
   };
 
   const logoutFiredRef = useRef(false);
 
   const fetchAdminData = async (path: string, params?: Record<string, string>) => {
-    const token = getToken();
-    
-    // If no token or already logging out, bail
-    if (!token || logoutFiredRef.current) {
+    if (logoutFiredRef.current) {
       throw new Error("Sessão expirada");
     }
     
@@ -775,8 +792,9 @@ export default function AdminAnalytics() {
     // Use fetch directly for proper path handling
     const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data${path}${queryString}`;
     
+    const token = getToken();
     const headers = {
-      "x-admin-token": token,
+      "x-admin-token": token || "",
       "Content-Type": "application/json",
       "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     };
@@ -787,7 +805,7 @@ export default function AdminAnalytics() {
 
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
-        const fetchResponse = await fetch(url, { headers });
+        const fetchResponse = await fetchAdmin(url, { headers });
 
         // Retry on transient errors (cold-start boot errors, gateway timeouts)
         if ((fetchResponse.status === 503 || fetchResponse.status === 504) && attempt < MAX_RETRIES - 1) {
@@ -799,13 +817,6 @@ export default function AdminAnalytics() {
 
         if (!fetchResponse.ok) {
           const error = await fetchResponse.json().catch(() => ({ error: "Erro desconhecido" }));
-          if (fetchResponse.status === 401 && !logoutFiredRef.current) {
-            logoutFiredRef.current = true;
-            console.log("Token expirado, fazendo logout...");
-            handleLogout();
-            toast({ title: "Sessão expirada. Faça login novamente.", variant: "destructive" });
-            throw new Error("Sessão expirada");
-          }
           throw new Error(error.error || "Erro ao carregar dados");
         }
 

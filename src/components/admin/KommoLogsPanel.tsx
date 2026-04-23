@@ -14,8 +14,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-
-const ADMIN_TOKEN_KEY = "admin_analytics_token";
+import { fetchAdmin } from "@/lib/adminAuth";
 
 interface KommoLog {
   id: string;
@@ -36,12 +35,10 @@ interface KommoLog {
 }
 
 async function fetchAdminData(path: string, params?: Record<string, string>) {
-  const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
   const queryString = params ? "?" + new URLSearchParams(params).toString() : "";
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data${path}${queryString}`;
-  const res = await fetch(url, {
+  const res = await fetchAdmin(url, {
     headers: {
-      "x-admin-token": token || "",
       "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     },
   });
@@ -50,12 +47,10 @@ async function fetchAdminData(path: string, params?: Record<string, string>) {
 }
 
 async function postAdminData(path: string, body?: Record<string, unknown>) {
-  const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data${path}`;
-  const res = await fetch(url, {
+  const res = await fetchAdmin(url, {
     method: "POST",
     headers: {
-      "x-admin-token": token || "",
       "Content-Type": "application/json",
       "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     },
