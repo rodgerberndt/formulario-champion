@@ -1616,9 +1616,21 @@ Deno.serve(async (req: Request) => {
         }
       }
 
+      // When filtering by campaign names, only sales/meetings whose linked lead matches
+      // the campaign filter should be aggregated. Build the allowed-lead set.
+      const campaignFilteredLeadIds: Set<string> | null = campaignFilter
+        ? new Set(
+            allLeads
+              .filter(l => matchesCampaignFilter(l.utm_campaign))
+              .map(l => l.id)
+          )
+        : null;
+
       // Process sales - resolve creative from linked lead if needed
       let salesWithoutCreative = 0;
       for (const sale of (salesData || [])) {
+        // When campaign filter is active, drop sales not linked to a matching lead
+        if (campaignFilteredLeadIds && (!sale.lead_id || !campaignFilteredLeadIds.has(sale.lead_id))) continue;
         let rawKey = sale.creative_key || sale.utm_content;
         // If no creative but has lead_id, try to get it from the lead
         if ((!rawKey || rawKey === '{{ad.name}}' || DIRECT_KEYS.has(normalizeKey(rawKey) || "")) && sale.lead_id) {
@@ -1654,6 +1666,8 @@ Deno.serve(async (req: Request) => {
       let totalMeetingsCount = 0;
       let totalMeetingsAttendedCount = 0;
       for (const meeting of (meetingsData || [])) {
+        // When campaign filter is active, drop meetings not linked to a matching lead
+        if (campaignFilteredLeadIds && (!meeting.lead_id || !campaignFilteredLeadIds.has(meeting.lead_id))) continue;
         let rawKey = meeting.creative_key || meeting.utm_content;
         if ((!rawKey || rawKey === '{{ad.name}}' || DIRECT_KEYS.has(normalizeKey(rawKey) || "")) && meeting.lead_id) {
           const leadCreative = leadUtmMap.get(meeting.lead_id);
