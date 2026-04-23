@@ -496,6 +496,9 @@ export default function AdminAnalytics() {
     return () => {
       window.removeEventListener(ADMIN_AUTH_EXPIRED_EVENT, handleExpired as EventListener);
     };
+  }, []);
+
+  useEffect(() => {
     setIsLoading(false);
   }, []);
 
