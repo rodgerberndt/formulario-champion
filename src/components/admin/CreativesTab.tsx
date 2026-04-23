@@ -348,6 +348,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [campaignTypeFilter, setCampaignTypeFilter] = useState<"all" | "conversao" | "mql">("all");
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
   const [campaignFilterOpen, setCampaignFilterOpen] = useState(false);
+  const [selectedCreatives, setSelectedCreatives] = useState<string[]>([]);
+  const [creativeFilterOpen, setCreativeFilterOpen] = useState(false);
 
   // Manual sales form
   const [showAddSale, setShowAddSale] = useState(false);
@@ -717,6 +719,21 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     );
   };
 
+  // Extract unique creative keys for filter
+  const allCreativeKeys = useMemo(() => {
+    const keys = new Set<string>();
+    (data?.creatives || []).forEach(c => {
+      if (c.creative_key) keys.add(c.creative_key);
+    });
+    return Array.from(keys).sort();
+  }, [data]);
+
+  const toggleCreative = (key: string) => {
+    setSelectedCreatives(prev =>
+      prev.includes(key) ? prev.filter(c => c !== key) : [...prev, key]
+    );
+  };
+
   const creatives = (data?.creatives || [])
     .filter(c => {
       if (filterOnlyActive && !c.is_active) return false;
@@ -725,6 +742,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       if (filterOnlyWithMql && c.mql_count <= 0) return false;
       if (filterOnlyWithSales && c.sales_count <= 0) return false;
       if (selectedCampaigns.length > 0 && !c.campaigns.some(camp => selectedCampaigns.includes(camp))) return false;
+      if (selectedCreatives.length > 0 && !selectedCreatives.includes(c.creative_key)) return false;
       return true;
     })
     .sort((a, b) => {
@@ -829,6 +847,45 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               {selectedCampaigns.length > 0 && (
                 <div className="border-t p-2">
                   <Button variant="ghost" size="sm" className="w-full text-xs h-7" onClick={() => setSelectedCampaigns([])}>
+                    <X className="w-3 h-3 mr-1" /> Limpar filtro
+                  </Button>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
+        )}
+
+        {/* Creative key filter */}
+        {allCreativeKeys.length > 0 && (
+          <Popover open={creativeFilterOpen} onOpenChange={setCreativeFilterOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="min-w-[160px] justify-between font-normal">
+                {selectedCreatives.length > 0 ? (
+                  <span className="truncate">{selectedCreatives.length} criativo{selectedCreatives.length > 1 ? "s" : ""}</span>
+                ) : (
+                  <span className="text-muted-foreground">Filtrar criativos</span>
+                )}
+                <ChevronDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-72 p-0" align="start">
+              <Command>
+                <CommandInput placeholder="Buscar criativo..." />
+                <CommandList>
+                  <CommandEmpty>Nenhum criativo encontrado.</CommandEmpty>
+                  <CommandGroup>
+                    {allCreativeKeys.map(key => (
+                      <CommandItem key={key} value={key} onSelect={() => toggleCreative(key)}>
+                        <Check className={`mr-2 h-4 w-4 ${selectedCreatives.includes(key) ? "opacity-100" : "opacity-0"}`} />
+                        <span className="truncate text-xs">{key}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+              {selectedCreatives.length > 0 && (
+                <div className="border-t p-2">
+                  <Button variant="ghost" size="sm" className="w-full text-xs h-7" onClick={() => setSelectedCreatives([])}>
                     <X className="w-3 h-3 mr-1" /> Limpar filtro
                   </Button>
                 </div>
