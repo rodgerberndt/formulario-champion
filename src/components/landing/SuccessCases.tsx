@@ -90,7 +90,7 @@ export function SuccessCases() {
             Cases de Sucesso
           </p>
           <h2 className="text-foreground mb-2">
-            <ShimmerText isVisible={isVisible}>QUEM JÁ TRABALHA COM A </ShimmerText>
+            <ShimmerText isVisible={isVisible}>QUEM JÁ TRABALHA COM A{"\u00A0"}</ShimmerText>
             <KeywordGlow>CHAMPION</KeywordGlow>
           </h2>
         </div>
