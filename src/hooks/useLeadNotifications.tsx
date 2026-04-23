@@ -354,6 +354,14 @@ export function useLeadNotifications(
         notifyNewMeetings(newMeetings);
       }
     } catch (err) {
+      if (err instanceof Error && err.message === "Sessão expirada") {
+        if (pollIntervalRef.current) {
+          clearInterval(pollIntervalRef.current);
+          pollIntervalRef.current = null;
+        }
+        onAuthError?.();
+        return;
+      }
       console.error("[Notifications] Poll error:", err);
     }
   }, [getToken, notifyNewLeads, notifyNewSales, notifyNewMeetings, onAuthError]);
