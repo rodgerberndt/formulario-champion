@@ -719,6 +719,21 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     );
   };
 
+  // Extract unique creative keys for filter
+  const allCreativeKeys = useMemo(() => {
+    const keys = new Set<string>();
+    (data?.creatives || []).forEach(c => {
+      if (c.creative_key) keys.add(c.creative_key);
+    });
+    return Array.from(keys).sort();
+  }, [data]);
+
+  const toggleCreative = (key: string) => {
+    setSelectedCreatives(prev =>
+      prev.includes(key) ? prev.filter(c => c !== key) : [...prev, key]
+    );
+  };
+
   const creatives = (data?.creatives || [])
     .filter(c => {
       if (filterOnlyActive && !c.is_active) return false;
@@ -727,6 +742,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       if (filterOnlyWithMql && c.mql_count <= 0) return false;
       if (filterOnlyWithSales && c.sales_count <= 0) return false;
       if (selectedCampaigns.length > 0 && !c.campaigns.some(camp => selectedCampaigns.includes(camp))) return false;
+      if (selectedCreatives.length > 0 && !selectedCreatives.includes(c.creative_key)) return false;
       return true;
     })
     .sort((a, b) => {
