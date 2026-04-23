@@ -48,6 +48,11 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // NEVER cache the admin route — must always be fresh for the team
+  if (url.pathname.startsWith("/admin")) {
+    return;
+  }
+
   // NEVER cache JS/CSS bundles — Vite handles these with content hashing.
   // Caching them can cause React module duplication and blank-screen crashes.
   const ext = url.pathname.split(".").pop()?.toLowerCase();
