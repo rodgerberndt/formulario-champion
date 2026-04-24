@@ -591,10 +591,10 @@ Deno.serve(async (req: Request) => {
         return all;
       }
 
-      // Fetch ALL sessions (paginated) - include referrer & first_page for filtering
+      // Fetch ALL sessions acquired in range (cohort by first touch)
       const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, last_seen_at, referrer, first_page, completed, started_quiz", (q: any) => {
-        if (fromClamped) q = q.gte("last_seen_at", fromClamped);
-        if (toEnd) q = q.lte("last_seen_at", toEnd);
+        if (fromClamped) q = q.gte("created_at", fromClamped);
+        if (toEnd) q = q.lte("created_at", toEnd);
         return q;
       });
 
