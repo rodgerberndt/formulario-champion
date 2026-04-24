@@ -646,13 +646,13 @@ Deno.serve(async (req: Request) => {
       const filteredOutCount = rawSessions.length - sessions.length;
 
       const sessionIds = new Set(sessions.map((s: any) => s.id));
-      const total = sessions.length;
+      const trackedSessionTotal = sessions.length;
 
       // Calculate unique visitors by IP
       const sessionsWithIp = sessions.filter((s: any) => s.ip_address && s.ip_address !== 'unknown');
       const uniqueIps = new Set(sessionsWithIp.map((s: any) => s.ip_address));
-      const ipCoverage = total > 0 ? (sessionsWithIp.length / total) : 0;
-      const uniqueVisitors = ipCoverage >= 0.5 ? uniqueIps.size : total;
+      const ipCoverage = trackedSessionTotal > 0 ? (sessionsWithIp.length / trackedSessionTotal) : 0;
+      const trackedUniqueVisitors = ipCoverage >= 0.5 ? uniqueIps.size : trackedSessionTotal;
       const hasReliableIpData = ipCoverage >= 0.5;
 
       // Fetch ALL events for those sessions (paginated)
@@ -681,14 +681,26 @@ Deno.serve(async (req: Request) => {
       sessions.forEach((s: any) => {
         if (s.completed && !completedSessionIds.has(s.id)) completedSessionIds.add(s.id);
       });
-      const completed = completedSessionIds.size;
+      const trackedCompleted = completedSessionIds.size;
 
-      // Total de leads (mantido para exibição separada / KPIs de volume real)
-      let leadsQuery = supabase.from("leads").select("*", { count: "exact", head: true });
-      if (fromClamped) leadsQuery = leadsQuery.gte("created_at", fromClamped);
-      if (toEnd) leadsQuery = leadsQuery.lte("created_at", toEnd);
-      const { count: leadsCount } = await leadsQuery;
-      const totalLeads = leadsCount || 0;
+      const leadRows = await fetchAll<any>(
+        "leads",
+        "id, created_at, ip_address",
+        (q: any) => {
+          if (fromClamped) q = q.gte("created_at", fromClamped);
+          if (toEnd) q = q.lte("created_at", toEnd);
+          return q;
+        }
+      );
+      const totalLeads = leadRows.length;
+      const uniqueLeadVisitors = new Set(
+        leadRows.map((lead: any) =>
+          lead.ip_address && lead.ip_address !== "unknown"
+            ? `ip:${lead.ip_address}`
+            : `lead:${lead.id}`
+        )
+      ).size;
+      const completed = Math.max(trackedCompleted, totalLeads);
 
       // ===== Landing Views (fonte da verdade) =====
       // Conta hits únicos por session_id; se session_id null, dedup por (ip + user_agent) janela de 30min
@@ -737,6 +749,8 @@ Deno.serve(async (req: Request) => {
       );
 
       // Funil monotônico: completed <= startedQuiz <= enteredQuiz <= uniqueVisitors
+      const uniqueVisitors = Math.max(trackedUniqueVisitors, uniqueLeadVisitors, completed);
+      const total = Math.max(trackedSessionTotal, totalLeads, uniqueVisitors);
       const enteredQuizRaw = Math.max(sessionsWithQuizView.size, completed);
       const startedQuizRaw = Math.max(sessionsWithStepView.size, completed);
       const enteredQuiz = Math.min(enteredQuizRaw, uniqueVisitors);
