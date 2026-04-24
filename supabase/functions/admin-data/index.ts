@@ -560,6 +560,19 @@ Deno.serve(async (req: Request) => {
       const to = url.searchParams.get("to");
       const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
 
+      // Guard: clamp range to max 90 days to avoid 150s timeout on huge windows
+      // (e.g. preset "maximum" 2020→today). Heavy queries: landing_hits + lead_events.
+      let fromClamped = from;
+      if (from && toEnd) {
+        const fromMs = new Date(from).getTime();
+        const toMs = new Date(toEnd).getTime();
+        const MAX_MS = 90 * 24 * 60 * 60 * 1000;
+        if (toMs - fromMs > MAX_MS) {
+          fromClamped = new Date(toMs - MAX_MS).toISOString();
+          console.log(`[metrics] Range clamped to 90d: ${fromClamped} -> ${toEnd}`);
+        }
+      }
+
       // Helper to fetch ALL rows (bypass 1000-row limit) with pagination
       async function fetchAll<T>(table: string, select: string, filters: (q: any) => any): Promise<T[]> {
         const PAGE_SIZE = 1000;
