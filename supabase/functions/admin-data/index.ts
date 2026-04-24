@@ -445,6 +445,16 @@ Deno.serve(async (req: Request) => {
         }
       );
 
+      const leadRows = await fetchAllPaged<any>(
+        "leads",
+        "id, created_at, ip_address",
+        (q: any) => {
+          if (from) q = q.gte("created_at", from);
+          if (toEnd) q = q.lte("created_at", toEnd);
+          return q;
+        }
+      );
+
       // Helpers — convert UTC ISO -> America/Sao_Paulo calendar date (YYYY-MM-DD)
       // SP = UTC-3 (no DST currently). Use Intl for safety.
       const tzFmt = new Intl.DateTimeFormat("en-CA", {
@@ -534,18 +544,40 @@ Deno.serve(async (req: Request) => {
         b.clicks += Number(row.clicks) || 0;
       });
 
+      const leadCountsByDate = new Map<string, number>();
+      const leadVisitorsByDate = new Map<string, Set<string>>();
+      leadRows.forEach((lead: any) => {
+        const ymd = toLocalDate(lead.created_at);
+        leadCountsByDate.set(ymd, (leadCountsByDate.get(ymd) || 0) + 1);
+        if (!leadVisitorsByDate.has(ymd)) leadVisitorsByDate.set(ymd, new Set<string>());
+        const visitorKey = (lead.ip_address && lead.ip_address !== "unknown")
+          ? `ip:${lead.ip_address}`
+          : `lead:${lead.id}`;
+        leadVisitorsByDate.get(ymd)!.add(visitorKey);
+      });
+
       const days = Array.from(byDate.values())
-        .map((b) => ({
-          date: b.date,
-          dow: b.dow,
-          visitors: b.visitors.size,
-          sessions: b.sessions,
-          entered_quiz: b.entered_quiz,
-          completed: b.completed,
-          spend: Number(b.spend.toFixed(2)),
-          impressions: b.impressions,
-          clicks: b.clicks,
-        }))
+        .map((b) => {
+          const leadVisitors = leadVisitorsByDate.get(b.date);
+          leadVisitors?.forEach((visitorKey) => b.visitors.add(visitorKey));
+          const leadCompleted = leadCountsByDate.get(b.date) || 0;
+          const completed = Math.max(b.completed, leadCompleted);
+          const enteredQuiz = Math.max(b.entered_quiz, completed);
+          const visitors = Math.max(b.visitors.size, enteredQuiz);
+          const sessions = Math.max(b.sessions, completed);
+
+          return {
+            date: b.date,
+            dow: b.dow,
+            visitors,
+            sessions,
+            entered_quiz: enteredQuiz,
+            completed,
+            spend: Number(b.spend.toFixed(2)),
+            impressions: b.impressions,
+            clicks: b.clicks,
+          };
+        })
         .sort((a, b) => a.date.localeCompare(b.date));
 
       return new Response(
