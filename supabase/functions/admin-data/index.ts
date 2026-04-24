@@ -383,13 +383,13 @@ Deno.serve(async (req: Request) => {
         return all;
       }
 
-      // Fetch sessions active in range
+      // Fetch sessions acquired in range (cohort by first touch)
       const rawSessions = await fetchAllPaged<any>(
         "lead_sessions",
         "id, ip_address, created_at, last_seen_at, referrer, first_page, completed",
         (q: any) => {
-          if (from) q = q.gte("last_seen_at", from);
-          if (toEnd) q = q.lte("last_seen_at", toEnd);
+          if (from) q = q.gte("created_at", from);
+          if (toEnd) q = q.lte("created_at", toEnd);
           return q;
         }
       );
@@ -489,10 +489,10 @@ Deno.serve(async (req: Request) => {
         return b;
       };
 
-      // Per-session -> active date inside the selected range
+      // Per-session -> acquisition date inside the selected range
       const sessionDate = new Map<string, string>();
       sessions.forEach((s: any) => {
-        const ymd = toLocalDate(s.last_seen_at || s.created_at);
+        const ymd = toLocalDate(s.created_at || s.last_seen_at);
         sessionDate.set(s.id, ymd);
         const b = ensure(ymd);
         b.sessions += 1;
@@ -591,10 +591,10 @@ Deno.serve(async (req: Request) => {
         return all;
       }
 
-      // Fetch ALL sessions (paginated) - include referrer & first_page for filtering
+      // Fetch ALL sessions acquired in range (cohort by first touch)
       const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, last_seen_at, referrer, first_page, completed, started_quiz", (q: any) => {
-        if (fromClamped) q = q.gte("last_seen_at", fromClamped);
-        if (toEnd) q = q.lte("last_seen_at", toEnd);
+        if (fromClamped) q = q.gte("created_at", fromClamped);
+        if (toEnd) q = q.lte("created_at", toEnd);
         return q;
       });
 
