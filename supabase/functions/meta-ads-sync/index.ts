@@ -75,7 +75,7 @@ async function fetchMetaInsightsChunk(since: string, until: string): Promise<Met
 
   while (url) {
     console.log(`Fetching Meta Insights: ${since} to ${until}...`);
-    const response = await fetch(url);
+    const response: Response = await fetch(url);
     if (!response.ok) {
       const errText = await response.text();
       // If Meta returns 500/unknown error, skip this chunk instead of failing everything
@@ -86,7 +86,7 @@ async function fetchMetaInsightsChunk(since: string, until: string): Promise<Met
       console.error('Meta API error:', response.status, errText);
       throw new Error(`Meta API error ${response.status}: ${errText}`);
     }
-    const json = await response.json();
+    const json: any = await response.json();
     if (json.data) {
       allData = allData.concat(json.data);
     }
