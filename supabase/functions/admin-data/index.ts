@@ -702,6 +702,13 @@ Deno.serve(async (req: Request) => {
         )
       ).size;
       const completed = Math.max(trackedCompleted, totalLeads);
+      console.log("[metrics] tracked", JSON.stringify({
+        tracked_sessions: trackedSessionTotal,
+        tracked_unique_visitors: trackedUniqueVisitors,
+        tracked_completed: trackedCompleted,
+        total_leads: totalLeads,
+        unique_lead_visitors: uniqueLeadVisitors,
+      }));
 
       // ===== Landing Views (fonte da verdade) =====
       // Conta hits únicos por session_id; se session_id null, dedup por (ip + user_agent) janela de 30min
