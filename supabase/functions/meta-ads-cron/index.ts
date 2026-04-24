@@ -34,14 +34,14 @@ async function fetchMetaInsights(token: string, accountId: string, since: string
   let allData: MetaInsight[] = [];
 
   while (url) {
-    const response = await fetch(url);
+    const response: Response = await fetch(url);
     if (!response.ok) {
       const errText = await response.text();
       console.error("Meta API error:", response.status, errText);
       if (response.status >= 500) return allData;
       throw new Error(`Meta API error ${response.status}: ${errText}`);
     }
-    const json = await response.json();
+    const json: any = await response.json();
     if (json.data) allData = allData.concat(json.data);
     url = json.paging?.next || null;
   }
