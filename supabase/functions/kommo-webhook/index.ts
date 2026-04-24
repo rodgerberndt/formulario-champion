@@ -1,4 +1,8 @@
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createClient, SupabaseClient } from "jsr:@supabase/supabase-js@2";
+
+// Loose client type to avoid strict generic inference returning `never`
+// for table rows in this Deno edge function context.
+type AnyClient = SupabaseClient<any, any, any, any, any>;
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -98,7 +102,7 @@ interface LogEntry {
 }
 
 async function writeLog(
-  supabase: ReturnType<typeof createClient>,
+  supabase: AnyClient,
   entry: LogEntry,
 ) {
   try {
@@ -133,7 +137,7 @@ async function sleep(ms: number) {
 }
 
 async function updateLeadKommoStatus(
-  supabase: ReturnType<typeof createClient>,
+  supabase: AnyClient,
   leadDbId: string,
   status: string,
   contactId?: number,
@@ -176,7 +180,7 @@ async function updateLeadKommoStatus(
 }
 
 async function waitForLeadRow(
-  supabase: ReturnType<typeof createClient>,
+  supabase: AnyClient,
   leadDbId: string,
 ): Promise<
   {
@@ -448,7 +452,7 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const supabase: AnyClient = createClient<any>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   try {
     // Auth check — allow requests from:
