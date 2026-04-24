@@ -560,6 +560,19 @@ Deno.serve(async (req: Request) => {
       const to = url.searchParams.get("to");
       const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
 
+      // Guard: clamp range to max 90 days to avoid 150s timeout on huge windows
+      // (e.g. preset "maximum" 2020→today). Heavy queries: landing_hits + lead_events.
+      let fromClamped = from;
+      if (from && toEnd) {
+        const fromMs = new Date(from).getTime();
+        const toMs = new Date(toEnd).getTime();
+        const MAX_MS = 90 * 24 * 60 * 60 * 1000;
+        if (toMs - fromMs > MAX_MS) {
+          fromClamped = new Date(toMs - MAX_MS).toISOString();
+          console.log(`[metrics] Range clamped to 90d: ${fromClamped} -> ${toEnd}`);
+        }
+      }
+
       // Helper to fetch ALL rows (bypass 1000-row limit) with pagination
       async function fetchAll<T>(table: string, select: string, filters: (q: any) => any): Promise<T[]> {
         const PAGE_SIZE = 1000;
@@ -580,7 +593,7 @@ Deno.serve(async (req: Request) => {
 
       // Fetch ALL sessions (paginated) - include referrer & first_page for filtering
       const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, last_seen_at, referrer, first_page, completed, started_quiz", (q: any) => {
-        if (from) q = q.gte("last_seen_at", from);
+        if (fromClamped) q = q.gte("last_seen_at", fromClamped);
         if (toEnd) q = q.lte("last_seen_at", toEnd);
         return q;
       });
@@ -615,7 +628,7 @@ Deno.serve(async (req: Request) => {
         "lead_events",
         "event_name, step_id, session_id, metadata, button_id, created_at",
         (q: any) => {
-          if (from) q = q.gte("created_at", from);
+          if (fromClamped) q = q.gte("created_at", fromClamped);
           if (toEnd) q = q.lte("created_at", toEnd);
           return q;
         }
@@ -640,7 +653,7 @@ Deno.serve(async (req: Request) => {
 
       // Total de leads (mantido para exibição separada / KPIs de volume real)
       let leadsQuery = supabase.from("leads").select("*", { count: "exact", head: true });
-      if (from) leadsQuery = leadsQuery.gte("created_at", from);
+      if (fromClamped) leadsQuery = leadsQuery.gte("created_at", fromClamped);
       if (toEnd) leadsQuery = leadsQuery.lte("created_at", toEnd);
       const { count: leadsCount } = await leadsQuery;
       const totalLeads = leadsCount || 0;
@@ -651,7 +664,7 @@ Deno.serve(async (req: Request) => {
         .from("landing_hits")
         .select("session_id, ip_address, user_agent, created_at, referrer")
         .order("created_at", { ascending: true });
-      if (from) hitsQuery = hitsQuery.gte("created_at", from);
+      if (fromClamped) hitsQuery = hitsQuery.gte("created_at", fromClamped);
       if (toEnd) hitsQuery = hitsQuery.lte("created_at", toEnd);
       const { data: hitsData } = await hitsQuery;
       const cleanHits = (hitsData || []).filter((h: any) => {
@@ -678,7 +691,7 @@ Deno.serve(async (req: Request) => {
 
       // ===== Meta clicks (do ad_spend já agregado) =====
       let spendQuery = supabase.from("ad_spend").select("clicks, date");
-      if (from) spendQuery = spendQuery.gte("date", from.slice(0, 10));
+      if (fromClamped) spendQuery = spendQuery.gte("date", fromClamped.slice(0, 10));
       if (toEnd) spendQuery = spendQuery.lte("date", toEnd.slice(0, 10));
       const { data: spendData } = await spendQuery;
       const metaClicks = (spendData || []).reduce((sum: number, r: any) => sum + (r.clicks || 0), 0);
