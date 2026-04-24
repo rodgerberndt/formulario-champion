@@ -76,7 +76,8 @@ Deno.serve(async (req: Request) => {
       let query = supabase
         .from("leads")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(2000);
 
       // Apply date filters — supports both ISO timestamps and date-only strings
       if (from) {
