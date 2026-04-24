@@ -742,11 +742,13 @@ export default function Quiz() {
             <Loader2 className="w-12 h-12 text-primary mx-auto animate-spin" strokeWidth={2.5} />
             <div className="space-y-3">
               <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug">
-                Preparando seu formulário...
+                Atenção antes de continuar
               </h2>
               <p className="text-base sm:text-lg text-white/95 leading-relaxed font-medium">
-                As pessoas que preencherem o formulário e no final falarem com o nosso time no WhatsApp, vão ganhar{" "}
-                <span className="text-secondary font-bold">algumas semanas da nossa Assessoria 100% Gratuita</span>.
+                Ao preencher esse quiz, você concorda que{" "}
+                <span className="text-secondary font-bold">trabalha com o mercado digital</span>.
+                {" "}Se você não trabalha com o mercado digital,{" "}
+                <span className="text-secondary font-bold">saia desse quiz agora</span>.
               </p>
             </div>
             <div className="h-1.5 w-full bg-white/15 rounded-full overflow-hidden">
