@@ -548,6 +548,7 @@ Deno.serve(async (req: Request) => {
       const leadVisitorsByDate = new Map<string, Set<string>>();
       leadRows.forEach((lead: any) => {
         const ymd = toLocalDate(lead.created_at);
+        ensure(ymd);
         leadCountsByDate.set(ymd, (leadCountsByDate.get(ymd) || 0) + 1);
         if (!leadVisitorsByDate.has(ymd)) leadVisitorsByDate.set(ymd, new Set<string>());
         const visitorKey = (lead.ip_address && lead.ip_address !== "unknown")
