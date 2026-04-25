@@ -369,10 +369,11 @@ Deno.serve(async (req: Request) => {
 
       async function fetchAllPaged<T>(table: string, select: string, filters: (q: any) => any): Promise<T[]> {
         const PAGE_SIZE = 1000;
+        const MAX_ROWS = 20000; // hard cap to prevent OOM/CPU exhaustion
         let all: T[] = [];
         let offset = 0;
         let hasMore = true;
-        while (hasMore) {
+        while (hasMore && all.length < MAX_ROWS) {
           let q = supabase.from(table).select(select).range(offset, offset + PAGE_SIZE - 1);
           q = filters(q);
           const { data, error } = await q;
@@ -412,6 +413,8 @@ Deno.serve(async (req: Request) => {
         (q: any) => {
           if (from) q = q.gte("created_at", from);
           if (toEnd) q = q.lte("created_at", toEnd);
+          // Only need quiz_view + submit events for weekly aggregation
+          q = q.in("event_name", ["quiz_view", "submit"]);
           return q;
         }
       );
