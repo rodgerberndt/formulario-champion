@@ -1905,14 +1905,20 @@ Deno.serve(async (req: Request) => {
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
       
-      let query = supabase.from("manual_sales").select("*").order("sale_date", { ascending: false });
+      let query = supabase.from("manual_sales").select("*, leads:lead_id(created_at)").order("sale_date", { ascending: false });
       if (from) query = query.gte("sale_date", from);
       if (to) query = query.lte("sale_date", to);
       
       const { data, error } = await query;
       if (error) throw error;
       
-      return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      // Flatten lead_created_at into the row
+      const flat = (data || []).map((s: any) => ({
+        ...s,
+        lead_created_at: s.leads?.created_at ?? null,
+        leads: undefined,
+      }));
+      return new Response(JSON.stringify(flat), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ──── DELETE /manual-sales/:id ────
