@@ -1470,60 +1470,60 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           ) : (
             <Table className="table-fixed w-full">
               <TableHeader>
-                <TableRow className="text-[10px]">
+                <TableRow className="text-[10px] [&_th]:h-12 [&_th]:align-middle [&_th]:px-2 [&_th]:py-2 [&_th]:whitespace-nowrap [&_th]:font-semibold">
                   <TableHead className="w-[12%]">Campanha / Criativo</TableHead>
-                  <TableHead className="text-right cursor-pointer w-[5%]" onClick={() => handleSort("spend")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("spend")}>
                     Spend<SortIcon field="spend" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("leads_count")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[6%]" onClick={() => handleSort("leads_count")}>
                     Leads/CPL<SortIcon field="leads_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("mql_count")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[6%]" onClick={() => handleSort("mql_count")}>
                     MQL/CPMQL<SortIcon field="mql_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4%]" onClick={() => handleSort("mql_rate")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4%]" onClick={() => handleSort("mql_rate")}>
                     %MQL<SortIcon field="mql_rate" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("cost_per_small")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_small")}>
                     CP-S<SortIcon field="cost_per_small" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("cost_per_medium")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_medium")}>
                     CP-M<SortIcon field="cost_per_medium" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("cost_per_tier_large")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_tier_large")}>
                     CP-L<SortIcon field="cost_per_tier_large" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("cost_per_enterprise")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_enterprise")}>
                     CP-E<SortIcon field="cost_per_enterprise" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("cost_per_enterprise_plus")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_enterprise_plus")}>
                     CP-E+<SortIcon field="cost_per_enterprise_plus" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[5%]" onClick={() => handleSort("meetings_count")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("meetings_count")}>
                     Reun.<SortIcon field="meetings_count" />
                   </TableHead>
-                  <TableHead className="text-right w-[5%]" title="Conversão de chamada: Vendas / Reuniões">
-                    Conv.Call
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("call_conv_rate")} title="Conversão de chamada: Vendas / Reuniões">
+                    Conv.Call<SortIcon field="call_conv_rate" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("sales_count")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[6%]" onClick={() => handleSort("sales_count")}>
                     Vendas/CAC<SortIcon field="sales_count" />
                   </TableHead>
-                  <TableHead className="text-right w-[5%]" title="CAC Sprint: Spend / Vendas Sprint">
-                    CAC-S
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("cac_sprint")} title="CAC Sprint: Spend / Vendas Sprint">
+                    CAC-S<SortIcon field="cac_sprint" />
                   </TableHead>
-                  <TableHead className="text-right w-[5%]" title="CAC Assessoria: Spend / Vendas Assessoria">
-                    CAC-A
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("cac_assessoria")} title="CAC Assessoria: Spend / Vendas Assessoria">
+                    CAC-A<SortIcon field="cac_assessoria" />
                   </TableHead>
-                  <TableHead className="text-right w-[4.5%]" title="Win Rate: Vendas / MQLs">
-                    Win%
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("win_rate")} title="Win Rate: Vendas / MQLs">
+                    Win%<SortIcon field="win_rate" />
                   </TableHead>
-                  <TableHead className="text-right w-[5%]" title="Ciclo médio de vendas em dias">
-                    Ciclo
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("cycle_days")} title="Ciclo médio de vendas em dias">
+                    Ciclo<SortIcon field="cycle_days" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("revenue")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[6%]" onClick={() => handleSort("revenue")}>
                     FPC<SortIcon field="revenue" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("roas")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("roas")}>
                     ROAS<SortIcon field="roas" />
                   </TableHead>
                 </TableRow>
