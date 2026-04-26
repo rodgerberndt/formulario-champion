@@ -987,6 +987,24 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         }).length;
         const winRateVal = qualifiedLeads > 0 ? (totals.sales / qualifiedLeads) * 100 : 0;
 
+        // ── Win rate por tipo (período filtrado)
+        const sprintLeadsCount = leadsList.filter(
+          (l) => (l.investimento_faixa || "") === "De R$ 5 mil a R$ 10 mil"
+        ).length;
+        const mqlLeadsCount = leadsList.filter(
+          (l) => MQL_FAT_MIN_FAIXAS.includes(l.investimento_faixa || "")
+        ).length;
+        const sprintWinRate = sprintLeadsCount > 0
+          ? ((totals.sales_sprint || 0) / sprintLeadsCount) * 100
+          : null;
+        const assessoriaWinRate = mqlLeadsCount > 0
+          ? ((totals.sales_assessoria || 0) / mqlLeadsCount) * 100
+          : null;
+        const totalQualified = sprintLeadsCount + mqlLeadsCount;
+        const totalWinRate = totalQualified > 0
+          ? (((totals.sales_sprint || 0) + (totals.sales_assessoria || 0)) / totalQualified) * 100
+          : null;
+
         // ── Ciclo de vendas (período filtrado): dias entre lead.created_at e sale.sale_date
         const calcCycle = (filterFn: (s: ManualSale) => boolean): { avg: number | null; count: number } => {
           const days: number[] = [];
