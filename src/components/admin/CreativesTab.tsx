@@ -1180,7 +1180,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   className="h-7 text-xs"
                   onClick={() => {
                     setShowMeetingsList(!showMeetingsList);
-                    if (!showMeetingsList) loadMeetings();
                   }}
                 >
                   {showMeetingsList ? <ChevronUp className="w-3 h-3 mr-1" /> : <ChevronDown className="w-3 h-3 mr-1" />}
