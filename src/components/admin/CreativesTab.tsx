@@ -1348,7 +1348,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           )}
 
           {/* Row 5: Performance */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <Card>
               <CardContent className="pt-4">
                 <div className="grid grid-cols-1 gap-1">
@@ -1367,20 +1367,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <CardContent className="pt-4">
                 <div className="grid grid-cols-1 gap-1">
                   <MetricItem label="Win Rate" value={winRateVal > 0 ? `${winRateVal.toFixed(1)}%` : "—"} color="text-green-400" sub={`${totals.sales} vendas / ${qualifiedLeads} leads ≥5k`} />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-amber-500/20">
-              <CardContent className="pt-4">
-                <div className="grid grid-cols-1 gap-1">
-                  <MetricItem
-                    label="Ciclo de Vendas"
-                    value={salesCycle?.avg_days != null ? `${salesCycle.avg_days.toFixed(1)} dias` : "—"}
-                    color="text-amber-400"
-                    sub={salesCycle && salesCycle.count > 0
-                      ? `Histórico • ${salesCycle.count} venda${salesCycle.count > 1 ? "s" : ""}${salesCycle.median_days != null ? ` • mediana ${salesCycle.median_days.toFixed(0)}d` : ""}`
-                      : "Sem vendas com lead vinculado"}
-                  />
                 </div>
               </CardContent>
             </Card>
