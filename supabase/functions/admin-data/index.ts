@@ -1921,6 +1921,40 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify(flat), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ──── GET /sales-cycle ────
+    // Returns avg sales cycle (days) over ALL historical sales with a linked lead
+    if (path === "/sales-cycle" && req.method === "GET") {
+      const { data, error } = await supabase
+        .from("manual_sales")
+        .select("sale_date, leads:lead_id(created_at)")
+        .not("lead_id", "is", null);
+      if (error) throw error;
+
+      const days: number[] = [];
+      for (const s of (data || []) as any[]) {
+        const leadCreated = s.leads?.created_at;
+        if (!leadCreated || !s.sale_date) continue;
+        const leadDate = new Date(leadCreated);
+        const saleDate = new Date(s.sale_date + "T12:00:00Z");
+        if (isNaN(leadDate.getTime()) || isNaN(saleDate.getTime())) continue;
+        const diffDays = Math.max(0, Math.round((saleDate.getTime() - leadDate.getTime()) / 86400000));
+        days.push(diffDays);
+      }
+      const avg = days.length > 0 ? days.reduce((a, b) => a + b, 0) / days.length : null;
+      const sorted = [...days].sort((a, b) => a - b);
+      const median = sorted.length > 0
+        ? (sorted.length % 2 === 0
+            ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
+            : sorted[(sorted.length - 1) / 2])
+        : null;
+
+      return new Response(JSON.stringify({
+        avg_days: avg,
+        median_days: median,
+        count: days.length,
+      }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ──── DELETE /manual-sales/:id ────
     const deleteSaleMatch = path.match(/^\/manual-sales\/([a-f0-9-]+)$/);
     if (deleteSaleMatch && req.method === "DELETE") {
