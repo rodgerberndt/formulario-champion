@@ -1447,23 +1447,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             </Card>
           )}
 
-          {/* Row 5: Performance */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card>
-              <CardContent className="pt-4">
-                <div className="grid grid-cols-1 gap-1">
-                  <MetricItem label="CAC" value={formatCurrency(totals.cac) || "—"} sub="Spend ÷ Vendas" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-4">
-                <div className="grid grid-cols-1 gap-1">
-                  <MetricItem label="ROAS" value={totals.roas !== null ? `${totals.roas.toFixed(2)}x` : "—"} sub="Receita ÷ Spend" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
         );
       })()}
