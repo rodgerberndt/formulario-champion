@@ -2364,10 +2364,11 @@ Deno.serve(async (req: Request) => {
 
       async function pagedFetch(table: string, select: string, fromIso: string | null, toIso: string | null) {
         const PAGE = 1000;
+        const MAX_ROWS = 15000;
         let all: any[] = [];
         let offset = 0;
         let more = true;
-        while (more) {
+        while (more && all.length < MAX_ROWS) {
           let q = supabase.from(table).select(select).range(offset, offset + PAGE - 1);
           if (fromIso) q = q.gte("created_at", fromIso);
           if (toIso) q = q.lte("created_at", toIso);
