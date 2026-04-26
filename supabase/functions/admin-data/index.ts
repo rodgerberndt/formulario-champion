@@ -1,6 +1,8 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { verify } from "https://deno.land/x/djwt@v2.9.1/mod.ts";
 
+// build: qualified_count v2 (≥R$5k)
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-admin-token",
