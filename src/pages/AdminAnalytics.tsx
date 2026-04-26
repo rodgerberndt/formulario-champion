@@ -183,7 +183,9 @@ interface Lead {
   decisor: boolean | null;
   raw_answers_json: Record<string, unknown> | null;
   attribution_source: string | null;
+  first_opened_at: string | null;
 }
+
 
 export default function AdminAnalytics() {
   const navigate = useNavigate();
@@ -578,11 +580,37 @@ export default function AdminAnalytics() {
   };
 
   const openLeadDetail = (lead: Lead) => {
+    // Stamp first_opened_at exactly once (response-time metric)
+    if (!lead.first_opened_at) {
+      const nowIso = new Date().toISOString();
+      setLeads((prev) =>
+        prev.map((l) => (l.id === lead.id ? { ...l, first_opened_at: nowIso } : l))
+      );
+      // Background: persist mark_opened flag
+      (async () => {
+        try {
+          const token = getToken();
+          const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${lead.id}`;
+          await fetch(url, {
+            method: "PUT",
+            headers: {
+              "x-admin-token": token || "",
+              "Content-Type": "application/json",
+              "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            },
+            body: JSON.stringify({ mark_opened: true }),
+          });
+        } catch (e) {
+          console.error("Error marking lead opened:", e);
+        }
+      })();
+    }
+
     // Mark as read and update immediately in the list
     if (!lead.lido) {
       // Update the leads list immediately (optimistic update)
       setLeads((prev) =>
-        prev.map((l) => (l.id === lead.id ? { ...l, lido: true } : l))
+        prev.map((l) => (l.id === lead.id ? { ...l, lido: true, first_opened_at: l.first_opened_at || new Date().toISOString() } : l))
       );
       setLeadsUnreadCount((prev) => Math.max(0, prev - 1));
       
@@ -590,7 +618,7 @@ export default function AdminAnalytics() {
       updateLeadLido(lead.id, true);
       
       // Set selected lead with lido: true
-      setSelectedLead({ ...lead, lido: true });
+      setSelectedLead({ ...lead, lido: true, first_opened_at: lead.first_opened_at || new Date().toISOString() });
     } else {
       setSelectedLead(lead);
     }

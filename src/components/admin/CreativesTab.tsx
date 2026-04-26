@@ -174,6 +174,9 @@ interface LeadOption {
   tier: string | null;
   investimento_faixa?: string | null;
   created_at: string;
+  first_opened_at?: string | null;
+  estagio_negocio?: string | null;
+  sdr_override?: string | null;
 }
 
 interface AdSpendEntry {
@@ -1314,6 +1317,36 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         }).length;
         const winRateVal = qualifiedLeads > 0 ? (totals.sales / qualifiedLeads) * 100 : 0;
 
+        // ── Tempo de resposta (created_at → first_opened_at + 10s margem)
+        const RESPONSE_MARGIN_MS = 10_000;
+        const calcAvgResponse = (filterFn: (l: LeadOption) => boolean): string => {
+          const opened = leadsList.filter(
+            (l) => filterFn(l) && l.first_opened_at && l.created_at
+          );
+          if (opened.length === 0) return "—";
+          const totalMs = opened.reduce((sum, l) => {
+            const diff = new Date(l.first_opened_at!).getTime() - new Date(l.created_at).getTime();
+            return sum + Math.max(0, diff) + RESPONSE_MARGIN_MS;
+          }, 0);
+          const avgSec = Math.round(totalMs / opened.length / 1000);
+          if (avgSec < 60) return `${avgSec}s`;
+          const m = Math.floor(avgSec / 60);
+          const s = avgSec % 60;
+          if (m < 60) return s ? `${m}m ${s}s` : `${m}m`;
+          const h = Math.floor(m / 60);
+          const rm = m % 60;
+          return `${h}h ${rm}m`;
+        };
+        const isQualifiedLead = (l: LeadOption) => {
+          const f = l.investimento_faixa || null;
+          return !!f && !["Não vendo ainda (R$0/mês)", "Até R$ 5 mil"].includes(f);
+        };
+        const isMqlLead = (l: LeadOption) =>
+          isLeadMql(l.estagio_negocio || "", l.investimento_faixa || null, l.sdr_override || null);
+        const avgResponseAll = calcAvgResponse(() => true);
+        const avgResponse5k = calcAvgResponse(isQualifiedLead);
+        const avgResponseMql = calcAvgResponse(isMqlLead);
+
         const MetricItem = ({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) => (
           <div>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</p>
@@ -1335,7 +1368,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <MetricItem
                     label="Total Leads"
                     value={formatNumber(totals.leads)}
-                    sub={funnelMetrics && funnelMetrics.completed > 0 ? `${((totals.leads / funnelMetrics.completed) * 100).toFixed(1)}% das conclusões` : undefined}
+                    sub={`⏱ Resp: ${avgResponseAll}${funnelMetrics && funnelMetrics.completed > 0 ? ` · ${((totals.leads / funnelMetrics.completed) * 100).toFixed(1)}% conclusões` : ""}`}
                   />
                   <MetricItem label="CPL" value={formatCurrency(totals.cpl) || "—"} sub="Spend ÷ Leads" />
                 </div>
@@ -1347,8 +1380,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">MQLs</p>
                 <div className="grid grid-cols-5 gap-4">
                   <MetricItem label="% MQL" value={totals.leads > 0 ? `${((totals.mql / totals.leads) * 100).toFixed(1)}%` : "—"} color="text-green-300" sub="Leads → MQL" />
-                  <MetricItem label="Total MQL" value={formatNumber(totals.mql)} color="text-green-400" />
-                  <MetricItem label="Leads ≥5k" value={formatNumber(qualifiedLeads)} color="text-cyan-300" sub="Faturamento ≥ R$5k" />
+                  <MetricItem label="Total MQL" value={formatNumber(totals.mql)} color="text-green-400" sub={`⏱ Resp: ${avgResponseMql}`} />
+                  <MetricItem label="Leads ≥5k" value={formatNumber(qualifiedLeads)} color="text-cyan-300" sub={`⏱ Resp: ${avgResponse5k}`} />
                   <MetricItem label="CPMQL" value={formatCurrency(totals.cpmql) || "—"} />
                   <MetricItem label="CPL ≥5k" value={qualifiedLeads > 0 ? formatCurrency(totals.spend / qualifiedLeads) || "—" : "—"} color="text-cyan-400" />
                 </div>
