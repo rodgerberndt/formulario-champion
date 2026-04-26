@@ -1402,7 +1402,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card className="border-green-500/20">
               <CardContent className="pt-4">
                 <div className="grid grid-cols-1 gap-1">
-                  <MetricItem label="Win Rate" value={winRateVal > 0 ? `${winRateVal.toFixed(1)}%` : "—"} color="text-green-400" sub={`${totals.sales} vendas / ${qualifiedLeads} leads ≥5k`} />
+                  <MetricItem
+                    label="Win Rate"
+                    value={totalWinRate != null ? `${totalWinRate.toFixed(1)}%` : "—"}
+                    color="text-green-400"
+                    sub={`${(totals.sales_sprint || 0) + (totals.sales_assessoria || 0)} vendas / ${totalQualified} leads (Sprint + MQL)`}
+                  />
                 </div>
               </CardContent>
             </Card>
