@@ -833,8 +833,8 @@ export default function AdminAnalytics() {
       "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     };
 
-    // Retry on transient boot errors (503/504) up to 3 attempts with backoff
-    const MAX_RETRIES = 3;
+    // Retry on transient boot errors (502/503/504) with exponential backoff
+    const MAX_RETRIES = 4;
     let lastError: Error | null = null;
 
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -842,7 +842,7 @@ export default function AdminAnalytics() {
         const fetchResponse = await fetchAdmin(url, { headers });
 
         // Retry on transient errors (cold-start boot errors, gateway timeouts)
-        if ((fetchResponse.status === 503 || fetchResponse.status === 504) && attempt < MAX_RETRIES - 1) {
+        if ([502, 503, 504].includes(fetchResponse.status) && attempt < MAX_RETRIES - 1) {
           const delay = 400 * Math.pow(2, attempt) + Math.random() * 200;
           console.warn(`[admin-data] ${fetchResponse.status} on ${path}, retrying in ${Math.round(delay)}ms (attempt ${attempt + 1}/${MAX_RETRIES})`);
           await new Promise((r) => setTimeout(r, delay));
