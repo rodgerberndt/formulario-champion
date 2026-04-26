@@ -964,9 +964,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         </Card>
       )}
 
-      {/* Funnel Overview (espelha topo do dashboard) */}
-      {funnelMetrics && (() => {
-      <div className="flex justify-end">
         <Button variant="outline" size="sm" onClick={() => setShowAddSale(true)}>
           <Plus className="w-4 h-4 mr-1" /> Venda
         </Button>
