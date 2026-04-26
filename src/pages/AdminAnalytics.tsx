@@ -57,6 +57,7 @@ import { ADMIN_AUTH_EXPIRED_EVENT, ADMIN_TOKEN_KEY, clearAdminToken, fetchAdmin,
 const KommoLogsPanel = lazy(() => import("@/components/admin/KommoLogsPanel"));
 
 const CreativesTab = lazy(() => import("@/components/admin/CreativesTab"));
+const FunnelMetricsTab = lazy(() => import("@/components/admin/FunnelMetricsTab"));
 const LeadReportsTab = lazy(() => import("@/components/admin/LeadReportsTab"));
 const DailyReportsTab = lazy(() => import("@/components/admin/DailyReportsTab"));
 const InsightsTab = lazy(() => import("@/components/admin/InsightsTab"));
