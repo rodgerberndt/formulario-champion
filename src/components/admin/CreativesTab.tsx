@@ -749,6 +749,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       cycleDays: number | null;
       cycleCount: number;
       callConvRate: number | null;
+      bookingRate: number | null;
     }>();
 
     for (const c of (data?.creatives || [])) {
@@ -769,8 +770,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       }
       const cycleDays = days.length > 0 ? days.reduce((a, b) => a + b, 0) / days.length : null;
       const callConvRate = c.meetings_count > 0 ? c.sales_count / c.meetings_count : null;
+      const bookingRate = c.mql_count > 0 ? c.meetings_count / c.mql_count : null;
 
-      map.set(c.creative_key, { cacSprint, cacAssessoria, winRate, cycleDays, cycleCount: days.length, callConvRate });
+      map.set(c.creative_key, { cacSprint, cacAssessoria, winRate, cycleDays, cycleCount: days.length, callConvRate, bookingRate });
     }
     return map;
   }, [data?.creatives, salesList]);
@@ -791,6 +793,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         if (sortField === "cpl") return c.spend > 0 && c.leads_count > 0 ? c.spend / c.leads_count : null;
         const extras = creativeExtrasRaw.get(c.creative_key);
         if (sortField === "call_conv_rate") return extras?.callConvRate ?? null;
+        if (sortField === "booking_rate") return extras?.bookingRate ?? null;
         if (sortField === "cac_sprint") return extras?.cacSprint ?? null;
         if (sortField === "cac_assessoria") return extras?.cacAssessoria ?? null;
         if (sortField === "win_rate") return extras?.winRate ?? null;
