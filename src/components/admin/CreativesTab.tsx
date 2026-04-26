@@ -483,31 +483,16 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     loadData();
   }, [loadData]);
 
-  // Load sales cycle (historical, all-time) once on mount
+  // Always load sales for the period (used by sales cycle metric, not just the list)
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const result = await fetchAdminData("/sales-cycle");
-        if (!cancelled && result && typeof result === "object") {
-          setSalesCycle(result);
-        }
-      } catch (err) {
-        console.error("Error loading sales cycle:", err);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [fetchAdminData]);
+    loadSales();
+  }, [loadSales]);
 
   // Reload meetings list when dates change and list is visible
   useEffect(() => {
     if (showMeetingsList) loadMeetings();
   }, [startISO, endISO]);
 
-  // Reload sales list when dates change and list is visible
-  useEffect(() => {
-    if (showSalesList) loadSales();
-  }, [startISO, endISO]);
 
   const selectedSaleLead = selectedLeadId ? leadsList.find(l => l.id === selectedLeadId) : null;
   const selectedMeetingLead = meetingSelectedLeadId ? leadsList.find(l => l.id === meetingSelectedLeadId) : null;
