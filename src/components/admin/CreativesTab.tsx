@@ -774,7 +774,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         days.push(Math.max(0, Math.round((saleDate.getTime() - leadDate.getTime()) / 86400000)));
       }
       const cycleDays = days.length > 0 ? days.reduce((a, b) => a + b, 0) / days.length : null;
-      const callConvRate = c.meetings_count > 0 ? c.sales_count / c.meetings_count : null;
+      const callConvRate = c.meetings_count > 0 ? (c.sales_assessoria_count || 0) / c.meetings_count : null;
       const bookingRate = c.mql_count > 0 ? c.meetings_count / c.mql_count : null;
 
       map.set(c.creative_key, { cacSprint, cacAssessoria, winRate, cycleDays, cycleCount: days.length, callConvRate, bookingRate });
