@@ -1604,6 +1604,14 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">
                         {(() => {
+                          const r = creativeExtras.get(c.creative_key)?.bookingRate;
+                          if (r === null || r === undefined) return <span className="text-muted-foreground">—</span>;
+                          const cls = r >= 0.5 ? "text-emerald-400" : r >= 0.25 ? "text-amber-400" : "text-muted-foreground";
+                          return <span className={`font-semibold ${cls}`}>{(r * 100).toFixed(0)}%</span>;
+                        })()}
+                      </TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5">
+                        {(() => {
                           const r = creativeExtras.get(c.creative_key)?.callConvRate;
                           if (r === null || r === undefined) return <span className="text-muted-foreground">—</span>;
                           const cls = r >= 0.5 ? "text-emerald-400" : r >= 0.2 ? "text-amber-400" : "text-muted-foreground";
