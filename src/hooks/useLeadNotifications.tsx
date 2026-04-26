@@ -328,16 +328,12 @@ export function useLeadNotifications(
         apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
       };
 
-      // Fetch leads, sales, and meetings in parallel
-      const [leadsRes, salesRes, meetingsRes] = await Promise.all([
-        fetchAdmin(`${baseUrl}/leads?from=${today}&to=${today}`, { headers }),
-        fetchAdmin(`${baseUrl}/manual-sales?from=${today}&to=${today}`, { headers }),
-        fetchAdmin(`${baseUrl}/meetings?from=${today}&to=${today}`, { headers }),
+      // Fetch leads, sales, and meetings independently so one transient 503 doesn't break the whole admin screen
+      const [leads, sales, meetings] = await Promise.all([
+        safeFetchAdminList<NewLead>(`${baseUrl}/leads?from=${today}&to=${today}`, headers, "leads"),
+        safeFetchAdminList<SaleRecord>(`${baseUrl}/manual-sales?from=${today}&to=${today}`, headers, "vendas"),
+        safeFetchAdminList<MeetingRecord>(`${baseUrl}/meetings?from=${today}&to=${today}`, headers, "reuniões"),
       ]);
-
-      const leads: NewLead[] = leadsRes.ok ? await leadsRes.json() : [];
-      const sales: SaleRecord[] = salesRes.ok ? await salesRes.json() : [];
-      const meetings: MeetingRecord[] = meetingsRes.ok ? await meetingsRes.json() : [];
 
       const currentLeadIds = new Set(leads.map((l) => l.id));
       const currentSaleIds = new Set(sales.map((s) => s.id));
