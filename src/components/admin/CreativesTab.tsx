@@ -1288,7 +1288,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     {showSalesList ? "Ocultar" : "Ver vendas"}
                   </Button>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <MetricItem
                     label="Vendas"
                     value={`${formatNumber(totals.sales)}`}
@@ -1297,6 +1297,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   />
                   <MetricItem label="Ticket Médio" value={avgTotal > 0 ? formatCurrency(avgTotal) || "—" : "—"} color="text-emerald-300" />
                   <MetricItem label="Ciclo de Vendas" value={fmtCycle(cycleTotal)} color="text-emerald-300" sub={fmtCycleSub(cycleTotal)} />
+                  <MetricItem
+                    label="Win Rate"
+                    value={totalWinRate != null ? `${totalWinRate.toFixed(1)}%` : "—"}
+                    color="text-emerald-300"
+                    sub={`${(totals.sales_sprint || 0) + (totals.sales_assessoria || 0)} / ${totalQualified} leads (Sprint + MQL)`}
+                  />
                 </div>
               </CardContent>
             </Card>
