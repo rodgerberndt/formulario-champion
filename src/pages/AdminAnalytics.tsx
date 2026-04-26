@@ -185,6 +185,7 @@ interface Lead {
   attribution_source: string | null;
 }
 
+
 export default function AdminAnalytics() {
   const navigate = useNavigate();
   const { activeUsers, uniqueCount, getUsersWithDuration } = useActiveUsers();
