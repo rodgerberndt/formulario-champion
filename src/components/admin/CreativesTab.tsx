@@ -1388,7 +1388,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           )}
 
           {/* Row 5: Performance */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <Card>
               <CardContent className="pt-4">
                 <div className="grid grid-cols-1 gap-1">
@@ -1400,18 +1400,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <CardContent className="pt-4">
                 <div className="grid grid-cols-1 gap-1">
                   <MetricItem label="ROAS" value={totals.roas !== null ? `${totals.roas.toFixed(2)}x` : "—"} sub="Receita ÷ Spend" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-green-500/20">
-              <CardContent className="pt-4">
-                <div className="grid grid-cols-1 gap-1">
-                  <MetricItem
-                    label="Win Rate"
-                    value={totalWinRate != null ? `${totalWinRate.toFixed(1)}%` : "—"}
-                    color="text-green-400"
-                    sub={`${(totals.sales_sprint || 0) + (totals.sales_assessoria || 0)} vendas / ${totalQualified} leads (Sprint + MQL)`}
-                  />
                 </div>
               </CardContent>
             </Card>
