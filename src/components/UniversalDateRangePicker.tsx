@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Calendar as CalendarIcon, X } from "lucide-react";
+import { Calendar as CalendarIcon, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -80,12 +80,33 @@ export default function UniversalDateRangePicker() {
     setRange({ from: start, to: undefined });
   };
 
+  const shiftRange = (deltaDays: number) => {
+    if (!start || !end) return;
+    const MS_PER_DAY = 86_400_000;
+    const newFrom = new Date(start.getTime() + deltaDays * MS_PER_DAY);
+    const newTo = new Date(end.getTime() + deltaDays * MS_PER_DAY);
+    setCustomRange(startOfDay(newFrom), endOfDay(newTo));
+  };
+
   const presetLabel = useMemo(() => {
     return PRESET_LABELS[preset] || "Selecionar período";
   }, [preset]);
 
   return (
     <div className="flex items-center gap-2">
+      {/* Navigate one day backward */}
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => shiftRange(-1)}
+        disabled={!start || !end}
+        title="Voltar 1 dia"
+        aria-label="Voltar 1 dia"
+        className="h-9 w-9"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
+
       {/* Main Preset Selector */}
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
@@ -174,6 +195,19 @@ export default function UniversalDateRangePicker() {
           </button>
         )}
       </div>
+
+      {/* Navigate one day forward */}
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => shiftRange(1)}
+        disabled={!start || !end}
+        title="Avançar 1 dia"
+        aria-label="Avançar 1 dia"
+        className="h-9 w-9"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>
     </div>
   );
 }
