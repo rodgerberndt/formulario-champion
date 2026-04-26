@@ -1,0 +1,1 @@
+ALTER TABLE public.ad_spend ADD COLUMN IF NOT EXISTS landing_page_views integer NOT NULL DEFAULT 0;

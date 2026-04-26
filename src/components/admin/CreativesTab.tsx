@@ -100,6 +100,9 @@ interface CreativeData {
   meetings_count: number;
   meetings_attended_count: number;
   cost_per_meeting: number | null;
+  landing_page_views: number;
+  mql_per_view: number | null;
+  lead_per_view: number | null;
   is_active: boolean;
 }
 
@@ -122,6 +125,9 @@ interface CreativesResponse {
     revenue_assessoria: number;
     meetings: number;
     meetings_attended: number;
+    landing_page_views: number;
+    mql_per_view: number | null;
+    lead_per_view: number | null;
     cpl: number | null;
     cpmql: number | null;
     cp_tier_small: number | null;
@@ -1135,8 +1141,14 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card>
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Tráfego</p>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-4 gap-4">
                   <MetricItem label="Total Spend" value={formatCurrency(totals.spend) || "—"} />
+                  <MetricItem
+                    label="LPV"
+                    value={formatNumber(totals.landing_page_views || 0)}
+                    color="text-sky-400"
+                    sub="Landing Page Views (Pixel)"
+                  />
                   <MetricItem
                     label="Total Leads"
                     value={formatNumber(totals.leads)}
@@ -1150,8 +1162,14 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card>
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">MQLs</p>
-                <div className="grid grid-cols-5 gap-4">
+                <div className="grid grid-cols-6 gap-4">
                   <MetricItem label="% MQL" value={totals.leads > 0 ? `${((totals.mql / totals.leads) * 100).toFixed(1)}%` : "—"} color="text-green-300" sub="Leads → MQL" />
+                  <MetricItem
+                    label="% MQL/LPV"
+                    value={totals.mql_per_view !== null && totals.mql_per_view !== undefined ? `${(totals.mql_per_view * 100).toFixed(2)}%` : "—"}
+                    color="text-sky-300"
+                    sub="MQL ÷ LPV"
+                  />
                   <MetricItem label="Total MQL" value={formatNumber(totals.mql)} color="text-green-400" sub={`⏱ Resp: ${avgResponseMql}`} />
                   <MetricItem label="Leads ≥5k" value={formatNumber(qualifiedLeads)} color="text-cyan-300" sub={`⏱ Resp: ${avgResponse5k}`} />
                   <MetricItem label="CPMQL" value={formatCurrency(totals.cpmql) || "—"} />
@@ -1475,6 +1493,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("spend")}>
                     Spend<SortIcon field="spend" />
                   </TableHead>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("landing_page_views")} title="Landing Page Views (visualizações da página vindas do Pixel)">
+                    LPV<SortIcon field="landing_page_views" />
+                  </TableHead>
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[6%]" onClick={() => handleSort("leads_count")}>
                     Leads/CPL<SortIcon field="leads_count" />
                   </TableHead>
@@ -1483,6 +1504,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   </TableHead>
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[4%]" onClick={() => handleSort("mql_rate")}>
                     %MQL<SortIcon field="mql_rate" />
+                  </TableHead>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("mql_per_view")} title="MQL ÷ Landing Page Views">
+                    %MQL/LPV<SortIcon field="mql_per_view" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_small")}>
                     CP-S<SortIcon field="cost_per_small" />
@@ -1562,6 +1586,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         </div>
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">{formatCurrency(c.spend)}</TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5 text-sky-400">
+                        {c.landing_page_views > 0 ? formatNumber(c.landing_page_views) : <span className="text-muted-foreground">—</span>}
+                      </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">
                         <div className="font-semibold">{c.leads_count}</div>
                         <div className="text-muted-foreground text-[9px]">{formatCurrency(cpl)}</div>
@@ -1571,6 +1598,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         <div className={`text-[9px] ${isBestCpmql2 ? "font-bold text-green-400" : "text-muted-foreground"}`}>{formatCurrency(c.cost_per_mql)}</div>
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">{formatPercent(c.mql_rate)}</TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5 text-sky-300">
+                        {c.mql_per_view !== null && c.mql_per_view !== undefined
+                          ? `${(c.mql_per_view * 100).toFixed(2)}%`
+                          : <span className="text-muted-foreground">—</span>}
+                      </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">
                         {c.tier_small_count > 0 ? (
                           <><div className="font-semibold">{c.tier_small_count}</div><div className="text-muted-foreground text-[9px]">{formatCurrency(c.cost_per_small)}</div></>
