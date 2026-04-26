@@ -57,6 +57,7 @@ import { ADMIN_AUTH_EXPIRED_EVENT, ADMIN_TOKEN_KEY, clearAdminToken, fetchAdmin,
 const KommoLogsPanel = lazy(() => import("@/components/admin/KommoLogsPanel"));
 
 const CreativesTab = lazy(() => import("@/components/admin/CreativesTab"));
+const FunnelMetricsTab = lazy(() => import("@/components/admin/FunnelMetricsTab"));
 const LeadReportsTab = lazy(() => import("@/components/admin/LeadReportsTab"));
 const DailyReportsTab = lazy(() => import("@/components/admin/DailyReportsTab"));
 const InsightsTab = lazy(() => import("@/components/admin/InsightsTab"));
@@ -1634,7 +1635,13 @@ export default function AdminAnalytics() {
                   value="creatives" 
                   className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
                 >
-                  Métricas
+                  Métricas Creatives
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="funnel-metrics" 
+                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  Métricas Funil
                 </TabsTrigger>
                 <TabsTrigger 
                   value="reports" 
@@ -2866,6 +2873,23 @@ export default function AdminAnalytics() {
                   endDateOnly={endDateOnly}
                   startISO={startISO}
                   endISO={endISO}
+                  funnelMetrics={metrics ? {
+                    visitors: metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors,
+                    sessions: metrics.total_visitors,
+                    entered_quiz: metrics.entered_quiz,
+                    completed: metrics.completed,
+                    conversion_rate: Number(metrics.conversion_rate) || 0,
+                    step_funnel: metrics.step_funnel || [],
+                  } : null}
+                />
+              </Suspense>
+            </TabsContent>
+
+            {/* Métricas Funil Tab */}
+            <TabsContent value="funnel-metrics">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <FunnelMetricsTab
+                  fetchAdminData={fetchAdminData}
                   funnelMetrics={metrics ? {
                     visitors: metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors,
                     sessions: metrics.total_visitors,
