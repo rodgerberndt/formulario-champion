@@ -23,6 +23,34 @@ interface MetaInsight {
   actions?: Array<{ action_type: string; value: string }>;
 }
 
+const PIXEL_PAGE_VIEW_ACTION_TYPES = new Set([
+  "offsite_conversion.fb_pixel_page_view",
+  "offsite_conversion.fb_pixel_custom.PageView",
+]);
+
+const LANDING_PAGE_VIEW_ACTION_TYPES = new Set([
+  "landing_page_view",
+  "omni_landing_page_view",
+  "onsite_conversion.landing_page_view",
+]);
+
+function sumActionValues(actions: MetaInsight["actions"], matcher: (actionType: string) => boolean): number {
+  return (actions || []).reduce((sum, action) => {
+    const actionType = action.action_type || "";
+    return matcher(actionType) ? sum + (parseInt(action.value, 10) || 0) : sum;
+  }, 0);
+}
+
+function getPageViewsFromActions(actions: MetaInsight["actions"]): number {
+  const pixelPageViews = sumActionValues(actions, (type) => PIXEL_PAGE_VIEW_ACTION_TYPES.has(type));
+  if (pixelPageViews > 0) return pixelPageViews;
+
+  const landingPageViews = sumActionValues(actions, (type) => LANDING_PAGE_VIEW_ACTION_TYPES.has(type));
+  if (landingPageViews > 0) return landingPageViews;
+
+  return sumActionValues(actions, (type) => type.includes("fb_pixel_page_view") || type.endsWith(".page_view"));
+}
+
 function normalizeCreativeKey(raw: string): string {
   return raw.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-_]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
 }
@@ -89,8 +117,7 @@ Deno.serve(async (req: Request) => {
         const utmContentMatch = row.ad_name?.match(/utm_content[=:]([^\s|,]+)/i);
         const utmContent = utmContentMatch ? utmContentMatch[1] : row.ad_name;
         const creativeKey = utmContent ? normalizeCreativeKey(utmContent) : null;
-        const lpvAction = row.actions?.find((a) => a.action_type === "landing_page_view");
-        const landingPageViews = lpvAction ? parseInt(lpvAction.value) || 0 : 0;
+        const landingPageViews = getPageViewsFromActions(row.actions);
 
         return {
           date: row.date_start,
