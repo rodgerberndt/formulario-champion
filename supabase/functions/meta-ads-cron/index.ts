@@ -20,6 +20,7 @@ interface MetaInsight {
   clicks: string;
   date_start: string;
   date_stop: string;
+  actions?: Array<{ action_type: string; value: string }>;
 }
 
 function normalizeCreativeKey(raw: string): string {
@@ -27,7 +28,7 @@ function normalizeCreativeKey(raw: string): string {
 }
 
 async function fetchMetaInsights(token: string, accountId: string, since: string, until: string): Promise<MetaInsight[]> {
-  const fields = "ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,spend,impressions,clicks";
+  const fields = "ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,spend,impressions,clicks,actions";
   const timeRange = JSON.stringify({ since, until });
   const baseUrl = `https://graph.facebook.com/${META_API_VERSION}/${accountId}/insights`;
   let url: string | null = `${baseUrl}?fields=${fields}&time_range=${encodeURIComponent(timeRange)}&level=ad&time_increment=1&limit=500&access_token=${token}`;
