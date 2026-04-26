@@ -1493,6 +1493,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("spend")}>
                     Spend<SortIcon field="spend" />
                   </TableHead>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("landing_page_views")} title="Landing Page Views (visualizações da página vindas do Pixel)">
+                    LPV<SortIcon field="landing_page_views" />
+                  </TableHead>
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[6%]" onClick={() => handleSort("leads_count")}>
                     Leads/CPL<SortIcon field="leads_count" />
                   </TableHead>
@@ -1501,6 +1504,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   </TableHead>
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[4%]" onClick={() => handleSort("mql_rate")}>
                     %MQL<SortIcon field="mql_rate" />
+                  </TableHead>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("mql_per_view")} title="MQL ÷ Landing Page Views">
+                    %MQL/LPV<SortIcon field="mql_per_view" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_small")}>
                     CP-S<SortIcon field="cost_per_small" />
