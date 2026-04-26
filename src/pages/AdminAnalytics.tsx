@@ -589,19 +589,20 @@ export default function AdminAnalytics() {
       // Background: persist mark_opened flag
       (async () => {
         try {
-          const token = getToken();
           const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${lead.id}`;
-          await fetch(url, {
+          const res = await fetchAdmin(url, {
             method: "PUT",
-            headers: {
-              "x-admin-token": token || "",
-              "Content-Type": "application/json",
-              "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ mark_opened: true }),
           });
+          if (!res.ok) {
+            const txt = await res.text().catch(() => "");
+            console.error("[response-time] mark_opened failed", res.status, txt);
+          } else {
+            console.log("[response-time] first_opened_at stamped for", lead.id);
+          }
         } catch (e) {
-          console.error("Error marking lead opened:", e);
+          console.error("[response-time] mark_opened error:", e);
         }
       })();
     }
