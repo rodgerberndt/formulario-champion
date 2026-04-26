@@ -89,12 +89,15 @@ Deno.serve(async (req: Request) => {
         const utmContentMatch = row.ad_name?.match(/utm_content[=:]([^\s|,]+)/i);
         const utmContent = utmContentMatch ? utmContentMatch[1] : row.ad_name;
         const creativeKey = utmContent ? normalizeCreativeKey(utmContent) : null;
+        const lpvAction = row.actions?.find((a) => a.action_type === "landing_page_view");
+        const landingPageViews = lpvAction ? parseInt(lpvAction.value) || 0 : 0;
 
         return {
           date: row.date_start,
           spend: parseFloat(row.spend) || 0,
           impressions: parseInt(row.impressions) || 0,
           clicks: parseInt(row.clicks) || 0,
+          landing_page_views: landingPageViews,
           ad_id: row.ad_id,
           ad_name: row.ad_name,
           adset_id: row.adset_id,
