@@ -28,6 +28,7 @@ export type Database = {
           date: string
           id: string
           impressions: number
+          landing_page_views: number
           spend: number
           utm_content: string | null
           utm_creative: string | null
@@ -45,6 +46,7 @@ export type Database = {
           date: string
           id?: string
           impressions?: number
+          landing_page_views?: number
           spend?: number
           utm_content?: string | null
           utm_creative?: string | null
@@ -62,6 +64,7 @@ export type Database = {
           date?: string
           id?: string
           impressions?: number
+          landing_page_views?: number
           spend?: number
           utm_content?: string | null
           utm_creative?: string | null
