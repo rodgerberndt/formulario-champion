@@ -174,6 +174,9 @@ interface LeadOption {
   tier: string | null;
   investimento_faixa?: string | null;
   created_at: string;
+  first_opened_at?: string | null;
+  estagio_negocio?: string | null;
+  sdr_override?: string | null;
 }
 
 interface AdSpendEntry {
