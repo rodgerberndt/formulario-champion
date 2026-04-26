@@ -368,7 +368,7 @@ Deno.serve(async (req: Request) => {
       // Clamp range to a maximum of 90 days to avoid worker resource limits.
       // The weekly-analysis section only renders day-of-week aggregates, so
       // ranges longer than ~3 months provide no extra signal but easily OOM.
-      const MAX_DAYS = 90;
+      const MAX_DAYS = 31;
       if (from && to) {
         const fromMs = new Date(from).getTime();
         const toMs = new Date(to).getTime();
@@ -384,7 +384,7 @@ Deno.serve(async (req: Request) => {
 
       async function fetchAllPaged<T>(table: string, select: string, filters: (q: any) => any): Promise<T[]> {
         const PAGE_SIZE = 1000;
-        const MAX_ROWS = 20000; // hard cap to prevent OOM/CPU exhaustion
+        const MAX_ROWS = 8000; // hard cap to prevent OOM/CPU exhaustion (503)
         let all: T[] = [];
         let offset = 0;
         let hasMore = true;
