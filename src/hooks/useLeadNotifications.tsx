@@ -4,6 +4,26 @@ import { fetchAdmin, getAdminToken } from "@/lib/adminAuth";
 
 const NOTIFY_PREF_KEY = "champion_notify_enabled";
 const POLL_INTERVAL_MS = 15_000; // Poll every 15 seconds
+const TRANSIENT_STATUS_CODES = new Set([502, 503, 504]);
+
+async function safeFetchAdminList<T>(url: string, headers: Record<string, string>, label: string): Promise<T[]> {
+  try {
+    const response = await fetchAdmin(url, { headers });
+    if (response.ok) return response.json();
+
+    if (TRANSIENT_STATUS_CODES.has(response.status)) {
+      console.warn(`[Notifications] ${label} temporariamente indisponível (${response.status}); mantendo polling ativo.`);
+      return [];
+    }
+
+    console.warn(`[Notifications] Falha ao carregar ${label}: ${response.status}`);
+    return [];
+  } catch (error) {
+    if (error instanceof Error && error.message === "Sessão expirada") throw error;
+    console.warn(`[Notifications] Falha temporária ao carregar ${label}:`, error);
+    return [];
+  }
+}
 
 /** Plays a bright ascending chime for new (non-MQL) leads */
 function playLeadSound() {
@@ -308,16 +328,12 @@ export function useLeadNotifications(
         apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
       };
 
-      // Fetch leads, sales, and meetings in parallel
-      const [leadsRes, salesRes, meetingsRes] = await Promise.all([
-        fetchAdmin(`${baseUrl}/leads?from=${today}&to=${today}`, { headers }),
-        fetchAdmin(`${baseUrl}/manual-sales?from=${today}&to=${today}`, { headers }),
-        fetchAdmin(`${baseUrl}/meetings?from=${today}&to=${today}`, { headers }),
+      // Fetch leads, sales, and meetings independently so one transient 503 doesn't break the whole admin screen
+      const [leads, sales, meetings] = await Promise.all([
+        safeFetchAdminList<NewLead>(`${baseUrl}/leads?from=${today}&to=${today}`, headers, "leads"),
+        safeFetchAdminList<SaleRecord>(`${baseUrl}/manual-sales?from=${today}&to=${today}`, headers, "vendas"),
+        safeFetchAdminList<MeetingRecord>(`${baseUrl}/meetings?from=${today}&to=${today}`, headers, "reuniões"),
       ]);
-
-      const leads: NewLead[] = leadsRes.ok ? await leadsRes.json() : [];
-      const sales: SaleRecord[] = salesRes.ok ? await salesRes.json() : [];
-      const meetings: MeetingRecord[] = meetingsRes.ok ? await meetingsRes.json() : [];
 
       const currentLeadIds = new Set(leads.map((l) => l.id));
       const currentSaleIds = new Set(sales.map((s) => s.id));
