@@ -370,6 +370,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [deletingSaleId, setDeletingSaleId] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
 
+  // Sales cycle (historical, all time)
+  const [salesCycle, setSalesCycle] = useState<{ avg_days: number | null; median_days: number | null; count: number } | null>(null);
+
   // Meeting state
   const [showAddMeeting, setShowAddMeeting] = useState(false);
   const [meetingForm, setMeetingForm] = useState({ creative_key: "", notes: "" });
