@@ -4,6 +4,26 @@ import { fetchAdmin, getAdminToken } from "@/lib/adminAuth";
 
 const NOTIFY_PREF_KEY = "champion_notify_enabled";
 const POLL_INTERVAL_MS = 15_000; // Poll every 15 seconds
+const TRANSIENT_STATUS_CODES = new Set([502, 503, 504]);
+
+async function safeFetchAdminList<T>(url: string, headers: Record<string, string>, label: string): Promise<T[]> {
+  try {
+    const response = await fetchAdmin(url, { headers });
+    if (response.ok) return response.json();
+
+    if (TRANSIENT_STATUS_CODES.has(response.status)) {
+      console.warn(`[Notifications] ${label} temporariamente indisponível (${response.status}); mantendo polling ativo.`);
+      return [];
+    }
+
+    console.warn(`[Notifications] Falha ao carregar ${label}: ${response.status}`);
+    return [];
+  } catch (error) {
+    if (error instanceof Error && error.message === "Sessão expirada") throw error;
+    console.warn(`[Notifications] Falha temporária ao carregar ${label}:`, error);
+    return [];
+  }
+}
 
 /** Plays a bright ascending chime for new (non-MQL) leads */
 function playLeadSound() {
