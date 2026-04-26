@@ -1303,6 +1303,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     color="text-violet-300"
                     sub={`${totals.sales_sprint || 0} / ${sprintLeadsCount} leads sprint`}
                   />
+                  <MetricItem label="CAC" value={cacSprint !== null ? formatCurrency(cacSprint) || "—" : "—"} color="text-violet-300" sub="Spend ÷ Vendas Sprint" />
+                  <MetricItem label="ROAS" value={roasSprint !== null ? `${roasSprint.toFixed(2)}x` : "—"} color="text-violet-300" sub="Receita Sprint ÷ Spend" />
                 </div>
               </CardContent>
             </Card>
@@ -1325,6 +1327,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     color="text-teal-300"
                     sub={`${totals.sales_assessoria || 0} / ${mqlLeadsCount} MQLs`}
                   />
+                  <MetricItem label="CAC" value={cacAssessoria !== null ? formatCurrency(cacAssessoria) || "—" : "—"} color="text-teal-300" sub="Spend ÷ Vendas Assessoria" />
+                  <MetricItem label="ROAS" value={roasAssessoria !== null ? `${roasAssessoria.toFixed(2)}x` : "—"} color="text-teal-300" sub="Receita Assessoria ÷ Spend" />
                 </div>
               </CardContent>
             </Card>
@@ -1361,6 +1365,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     color="text-emerald-300"
                     sub={`${(totals.sales_sprint || 0) + (totals.sales_assessoria || 0)} / ${totalQualified} leads (Sprint + MQL)`}
                   />
+                  <MetricItem label="CAC" value={cacTotalVal !== null ? formatCurrency(cacTotalVal) || "—" : "—"} color="text-emerald-300" sub="Spend ÷ Vendas" />
+                  <MetricItem label="ROAS" value={roasTotalVal !== null ? `${roasTotalVal.toFixed(2)}x` : "—"} color="text-emerald-300" sub="Receita ÷ Spend" />
                 </div>
               </CardContent>
             </Card>
