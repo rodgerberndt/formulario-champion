@@ -2400,7 +2400,7 @@ Deno.serve(async (req: Request) => {
         const totalVisitors = validSessions.size;
 
         // section_views
-        let sv = supabase.from("section_views").select("session_id, section_id, section_order, time_spent_ms");
+        let sv = supabase.from("section_views").select("session_id, section_id, section_order, time_spent_ms").limit(15000);
         if (fromIso) sv = sv.gte("created_at", fromIso);
         if (toIso) sv = sv.lte("created_at", toIso);
         const { data: sectionRows } = await sv;
@@ -2425,7 +2425,7 @@ Deno.serve(async (req: Request) => {
         const sortedSections = Array.from(sectionMap.values()).sort((a, b) => a.order - b.order);
 
         // click events (need them BEFORE funnel to count clicks per section)
-        let ce = supabase.from("click_events").select("session_id, click_type, click_id, section_id, label, href");
+        let ce = supabase.from("click_events").select("session_id, click_type, click_id, section_id, label, href").limit(15000);
         if (fromIso) ce = ce.gte("created_at", fromIso);
         if (toIso) ce = ce.lte("created_at", toIso);
         const { data: clickRows } = await ce;
@@ -2441,7 +2441,7 @@ Deno.serve(async (req: Request) => {
         });
 
         // scroll milestones (precisamos ANTES do funil para usar como base)
-        let sm = supabase.from("scroll_milestones").select("session_id, milestone");
+        let sm = supabase.from("scroll_milestones").select("session_id, milestone").limit(15000);
         if (fromIso) sm = sm.gte("reached_at", fromIso);
         if (toIso) sm = sm.lte("reached_at", toIso);
         const { data: scrollRows } = await sm;
