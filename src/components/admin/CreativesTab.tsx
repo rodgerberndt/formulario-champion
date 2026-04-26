@@ -1034,6 +1034,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         const avgSprint = totals.sales_sprint > 0 ? totals.revenue_sprint / totals.sales_sprint : 0;
         const avgAssessoria = totals.sales_assessoria > 0 ? totals.revenue_assessoria / totals.sales_assessoria : 0;
         const avgTotal = totals.sales > 0 ? totals.revenue / totals.sales : 0;
+        const cacSprint = (totals.sales_sprint || 0) > 0 && totals.spend > 0 ? totals.spend / (totals.sales_sprint || 0) : null;
+        const cacAssessoria = (totals.sales_assessoria || 0) > 0 && totals.spend > 0 ? totals.spend / (totals.sales_assessoria || 0) : null;
+        const cacTotalVal = (totals.sales || 0) > 0 && totals.spend > 0 ? totals.spend / (totals.sales || 0) : null;
+        const roasSprint = totals.spend > 0 ? (totals.revenue_sprint || 0) / totals.spend : null;
+        const roasAssessoria = totals.spend > 0 ? (totals.revenue_assessoria || 0) / totals.spend : null;
+        const roasTotalVal = totals.spend > 0 ? (totals.revenue || 0) / totals.spend : null;
         const qualifiedLeads = leadsList.filter((lead) => {
           const faixa = lead.investimento_faixa || null;
           return !!faixa && !["Não vendo ainda (R$0/mês)", "Até R$ 5 mil"].includes(faixa);
