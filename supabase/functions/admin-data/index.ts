@@ -140,7 +140,22 @@ Deno.serve(async (req: Request) => {
       const wasLido = currentLead?.lido === true;
       const isSettingLido = body.lido === true;
       const isLidoTransition = !wasLido && isSettingLido;
-      
+
+      // First-open response-time tracking: stamp first_opened_at exactly once
+      // Body flag `mark_opened: true` triggers the stamp (only if not already set).
+      if (body.mark_opened === true) {
+        delete body.mark_opened;
+        // Only set if currently null in DB
+        const { data: existing } = await supabase
+          .from("leads")
+          .select("first_opened_at")
+          .eq("id", leadId)
+          .maybeSingle();
+        if (existing && !existing.first_opened_at) {
+          body.first_opened_at = new Date().toISOString();
+        }
+      }
+
       const { data, error } = await supabase
         .from("leads")
         .update(body)
