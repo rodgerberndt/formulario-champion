@@ -1034,6 +1034,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         const avgSprint = totals.sales_sprint > 0 ? totals.revenue_sprint / totals.sales_sprint : 0;
         const avgAssessoria = totals.sales_assessoria > 0 ? totals.revenue_assessoria / totals.sales_assessoria : 0;
         const avgTotal = totals.sales > 0 ? totals.revenue / totals.sales : 0;
+        const cacSprint = (totals.sales_sprint || 0) > 0 && totals.spend > 0 ? totals.spend / (totals.sales_sprint || 0) : null;
+        const cacAssessoria = (totals.sales_assessoria || 0) > 0 && totals.spend > 0 ? totals.spend / (totals.sales_assessoria || 0) : null;
+        const cacTotalVal = (totals.sales || 0) > 0 && totals.spend > 0 ? totals.spend / (totals.sales || 0) : null;
+        const roasSprint = totals.spend > 0 ? (totals.revenue_sprint || 0) / totals.spend : null;
+        const roasAssessoria = totals.spend > 0 ? (totals.revenue_assessoria || 0) / totals.spend : null;
+        const roasTotalVal = totals.spend > 0 ? (totals.revenue || 0) / totals.spend : null;
         const qualifiedLeads = leadsList.filter((lead) => {
           const faixa = lead.investimento_faixa || null;
           return !!faixa && !["Não vendo ainda (R$0/mês)", "Até R$ 5 mil"].includes(faixa);
@@ -1297,6 +1303,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     color="text-violet-300"
                     sub={`${totals.sales_sprint || 0} / ${sprintLeadsCount} leads sprint`}
                   />
+                  <MetricItem label="CAC" value={cacSprint !== null ? formatCurrency(cacSprint) || "—" : "—"} color="text-violet-300" sub="Spend ÷ Vendas Sprint" />
+                  <MetricItem label="ROAS" value={roasSprint !== null ? `${roasSprint.toFixed(2)}x` : "—"} color="text-violet-300" sub="Receita Sprint ÷ Spend" />
                 </div>
               </CardContent>
             </Card>
@@ -1319,6 +1327,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     color="text-teal-300"
                     sub={`${totals.sales_assessoria || 0} / ${mqlLeadsCount} MQLs`}
                   />
+                  <MetricItem label="CAC" value={cacAssessoria !== null ? formatCurrency(cacAssessoria) || "—" : "—"} color="text-teal-300" sub="Spend ÷ Vendas Assessoria" />
+                  <MetricItem label="ROAS" value={roasAssessoria !== null ? `${roasAssessoria.toFixed(2)}x` : "—"} color="text-teal-300" sub="Receita Assessoria ÷ Spend" />
                 </div>
               </CardContent>
             </Card>
@@ -1355,6 +1365,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     color="text-emerald-300"
                     sub={`${(totals.sales_sprint || 0) + (totals.sales_assessoria || 0)} / ${totalQualified} leads (Sprint + MQL)`}
                   />
+                  <MetricItem label="CAC" value={cacTotalVal !== null ? formatCurrency(cacTotalVal) || "—" : "—"} color="text-emerald-300" sub="Spend ÷ Vendas" />
+                  <MetricItem label="ROAS" value={roasTotalVal !== null ? `${roasTotalVal.toFixed(2)}x` : "—"} color="text-emerald-300" sub="Receita ÷ Spend" />
                 </div>
               </CardContent>
             </Card>
@@ -1435,23 +1447,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             </Card>
           )}
 
-          {/* Row 5: Performance */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card>
-              <CardContent className="pt-4">
-                <div className="grid grid-cols-1 gap-1">
-                  <MetricItem label="CAC" value={formatCurrency(totals.cac) || "—"} sub="Spend ÷ Vendas" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-4">
-                <div className="grid grid-cols-1 gap-1">
-                  <MetricItem label="ROAS" value={totals.roas !== null ? `${totals.roas.toFixed(2)}x` : "—"} sub="Receita ÷ Spend" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
         );
       })()}
