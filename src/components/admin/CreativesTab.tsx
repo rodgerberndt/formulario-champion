@@ -1318,7 +1318,23 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           )}
 
           {/* Row 5: Performance */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {(() => {
+            // Ciclo de vendas médio: dias entre lead.created_at e sale.sale_date
+            const cycleDays: number[] = [];
+            for (const s of salesList) {
+              if (!s.lead_created_at || !s.sale_date) continue;
+              const leadDate = new Date(s.lead_created_at);
+              const saleDate = new Date(s.sale_date + "T12:00:00");
+              if (isNaN(leadDate.getTime()) || isNaN(saleDate.getTime())) continue;
+              const diffMs = saleDate.getTime() - leadDate.getTime();
+              const diffDays = Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24)));
+              cycleDays.push(diffDays);
+            }
+            const avgCycle = cycleDays.length > 0
+              ? cycleDays.reduce((a, b) => a + b, 0) / cycleDays.length
+              : null;
+            return (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             <Card>
               <CardContent className="pt-4">
                 <div className="grid grid-cols-1 gap-1">
@@ -1340,7 +1356,21 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 </div>
               </CardContent>
             </Card>
+            <Card className="border-amber-500/20">
+              <CardContent className="pt-4">
+                <div className="grid grid-cols-1 gap-1">
+                  <MetricItem
+                    label="Ciclo de Vendas"
+                    value={avgCycle !== null ? `${avgCycle.toFixed(1)} dias` : "—"}
+                    color="text-amber-400"
+                    sub={cycleDays.length > 0 ? `Média de ${cycleDays.length} venda${cycleDays.length > 1 ? "s" : ""} (lead → venda)` : "Sem vendas com lead vinculado"}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </div>
+            );
+          })()}
         </div>
         );
       })()}
