@@ -788,7 +788,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const dq = data?.data_quality;
 
   // ── Per-creative extras: CAC by type, win rate, sales cycle, call→sale conversion ──
-  const creativeExtras = React.useMemo(() => {
+  const creativeExtras = useMemo(() => {
     const map = new Map<string, {
       cacSprint: number | null;
       cacAssessoria: number | null;
