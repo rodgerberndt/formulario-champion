@@ -2885,6 +2885,23 @@ export default function AdminAnalytics() {
               </Suspense>
             </TabsContent>
 
+            {/* Métricas Funil Tab */}
+            <TabsContent value="funnel-metrics">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <FunnelMetricsTab
+                  fetchAdminData={fetchAdminData}
+                  funnelMetrics={metrics ? {
+                    visitors: metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors,
+                    sessions: metrics.total_visitors,
+                    entered_quiz: metrics.entered_quiz,
+                    completed: metrics.completed,
+                    conversion_rate: Number(metrics.conversion_rate) || 0,
+                    step_funnel: metrics.step_funnel || [],
+                  } : null}
+                />
+              </Suspense>
+            </TabsContent>
+
             {/* Relatórios Lead Tab */}
             <TabsContent value="reports">
               <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
