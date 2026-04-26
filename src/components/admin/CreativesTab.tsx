@@ -1603,6 +1603,14 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         ) : <span className="text-muted-foreground">0</span>}
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">
+                        {(() => {
+                          const r = creativeExtras.get(c.creative_key)?.callConvRate;
+                          if (r === null || r === undefined) return <span className="text-muted-foreground">—</span>;
+                          const cls = r >= 0.5 ? "text-emerald-400" : r >= 0.2 ? "text-amber-400" : "text-muted-foreground";
+                          return <span className={`font-semibold ${cls}`}>{(r * 100).toFixed(0)}%</span>;
+                        })()}
+                      </TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5">
                         <Popover>
                           <PopoverTrigger asChild>
                             <button className="text-right w-full hover:underline">
@@ -1619,6 +1627,36 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                             </div>
                           </PopoverContent>
                         </Popover>
+                      </TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5 text-violet-400">
+                        {c.sales_sprint_count > 0 ? (
+                          <><div className="font-semibold">{c.sales_sprint_count}</div><div className="text-[9px]">{formatCurrency(creativeExtras.get(c.creative_key)?.cacSprint ?? null)}</div></>
+                        ) : <span className="text-muted-foreground">0</span>}
+                      </TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5 text-teal-400">
+                        {c.sales_assessoria_count > 0 ? (
+                          <><div className="font-semibold">{c.sales_assessoria_count}</div><div className="text-[9px]">{formatCurrency(creativeExtras.get(c.creative_key)?.cacAssessoria ?? null)}</div></>
+                        ) : <span className="text-muted-foreground">0</span>}
+                      </TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5">
+                        {(() => {
+                          const w = creativeExtras.get(c.creative_key)?.winRate;
+                          if (w === null || w === undefined) return <span className="text-muted-foreground">—</span>;
+                          const cls = w >= 0.3 ? "text-emerald-400" : w >= 0.1 ? "text-amber-400" : "text-muted-foreground";
+                          return <span className={`font-semibold ${cls}`}>{(w * 100).toFixed(0)}%</span>;
+                        })()}
+                      </TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5">
+                        {(() => {
+                          const ext = creativeExtras.get(c.creative_key);
+                          if (!ext || ext.cycleDays === null) return <span className="text-muted-foreground">—</span>;
+                          return (
+                            <>
+                              <div className="font-semibold">{ext.cycleDays.toFixed(1)}d</div>
+                              <div className="text-[9px] text-muted-foreground">{ext.cycleCount} venda{ext.cycleCount !== 1 ? "s" : ""}</div>
+                            </>
+                          );
+                        })()}
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">
                         <Popover>
