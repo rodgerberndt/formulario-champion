@@ -49,9 +49,24 @@ export function getAdminToken() {
   return token;
 }
 
+let adminFetchQueue: Promise<void> = Promise.resolve();
+
+function wait(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
 export async function fetchAdmin(url: string, init: RequestInit = {}) {
+  const previousRequest = adminFetchQueue;
+  let releaseQueue: () => void = () => undefined;
+  adminFetchQueue = new Promise<void>((resolve) => {
+    releaseQueue = resolve;
+  });
+
+  await previousRequest.catch(() => undefined);
+
   const token = getAdminToken();
   if (!token) {
+    releaseQueue();
     throw new Error("Sessão expirada");
   }
 
@@ -62,16 +77,42 @@ export async function fetchAdmin(url: string, init: RequestInit = {}) {
     headers.set("apikey", import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
   }
 
-  const response = await fetch(url, {
-    ...init,
-    headers,
-  });
+  const method = (init.method || "GET").toUpperCase();
+  const canRetry = method === "GET";
+  const maxAttempts = canRetry ? 4 : 1;
 
-  if (response.status === 401) {
-    clearAdminToken();
-    notifyAdminAuthExpired();
-    throw new Error("Sessão expirada");
+  try {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        const response = await fetch(url, {
+          ...init,
+          headers,
+        });
+
+        if (response.status === 401) {
+          clearAdminToken();
+          notifyAdminAuthExpired();
+          throw new Error("Sessão expirada");
+        }
+
+        if ([502, 503, 504].includes(response.status) && attempt < maxAttempts - 1) {
+          await wait(900 * Math.pow(2, attempt) + Math.random() * 250);
+          continue;
+        }
+
+        return response;
+      } catch (error) {
+        if (error instanceof Error && error.message === "Sessão expirada") throw error;
+        if (attempt < maxAttempts - 1) {
+          await wait(900 * Math.pow(2, attempt) + Math.random() * 250);
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    throw new Error("Falha ao carregar dados");
+  } finally {
+    releaseQueue();
   }
-
-  return response;
 }
