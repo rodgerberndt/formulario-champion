@@ -1586,6 +1586,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         </div>
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">{formatCurrency(c.spend)}</TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5 text-sky-400">
+                        {c.landing_page_views > 0 ? formatNumber(c.landing_page_views) : <span className="text-muted-foreground">—</span>}
+                      </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">
                         <div className="font-semibold">{c.leads_count}</div>
                         <div className="text-muted-foreground text-[9px]">{formatCurrency(cpl)}</div>
@@ -1595,6 +1598,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         <div className={`text-[9px] ${isBestCpmql2 ? "font-bold text-green-400" : "text-muted-foreground"}`}>{formatCurrency(c.cost_per_mql)}</div>
                       </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">{formatPercent(c.mql_rate)}</TableCell>
+                      <TableCell className="text-right text-[10px] py-1.5 text-sky-300">
+                        {c.mql_per_view !== null && c.mql_per_view !== undefined
+                          ? `${(c.mql_per_view * 100).toFixed(2)}%`
+                          : <span className="text-muted-foreground">—</span>}
+                      </TableCell>
                       <TableCell className="text-right text-[10px] py-1.5">
                         {c.tier_small_count > 0 ? (
                           <><div className="font-semibold">{c.tier_small_count}</div><div className="text-muted-foreground text-[9px]">{formatCurrency(c.cost_per_small)}</div></>
