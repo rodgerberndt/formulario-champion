@@ -987,6 +987,24 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         }).length;
         const winRateVal = qualifiedLeads > 0 ? (totals.sales / qualifiedLeads) * 100 : 0;
 
+        // ── Win rate por tipo (período filtrado)
+        const sprintLeadsCount = leadsList.filter(
+          (l) => (l.investimento_faixa || "") === "De R$ 5 mil a R$ 10 mil"
+        ).length;
+        const mqlLeadsCount = leadsList.filter(
+          (l) => MQL_FAT_MIN_FAIXAS.includes(l.investimento_faixa || "")
+        ).length;
+        const sprintWinRate = sprintLeadsCount > 0
+          ? ((totals.sales_sprint || 0) / sprintLeadsCount) * 100
+          : null;
+        const assessoriaWinRate = mqlLeadsCount > 0
+          ? ((totals.sales_assessoria || 0) / mqlLeadsCount) * 100
+          : null;
+        const totalQualified = sprintLeadsCount + mqlLeadsCount;
+        const totalWinRate = totalQualified > 0
+          ? (((totals.sales_sprint || 0) + (totals.sales_assessoria || 0)) / totalQualified) * 100
+          : null;
+
         // ── Ciclo de vendas (período filtrado): dias entre lead.created_at e sale.sale_date
         const calcCycle = (filterFn: (s: ManualSale) => boolean): { avg: number | null; count: number } => {
           const days: number[] = [];
@@ -1212,7 +1230,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card className="border-violet-500/20">
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-violet-400 uppercase tracking-wider mb-3 border-b border-violet-500/20 pb-2">Sprint</p>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <MetricItem
                     label="Vendas"
                     value={`${formatNumber(totals.sales_sprint || 0)}`}
@@ -1221,6 +1239,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   />
                   <MetricItem label="Ticket Médio" value={avgSprint > 0 ? formatCurrency(avgSprint) || "—" : "—"} color="text-violet-300" />
                   <MetricItem label="Ciclo de Vendas" value={fmtCycle(cycleSprint)} color="text-violet-300" sub={fmtCycleSub(cycleSprint)} />
+                  <MetricItem
+                    label="Win Rate"
+                    value={sprintWinRate != null ? `${sprintWinRate.toFixed(1)}%` : "—"}
+                    color="text-violet-300"
+                    sub={`${totals.sales_sprint || 0} / ${sprintLeadsCount} leads sprint`}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -1228,7 +1252,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card className="border-teal-500/20">
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-3 border-b border-teal-500/20 pb-2">Assessoria</p>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <MetricItem
                     label="Vendas"
                     value={`${formatNumber(totals.sales_assessoria || 0)}`}
@@ -1237,6 +1261,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   />
                   <MetricItem label="Ticket Médio" value={avgAssessoria > 0 ? formatCurrency(avgAssessoria) || "—" : "—"} color="text-teal-300" />
                   <MetricItem label="Ciclo de Vendas" value={fmtCycle(cycleAssessoria)} color="text-teal-300" sub={fmtCycleSub(cycleAssessoria)} />
+                  <MetricItem
+                    label="Win Rate"
+                    value={assessoriaWinRate != null ? `${assessoriaWinRate.toFixed(1)}%` : "—"}
+                    color="text-teal-300"
+                    sub={`${totals.sales_assessoria || 0} / ${mqlLeadsCount} MQLs`}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -1258,7 +1288,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     {showSalesList ? "Ocultar" : "Ver vendas"}
                   </Button>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <MetricItem
                     label="Vendas"
                     value={`${formatNumber(totals.sales)}`}
@@ -1267,6 +1297,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   />
                   <MetricItem label="Ticket Médio" value={avgTotal > 0 ? formatCurrency(avgTotal) || "—" : "—"} color="text-emerald-300" />
                   <MetricItem label="Ciclo de Vendas" value={fmtCycle(cycleTotal)} color="text-emerald-300" sub={fmtCycleSub(cycleTotal)} />
+                  <MetricItem
+                    label="Win Rate"
+                    value={totalWinRate != null ? `${totalWinRate.toFixed(1)}%` : "—"}
+                    color="text-emerald-300"
+                    sub={`${(totals.sales_sprint || 0) + (totals.sales_assessoria || 0)} / ${totalQualified} leads (Sprint + MQL)`}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -1366,7 +1402,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card className="border-green-500/20">
               <CardContent className="pt-4">
                 <div className="grid grid-cols-1 gap-1">
-                  <MetricItem label="Win Rate" value={winRateVal > 0 ? `${winRateVal.toFixed(1)}%` : "—"} color="text-green-400" sub={`${totals.sales} vendas / ${qualifiedLeads} leads ≥5k`} />
+                  <MetricItem
+                    label="Win Rate"
+                    value={totalWinRate != null ? `${totalWinRate.toFixed(1)}%` : "—"}
+                    color="text-green-400"
+                    sub={`${(totals.sales_sprint || 0) + (totals.sales_assessoria || 0)} vendas / ${totalQualified} leads (Sprint + MQL)`}
+                  />
                 </div>
               </CardContent>
             </Card>
