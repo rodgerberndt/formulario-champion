@@ -742,6 +742,41 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     );
   };
 
+  // ── Per-creative extras: CAC by type, win rate, sales cycle, call→sale conversion ──
+  const creativeExtrasRaw = useMemo(() => {
+    const map = new Map<string, {
+      cacSprint: number | null;
+      cacAssessoria: number | null;
+      winRate: number | null;
+      cycleDays: number | null;
+      cycleCount: number;
+      callConvRate: number | null;
+    }>();
+
+    for (const c of (data?.creatives || [])) {
+      const sprintCount = c.sales_sprint_count || 0;
+      const assesCount = c.sales_assessoria_count || 0;
+      const cacSprint = sprintCount > 0 && c.spend > 0 ? c.spend / sprintCount : null;
+      const cacAssessoria = assesCount > 0 && c.spend > 0 ? c.spend / assesCount : null;
+      const winRate = c.mql_count > 0 ? c.sales_count / c.mql_count : null;
+
+      const days: number[] = [];
+      for (const s of salesList) {
+        if (!s.creative_key || s.creative_key !== c.creative_key) continue;
+        if (!s.lead_created_at || !s.sale_date) continue;
+        const leadDate = new Date(s.lead_created_at);
+        const saleDate = new Date(s.sale_date + "T12:00:00Z");
+        if (isNaN(leadDate.getTime()) || isNaN(saleDate.getTime())) continue;
+        days.push(Math.max(0, Math.round((saleDate.getTime() - leadDate.getTime()) / 86400000)));
+      }
+      const cycleDays = days.length > 0 ? days.reduce((a, b) => a + b, 0) / days.length : null;
+      const callConvRate = c.meetings_count > 0 ? c.sales_count / c.meetings_count : null;
+
+      map.set(c.creative_key, { cacSprint, cacAssessoria, winRate, cycleDays, cycleCount: days.length, callConvRate });
+    }
+    return map;
+  }, [data?.creatives, salesList]);
+
   const creatives = (data?.creatives || [])
     .filter(c => {
       if (filterOnlyActive && !c.is_active) return false;
@@ -756,6 +791,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     .sort((a, b) => {
       const getValue = (c: CreativeData) => {
         if (sortField === "cpl") return c.spend > 0 && c.leads_count > 0 ? c.spend / c.leads_count : null;
+        const extras = creativeExtrasRaw.get(c.creative_key);
+        if (sortField === "call_conv_rate") return extras?.callConvRate ?? null;
+        if (sortField === "cac_sprint") return extras?.cacSprint ?? null;
+        if (sortField === "cac_assessoria") return extras?.cacAssessoria ?? null;
+        if (sortField === "win_rate") return extras?.winRate ?? null;
+        if (sortField === "cycle_days") return extras?.cycleDays ?? null;
         return (c as any)[sortField] ?? null;
       };
       const aVal = getValue(a) ?? -Infinity;
@@ -787,52 +828,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const totals = data?.totals;
   const dq = data?.data_quality;
 
-  // ── Per-creative extras: CAC by type, win rate, sales cycle, call→sale conversion ──
-  const creativeExtras = useMemo(() => {
-    const map = new Map<string, {
-      cacSprint: number | null;
-      cacAssessoria: number | null;
-      winRate: number | null;
-      cycleDays: number | null;
-      cycleCount: number;
-      callConvRate: number | null;
-    }>();
-
-    for (const c of (data?.creatives || [])) {
-      const sprintCount = c.sales_sprint_count || 0;
-      const assesCount = c.sales_assessoria_count || 0;
-      const cacSprint = sprintCount > 0 && c.spend > 0 ? c.spend / sprintCount : null;
-      const cacAssessoria = assesCount > 0 && c.spend > 0 ? c.spend / assesCount : null;
-
-      // Win rate = sales / MQLs (consistent with global metric)
-      const winRate = c.mql_count > 0 ? c.sales_count / c.mql_count : null;
-
-      // Sales cycle from manual_sales matched by creative_key (using lead_created_at vs sale_date)
-      const days: number[] = [];
-      for (const s of salesList) {
-        if (!s.creative_key || s.creative_key !== c.creative_key) continue;
-        if (!s.lead_created_at || !s.sale_date) continue;
-        const leadDate = new Date(s.lead_created_at);
-        const saleDate = new Date(s.sale_date + "T12:00:00Z");
-        if (isNaN(leadDate.getTime()) || isNaN(saleDate.getTime())) continue;
-        days.push(Math.max(0, Math.round((saleDate.getTime() - leadDate.getTime()) / 86400000)));
-      }
-      const cycleDays = days.length > 0 ? days.reduce((a, b) => a + b, 0) / days.length : null;
-
-      // Call → sale conversion: sales / meetings for this creative
-      const callConvRate = c.meetings_count > 0 ? c.sales_count / c.meetings_count : null;
-
-      map.set(c.creative_key, {
-        cacSprint,
-        cacAssessoria,
-        winRate,
-        cycleDays,
-        cycleCount: days.length,
-        callConvRate,
-      });
-    }
-    return map;
-  }, [data?.creatives, salesList]);
+  const creativeExtras = creativeExtrasRaw;
 
   if (loading && !data) {
     return (
@@ -1474,60 +1470,60 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           ) : (
             <Table className="table-fixed w-full">
               <TableHeader>
-                <TableRow className="text-[10px]">
+                <TableRow className="text-[10px] [&_th]:h-12 [&_th]:align-middle [&_th]:px-2 [&_th]:py-2 [&_th]:whitespace-nowrap [&_th]:font-semibold">
                   <TableHead className="w-[12%]">Campanha / Criativo</TableHead>
-                  <TableHead className="text-right cursor-pointer w-[5%]" onClick={() => handleSort("spend")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("spend")}>
                     Spend<SortIcon field="spend" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("leads_count")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[6%]" onClick={() => handleSort("leads_count")}>
                     Leads/CPL<SortIcon field="leads_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("mql_count")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[6%]" onClick={() => handleSort("mql_count")}>
                     MQL/CPMQL<SortIcon field="mql_count" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4%]" onClick={() => handleSort("mql_rate")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4%]" onClick={() => handleSort("mql_rate")}>
                     %MQL<SortIcon field="mql_rate" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("cost_per_small")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_small")}>
                     CP-S<SortIcon field="cost_per_small" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("cost_per_medium")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_medium")}>
                     CP-M<SortIcon field="cost_per_medium" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("cost_per_tier_large")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_tier_large")}>
                     CP-L<SortIcon field="cost_per_tier_large" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("cost_per_enterprise")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_enterprise")}>
                     CP-E<SortIcon field="cost_per_enterprise" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("cost_per_enterprise_plus")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("cost_per_enterprise_plus")}>
                     CP-E+<SortIcon field="cost_per_enterprise_plus" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[5%]" onClick={() => handleSort("meetings_count")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("meetings_count")}>
                     Reun.<SortIcon field="meetings_count" />
                   </TableHead>
-                  <TableHead className="text-right w-[5%]" title="Conversão de chamada: Vendas / Reuniões">
-                    Conv.Call
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("call_conv_rate")} title="Conversão de chamada: Vendas / Reuniões">
+                    Conv.Call<SortIcon field="call_conv_rate" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("sales_count")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[6%]" onClick={() => handleSort("sales_count")}>
                     Vendas/CAC<SortIcon field="sales_count" />
                   </TableHead>
-                  <TableHead className="text-right w-[5%]" title="CAC Sprint: Spend / Vendas Sprint">
-                    CAC-S
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("cac_sprint")} title="CAC Sprint: Spend / Vendas Sprint">
+                    CAC-S<SortIcon field="cac_sprint" />
                   </TableHead>
-                  <TableHead className="text-right w-[5%]" title="CAC Assessoria: Spend / Vendas Assessoria">
-                    CAC-A
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("cac_assessoria")} title="CAC Assessoria: Spend / Vendas Assessoria">
+                    CAC-A<SortIcon field="cac_assessoria" />
                   </TableHead>
-                  <TableHead className="text-right w-[4.5%]" title="Win Rate: Vendas / MQLs">
-                    Win%
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("win_rate")} title="Win Rate: Vendas / MQLs">
+                    Win%<SortIcon field="win_rate" />
                   </TableHead>
-                  <TableHead className="text-right w-[5%]" title="Ciclo médio de vendas em dias">
-                    Ciclo
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("cycle_days")} title="Ciclo médio de vendas em dias">
+                    Ciclo<SortIcon field="cycle_days" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[6%]" onClick={() => handleSort("revenue")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[6%]" onClick={() => handleSort("revenue")}>
                     FPC<SortIcon field="revenue" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer w-[4.5%]" onClick={() => handleSort("roas")}>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[4.5%]" onClick={() => handleSort("roas")}>
                     ROAS<SortIcon field="roas" />
                   </TableHead>
                 </TableRow>
