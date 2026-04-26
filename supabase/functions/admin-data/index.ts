@@ -1811,6 +1811,10 @@ Deno.serve(async (req: Request) => {
         const cost_per_medium = c.tier_medium_count > 0 ? c.spend / c.tier_medium_count : null;
         const cost_per_enterprise = c.tier_enterprise_count > 0 ? c.spend / c.tier_enterprise_count : null;
         const cost_per_enterprise_plus = c.tier_enterprise_plus_count > 0 ? c.spend / c.tier_enterprise_plus_count : null;
+        // Leads "qualificados" (≥ R$5k de faturamento): Medium + Large + Enterprise + Enterprise+
+        const qualified_count =
+          c.tier_medium_count + c.tier_large_count + c.tier_enterprise_count + c.tier_enterprise_plus_count;
+        const cost_per_qualified = qualified_count > 0 ? c.spend / qualified_count : null;
         const cac = c.sales_count > 0 ? c.spend / c.sales_count : null;
         const cac_sprint = c.sales_sprint_count > 0 ? c.spend / c.sales_sprint_count : null;
         const cac_assessoria = c.sales_assessoria_count > 0 ? c.spend / c.sales_assessoria_count : null;
@@ -1828,6 +1832,8 @@ Deno.serve(async (req: Request) => {
           cost_per_medium,
           cost_per_enterprise,
           cost_per_enterprise_plus,
+          qualified_count,
+          cost_per_qualified,
           cac,
           cac_sprint,
           cac_assessoria,
@@ -1860,6 +1866,8 @@ Deno.serve(async (req: Request) => {
       const totalRevenueSprint = creatives.reduce((s, c) => s + c.revenue_sprint, 0);
       const totalRevenueAssessoria = creatives.reduce((s, c) => s + c.revenue_assessoria, 0);
       const totalLandingPageViews = creatives.reduce((s, c) => s + c.landing_page_views, 0);
+      const totalQualified =
+        totalTierMedium + totalTierLarge + totalTierEnterprise + totalTierEnterprisePlus;
 
       return new Response(
         JSON.stringify({
@@ -1876,6 +1884,8 @@ Deno.serve(async (req: Request) => {
             tier_large: totalTierLarge,
             tier_enterprise: totalTierEnterprise,
             tier_enterprise_plus: totalTierEnterprisePlus,
+            qualified: totalQualified,
+            cp_qualified: totalQualified > 0 ? totalSpend / totalQualified : null,
             sales: totalSales,
             sales_sprint: totalSalesSprint,
             sales_assessoria: totalSalesAssessoria,
