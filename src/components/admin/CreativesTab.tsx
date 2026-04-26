@@ -502,6 +502,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       toast({ title: "Preencha a receita", variant: "destructive" });
       return;
     }
+    if (!selectedLeadId) {
+      toast({ title: "Selecione o lead da venda", description: "Necessário para calcular o ciclo de vendas", variant: "destructive" });
+      return;
+    }
     setSavingSale(true);
     try {
       const lead = selectedSaleLead;
