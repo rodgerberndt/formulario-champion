@@ -183,6 +183,7 @@ interface Lead {
   decisor: boolean | null;
   raw_answers_json: Record<string, unknown> | null;
   attribution_source: string | null;
+  first_opened_at: string | null;
 }
 
 
