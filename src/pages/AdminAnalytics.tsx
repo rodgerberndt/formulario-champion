@@ -815,63 +815,76 @@ export default function AdminAnalytics() {
   };
 
   const logoutFiredRef = useRef(false);
+  const adminRequestQueueRef = useRef<Promise<void>>(Promise.resolve());
 
   const fetchAdminData = async (path: string, params?: Record<string, string>) => {
-    if (logoutFiredRef.current) {
-      throw new Error("Sessão expirada");
-    }
-    
-    const queryString = params ? "?" + new URLSearchParams(params).toString() : "";
-    
-    // Use fetch directly for proper path handling
-    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data${path}${queryString}`;
-    
-    const token = getToken();
-    const headers = {
-      "x-admin-token": token || "",
-      "Content-Type": "application/json",
-      "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-    };
+    const previousRequest = adminRequestQueueRef.current;
+    let releaseQueue: () => void = () => undefined;
+    adminRequestQueueRef.current = new Promise<void>((resolve) => {
+      releaseQueue = resolve;
+    });
 
-    // Retry on transient boot errors (502/503/504) with exponential backoff
-    const MAX_RETRIES = 4;
-    let lastError: Error | null = null;
+    await previousRequest.catch(() => undefined);
 
-    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-      try {
-        const fetchResponse = await fetchAdmin(url, { headers });
+    try {
+      if (logoutFiredRef.current) {
+        throw new Error("Sessão expirada");
+      }
+      
+      const queryString = params ? "?" + new URLSearchParams(params).toString() : "";
+      
+      // Use fetch directly for proper path handling
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data${path}${queryString}`;
+      
+      const token = getToken();
+      const headers = {
+        "x-admin-token": token || "",
+        "Content-Type": "application/json",
+        "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      };
 
-        // Retry on transient errors (cold-start boot errors, gateway timeouts)
-        if ([502, 503, 504].includes(fetchResponse.status) && attempt < MAX_RETRIES - 1) {
-          const delay = 400 * Math.pow(2, attempt) + Math.random() * 200;
-          console.warn(`[admin-data] ${fetchResponse.status} on ${path}, retrying in ${Math.round(delay)}ms (attempt ${attempt + 1}/${MAX_RETRIES})`);
-          await new Promise((r) => setTimeout(r, delay));
-          continue;
-        }
+      // Retry on transient boot errors (502/503/504) with exponential backoff
+      const MAX_RETRIES = 5;
+      let lastError: Error | null = null;
 
-        if (!fetchResponse.ok) {
-          const error = await fetchResponse.json().catch(() => ({ error: "Erro desconhecido" }));
-          throw new Error(error.error || "Erro ao carregar dados");
-        }
+      for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+        try {
+          const fetchResponse = await fetchAdmin(url, { headers });
 
-        return fetchResponse.json();
-      } catch (error) {
-        if (error instanceof Error && error.message === "Sessão expirada") {
+          // Retry on transient errors (cold-start boot errors, gateway timeouts)
+          if ([502, 503, 504].includes(fetchResponse.status) && attempt < MAX_RETRIES - 1) {
+            const delay = 700 * Math.pow(2, attempt) + Math.random() * 250;
+            console.warn(`[admin-data] ${fetchResponse.status} on ${path}, retrying in ${Math.round(delay)}ms (attempt ${attempt + 1}/${MAX_RETRIES})`);
+            await new Promise((r) => setTimeout(r, delay));
+            continue;
+          }
+
+          if (!fetchResponse.ok) {
+            const error = await fetchResponse.json().catch(() => ({ error: "Erro desconhecido" }));
+            throw new Error(error.error || "Erro ao carregar dados");
+          }
+
+          return fetchResponse.json();
+        } catch (error) {
+          if (error instanceof Error && error.message === "Sessão expirada") {
+            throw error;
+          }
+          // Retry on network errors too
+          if (attempt < MAX_RETRIES - 1) {
+            lastError = error as Error;
+            const delay = 700 * Math.pow(2, attempt) + Math.random() * 250;
+            console.warn(`[admin-data] network error on ${path}, retrying in ${Math.round(delay)}ms`);
+            await new Promise((r) => setTimeout(r, delay));
+            continue;
+          }
+          console.error("Fetch error:", error);
           throw error;
         }
-        // Retry on network errors too
-        if (attempt < MAX_RETRIES - 1) {
-          lastError = error as Error;
-          const delay = 400 * Math.pow(2, attempt) + Math.random() * 200;
-          console.warn(`[admin-data] network error on ${path}, retrying in ${Math.round(delay)}ms`);
-          await new Promise((r) => setTimeout(r, delay));
-          continue;
-        }
-        console.error("Fetch error:", error);
-        throw error;
       }
+      throw lastError || new Error("Falha após múltiplas tentativas");
+    } finally {
+      releaseQueue();
     }
-    throw lastError || new Error("Falha após múltiplas tentativas");
   };
 
   const loadMetrics = async () => {
