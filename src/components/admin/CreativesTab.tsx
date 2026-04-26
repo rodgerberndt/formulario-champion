@@ -86,6 +86,8 @@ interface CreativeData {
   cost_per_tier_large: number | null;
   cost_per_enterprise: number | null;
   cost_per_enterprise_plus: number | null;
+  qualified_count: number;
+  cost_per_qualified: number | null;
   sales_count: number;
   sales_sprint_count: number;
   sales_assessoria_count: number;
