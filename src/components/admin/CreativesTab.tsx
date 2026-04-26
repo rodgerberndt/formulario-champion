@@ -787,6 +787,53 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const totals = data?.totals;
   const dq = data?.data_quality;
 
+  // ── Per-creative extras: CAC by type, win rate, sales cycle, call→sale conversion ──
+  const creativeExtras = React.useMemo(() => {
+    const map = new Map<string, {
+      cacSprint: number | null;
+      cacAssessoria: number | null;
+      winRate: number | null;
+      cycleDays: number | null;
+      cycleCount: number;
+      callConvRate: number | null;
+    }>();
+
+    for (const c of (data?.creatives || [])) {
+      const sprintCount = c.sales_sprint_count || 0;
+      const assesCount = c.sales_assessoria_count || 0;
+      const cacSprint = sprintCount > 0 && c.spend > 0 ? c.spend / sprintCount : null;
+      const cacAssessoria = assesCount > 0 && c.spend > 0 ? c.spend / assesCount : null;
+
+      // Win rate = sales / MQLs (consistent with global metric)
+      const winRate = c.mql_count > 0 ? c.sales_count / c.mql_count : null;
+
+      // Sales cycle from manual_sales matched by creative_key (using lead_created_at vs sale_date)
+      const days: number[] = [];
+      for (const s of salesList) {
+        if (!s.creative_key || s.creative_key !== c.creative_key) continue;
+        if (!s.lead_created_at || !s.sale_date) continue;
+        const leadDate = new Date(s.lead_created_at);
+        const saleDate = new Date(s.sale_date + "T12:00:00Z");
+        if (isNaN(leadDate.getTime()) || isNaN(saleDate.getTime())) continue;
+        days.push(Math.max(0, Math.round((saleDate.getTime() - leadDate.getTime()) / 86400000)));
+      }
+      const cycleDays = days.length > 0 ? days.reduce((a, b) => a + b, 0) / days.length : null;
+
+      // Call → sale conversion: sales / meetings for this creative
+      const callConvRate = c.meetings_count > 0 ? c.sales_count / c.meetings_count : null;
+
+      map.set(c.creative_key, {
+        cacSprint,
+        cacAssessoria,
+        winRate,
+        cycleDays,
+        cycleCount: days.length,
+        callConvRate,
+      });
+    }
+    return map;
+  }, [data?.creatives, salesList]);
+
   if (loading && !data) {
     return (
       <div className="flex items-center justify-center py-20">
