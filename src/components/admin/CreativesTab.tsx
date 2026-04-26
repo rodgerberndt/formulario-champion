@@ -1317,6 +1317,36 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         }).length;
         const winRateVal = qualifiedLeads > 0 ? (totals.sales / qualifiedLeads) * 100 : 0;
 
+        // ── Tempo de resposta (created_at → first_opened_at + 10s margem)
+        const RESPONSE_MARGIN_MS = 10_000;
+        const calcAvgResponse = (filterFn: (l: LeadOption) => boolean): string => {
+          const opened = leadsList.filter(
+            (l) => filterFn(l) && l.first_opened_at && l.created_at
+          );
+          if (opened.length === 0) return "—";
+          const totalMs = opened.reduce((sum, l) => {
+            const diff = new Date(l.first_opened_at!).getTime() - new Date(l.created_at).getTime();
+            return sum + Math.max(0, diff) + RESPONSE_MARGIN_MS;
+          }, 0);
+          const avgSec = Math.round(totalMs / opened.length / 1000);
+          if (avgSec < 60) return `${avgSec}s`;
+          const m = Math.floor(avgSec / 60);
+          const s = avgSec % 60;
+          if (m < 60) return s ? `${m}m ${s}s` : `${m}m`;
+          const h = Math.floor(m / 60);
+          const rm = m % 60;
+          return `${h}h ${rm}m`;
+        };
+        const isQualifiedLead = (l: LeadOption) => {
+          const f = l.investimento_faixa || null;
+          return !!f && !["Não vendo ainda (R$0/mês)", "Até R$ 5 mil"].includes(f);
+        };
+        const isMqlLead = (l: LeadOption) =>
+          isLeadMql(l.estagio_negocio || "", l.investimento_faixa || null, l.sdr_override || null);
+        const avgResponseAll = calcAvgResponse(() => true);
+        const avgResponse5k = calcAvgResponse(isQualifiedLead);
+        const avgResponseMql = calcAvgResponse(isMqlLead);
+
         const MetricItem = ({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) => (
           <div>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</p>
