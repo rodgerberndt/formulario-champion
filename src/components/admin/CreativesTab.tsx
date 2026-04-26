@@ -1368,7 +1368,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <MetricItem
                     label="Total Leads"
                     value={formatNumber(totals.leads)}
-                    sub={funnelMetrics && funnelMetrics.completed > 0 ? `${((totals.leads / funnelMetrics.completed) * 100).toFixed(1)}% das conclusões` : undefined}
+                    sub={`⏱ Resp: ${avgResponseAll}${funnelMetrics && funnelMetrics.completed > 0 ? ` · ${((totals.leads / funnelMetrics.completed) * 100).toFixed(1)}% conclusões` : ""}`}
                   />
                   <MetricItem label="CPL" value={formatCurrency(totals.cpl) || "—"} sub="Spend ÷ Leads" />
                 </div>
@@ -1380,8 +1380,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">MQLs</p>
                 <div className="grid grid-cols-5 gap-4">
                   <MetricItem label="% MQL" value={totals.leads > 0 ? `${((totals.mql / totals.leads) * 100).toFixed(1)}%` : "—"} color="text-green-300" sub="Leads → MQL" />
-                  <MetricItem label="Total MQL" value={formatNumber(totals.mql)} color="text-green-400" />
-                  <MetricItem label="Leads ≥5k" value={formatNumber(qualifiedLeads)} color="text-cyan-300" sub="Faturamento ≥ R$5k" />
+                  <MetricItem label="Total MQL" value={formatNumber(totals.mql)} color="text-green-400" sub={`⏱ Resp: ${avgResponseMql}`} />
+                  <MetricItem label="Leads ≥5k" value={formatNumber(qualifiedLeads)} color="text-cyan-300" sub={`⏱ Resp: ${avgResponse5k}`} />
                   <MetricItem label="CPMQL" value={formatCurrency(totals.cpmql) || "—"} />
                   <MetricItem label="CPL ≥5k" value={qualifiedLeads > 0 ? formatCurrency(totals.spend / qualifiedLeads) || "—" : "—"} color="text-cyan-400" />
                 </div>
