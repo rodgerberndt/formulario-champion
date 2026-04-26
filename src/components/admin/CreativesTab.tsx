@@ -152,6 +152,7 @@ interface ManualSale {
   utm_content: string | null;
   notes: string | null;
   sale_type: string;
+  lead_created_at?: string | null;
 }
 
 interface Meeting {
