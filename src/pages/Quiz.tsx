@@ -287,16 +287,20 @@ export default function Quiz() {
         dor_desejo: currentData.dor_desejo
       });
 
-      // Capture IP for attribution matching
-      let clientIp: string | null = null;
-      try {
-        const ipRes = await supabase.functions.invoke('get-client-ip', {
-          body: { action: 'get_ip_only' }
+      // Fire IP capture in parallel (non-blocking) — attribution can be recovered server-side from session
+      const clientIpPromise = supabase.functions
+        .invoke('get-client-ip', { body: { action: 'get_ip_only' } })
+        .then((r) => (r.data?.ip as string) || null)
+        .catch((e) => {
+          console.warn('Failed to get client IP:', e);
+          return null;
         });
-        clientIp = ipRes.data?.ip || null;
-      } catch (e) {
-        console.warn('Failed to get client IP:', e);
-      }
+
+      // Wait briefly for IP (max 800ms) so we don't block the redirect
+      const clientIp: string | null = await Promise.race([
+        clientIpPromise,
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 800)),
+      ]);
 
       const dbData = {
         nome_completo: currentData.nome_completo,
@@ -347,7 +351,7 @@ export default function Quiz() {
         });
       }
 
-      // Insert into quiz_leads on external Supabase (blocking before redirect)
+      // Insert into quiz_leads on external Supabase (background — no need to block redirect)
       const utmData = getUtmPayload();
       const quizLeadPayload = {
         name: currentData.nome_completo ?? null,
@@ -375,19 +379,19 @@ export default function Quiz() {
 
       console.log("QUIZ_LEADS_PAYLOAD", quizLeadPayload);
 
-      const { data: quizLeadInsertData, error: quizLeadError } = await supabaseExternal
+      supabaseExternal
         .from("quiz_leads")
-        .insert([quizLeadPayload]);
+        .insert([quizLeadPayload])
+        .then(({ data: quizLeadInsertData, error: quizLeadError }) => {
+          if (quizLeadError) {
+            console.error("QUIZ_LEADS_INSERT_ERROR", quizLeadError);
+            console.error("QUIZ_LEADS_INSERT_ERROR_PAYLOAD", quizLeadPayload);
+          } else {
+            console.log("QUIZ_LEADS_INSERT_SUCCESS", quizLeadInsertData);
+          }
+        });
 
-      if (quizLeadError) {
-        console.error("QUIZ_LEADS_INSERT_ERROR", quizLeadError);
-        console.error("QUIZ_LEADS_INSERT_ERROR_PAYLOAD", quizLeadPayload);
-        throw quizLeadError;
-      }
-
-      console.log("QUIZ_LEADS_INSERT_SUCCESS", quizLeadInsertData);
-
-      // Send to n8n webhook via edge function
+      // Send to n8n webhook via edge function (background)
       const utmPayload = getUtmPayload();
       const n8nBody = {
         name: currentData.nome_completo,
@@ -409,35 +413,28 @@ export default function Quiz() {
         utm_content: utmPayload.utm_content || null,
       };
 
-      try {
-        const n8nRes = await supabase.functions.invoke('send-quiz-data', {
-          body: n8nBody,
+      supabase.functions
+        .invoke('send-quiz-data', { body: n8nBody })
+        .then((n8nRes) => {
+          if (n8nRes.error) {
+            console.error("n8n webhook error:", n8nRes.error);
+          } else {
+            console.log("n8n webhook sent successfully");
+          }
+        })
+        .catch((n8nErr) => {
+          console.error("n8n webhook error:", n8nErr);
         });
-        if (n8nRes.error) {
-          console.error("n8n webhook error:", n8nRes.error);
-          throw new Error('n8n webhook failed');
-        }
-        console.log("n8n webhook sent successfully");
-      } catch (n8nErr) {
-        console.error("n8n webhook error:", n8nErr);
-        toast({
-          title: "Erro ao processar",
-          description: "Não foi possível completar o envio. Tente novamente.",
-          variant: "destructive",
-        });
-        setIsSubmitting(false);
-        return;
-      }
 
-      // Track submit with lead data
-      await trackSubmit({
+      // Track submit with lead data (fire and forget)
+      trackSubmit({
         name: currentData.nome_completo,
         whatsapp: currentData.whatsapp,
         instagram: currentData.instagram,
         market: currentData.mercado,
         stage: currentData.mercado,
         investimentoFaixa: currentData.investimento_faixa,
-      });
+      }).catch((e) => console.warn('trackSubmit failed:', e));
 
       localStorage.removeItem(STORAGE_KEY);
 
