@@ -625,13 +625,14 @@ Deno.serve(async (req: Request) => {
         }
       }
 
-      // Helper to fetch ALL rows (bypass 1000-row limit) with pagination
+      // Helper to fetch rows with pagination, capped to protect Edge runtime memory/CPU.
       async function fetchAll<T>(table: string, select: string, filters: (q: any) => any): Promise<T[]> {
         const PAGE_SIZE = 1000;
+        const MAX_ROWS = 15000;
         let all: T[] = [];
         let offset = 0;
         let hasMore = true;
-        while (hasMore) {
+        while (hasMore && all.length < MAX_ROWS) {
           let q = supabase.from(table).select(select).range(offset, offset + PAGE_SIZE - 1);
           q = filters(q);
           const { data, error } = await q;
@@ -639,6 +640,9 @@ Deno.serve(async (req: Request) => {
           if (data) all = all.concat(data as T[]);
           hasMore = (data?.length || 0) === PAGE_SIZE;
           offset += PAGE_SIZE;
+        }
+        if (all.length >= MAX_ROWS) {
+          console.warn(`[metrics] ${table} capped at ${MAX_ROWS} rows to avoid runtime exhaustion`);
         }
         return all;
       }
@@ -734,7 +738,8 @@ Deno.serve(async (req: Request) => {
       let hitsQuery = supabase
         .from("landing_hits")
         .select("session_id, ip_address, user_agent, created_at, referrer")
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: true })
+        .limit(15000);
       if (fromClamped) hitsQuery = hitsQuery.gte("created_at", fromClamped);
       if (toEnd) hitsQuery = hitsQuery.lte("created_at", toEnd);
       const { data: hitsData } = await hitsQuery;
