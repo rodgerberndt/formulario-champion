@@ -487,6 +487,7 @@ export type Database = {
           estagio_negocio: string | null
           faturamento_faixa: string | null
           fbclid: string | null
+          first_opened_at: string | null
           gargalo: string | null
           gclid: string | null
           id: string
@@ -536,6 +537,7 @@ export type Database = {
           estagio_negocio?: string | null
           faturamento_faixa?: string | null
           fbclid?: string | null
+          first_opened_at?: string | null
           gargalo?: string | null
           gclid?: string | null
           id?: string
@@ -585,6 +587,7 @@ export type Database = {
           estagio_negocio?: string | null
           faturamento_faixa?: string | null
           fbclid?: string | null
+          first_opened_at?: string | null
           gargalo?: string | null
           gclid?: string | null
           id?: string
