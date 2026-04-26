@@ -1141,8 +1141,14 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card>
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Tráfego</p>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-4 gap-4">
                   <MetricItem label="Total Spend" value={formatCurrency(totals.spend) || "—"} />
+                  <MetricItem
+                    label="LPV"
+                    value={formatNumber(totals.landing_page_views || 0)}
+                    color="text-sky-400"
+                    sub="Landing Page Views (Pixel)"
+                  />
                   <MetricItem
                     label="Total Leads"
                     value={formatNumber(totals.leads)}
@@ -1156,8 +1162,14 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card>
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">MQLs</p>
-                <div className="grid grid-cols-5 gap-4">
+                <div className="grid grid-cols-6 gap-4">
                   <MetricItem label="% MQL" value={totals.leads > 0 ? `${((totals.mql / totals.leads) * 100).toFixed(1)}%` : "—"} color="text-green-300" sub="Leads → MQL" />
+                  <MetricItem
+                    label="% MQL/LPV"
+                    value={totals.mql_per_view !== null && totals.mql_per_view !== undefined ? `${(totals.mql_per_view * 100).toFixed(2)}%` : "—"}
+                    color="text-sky-300"
+                    sub="MQL ÷ LPV"
+                  />
                   <MetricItem label="Total MQL" value={formatNumber(totals.mql)} color="text-green-400" sub={`⏱ Resp: ${avgResponseMql}`} />
                   <MetricItem label="Leads ≥5k" value={formatNumber(qualifiedLeads)} color="text-cyan-300" sub={`⏱ Resp: ${avgResponse5k}`} />
                   <MetricItem label="CPMQL" value={formatCurrency(totals.cpmql) || "—"} />
