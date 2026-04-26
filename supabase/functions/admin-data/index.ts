@@ -77,7 +77,7 @@ Deno.serve(async (req: Request) => {
         .from("leads")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(2000);
+        .limit(1000);
 
       // Apply date filters — supports both ISO timestamps and date-only strings
       if (from) {
