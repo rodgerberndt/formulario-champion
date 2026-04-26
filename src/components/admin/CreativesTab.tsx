@@ -370,8 +370,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [deletingSaleId, setDeletingSaleId] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
 
-  // Sales cycle (historical, all time)
-  const [salesCycle, setSalesCycle] = useState<{ avg_days: number | null; median_days: number | null; count: number } | null>(null);
 
   // Meeting state
   const [showAddMeeting, setShowAddMeeting] = useState(false);
@@ -485,31 +483,16 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     loadData();
   }, [loadData]);
 
-  // Load sales cycle (historical, all-time) once on mount
+  // Always load sales for the period (used by sales cycle metric, not just the list)
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const result = await fetchAdminData("/sales-cycle");
-        if (!cancelled && result && typeof result === "object") {
-          setSalesCycle(result);
-        }
-      } catch (err) {
-        console.error("Error loading sales cycle:", err);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [fetchAdminData]);
+    loadSales();
+  }, [loadSales]);
 
   // Reload meetings list when dates change and list is visible
   useEffect(() => {
     if (showMeetingsList) loadMeetings();
   }, [startISO, endISO]);
 
-  // Reload sales list when dates change and list is visible
-  useEffect(() => {
-    if (showSalesList) loadSales();
-  }, [startISO, endISO]);
 
   const selectedSaleLead = selectedLeadId ? leadsList.find(l => l.id === selectedLeadId) : null;
   const selectedMeetingLead = meetingSelectedLeadId ? leadsList.find(l => l.id === meetingSelectedLeadId) : null;
@@ -1004,6 +987,31 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         }).length;
         const winRateVal = qualifiedLeads > 0 ? (totals.sales / qualifiedLeads) * 100 : 0;
 
+        // ── Ciclo de vendas (período filtrado): dias entre lead.created_at e sale.sale_date
+        const calcCycle = (filterFn: (s: ManualSale) => boolean): { avg: number | null; count: number } => {
+          const days: number[] = [];
+          for (const s of salesList) {
+            if (!filterFn(s)) continue;
+            if (!s.lead_created_at || !s.sale_date) continue;
+            const leadDate = new Date(s.lead_created_at);
+            const saleDate = new Date(s.sale_date + "T12:00:00");
+            if (isNaN(leadDate.getTime()) || isNaN(saleDate.getTime())) continue;
+            const diff = Math.max(0, Math.round((saleDate.getTime() - leadDate.getTime()) / 86400000));
+            days.push(diff);
+          }
+          return {
+            avg: days.length > 0 ? days.reduce((a, b) => a + b, 0) / days.length : null,
+            count: days.length,
+          };
+        };
+        const cycleSprint = calcCycle((s) => s.sale_type === "sprint");
+        const cycleAssessoria = calcCycle((s) => s.sale_type === "assessoria");
+        const cycleTotal = calcCycle(() => true);
+        const fmtCycle = (c: { avg: number | null; count: number }): string =>
+          c.avg != null ? `${c.avg.toFixed(1)} dias` : "—";
+        const fmtCycleSub = (c: { avg: number | null; count: number }): string =>
+          c.count > 0 ? `${c.count} venda${c.count > 1 ? "s" : ""} c/ lead vinculado` : "Sem dados";
+
         // ── Tempo de resposta (created_at → first_opened_at + 10s margem)
         const RESPONSE_MARGIN_MS = 10_000;
         const calcAvgResponse = (filterFn: (l: LeadOption) => boolean): string => {
@@ -1204,7 +1212,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card className="border-violet-500/20">
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-violet-400 uppercase tracking-wider mb-3 border-b border-violet-500/20 pb-2">Sprint</p>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <MetricItem
                     label="Vendas"
                     value={`${formatNumber(totals.sales_sprint || 0)}`}
@@ -1212,6 +1220,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     sub={`${formatCurrency(totals.revenue_sprint || 0) || "—"} · ${qualifiedLeads > 0 ? (((totals.sales_sprint || 0) / qualifiedLeads) * 100).toFixed(1) : "0.0"}% leads ≥5k`}
                   />
                   <MetricItem label="Ticket Médio" value={avgSprint > 0 ? formatCurrency(avgSprint) || "—" : "—"} color="text-violet-300" />
+                  <MetricItem label="Ciclo de Vendas" value={fmtCycle(cycleSprint)} color="text-violet-300" sub={fmtCycleSub(cycleSprint)} />
                 </div>
               </CardContent>
             </Card>
@@ -1219,7 +1228,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card className="border-teal-500/20">
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-3 border-b border-teal-500/20 pb-2">Assessoria</p>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <MetricItem
                     label="Vendas"
                     value={`${formatNumber(totals.sales_assessoria || 0)}`}
@@ -1227,6 +1236,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     sub={`${formatCurrency(totals.revenue_assessoria || 0) || "—"} · ${totals.mql > 0 ? (((totals.sales_assessoria || 0) / totals.mql) * 100).toFixed(1) : "0.0"}% MQLs`}
                   />
                   <MetricItem label="Ticket Médio" value={avgAssessoria > 0 ? formatCurrency(avgAssessoria) || "—" : "—"} color="text-teal-300" />
+                  <MetricItem label="Ciclo de Vendas" value={fmtCycle(cycleAssessoria)} color="text-teal-300" sub={fmtCycleSub(cycleAssessoria)} />
                 </div>
               </CardContent>
             </Card>
@@ -1248,7 +1258,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     {showSalesList ? "Ocultar" : "Ver vendas"}
                   </Button>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <MetricItem
                     label="Vendas"
                     value={`${formatNumber(totals.sales)}`}
@@ -1256,6 +1266,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     sub={`${formatCurrency(totals.revenue) || "—"} · ${totals.leads > 0 ? ((totals.sales / totals.leads) * 100).toFixed(2) : "0.00"}% leads`}
                   />
                   <MetricItem label="Ticket Médio" value={avgTotal > 0 ? formatCurrency(avgTotal) || "—" : "—"} color="text-emerald-300" />
+                  <MetricItem label="Ciclo de Vendas" value={fmtCycle(cycleTotal)} color="text-emerald-300" sub={fmtCycleSub(cycleTotal)} />
                 </div>
               </CardContent>
             </Card>
@@ -1337,7 +1348,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           )}
 
           {/* Row 5: Performance */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <Card>
               <CardContent className="pt-4">
                 <div className="grid grid-cols-1 gap-1">
@@ -1356,20 +1367,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <CardContent className="pt-4">
                 <div className="grid grid-cols-1 gap-1">
                   <MetricItem label="Win Rate" value={winRateVal > 0 ? `${winRateVal.toFixed(1)}%` : "—"} color="text-green-400" sub={`${totals.sales} vendas / ${qualifiedLeads} leads ≥5k`} />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-amber-500/20">
-              <CardContent className="pt-4">
-                <div className="grid grid-cols-1 gap-1">
-                  <MetricItem
-                    label="Ciclo de Vendas"
-                    value={salesCycle?.avg_days != null ? `${salesCycle.avg_days.toFixed(1)} dias` : "—"}
-                    color="text-amber-400"
-                    sub={salesCycle && salesCycle.count > 0
-                      ? `Histórico • ${salesCycle.count} venda${salesCycle.count > 1 ? "s" : ""}${salesCycle.median_days != null ? ` • mediana ${salesCycle.median_days.toFixed(0)}d` : ""}`
-                      : "Sem vendas com lead vinculado"}
-                  />
                 </div>
               </CardContent>
             </Card>
