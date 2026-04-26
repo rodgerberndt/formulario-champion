@@ -1503,6 +1503,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("meetings_count")}>
                     Reun.<SortIcon field="meetings_count" />
                   </TableHead>
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("booking_rate")} title="Taxa de agendamento: Reuniões / MQLs">
+                    Agend.%<SortIcon field="booking_rate" />
+                  </TableHead>
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("call_conv_rate")} title="Conversão de chamada: Vendas / Reuniões">
                     Conv.Call<SortIcon field="call_conv_rate" />
                   </TableHead>
