@@ -480,6 +480,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     const loadInitialData = async () => {
       await loadData();
       if (!cancelled) await loadSales();
+      if (!cancelled) await loadLeads();
+      if (!cancelled) await loadMeetings();
     };
 
     loadInitialData();
@@ -487,13 +489,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     return () => {
       cancelled = true;
     };
-  }, [loadData, loadSales]);
-
-  useEffect(() => {
-    if ((showAddSale || showAddMeeting) && leadsList.length === 0 && !leadsLoading) {
-      loadLeads();
-    }
-  }, [showAddSale, showAddMeeting, leadsList.length, leadsLoading, loadLeads]);
+  }, [loadData, loadSales, loadLeads, loadMeetings]);
 
 
   const selectedSaleLead = selectedLeadId ? leadsList.find(l => l.id === selectedLeadId) : null;
