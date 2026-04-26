@@ -987,6 +987,31 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         }).length;
         const winRateVal = qualifiedLeads > 0 ? (totals.sales / qualifiedLeads) * 100 : 0;
 
+        // ── Ciclo de vendas (período filtrado): dias entre lead.created_at e sale.sale_date
+        const calcCycle = (filterFn: (s: ManualSale) => boolean): { avg: number | null; count: number } => {
+          const days: number[] = [];
+          for (const s of salesList) {
+            if (!filterFn(s)) continue;
+            if (!s.lead_created_at || !s.sale_date) continue;
+            const leadDate = new Date(s.lead_created_at);
+            const saleDate = new Date(s.sale_date + "T12:00:00");
+            if (isNaN(leadDate.getTime()) || isNaN(saleDate.getTime())) continue;
+            const diff = Math.max(0, Math.round((saleDate.getTime() - leadDate.getTime()) / 86400000));
+            days.push(diff);
+          }
+          return {
+            avg: days.length > 0 ? days.reduce((a, b) => a + b, 0) / days.length : null,
+            count: days.length,
+          };
+        };
+        const cycleSprint = calcCycle((s) => s.sale_type === "sprint");
+        const cycleAssessoria = calcCycle((s) => s.sale_type === "assessoria");
+        const cycleTotal = calcCycle(() => true);
+        const fmtCycle = (c: { avg: number | null; count: number }): string =>
+          c.avg != null ? `${c.avg.toFixed(1)} dias` : "—";
+        const fmtCycleSub = (c: { avg: number | null; count: number }): string =>
+          c.count > 0 ? `${c.count} venda${c.count > 1 ? "s" : ""} c/ lead vinculado` : "Sem dados";
+
         // ── Tempo de resposta (created_at → first_opened_at + 10s margem)
         const RESPONSE_MARGIN_MS = 10_000;
         const calcAvgResponse = (filterFn: (l: LeadOption) => boolean): string => {
