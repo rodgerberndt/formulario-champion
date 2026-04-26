@@ -100,6 +100,9 @@ interface CreativeData {
   meetings_count: number;
   meetings_attended_count: number;
   cost_per_meeting: number | null;
+  landing_page_views: number;
+  mql_per_view: number | null;
+  lead_per_view: number | null;
   is_active: boolean;
 }
 
@@ -122,6 +125,9 @@ interface CreativesResponse {
     revenue_assessoria: number;
     meetings: number;
     meetings_attended: number;
+    landing_page_views: number;
+    mql_per_view: number | null;
+    lead_per_view: number | null;
     cpl: number | null;
     cpmql: number | null;
     cp_tier_small: number | null;
