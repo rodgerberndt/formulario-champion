@@ -472,26 +472,28 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     } finally {
       setLoading(false);
     }
-  }, [fetchAdminData, startDateOnly, endDateOnly, attribution, campaignTypeFilter, selectedCampaigns]);
-
-  // Load leads when date range changes
-  useEffect(() => {
-    loadLeads();
-  }, [loadLeads]);
+  }, [fetchAdminData, startISO, endISO, startDateOnly, endDateOnly, attribution, campaignTypeFilter, selectedCampaigns]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    let cancelled = false;
 
-  // Always load sales for the period (used by sales cycle metric, not just the list)
-  useEffect(() => {
-    loadSales();
-  }, [loadSales]);
+    const loadInitialData = async () => {
+      await loadData();
+      if (!cancelled) await loadSales();
+    };
 
-  // Always load meetings for the period (used by per-creative call→sale conversion)
+    loadInitialData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loadData, loadSales]);
+
   useEffect(() => {
-    loadMeetings();
-  }, [loadMeetings]);
+    if ((showAddSale || showAddMeeting) && leadsList.length === 0 && !leadsLoading) {
+      loadLeads();
+    }
+  }, [showAddSale, showAddMeeting, leadsList.length, leadsLoading, loadLeads]);
 
 
   const selectedSaleLead = selectedLeadId ? leadsList.find(l => l.id === selectedLeadId) : null;
