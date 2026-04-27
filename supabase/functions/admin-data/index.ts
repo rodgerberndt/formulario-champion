@@ -1689,6 +1689,9 @@ Deno.serve(async (req: Request) => {
         else if (computedTier === "Large") agg.tier_large_count++;
         else if (computedTier === "Enterprise") agg.tier_enterprise_count++;
         else if (computedTier === "Enterprise+") agg.tier_enterprise_plus_count++;
+        if ((lead.investimento_faixa || "") === "De R$ 5 mil a R$ 10 mil") {
+          agg.leads_5_10k_count++;
+        }
         agg.leads_by_stage[lead.estagio_negocio] = (agg.leads_by_stage[lead.estagio_negocio] || 0) + 1;
         if (lead.utm_campaign) agg.campaigns.add(lead.utm_campaign);
         if (!agg.last_activity || lead.created_at > agg.last_activity) {
