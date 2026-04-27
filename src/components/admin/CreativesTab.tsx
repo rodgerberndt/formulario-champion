@@ -1516,11 +1516,23 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       {/* Main Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" />
-            Performance por Criativo
-            <span className="text-sm font-normal text-muted-foreground">({creatives.length})</span>
-          </CardTitle>
+          <div className="flex items-center justify-between gap-2">
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Performance por Criativo
+              <span className="text-sm font-normal text-muted-foreground">({creatives.length})</span>
+            </CardTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-[10px] h-7"
+              onClick={() => setColumnOrder([...DEFAULT_COLUMN_ORDER])}
+              title="Restaurar ordem padrão das colunas"
+            >
+              <GripVertical className="w-3 h-3 mr-1" />
+              Resetar colunas
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {creatives.length === 0 ? (
