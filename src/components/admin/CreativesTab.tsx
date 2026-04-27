@@ -1048,10 +1048,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         const roasSprint = totals.spend > 0 ? (totals.revenue_sprint || 0) / totals.spend : null;
         const roasAssessoria = totals.spend > 0 ? (totals.revenue_assessoria || 0) / totals.spend : null;
         const roasTotalVal = totals.spend > 0 ? (totals.revenue || 0) / totals.spend : null;
-        const qualifiedLeads = leadsList.filter((lead) => {
-          const faixa = lead.investimento_faixa || null;
-          return !!faixa && !["Não vendo ainda (R$0/mês)", "Até R$ 5 mil"].includes(faixa);
-        }).length;
+        // Leads R$ 5 mil a R$ 10 mil (tier Medium) — usado para CPL ≥5k
+        const qualifiedLeads = leadsList.filter(
+          (lead) => (lead.investimento_faixa || "") === "De R$ 5 mil a R$ 10 mil"
+        ).length;
         const winRateVal = qualifiedLeads > 0 ? (totals.sales / qualifiedLeads) * 100 : 0;
 
         // ── Win rate por tipo (período filtrado)
@@ -1510,8 +1510,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("mql_per_view")} title="MQL ÷ Landing Page Views">
                     %MQL/LPV<SortIcon field="mql_per_view" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[7%]" onClick={() => handleSort("qualified_count")} title="Leads com faturamento ≥ R$ 5 mil (Medium + Large + Enterprise + Enterprise+) e custo por lead qualificado">
-                    ≥5k / CP<SortIcon field="qualified_count" />
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[7%]" onClick={() => handleSort("qualified_count")} title="Leads com faturamento de R$ 5 mil a R$ 10 mil (tier Medium) e custo por lead">
+                    5–10k / CP<SortIcon field="qualified_count" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("meetings_count")}>
                     Reun.<SortIcon field="meetings_count" />
