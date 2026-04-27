@@ -1872,7 +1872,7 @@ Deno.serve(async (req: Request) => {
       const totalRevenueSprint = creatives.reduce((s, c) => s + c.revenue_sprint, 0);
       const totalRevenueAssessoria = creatives.reduce((s, c) => s + c.revenue_assessoria, 0);
       const totalLandingPageViews = creatives.reduce((s, c) => s + c.landing_page_views, 0);
-      const totalQualified = totalTierMedium;
+      const totalQualified = creatives.reduce((s, c) => s + c.leads_5_10k_count, 0);
 
       return new Response(
         JSON.stringify({
