@@ -1700,7 +1700,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   ),
                 },
                 cac_assessoria: {
-                  id: "cac_assessoria", label: "CAC-A", width: "5%", sortField: "cac_assessoria",
+                  id: "cac_assessoria", label: "CAC/Vendas-A", width: "5%", sortField: "cac_assessoria",
                   title: "CAC Assessoria: Spend / Vendas Assessoria",
                   renderCell: (c) => (
                     <span className="text-teal-400">
