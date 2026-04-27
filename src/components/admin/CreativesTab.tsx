@@ -1670,17 +1670,17 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   renderCell: (c) => (
                     <Popover>
                       <PopoverTrigger asChild>
-                        <button className="text-right w-full hover:underline">
+                        <button className="text-right w-full hover:underline text-emerald-400">
                           <div className="font-semibold">{c.sales_count}</div>
-                          {c.cac !== null && <div className="text-muted-foreground text-[9px]">{formatCurrency(c.cac)}</div>}
+                          {c.cac !== null && <div className="text-emerald-300/70 text-[9px]">{formatCurrency(c.cac)}</div>}
                         </button>
                       </PopoverTrigger>
                       <PopoverContent className="w-52 p-3" align="end">
                         <p className="text-xs font-semibold mb-2">Vendas por Tipo</p>
                         <div className="space-y-1 text-xs">
-                          <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{c.sales_count}</span></div>
-                          <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{c.sales_sprint_count || 0}</span></div>
-                          <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{c.sales_assessoria_count || 0}</span></div>
+                          <div className="flex justify-between"><span>Geral:</span><span className="font-bold text-emerald-400">{c.sales_count}</span></div>
+                          <div className="flex justify-between"><span className="text-emerald-300">Sprint:</span><span className="font-bold text-emerald-300">{c.sales_sprint_count || 0}</span></div>
+                          <div className="flex justify-between"><span className="text-emerald-500">Assessoria:</span><span className="font-bold text-emerald-500">{c.sales_assessoria_count || 0}</span></div>
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -1690,7 +1690,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   id: "cac_sprint", label: "CAC-S", width: "5%", sortField: "cac_sprint",
                   title: "CAC Sprint: Spend / Vendas Sprint",
                   renderCell: (c) => (
-                    <span className="text-violet-400">
+                    <span className="text-emerald-300">
                       {c.sales_sprint_count > 0 ? (
                         <><div className="font-semibold">{c.sales_sprint_count}</div><div className="text-[9px]">{formatCurrency(creativeExtras.get(c.creative_key)?.cacSprint ?? null)}</div></>
                       ) : <span className="text-muted-foreground">0</span>}
@@ -1701,7 +1701,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   id: "cac_assessoria", label: "CAC/Vendas-A", width: "5%", sortField: "cac_assessoria",
                   title: "CAC Assessoria: Spend / Vendas Assessoria",
                   renderCell: (c) => (
-                    <span className="text-teal-400">
+                    <span className="text-emerald-500">
                       {c.sales_assessoria_count > 0 ? (
                         <><div className="font-semibold">{c.sales_assessoria_count}</div><div className="text-[9px]">{formatCurrency(creativeExtras.get(c.creative_key)?.cacAssessoria ?? null)}</div></>
                       ) : <span className="text-muted-foreground">0</span>}
@@ -1714,7 +1714,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   renderCell: (c) => {
                     const w = creativeExtras.get(c.creative_key)?.winRate;
                     if (w === null || w === undefined) return <span className="text-muted-foreground">—</span>;
-                    const cls = w >= 0.3 ? "text-emerald-400" : w >= 0.1 ? "text-amber-400" : "text-muted-foreground";
+                    const cls = w >= 0.3 ? "text-emerald-400" : w >= 0.1 ? "text-emerald-300" : "text-emerald-200/60";
                     return <span className={`font-semibold ${cls}`}>{(w * 100).toFixed(0)}%</span>;
                   },
                 },
@@ -1737,16 +1737,16 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   renderCell: (c) => (
                     <Popover>
                       <PopoverTrigger asChild>
-                        <button className="text-right w-full hover:underline">
+                        <button className="text-right w-full hover:underline text-emerald-400">
                           <div className="font-semibold">{formatCurrency(c.revenue)}</div>
                         </button>
                       </PopoverTrigger>
                       <PopoverContent className="w-52 p-3" align="end">
                         <p className="text-xs font-semibold mb-2">Faturamento por Tipo</p>
                         <div className="space-y-1 text-xs">
-                          <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{formatCurrency(c.revenue)}</span></div>
-                          <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{formatCurrency(c.revenue_sprint || 0)}</span></div>
-                          <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{formatCurrency(c.revenue_assessoria || 0)}</span></div>
+                          <div className="flex justify-between"><span>Geral:</span><span className="font-bold text-emerald-400">{formatCurrency(c.revenue)}</span></div>
+                          <div className="flex justify-between"><span className="text-emerald-300">Sprint:</span><span className="font-bold text-emerald-300">{formatCurrency(c.revenue_sprint || 0)}</span></div>
+                          <div className="flex justify-between"><span className="text-emerald-500">Assessoria:</span><span className="font-bold text-emerald-500">{formatCurrency(c.revenue_assessoria || 0)}</span></div>
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -1756,7 +1756,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   id: "roas", label: "ROAS", width: "4.5%", sortField: "roas",
                   renderCell: (c) => (
                     <span className="font-bold">
-                      {c.roas !== null ? <span className={c.roas >= 1 ? "text-emerald-400" : "text-red-400"}>{c.roas.toFixed(1)}x</span> : "—"}
+                      {c.roas !== null ? <span className={c.roas >= 1 ? "text-emerald-400" : "text-emerald-200/50"}>{c.roas.toFixed(1)}x</span> : "—"}
                     </span>
                   ),
                 },
