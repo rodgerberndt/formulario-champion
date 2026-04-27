@@ -1646,7 +1646,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   ),
                 },
                 booking_rate: {
-                  id: "booking_rate", label: "Agend.%", width: "5%", sortField: "booking_rate",
+                  id: "booking_rate", label: "Tx.Agend", width: "5%", sortField: "booking_rate",
                   title: "Taxa de agendamento: Reuniões / MQLs",
                   renderCell: (c) => {
                     const r = creativeExtras.get(c.creative_key)?.bookingRate;
