@@ -1600,17 +1600,15 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   renderCell: (c) => <div className="font-semibold">{c.leads_count}</div>,
                 },
                 mql_cpmql: {
-                  id: "mql_cpmql", label: "MQL/CPMQL", width: "6%", sortField: "mql_count",
+                  id: "mql_cpmql", label: "MQL", width: "7%", sortField: "mql_count",
+                  title: "MQL: contagem · %MQL (Leads → MQL) · CPMQL (Spend ÷ MQL)",
                   renderCell: (c, { isBestCpmql2 }) => (
                     <div className={isBestCpmql2 ? "text-green-400" : ""}>
                       <div className="font-semibold text-green-400">{c.mql_count}</div>
+                      <div className="text-[9px] text-muted-foreground">{formatPercent(c.mql_rate)}</div>
                       <div className={`text-[9px] ${isBestCpmql2 ? "font-bold text-green-400" : "text-muted-foreground"}`}>{formatCurrency(c.cost_per_mql)}</div>
                     </div>
                   ),
-                },
-                mql_rate: {
-                  id: "mql_rate", label: "%MQL", width: "4%", sortField: "mql_rate",
-                  renderCell: (c) => <>{formatPercent(c.mql_rate)}</>,
                 },
                 mql_per_view: {
                   id: "mql_per_view", label: "%MQL/LPV", width: "5%", sortField: "mql_per_view",
