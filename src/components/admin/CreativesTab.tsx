@@ -1791,150 +1791,27 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   const isBestMql = topMql && c.creative_key === topMql.creative_key && c.mql_count > 0;
                   const isBestCpmql2 = bestCpmql && c.creative_key === bestCpmql.creative_key;
                   const isBestRevenue = topRevenue && c.creative_key === topRevenue.creative_key && c.revenue > 0;
-                  const cpl = c.spend > 0 && c.leads_count > 0 ? c.spend / c.leads_count : null;
-
                   return (
                     <TableRow
                       key={c.creative_key}
                       className={`cursor-pointer hover:bg-muted/50 ${isBestMql ? "bg-green-500/5" : ""} ${isBestRevenue ? "bg-emerald-500/5" : ""}`}
                       onClick={() => setDrillCreative(c)}
                     >
-                      <TableCell className="py-1.5">
-                        <div className="flex items-center gap-1">
-                          <Circle className={`w-2 h-2 flex-shrink-0 ${c.is_active ? "fill-green-500 text-green-500" : "fill-muted-foreground/30 text-muted-foreground/30"}`} />
-                          {i < 3 && c.mql_count > 0 && (
-                            <Star className="w-2.5 h-2.5 text-yellow-400 flex-shrink-0" />
-                          )}
-                          <div className="min-w-0">
-                            {c.campaigns.length > 0 && (
-                              <p className="text-[8px] text-muted-foreground truncate" title={c.campaigns.join(", ")}>
-                                {c.campaigns.join(", ")}
-                              </p>
-                            )}
-                            <p className="font-medium truncate text-[10px]">{c.creative_label}</p>
-                            <code className="text-[8px] text-muted-foreground truncate block">{c.creative_key}</code>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5">{formatCurrency(c.spend)}</TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5 text-sky-400">
-                        {c.landing_page_views > 0 ? formatNumber(c.landing_page_views) : <span className="text-muted-foreground">—</span>}
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5">
-                        <div className="font-semibold">{c.leads_count}</div>
-                      </TableCell>
-                      <TableCell className={`text-right text-[10px] py-1.5 ${isBestCpmql2 ? "text-green-400" : ""}`}>
-                        <div className="font-semibold text-green-400">{c.mql_count}</div>
-                        <div className={`text-[9px] ${isBestCpmql2 ? "font-bold text-green-400" : "text-muted-foreground"}`}>{formatCurrency(c.cost_per_mql)}</div>
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5">{formatPercent(c.mql_rate)}</TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5 text-sky-300">
-                        {c.mql_per_view !== null && c.mql_per_view !== undefined
-                          ? `${(c.mql_per_view * 100).toFixed(2)}%`
-                          : <span className="text-muted-foreground">—</span>}
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5 text-amber-300">
-                        {c.qualified_count > 0 ? (
-                          <>
-                            <div className="font-semibold">{c.qualified_count}</div>
-                            <div className="text-muted-foreground text-[9px]">{formatCurrency(c.cost_per_qualified)}</div>
-                          </>
-                        ) : <span className="text-muted-foreground">0</span>}
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5 text-orange-400">
-                        {c.meetings_count > 0 ? (
-                          <><div className="font-semibold">{c.meetings_count}</div><div className="text-[9px]">{formatCurrency(c.cost_per_meeting)}</div></>
-                        ) : <span className="text-muted-foreground">0</span>}
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5">
-                        {(() => {
-                          const r = creativeExtras.get(c.creative_key)?.bookingRate;
-                          if (r === null || r === undefined) return <span className="text-muted-foreground">—</span>;
-                          const cls = r >= 0.5 ? "text-emerald-400" : r >= 0.25 ? "text-amber-400" : "text-muted-foreground";
-                          return <span className={`font-semibold ${cls}`}>{(r * 100).toFixed(0)}%</span>;
-                        })()}
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5">
-                        {(() => {
-                          const r = creativeExtras.get(c.creative_key)?.callConvRate;
-                          if (r === null || r === undefined) return <span className="text-muted-foreground">—</span>;
-                          const cls = r >= 0.5 ? "text-emerald-400" : r >= 0.2 ? "text-amber-400" : "text-muted-foreground";
-                          return <span className={`font-semibold ${cls}`}>{(r * 100).toFixed(0)}%</span>;
-                        })()}
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <button className="text-right w-full hover:underline">
-                              <div className="font-semibold">{c.sales_count}</div>
-                              {c.cac !== null && <div className="text-muted-foreground text-[9px]">{formatCurrency(c.cac)}</div>}
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-52 p-3" align="end">
-                            <p className="text-xs font-semibold mb-2">Vendas por Tipo</p>
-                            <div className="space-y-1 text-xs">
-                              <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{c.sales_count}</span></div>
-                              <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{c.sales_sprint_count || 0}</span></div>
-                              <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{c.sales_assessoria_count || 0}</span></div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5 text-violet-400">
-                        {c.sales_sprint_count > 0 ? (
-                          <><div className="font-semibold">{c.sales_sprint_count}</div><div className="text-[9px]">{formatCurrency(creativeExtras.get(c.creative_key)?.cacSprint ?? null)}</div></>
-                        ) : <span className="text-muted-foreground">0</span>}
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5 text-teal-400">
-                        {c.sales_assessoria_count > 0 ? (
-                          <><div className="font-semibold">{c.sales_assessoria_count}</div><div className="text-[9px]">{formatCurrency(creativeExtras.get(c.creative_key)?.cacAssessoria ?? null)}</div></>
-                        ) : <span className="text-muted-foreground">0</span>}
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5">
-                        {(() => {
-                          const w = creativeExtras.get(c.creative_key)?.winRate;
-                          if (w === null || w === undefined) return <span className="text-muted-foreground">—</span>;
-                          const cls = w >= 0.3 ? "text-emerald-400" : w >= 0.1 ? "text-amber-400" : "text-muted-foreground";
-                          return <span className={`font-semibold ${cls}`}>{(w * 100).toFixed(0)}%</span>;
-                        })()}
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5">
-                        {(() => {
-                          const ext = creativeExtras.get(c.creative_key);
-                          if (!ext || ext.cycleDays === null) return <span className="text-muted-foreground">—</span>;
-                          return (
-                            <>
-                              <div className="font-semibold">{ext.cycleDays.toFixed(1)}d</div>
-                              <div className="text-[9px] text-muted-foreground">{ext.cycleCount} venda{ext.cycleCount !== 1 ? "s" : ""}</div>
-                            </>
-                          );
-                        })()}
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <button className="text-right w-full hover:underline">
-                              <div className="font-semibold">{formatCurrency(c.revenue)}</div>
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-52 p-3" align="end">
-                            <p className="text-xs font-semibold mb-2">Faturamento por Tipo</p>
-                            <div className="space-y-1 text-xs">
-                              <div className="flex justify-between"><span>Geral:</span><span className="font-bold">{formatCurrency(c.revenue)}</span></div>
-                              <div className="flex justify-between"><span className="text-violet-400">Sprint:</span><span className="font-bold text-violet-400">{formatCurrency(c.revenue_sprint || 0)}</span></div>
-                              <div className="flex justify-between"><span className="text-teal-400">Assessoria:</span><span className="font-bold text-teal-400">{formatCurrency(c.revenue_assessoria || 0)}</span></div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      </TableCell>
-                      <TableCell className="text-right text-[10px] py-1.5 font-bold">
-                        {c.roas !== null ? <span className={c.roas >= 1 ? "text-emerald-400" : "text-red-400"}>{c.roas.toFixed(1)}x</span> : "—"}
-                      </TableCell>
+                      {orderedCols.map((col) => (
+                        <TableCell
+                          key={col.id}
+                          className={`${col.id === "creative" ? "" : "text-right"} text-[10px] py-1.5`}
+                        >
+                          {col.renderCell(c, { isBestCpmql2: !!isBestCpmql2, i })}
+                        </TableCell>
+                      ))}
                     </TableRow>
                   );
                 })}
               </TableBody>
             </Table>
+              );
+            })()
           )}
         </CardContent>
       </Card>
