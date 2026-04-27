@@ -1531,6 +1531,7 @@ Deno.serve(async (req: Request) => {
         tier_large_count: number;
         tier_enterprise_count: number;
         tier_enterprise_plus_count: number;
+        leads_5_10k_count: number;
         spend: number;
         sales_count: number;
         sales_sprint_count: number;
@@ -1561,6 +1562,7 @@ Deno.serve(async (req: Request) => {
             tier_large_count: 0,
             tier_enterprise_count: 0,
             tier_enterprise_plus_count: 0,
+            leads_5_10k_count: 0,
             spend: 0,
             sales_count: 0,
             sales_sprint_count: 0,
