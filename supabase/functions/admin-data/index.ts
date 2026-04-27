@@ -1531,6 +1531,7 @@ Deno.serve(async (req: Request) => {
         tier_large_count: number;
         tier_enterprise_count: number;
         tier_enterprise_plus_count: number;
+        leads_5_10k_count: number;
         spend: number;
         sales_count: number;
         sales_sprint_count: number;
@@ -1561,6 +1562,7 @@ Deno.serve(async (req: Request) => {
             tier_large_count: 0,
             tier_enterprise_count: 0,
             tier_enterprise_plus_count: 0,
+            leads_5_10k_count: 0,
             spend: 0,
             sales_count: 0,
             sales_sprint_count: 0,
@@ -1687,6 +1689,9 @@ Deno.serve(async (req: Request) => {
         else if (computedTier === "Large") agg.tier_large_count++;
         else if (computedTier === "Enterprise") agg.tier_enterprise_count++;
         else if (computedTier === "Enterprise+") agg.tier_enterprise_plus_count++;
+        if ((lead.investimento_faixa || "") === "De R$ 5 mil a R$ 10 mil") {
+          agg.leads_5_10k_count++;
+        }
         agg.leads_by_stage[lead.estagio_negocio] = (agg.leads_by_stage[lead.estagio_negocio] || 0) + 1;
         if (lead.utm_campaign) agg.campaigns.add(lead.utm_campaign);
         if (!agg.last_activity || lead.created_at > agg.last_activity) {
@@ -1813,8 +1818,8 @@ Deno.serve(async (req: Request) => {
         const cost_per_medium = c.tier_medium_count > 0 ? c.spend / c.tier_medium_count : null;
         const cost_per_enterprise = c.tier_enterprise_count > 0 ? c.spend / c.tier_enterprise_count : null;
         const cost_per_enterprise_plus = c.tier_enterprise_plus_count > 0 ? c.spend / c.tier_enterprise_plus_count : null;
-        // Leads "qualificados" (R$ 5k a R$ 10k de faturamento): apenas tier Medium
-        const qualified_count = c.tier_medium_count;
+        // Leads "qualificados" — apenas faixa exata "De R$ 5 mil a R$ 10 mil"
+        const qualified_count = c.leads_5_10k_count;
         const cost_per_qualified = qualified_count > 0 ? c.spend / qualified_count : null;
         const cac = c.sales_count > 0 ? c.spend / c.sales_count : null;
         const cac_sprint = c.sales_sprint_count > 0 ? c.spend / c.sales_sprint_count : null;
@@ -1867,7 +1872,7 @@ Deno.serve(async (req: Request) => {
       const totalRevenueSprint = creatives.reduce((s, c) => s + c.revenue_sprint, 0);
       const totalRevenueAssessoria = creatives.reduce((s, c) => s + c.revenue_assessoria, 0);
       const totalLandingPageViews = creatives.reduce((s, c) => s + c.landing_page_views, 0);
-      const totalQualified = totalTierMedium;
+      const totalQualified = creatives.reduce((s, c) => s + c.leads_5_10k_count, 0);
 
       return new Response(
         JSON.stringify({
