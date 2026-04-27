@@ -1611,7 +1611,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   ),
                 },
                 mql_per_view: {
-                  id: "mql_per_view", label: "%MQL/LPV", width: "5%", sortField: "mql_per_view",
+                  id: "mql_per_view", label: "MQLPV%", width: "5%", sortField: "mql_per_view",
                   title: "MQL ÷ Landing Page Views",
                   renderCell: (c) => (
                     <span className="text-sky-300">
