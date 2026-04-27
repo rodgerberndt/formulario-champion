@@ -1666,13 +1666,19 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   },
                 },
                 sales_cac: {
-                  id: "sales_cac", label: "Vendas\n/ CAC", width: "6%", sortField: "sales_count",
-                  renderCell: (c) => (
+                  id: "sales_cac", label: "Vendas\n/ CAC", width: "7%", sortField: "sales_count",
+                  title: "Vendas · CAC · Ciclo médio (dias)",
+                  renderCell: (c) => {
+                    const ext = creativeExtras.get(c.creative_key);
+                    return (
                     <Popover>
                       <PopoverTrigger asChild>
                         <button className="text-right w-full hover:underline text-emerald-400">
                           <div className="font-semibold">{c.sales_count}</div>
                           {c.cac !== null && <div className="text-emerald-300/70 text-[9px]">{formatCurrency(c.cac)}</div>}
+                          {ext && ext.cycleDays !== null && (
+                            <div className="text-emerald-200/60 text-[9px]">{ext.cycleDays.toFixed(1)}d</div>
+                          )}
                         </button>
                       </PopoverTrigger>
                       <PopoverContent className="w-52 p-3" align="end">
@@ -1684,7 +1690,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         </div>
                       </PopoverContent>
                     </Popover>
-                  ),
+                    );
+                  },
                 },
                 cac_sprint: {
                   id: "cac_sprint", label: "CAC-S", width: "5%", sortField: "cac_sprint",
@@ -1716,20 +1723,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     if (w === null || w === undefined) return <span className="text-muted-foreground">—</span>;
                     const cls = w >= 0.3 ? "text-emerald-400" : w >= 0.1 ? "text-emerald-300" : "text-emerald-200/60";
                     return <span className={`font-semibold ${cls}`}>{(w * 100).toFixed(0)}%</span>;
-                  },
-                },
-                cycle: {
-                  id: "cycle", label: "Ciclo", width: "5%", sortField: "cycle_days",
-                  title: "Ciclo médio de vendas em dias",
-                  renderCell: (c) => {
-                    const ext = creativeExtras.get(c.creative_key);
-                    if (!ext || ext.cycleDays === null) return <span className="text-muted-foreground">—</span>;
-                    return (
-                      <>
-                        <div className="font-semibold">{ext.cycleDays.toFixed(1)}d</div>
-                        <div className="text-[9px] text-muted-foreground">{ext.cycleCount} venda{ext.cycleCount !== 1 ? "s" : ""}</div>
-                      </>
-                    );
                   },
                 },
                 revenue: {
