@@ -1510,8 +1510,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("mql_per_view")} title="MQL ÷ Landing Page Views">
                     %MQL/LPV<SortIcon field="mql_per_view" />
                   </TableHead>
-                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[7%]" onClick={() => handleSort("qualified_count")} title="Leads com faturamento ≥ R$ 5 mil (Medium + Large + Enterprise + Enterprise+) e custo por lead qualificado">
-                    ≥5k / CP<SortIcon field="qualified_count" />
+                  <TableHead className="text-right cursor-pointer hover:text-foreground w-[7%]" onClick={() => handleSort("qualified_count")} title="Leads com faturamento de R$ 5 mil a R$ 10 mil (tier Medium) e custo por lead">
+                    5–10k / CP<SortIcon field="qualified_count" />
                   </TableHead>
                   <TableHead className="text-right cursor-pointer hover:text-foreground w-[5%]" onClick={() => handleSort("meetings_count")}>
                     Reun.<SortIcon field="meetings_count" />
