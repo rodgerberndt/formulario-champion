@@ -1765,7 +1765,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               return (
             <Table className="table-fixed w-full">
               <TableHeader>
-                <TableRow className="text-[10px] [&_th]:h-12 [&_th]:align-middle [&_th]:px-1 [&_th]:py-2 [&_th]:whitespace-nowrap [&_th]:font-semibold">
+                <TableRow className="text-[10px] [&_th]:h-12 [&_th]:align-middle [&_th]:px-1 [&_th]:py-2 [&_th]:font-semibold [&_th]:leading-tight">
                   {orderedCols.map((col) => {
                     const isDraggable = col.draggable !== false;
                     const isDragOver = draggedCol && draggedCol !== col.id;
