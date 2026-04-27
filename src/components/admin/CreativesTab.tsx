@@ -349,6 +349,45 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [drillCreative, setDrillCreative] = useState<CreativeData | null>(null);
 
+  // Drag & drop column ordering (persisted)
+  const DEFAULT_COLUMN_ORDER = [
+    "creative", "spend", "lpv", "leads", "mql_cpmql", "mql_rate", "mql_per_view",
+    "qualified_5_10k", "meetings", "booking_rate", "call_conv", "sales_cac",
+    "cac_sprint", "cac_assessoria", "win_rate", "cycle", "revenue", "roas",
+  ] as const;
+  type ColumnId = (typeof DEFAULT_COLUMN_ORDER)[number];
+  const COLUMN_ORDER_KEY = "creatives-tab-column-order-v1";
+  const [columnOrder, setColumnOrder] = useState<ColumnId[]>(() => {
+    if (typeof window === "undefined") return [...DEFAULT_COLUMN_ORDER];
+    try {
+      const saved = localStorage.getItem(COLUMN_ORDER_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as ColumnId[];
+        const valid = parsed.filter((c) => (DEFAULT_COLUMN_ORDER as readonly string[]).includes(c)) as ColumnId[];
+        // Append any new columns missing from saved order
+        for (const c of DEFAULT_COLUMN_ORDER) if (!valid.includes(c)) valid.push(c);
+        return valid;
+      }
+    } catch {}
+    return [...DEFAULT_COLUMN_ORDER];
+  });
+  useEffect(() => {
+    try { localStorage.setItem(COLUMN_ORDER_KEY, JSON.stringify(columnOrder)); } catch {}
+  }, [columnOrder]);
+  const [draggedCol, setDraggedCol] = useState<ColumnId | null>(null);
+  const moveColumn = (from: ColumnId, to: ColumnId) => {
+    if (from === to) return;
+    setColumnOrder((prev) => {
+      const next = [...prev];
+      const fromIdx = next.indexOf(from);
+      const toIdx = next.indexOf(to);
+      if (fromIdx < 0 || toIdx < 0) return prev;
+      next.splice(fromIdx, 1);
+      next.splice(toIdx, 0, from);
+      return next;
+    });
+  };
+
   // Filters
   const [filterOnlyActive, setFilterOnlyActive] = useState(false);
   const [filterOnlyWithSpend, setFilterOnlyWithSpend] = useState(false);
