@@ -1578,12 +1578,22 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 },
                 lpv: {
                   id: "lpv", label: "LPV", width: "5%", sortField: "landing_page_views",
-                  title: "Landing Page Views (visualizações da página vindas do Pixel)",
-                  renderCell: (c) => (
-                    <span className="text-sky-400">
-                      {c.landing_page_views > 0 ? formatNumber(c.landing_page_views) : <span className="text-muted-foreground">—</span>}
-                    </span>
-                  ),
+                  title: "Landing Page Views e custo por LPV (Spend ÷ LPV)",
+                  renderCell: (c) => {
+                    const cpLpv = c.landing_page_views > 0 ? c.spend / c.landing_page_views : null;
+                    return (
+                      <span className="text-sky-400">
+                        {c.landing_page_views > 0 ? (
+                          <>
+                            <div className="font-semibold">{formatNumber(c.landing_page_views)}</div>
+                            {cpLpv !== null && (
+                              <div className="text-[9px] text-muted-foreground">{formatCurrency(cpLpv)}</div>
+                            )}
+                          </>
+                        ) : <span className="text-muted-foreground">—</span>}
+                      </span>
+                    );
+                  },
                 },
                 leads: {
                   id: "leads", label: "Leads", width: "6%", sortField: "leads_count",
@@ -1757,7 +1767,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               return (
             <Table className="table-fixed w-full">
               <TableHeader>
-                <TableRow className="text-[10px] [&_th]:h-12 [&_th]:align-middle [&_th]:px-2 [&_th]:py-2 [&_th]:whitespace-nowrap [&_th]:font-semibold">
+                <TableRow className="text-[10px] [&_th]:h-12 [&_th]:align-middle [&_th]:px-1 [&_th]:py-2 [&_th]:whitespace-nowrap [&_th]:font-semibold">
                   {orderedCols.map((col) => {
                     const isDraggable = col.draggable !== false;
                     const isDragOver = draggedCol && draggedCol !== col.id;
@@ -1812,7 +1822,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       {orderedCols.map((col) => (
                         <TableCell
                           key={col.id}
-                          className={`${col.id === "creative" ? "" : "text-right"} text-[10px] py-1.5`}
+                          className={`${col.id === "creative" ? "px-1" : "text-right px-1"} text-[10px] py-1.5`}
                         >
                           {col.renderCell(c, { isBestCpmql2: !!isBestCpmql2, i })}
                         </TableCell>
