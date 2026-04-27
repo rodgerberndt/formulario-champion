@@ -1818,8 +1818,8 @@ Deno.serve(async (req: Request) => {
         const cost_per_medium = c.tier_medium_count > 0 ? c.spend / c.tier_medium_count : null;
         const cost_per_enterprise = c.tier_enterprise_count > 0 ? c.spend / c.tier_enterprise_count : null;
         const cost_per_enterprise_plus = c.tier_enterprise_plus_count > 0 ? c.spend / c.tier_enterprise_plus_count : null;
-        // Leads "qualificados" (R$ 5k a R$ 10k de faturamento): apenas tier Medium
-        const qualified_count = c.tier_medium_count;
+        // Leads "qualificados" — apenas faixa exata "De R$ 5 mil a R$ 10 mil"
+        const qualified_count = c.leads_5_10k_count;
         const cost_per_qualified = qualified_count > 0 ? c.spend / qualified_count : null;
         const cac = c.sales_count > 0 ? c.spend / c.sales_count : null;
         const cac_sprint = c.sales_sprint_count > 0 ? c.spend / c.sales_sprint_count : null;
