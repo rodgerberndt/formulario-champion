@@ -1767,7 +1767,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               return (
             <Table className="table-fixed w-full">
               <TableHeader>
-                <TableRow className="text-[10px] [&_th]:h-12 [&_th]:align-middle [&_th]:px-2 [&_th]:py-2 [&_th]:whitespace-nowrap [&_th]:font-semibold">
+                <TableRow className="text-[10px] [&_th]:h-12 [&_th]:align-middle [&_th]:px-1 [&_th]:py-2 [&_th]:whitespace-nowrap [&_th]:font-semibold">
                   {orderedCols.map((col) => {
                     const isDraggable = col.draggable !== false;
                     const isDragOver = draggedCol && draggedCol !== col.id;
@@ -1822,7 +1822,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       {orderedCols.map((col) => (
                         <TableCell
                           key={col.id}
-                          className={`${col.id === "creative" ? "" : "text-right"} text-[10px] py-1.5`}
+                          className={`${col.id === "creative" ? "px-1" : "text-right px-1"} text-[10px] py-1.5`}
                         >
                           {col.renderCell(c, { isBestCpmql2: !!isBestCpmql2, i })}
                         </TableCell>
