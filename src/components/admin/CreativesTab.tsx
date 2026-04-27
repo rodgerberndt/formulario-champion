@@ -46,6 +46,7 @@ import {
   Search,
   X,
   Check,
+  GripVertical,
 } from "lucide-react";
 import {
   Command,
