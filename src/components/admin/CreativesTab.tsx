@@ -1622,7 +1622,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   ),
                 },
                 qualified_5_10k: {
-                  id: "qualified_5_10k", label: "5–10k / CP", width: "7%", sortField: "qualified_count",
+                  id: "qualified_5_10k", label: "5–10k\n/ CP", width: "7%", sortField: "qualified_count",
                   title: "Leads com faturamento de R$ 5 mil a R$ 10 mil e custo por lead",
                   renderCell: (c) => (
                     <span className="text-amber-300">
@@ -1666,7 +1666,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   },
                 },
                 sales_cac: {
-                  id: "sales_cac", label: "Vendas/CAC", width: "6%", sortField: "sales_count",
+                  id: "sales_cac", label: "Vendas\n/ CAC", width: "6%", sortField: "sales_count",
                   renderCell: (c) => (
                     <Popover>
                       <PopoverTrigger asChild>
@@ -1698,7 +1698,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   ),
                 },
                 cac_assessoria: {
-                  id: "cac_assessoria", label: "CAC/Vendas-A", width: "5%", sortField: "cac_assessoria",
+                  id: "cac_assessoria", label: "CAC/\nVendas-A", width: "5%", sortField: "cac_assessoria",
                   title: "CAC Assessoria: Spend / Vendas Assessoria",
                   renderCell: (c) => (
                     <span className="text-emerald-500">
@@ -1765,7 +1765,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               return (
             <Table className="table-fixed w-full">
               <TableHeader>
-                <TableRow className="text-[10px] [&_th]:h-12 [&_th]:align-middle [&_th]:px-1 [&_th]:py-2 [&_th]:whitespace-nowrap [&_th]:font-semibold">
+                <TableRow className="text-[10px] [&_th]:h-12 [&_th]:align-middle [&_th]:px-1 [&_th]:py-2 [&_th]:font-semibold [&_th]:leading-tight">
                   {orderedCols.map((col) => {
                     const isDraggable = col.draggable !== false;
                     const isDragOver = draggedCol && draggedCol !== col.id;
@@ -1798,7 +1798,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                               onClick={(e) => e.stopPropagation()}
                             />
                           )}
-                          <span>{col.label}</span>
+                          <span className="whitespace-pre-line text-center">{col.label}</span>
                           {col.sortField && <SortIcon field={col.sortField} />}
                         </span>
                       </TableHead>
