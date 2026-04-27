@@ -1578,12 +1578,22 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 },
                 lpv: {
                   id: "lpv", label: "LPV", width: "5%", sortField: "landing_page_views",
-                  title: "Landing Page Views (visualizações da página vindas do Pixel)",
-                  renderCell: (c) => (
-                    <span className="text-sky-400">
-                      {c.landing_page_views > 0 ? formatNumber(c.landing_page_views) : <span className="text-muted-foreground">—</span>}
-                    </span>
-                  ),
+                  title: "Landing Page Views e custo por LPV (Spend ÷ LPV)",
+                  renderCell: (c) => {
+                    const cpLpv = c.landing_page_views > 0 ? c.spend / c.landing_page_views : null;
+                    return (
+                      <span className="text-sky-400">
+                        {c.landing_page_views > 0 ? (
+                          <>
+                            <div className="font-semibold">{formatNumber(c.landing_page_views)}</div>
+                            {cpLpv !== null && (
+                              <div className="text-[9px] text-muted-foreground">{formatCurrency(cpLpv)}</div>
+                            )}
+                          </>
+                        ) : <span className="text-muted-foreground">—</span>}
+                      </span>
+                    );
+                  },
                 },
                 leads: {
                   id: "leads", label: "Leads", width: "6%", sortField: "leads_count",
