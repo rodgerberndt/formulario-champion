@@ -844,7 +844,7 @@ export default function AdminAnalytics() {
       };
 
       // Retry on transient boot errors (502/503/504) with exponential backoff
-      const MAX_RETRIES = 5;
+      const MAX_RETRIES = 6;
       let lastError: Error | null = null;
 
       for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -853,7 +853,7 @@ export default function AdminAnalytics() {
 
           // Retry on transient errors (cold-start boot errors, gateway timeouts)
           if ([502, 503, 504].includes(fetchResponse.status) && attempt < MAX_RETRIES - 1) {
-            const delay = 700 * Math.pow(2, attempt) + Math.random() * 250;
+            const delay = 400 * Math.pow(2, attempt) + Math.random() * 200;
             console.warn(`[admin-data] ${fetchResponse.status} on ${path}, retrying in ${Math.round(delay)}ms (attempt ${attempt + 1}/${MAX_RETRIES})`);
             await new Promise((r) => setTimeout(r, delay));
             continue;
@@ -872,7 +872,7 @@ export default function AdminAnalytics() {
           // Retry on network errors too
           if (attempt < MAX_RETRIES - 1) {
             lastError = error as Error;
-            const delay = 700 * Math.pow(2, attempt) + Math.random() * 250;
+            const delay = 400 * Math.pow(2, attempt) + Math.random() * 200;
             console.warn(`[admin-data] network error on ${path}, retrying in ${Math.round(delay)}ms`);
             await new Promise((r) => setTimeout(r, delay));
             continue;
