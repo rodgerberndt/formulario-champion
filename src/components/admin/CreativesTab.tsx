@@ -1798,7 +1798,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                               onClick={(e) => e.stopPropagation()}
                             />
                           )}
-                          <span>{col.label}</span>
+                          <span className="whitespace-pre-line text-center">{col.label}</span>
                           {col.sortField && <SortIcon field={col.sortField} />}
                         </span>
                       </TableHead>
