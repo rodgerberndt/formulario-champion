@@ -353,7 +353,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const DEFAULT_COLUMN_ORDER = [
     "creative", "spend", "lpv", "leads", "mql_cpmql", "mql_per_view",
     "qualified_5_10k", "meetings", "booking_rate", "call_conv", "sales_cac",
-    "cac_sprint", "cac_assessoria", "win_rate", "cycle", "revenue", "roas",
+    "cac_sprint", "cac_assessoria", "win_rate", "revenue", "roas",
   ] as const;
   type ColumnId = (typeof DEFAULT_COLUMN_ORDER)[number];
   const COLUMN_ORDER_KEY = "creatives-tab-column-order-v1";
