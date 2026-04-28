@@ -944,7 +944,7 @@ export default function AdminAnalytics() {
       };
       if (statusFilter !== "all") params.status = statusFilter;
       if (buttonFilter !== "all") params.button_id = buttonFilter;
-      if (searchQuery) params.q = searchQuery;
+      if (debouncedSearchQuery) params.q = debouncedSearchQuery;
 
       const data = await fetchAdminData("/sessions", params);
       setSessions(data.data);
