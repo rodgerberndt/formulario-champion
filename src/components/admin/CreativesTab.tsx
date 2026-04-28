@@ -345,6 +345,22 @@ interface CreativesTabProps {
 export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnly, startISO, endISO, funnelMetrics }: CreativesTabProps) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<CreativesResponse | null>(null);
+  // Slot no header global do /admin para portar as ações (Sync Meta Ads / Gasto / Reunião / Venda / Atualizar)
+  const [headerSlot, setHeaderSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    // Espera o slot existir; usa rAF para aguardar montagem do header
+    let raf = 0;
+    const find = () => {
+      const el = document.getElementById("admin-header-actions-slot");
+      if (el) setHeaderSlot(el);
+      else raf = window.requestAnimationFrame(find);
+    };
+    find();
+    return () => {
+      if (raf) window.cancelAnimationFrame(raf);
+      setHeaderSlot(null);
+    };
+  }, []);
   const [attribution, setAttribution] = useState<"first" | "last">("first");
   const [sortField, setSortField] = useState<string>("mql_count");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
