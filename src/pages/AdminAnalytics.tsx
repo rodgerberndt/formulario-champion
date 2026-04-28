@@ -1508,9 +1508,13 @@ export default function AdminAnalytics() {
             </div>
           </div>
 
-          {/* Global Date Filter */}
-          <div className="flex flex-wrap gap-4 mb-6">
+          {/* Global Date Filter + slot para ações contextuais (ex: Sync Meta Ads / Gasto / Reunião / Venda / Atualizar) */}
+          <div className="flex flex-wrap items-center gap-4 mb-6">
             <UniversalDateRangePicker />
+            <div
+              id="admin-header-actions-slot"
+              className="ml-auto flex flex-wrap items-center gap-2"
+            />
           </div>
 
           {/* Alerta de relatório diário pendente (Caio/Dara) — após 9h */}
