@@ -505,15 +505,30 @@ export default function AdminAnalytics() {
     setIsLoading(false);
   }, []);
 
-  // Load data when authenticated or global date range changes
+  // Load heavy data (metrics, leads, campaign) only when auth or date range changes.
+  // Session filters/search/pagination are isolated to loadSessions to avoid
+  // refetching the entire panel on every keystroke or filter change.
   useEffect(() => {
     if (isAuthenticated) {
       loadMetrics();
-      loadSessions();
       loadLeads();
       loadCampaignMetrics();
     }
-  }, [isAuthenticated, statusFilter, buttonFilter, searchQuery, startISO, endISO, sessionsPage]);
+  }, [isAuthenticated, startISO, endISO]);
+
+  // Debounce the search query so the sessions endpoint isn't hit on every keystroke.
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
+  useEffect(() => {
+    const id = window.setTimeout(() => setDebouncedSearchQuery(searchQuery), 350);
+    return () => window.clearTimeout(id);
+  }, [searchQuery]);
+
+  // Load sessions when auth, date range, sessions filters, search or page changes.
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadSessions();
+    }
+  }, [isAuthenticated, statusFilter, buttonFilter, debouncedSearchQuery, startISO, endISO, sessionsPage]);
 
   // Auto-refresh quiz funnel metrics every 15s while authenticated so the
   // Funil do Quiz updates live (same UX as the real-time lead notifications).
@@ -929,7 +944,7 @@ export default function AdminAnalytics() {
       };
       if (statusFilter !== "all") params.status = statusFilter;
       if (buttonFilter !== "all") params.button_id = buttonFilter;
-      if (searchQuery) params.q = searchQuery;
+      if (debouncedSearchQuery) params.q = debouncedSearchQuery;
 
       const data = await fetchAdminData("/sessions", params);
       setSessions(data.data);
@@ -1493,9 +1508,13 @@ export default function AdminAnalytics() {
             </div>
           </div>
 
-          {/* Global Date Filter */}
-          <div className="flex flex-wrap gap-4 mb-6">
+          {/* Global Date Filter + slot para ações contextuais (ex: Sync Meta Ads / Gasto / Reunião / Venda / Atualizar) */}
+          <div className="flex flex-wrap items-center gap-4 mb-6">
             <UniversalDateRangePicker />
+            <div
+              id="admin-header-actions-slot"
+              className="ml-auto flex flex-wrap items-center gap-2"
+            />
           </div>
 
           {/* Alerta de relatório diário pendente (Caio/Dara) — após 9h */}

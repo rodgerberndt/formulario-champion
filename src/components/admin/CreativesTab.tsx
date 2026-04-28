@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -344,6 +345,22 @@ interface CreativesTabProps {
 export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnly, startISO, endISO, funnelMetrics }: CreativesTabProps) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<CreativesResponse | null>(null);
+  // Slot no header global do /admin para portar as ações (Sync Meta Ads / Gasto / Reunião / Venda / Atualizar)
+  const [headerSlot, setHeaderSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    // Espera o slot existir; usa rAF para aguardar montagem do header
+    let raf = 0;
+    const find = () => {
+      const el = document.getElementById("admin-header-actions-slot");
+      if (el) setHeaderSlot(el);
+      else raf = window.requestAnimationFrame(find);
+    };
+    find();
+    return () => {
+      if (raf) window.cancelAnimationFrame(raf);
+      setHeaderSlot(null);
+    };
+  }, []);
   const [attribution, setAttribution] = useState<"first" | "last">("first");
   const [sortField, setSortField] = useState<string>("mql_count");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
@@ -999,25 +1016,32 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </Popover>
         )}
 
-        <div className="ml-auto flex gap-2">
-          <Button variant="default" size="sm" onClick={handleMetaSync} disabled={syncing}>
-            {syncing ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <RefreshCw className="w-4 h-4 mr-1" />}
-            {syncing ? "Sincronizando..." : "Sync Meta Ads"}
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowAddSpend(true)}>
-            <Plus className="w-4 h-4 mr-1" /> Gasto
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowAddMeeting(true)}>
-            <Calendar className="w-4 h-4 mr-1" /> Reunião
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowAddSale(true)}>
-            <Plus className="w-4 h-4 mr-1" /> Venda
-          </Button>
-          <Button variant="ghost" size="sm" onClick={loadData} disabled={loading}>
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Atualizar"}
-          </Button>
-        </div>
+        {/* Ações foram movidas para o header global (#admin-header-actions-slot) via portal abaixo. */}
       </div>
+
+      {/* Portal: ações renderizadas no header do /admin, ao lado do seletor de datas */}
+      {headerSlot &&
+        createPortal(
+          <>
+            <Button variant="default" size="sm" onClick={handleMetaSync} disabled={syncing}>
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <RefreshCw className="w-4 h-4 mr-1" />}
+              {syncing ? "Sincronizando..." : "Sync Meta Ads"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowAddSpend(true)}>
+              <Plus className="w-4 h-4 mr-1" /> Gasto
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowAddMeeting(true)}>
+              <Calendar className="w-4 h-4 mr-1" /> Reunião
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowAddSale(true)}>
+              <Plus className="w-4 h-4 mr-1" /> Venda
+            </Button>
+            <Button variant="ghost" size="sm" onClick={loadData} disabled={loading}>
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Atualizar"}
+            </Button>
+          </>,
+          headerSlot
+        )}
 
       {/* CAPI Retroactive Actions */}
       <div className="flex flex-wrap gap-2 mt-2">
