@@ -1016,25 +1016,32 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </Popover>
         )}
 
-        <div className="ml-auto flex gap-2">
-          <Button variant="default" size="sm" onClick={handleMetaSync} disabled={syncing}>
-            {syncing ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <RefreshCw className="w-4 h-4 mr-1" />}
-            {syncing ? "Sincronizando..." : "Sync Meta Ads"}
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowAddSpend(true)}>
-            <Plus className="w-4 h-4 mr-1" /> Gasto
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowAddMeeting(true)}>
-            <Calendar className="w-4 h-4 mr-1" /> Reunião
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowAddSale(true)}>
-            <Plus className="w-4 h-4 mr-1" /> Venda
-          </Button>
-          <Button variant="ghost" size="sm" onClick={loadData} disabled={loading}>
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Atualizar"}
-          </Button>
-        </div>
+        {/* Ações foram movidas para o header global (#admin-header-actions-slot) via portal abaixo. */}
       </div>
+
+      {/* Portal: ações renderizadas no header do /admin, ao lado do seletor de datas */}
+      {headerSlot &&
+        createPortal(
+          <>
+            <Button variant="default" size="sm" onClick={handleMetaSync} disabled={syncing}>
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <RefreshCw className="w-4 h-4 mr-1" />}
+              {syncing ? "Sincronizando..." : "Sync Meta Ads"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowAddSpend(true)}>
+              <Plus className="w-4 h-4 mr-1" /> Gasto
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowAddMeeting(true)}>
+              <Calendar className="w-4 h-4 mr-1" /> Reunião
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowAddSale(true)}>
+              <Plus className="w-4 h-4 mr-1" /> Venda
+            </Button>
+            <Button variant="ghost" size="sm" onClick={loadData} disabled={loading}>
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Atualizar"}
+            </Button>
+          </>,
+          headerSlot
+        )}
 
       {/* CAPI Retroactive Actions */}
       <div className="flex flex-wrap gap-2 mt-2">
