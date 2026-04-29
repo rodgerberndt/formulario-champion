@@ -1162,15 +1162,69 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           c.count > 0 ? `${c.count} venda${c.count > 1 ? "s" : ""} c/ lead vinculado` : "Sem dados";
 
         // ── Tempo de resposta (created_at → first_opened_at + 10s margem)
+        // Conta APENAS minutos dentro do horário comercial (9h–20h, America/Sao_Paulo, todos os dias).
+        // Leads que chegam fora do expediente "começam a contar" às 9h do próximo dia útil de atendimento.
         const RESPONSE_MARGIN_MS = 10_000;
+        const BUSINESS_START_HOUR = 9;
+        const BUSINESS_END_HOUR = 20; // exclusivo: janela é [9h, 20h)
+        const BR_TZ_OFFSET_MS = -3 * 60 * 60 * 1000; // BRT (UTC-3)
+
+        // Converte um instante UTC para "ms desde epoch" no relógio de São Paulo.
+        const toBrClockMs = (utcMs: number) => utcMs + BR_TZ_OFFSET_MS;
+        const fromBrClockMs = (brMs: number) => brMs - BR_TZ_OFFSET_MS;
+
+        // Retorna o início (ms UTC) da janela comercial do dia que contém `brMs`.
+        const businessStartOfDay = (brMs: number) => {
+          const d = new Date(brMs);
+          const dayStartBr = Date.UTC(
+            d.getUTCFullYear(),
+            d.getUTCMonth(),
+            d.getUTCDate(),
+            BUSINESS_START_HOUR, 0, 0, 0
+          );
+          return dayStartBr;
+        };
+        const businessEndOfDay = (brMs: number) => {
+          const d = new Date(brMs);
+          return Date.UTC(
+            d.getUTCFullYear(),
+            d.getUTCMonth(),
+            d.getUTCDate(),
+            BUSINESS_END_HOUR, 0, 0, 0
+          );
+        };
+
+        // Calcula ms entre dois instantes UTC contando apenas dentro de [9h,20h) BR.
+        const businessHoursDiffMs = (startUtcMs: number, endUtcMs: number): number => {
+          if (endUtcMs <= startUtcMs) return 0;
+          let startBr = toBrClockMs(startUtcMs);
+          const endBr = toBrClockMs(endUtcMs);
+          let total = 0;
+          // Limite de segurança: no máximo 60 dias de varredura.
+          for (let i = 0; i < 60 && startBr < endBr; i++) {
+            const dayStart = businessStartOfDay(startBr);
+            const dayEnd = businessEndOfDay(startBr);
+            const windowStart = Math.max(startBr, dayStart);
+            const windowEnd = Math.min(endBr, dayEnd);
+            if (windowEnd > windowStart) total += windowEnd - windowStart;
+            // Avança para 9h do próximo dia.
+            const nextDay = new Date(dayStart);
+            nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+            startBr = nextDay.getTime();
+          }
+          return total;
+        };
+
         const calcAvgResponse = (filterFn: (l: LeadOption) => boolean): string => {
           const opened = leadsList.filter(
             (l) => filterFn(l) && l.first_opened_at && l.created_at
           );
           if (opened.length === 0) return "—";
           const totalMs = opened.reduce((sum, l) => {
-            const diff = new Date(l.first_opened_at!).getTime() - new Date(l.created_at).getTime();
-            return sum + Math.max(0, diff) + RESPONSE_MARGIN_MS;
+            const startUtc = new Date(l.created_at).getTime();
+            const endUtc = new Date(l.first_opened_at!).getTime();
+            const diff = businessHoursDiffMs(startUtc, endUtc);
+            return sum + diff + RESPONSE_MARGIN_MS;
           }, 0);
           const avgSec = Math.round(totalMs / opened.length / 1000);
           if (avgSec < 60) return `${avgSec}s`;
