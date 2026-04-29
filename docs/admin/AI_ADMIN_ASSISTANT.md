@@ -5,6 +5,9 @@ Camada segura para uma IA externa (ex. Claude Code) **ler** o /admin e **propor 
 > **Nada de MQL, roteamento, Kommo, CAPI, notify-lead ou Meta Ads cron foi alterado.**
 > A regra de MQL (`MQL_FAIXAS`, `isMql`, `isLeadMql`, `mql_count`) permanece intocada.
 > Roteamento `/obrigado` e `/obrigadomql` permanece intocado.
+>
+> ⚠️ **Status do Kommo (Abril/2026): LEGADO.**
+> A Champion **não usa mais Kommo como CRM principal**. Endpoints e logs do Kommo permanecem disponíveis **somente para histórico/debug**. **Não** devem ser usados como fonte de verdade para análise comercial, e a IA externa **não deve priorizar** correções de `kommo_status=pending` ou `kommo_logs` com `failed`.
 
 ---
 
@@ -54,7 +57,7 @@ Base: `https://<project-ref>.functions.supabase.co/ai-admin-assistant`
 | `/manual-sales` | Vendas manuais |
 | `/daily-reports` | Relatórios diários |
 | `/ad-spend` | Spend Meta Ads |
-| `/kommo-logs` | Logs Kommo (sanitizado) |
+| `/kommo-logs` | ⚠️ **LEGADO** — Logs Kommo (sanitizado). Apenas histórico/debug. Não usar como fonte de verdade. |
 | `/proposals?status=pending` | Listar propostas |
 
 Query params suportados:
