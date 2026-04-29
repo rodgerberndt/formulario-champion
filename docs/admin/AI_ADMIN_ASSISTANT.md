@@ -187,3 +187,22 @@ Fluxo recomendado:
 - ✅ `x-admin-token` obrigatório em approve/reject
 - ✅ Aprovação expira em 1h
 - ✅ Toda leitura e ação registradas em `ai_assistant_access_log` / `action_log`
+
+---
+
+## 10. Kommo — status LEGADO (Abril/2026)
+
+A Champion **não usa mais Kommo como CRM principal**. Toda a infraestrutura do Kommo (`kommo-webhook`, `kommo_logs`, campo `kommo_status` em `leads`, endpoints `/kommo-logs` e `/kommo-full`) continua existindo **apenas para histórico e debug**, sem remoção.
+
+Diretrizes para a IA externa (Claude Code) e qualquer consumidor desta API:
+
+- ❌ **Não** tratar Kommo como fonte de verdade para análise comercial, funil ou pipeline.
+- ❌ **Não** priorizar correções de `kommo_status = 'pending'` nem de `kommo_logs` com `status = 'failed'`. Esses sinais não representam mais incidentes operacionais ativos.
+- ❌ **Não** propor ações (`propose-action`) cujo objetivo seja reprocessar, sincronizar ou "consertar" Kommo.
+- ❌ **Não** posicionar `/kommo-full` nem `/kommo-logs` como endpoints prioritários em diagnósticos, dashboards de saúde ou relatórios.
+- ✅ **Pode** consultar `/kommo-logs` e `/kommo-full` para fins históricos, auditoria retroativa ou debug pontual.
+- ✅ Ao gerar resumos a partir de `/admin-full-overview`, tratar o bloco `kommo_logs` como **dado legado** e rebaixá-lo na narrativa (ou omitir se não for relevante ao período analisado).
+
+Fontes de verdade atuais para análise comercial:
+- `leads`, `quiz_sessions`, `meetings`, `manual_sales`, `daily_reports`, `ad_spend` — expostos via `/leads`, `/sessions`, `/meetings`, `/manual-sales`, `/daily-reports`, `/ad-spend` (e respectivos `*-full`).
+- Regra de qualificação: **MQL = Faturamento Mensal ≥ R$ 10.000** (intocada — ver `/metrics-map`).
