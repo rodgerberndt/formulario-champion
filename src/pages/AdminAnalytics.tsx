@@ -832,7 +832,13 @@ export default function AdminAnalytics() {
   const logoutFiredRef = useRef(false);
   const adminRequestQueueRef = useRef<Promise<void>>(Promise.resolve());
 
-  const fetchAdminData = async (path: string, params?: Record<string, string>) => {
+  // IMPORTANT: keep a stable identity for fetchAdminData.
+  // Esta função é passada como prop para tabs (CreativesTab etc.) cujos
+  // useCallback/useEffect dependem dela. Sem useCallback, uma nova referência
+  // a cada render do AdminAnalytics dispara refetch em loop (ex: lista de
+  // reuniões piscando "abre/carrega/fecha"). Como ela só usa refs e helpers
+  // estáveis, é seguro memoizar com deps vazias.
+  const fetchAdminData = useCallback(async (path: string, params?: Record<string, string>) => {
     const previousRequest = adminRequestQueueRef.current;
     let releaseQueue: () => void = () => undefined;
     adminRequestQueueRef.current = new Promise<void>((resolve) => {
@@ -900,7 +906,7 @@ export default function AdminAnalytics() {
     } finally {
       releaseQueue();
     }
-  };
+  }, []);
 
   const loadMetrics = async () => {
     try {
