@@ -61,6 +61,7 @@ const FunnelMetricsTab = lazy(() => import("@/components/admin/FunnelMetricsTab"
 const LeadReportsTab = lazy(() => import("@/components/admin/LeadReportsTab"));
 const DailyReportsTab = lazy(() => import("@/components/admin/DailyReportsTab"));
 const InsightsTab = lazy(() => import("@/components/admin/InsightsTab"));
+const AiProposalsTab = lazy(() => import("@/components/admin/AiProposalsTab"));
 import {
   Dialog,
   DialogContent,
@@ -1699,6 +1700,12 @@ export default function AdminAnalytics() {
                 >
                   Insights (IA)
                 </TabsTrigger>
+                <TabsTrigger 
+                  value="ai-proposals" 
+                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  AI Proposals
+                </TabsTrigger>
               </TabsList>
             </div>
 
@@ -2958,6 +2965,13 @@ export default function AdminAnalytics() {
             <TabsContent value="insights">
               <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
                 <InsightsTab fetchAdminData={fetchAdminData} />
+              </Suspense>
+            </TabsContent>
+
+            {/* AI Proposals — Approval Gate */}
+            <TabsContent value="ai-proposals">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <AiProposalsTab />
               </Suspense>
             </TabsContent>
 

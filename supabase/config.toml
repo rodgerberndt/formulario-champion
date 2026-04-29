@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.landing-hit]
 verify_jwt = false
+
+[functions.ai-admin-assistant]
+verify_jwt = false

@@ -71,6 +71,167 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_assistant_access_log: {
+        Row: {
+          api_key_fingerprint: string | null
+          contains_pii: boolean | null
+          contains_sensitive_free_text: boolean | null
+          created_at: string
+          endpoint: string
+          id: string
+          ip: string | null
+          latency_ms: number | null
+          method: string
+          query_params: Json | null
+          row_count: number | null
+          status_code: number | null
+          user_agent: string | null
+        }
+        Insert: {
+          api_key_fingerprint?: string | null
+          contains_pii?: boolean | null
+          contains_sensitive_free_text?: boolean | null
+          created_at?: string
+          endpoint: string
+          id?: string
+          ip?: string | null
+          latency_ms?: number | null
+          method?: string
+          query_params?: Json | null
+          row_count?: number | null
+          status_code?: number | null
+          user_agent?: string | null
+        }
+        Update: {
+          api_key_fingerprint?: string | null
+          contains_pii?: boolean | null
+          contains_sensitive_free_text?: boolean | null
+          created_at?: string
+          endpoint?: string
+          id?: string
+          ip?: string | null
+          latency_ms?: number | null
+          method?: string
+          query_params?: Json | null
+          row_count?: number | null
+          status_code?: number | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      ai_assistant_action_log: {
+        Row: {
+          affected_row_id: string | null
+          affected_table: string | null
+          applied_payload: Json | null
+          created_at: string
+          error_message: string | null
+          executor: string
+          id: string
+          proposed_action_id: string | null
+          success: boolean
+        }
+        Insert: {
+          affected_row_id?: string | null
+          affected_table?: string | null
+          applied_payload?: Json | null
+          created_at?: string
+          error_message?: string | null
+          executor: string
+          id?: string
+          proposed_action_id?: string | null
+          success: boolean
+        }
+        Update: {
+          affected_row_id?: string | null
+          affected_table?: string | null
+          applied_payload?: Json | null
+          created_at?: string
+          error_message?: string | null
+          executor?: string
+          id?: string
+          proposed_action_id?: string | null
+          success?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assistant_action_log_proposed_action_id_fkey"
+            columns: ["proposed_action_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assistant_proposed_actions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_assistant_proposed_actions: {
+        Row: {
+          action_type: string
+          approved_at: string | null
+          approver_id: string | null
+          approver_note: string | null
+          created_at: string
+          current_state: Json | null
+          executed_at: string | null
+          execution_result: Json | null
+          expected_impact: string | null
+          expires_at: string
+          files_or_tables_affected: string[] | null
+          id: string
+          is_hard_block: boolean
+          proposed_change: Json
+          proposer_fingerprint: string | null
+          requires_manual_execution: boolean
+          risks: string | null
+          rollback_plan: string | null
+          status: string
+          target: string
+        }
+        Insert: {
+          action_type: string
+          approved_at?: string | null
+          approver_id?: string | null
+          approver_note?: string | null
+          created_at?: string
+          current_state?: Json | null
+          executed_at?: string | null
+          execution_result?: Json | null
+          expected_impact?: string | null
+          expires_at?: string
+          files_or_tables_affected?: string[] | null
+          id?: string
+          is_hard_block?: boolean
+          proposed_change: Json
+          proposer_fingerprint?: string | null
+          requires_manual_execution?: boolean
+          risks?: string | null
+          rollback_plan?: string | null
+          status?: string
+          target: string
+        }
+        Update: {
+          action_type?: string
+          approved_at?: string | null
+          approver_id?: string | null
+          approver_note?: string | null
+          created_at?: string
+          current_state?: Json | null
+          executed_at?: string | null
+          execution_result?: Json | null
+          expected_impact?: string | null
+          expires_at?: string
+          files_or_tables_affected?: string[] | null
+          id?: string
+          is_hard_block?: boolean
+          proposed_change?: Json
+          proposer_fingerprint?: string | null
+          requires_manual_execution?: boolean
+          risks?: string | null
+          rollback_plan?: string | null
+          status?: string
+          target?: string
+        }
+        Relationships: []
+      }
       click_events: {
         Row: {
           click_id: string | null
