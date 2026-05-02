@@ -2075,7 +2075,7 @@ export default function AdminAnalytics() {
                     return (
                       <Card 
                         key={lead.id}
-                        className={`cursor-pointer transition-colors ${!lead.lido ? "border-primary/30 bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "bg-primary/10 border-primary/50" : ""}`}
+                        className={`cursor-pointer ${!lead.lido ? "border-primary/30 bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "!bg-secondary/20 !border-secondary ring-2 ring-secondary/60" : ""}`}
                         onClick={() => openLeadDetail(lead)}
                       >
                         <CardContent className="p-4">
@@ -2095,7 +2095,7 @@ export default function AdminAnalytics() {
                               >
                                 <Checkbox
                                   checked={selectedLeadIds.has(lead.id)}
-                                  className="h-5 w-5 border-2 border-secondary/70 bg-background data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:border-secondary pointer-events-none"
+                                  className="h-4 w-4 border-2 border-secondary/80 bg-background data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:border-secondary pointer-events-none"
                                 />
                               </div>
                               <div className="min-w-0">
