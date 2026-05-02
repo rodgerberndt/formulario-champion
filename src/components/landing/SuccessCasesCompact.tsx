@@ -66,7 +66,7 @@ const cases: Case[] = [
   },
 ];
 
-export function SuccessCases() {
+export function SuccessCasesCompact() {
   const { ref, isVisible } = useReveal(0.08);
   const [index, setIndex] = useState(0);
   const total = cases.length;
@@ -75,7 +75,7 @@ export function SuccessCases() {
   const go = (dir: 1 | -1) => setIndex((i) => (i + dir + total) % total);
 
   return (
-    <section id="success-cases" className="py-12 md:py-20 relative" ref={ref}>
+    <section id="success-cases-compact" className="py-8 md:py-10 relative" ref={ref}>
       <div
         className={`absolute inset-0 pointer-events-none transition-opacity duration-700 ${isVisible ? "opacity-100" : "opacity-0"}`}
         style={{
@@ -84,12 +84,12 @@ export function SuccessCases() {
         }}
       />
 
-      <div className="container mx-auto px-5 max-w-5xl relative z-10">
-        <div className={`text-center mb-8 reveal-up ${isVisible ? "visible" : ""}`}>
-          <p className="text-xs uppercase tracking-[0.2em] text-secondary mb-2 font-semibold">
+      <div className="container mx-auto px-5 max-w-3xl relative z-10">
+        <div className={`text-center mb-5 reveal-up ${isVisible ? "visible" : ""}`}>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-secondary mb-1.5 font-semibold">
             Cases de Sucesso
           </p>
-          <h2 className="text-foreground mb-2">
+          <h2 className="text-foreground mb-2 text-2xl md:text-3xl">
             <ShimmerText isVisible={isVisible}>QUEM JÁ TRABALHA COM A{"\u00A0"}</ShimmerText>
             <KeywordGlow>CHAMPION</KeywordGlow>
           </h2>
@@ -99,7 +99,7 @@ export function SuccessCases() {
           initial={{ opacity: 0, y: 20 }}
           animate={isVisible ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="gold-card p-4 md:p-6 overflow-hidden"
+          className="gold-card p-4 md:p-5 overflow-hidden"
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -108,33 +108,38 @@ export function SuccessCases() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -24 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="grid md:grid-cols-2 gap-5 md:gap-8 items-center"
+              className="flex flex-col gap-4"
             >
-              <div className="relative rounded-2xl overflow-hidden bg-muted/10 aspect-[4/5] md:aspect-[3/4]">
-                <img
-                  src={current.image}
-                  alt={`Foto de ${current.name}, case de sucesso da Champion`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  width={600}
-                  height={800}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
+              {/* Top row: image left, identity right */}
+              <div className="flex gap-3 md:gap-4 items-start">
+                <div className="relative rounded-xl overflow-hidden bg-muted/10 w-24 h-32 md:w-32 md:h-40 flex-shrink-0">
+                  <img
+                    src={current.image}
+                    alt={`Foto de ${current.name}, case de sucesso da Champion`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    width={300}
+                    height={400}
+                  />
+                </div>
+                <div className="flex flex-col min-w-0 flex-1 pt-0.5">
+                  <div className="flex items-center gap-1.5 text-secondary mb-1">
+                    <Instagram className="w-3.5 h-3.5" />
+                    <span className="text-xs font-semibold tracking-wide truncate">
+                      {current.instagram}
+                    </span>
+                  </div>
+                  <h3 className="text-foreground text-lg md:text-xl font-bold leading-tight mb-1">
+                    {current.name}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-snug">{current.role}</p>
+                </div>
               </div>
 
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2 text-secondary mb-2">
-                  <Instagram className="w-4 h-4" />
-                  <span className="text-sm font-semibold tracking-wide">{current.instagram}</span>
-                </div>
-                <h3 className="text-foreground text-2xl md:text-3xl font-bold mb-1">
-                  {current.name}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">{current.role}</p>
-                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                  {current.body}
-                </p>
-              </div>
+              {/* Bottom: full-width bio */}
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {current.body}
+              </p>
             </motion.div>
           </AnimatePresence>
 
