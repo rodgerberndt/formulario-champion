@@ -909,6 +909,49 @@ export default function Quiz() {
               O que você quer resolver hoje com a Champion?
             </label>
 
+            <div className="flex flex-wrap gap-2">
+              {[
+                "Delegar para ganhar mais tempo",
+                "Criativos que não vendem",
+                "Criativos que aguentam escala",
+                "Lead qualificado",
+                "Reprovação de criativos",
+                "Otimizações com base em métricas",
+                "Falta de conhecimento",
+              ].map((dor) => {
+                const lines = formData.dor_desejo.split(/\r?\n/).map((s) => s.trim());
+                const selected = lines.includes(dor);
+                return (
+                  <button
+                    type="button"
+                    key={dor}
+                    onClick={() => {
+                      const current = formData.dor_desejo;
+                      if (selected) {
+                        const next = current
+                          .split(/\r?\n/)
+                          .filter((line) => line.trim() !== dor)
+                          .join("\n")
+                          .replace(/\n{3,}/g, "\n\n")
+                          .trim();
+                        updateField("dor_desejo", next);
+                      } else {
+                        const next = current.trim() ? `${current.trim()}\n${dor}` : dor;
+                        updateField("dor_desejo", next);
+                      }
+                    }}
+                    className={`text-xs sm:text-sm px-3 py-1.5 rounded-full border transition-all ${
+                      selected
+                        ? "bg-secondary text-secondary-foreground border-secondary"
+                        : "bg-transparent text-foreground border-border/60 hover:border-secondary/60"
+                    }`}
+                  >
+                    {dor}
+                  </button>
+                );
+              })}
+            </div>
+
             <Textarea
               className="w-full text-sm sm:text-base min-h-[90px] sm:min-h-[110px] resize-none bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200"
               placeholder="Ex: Quero escalar meu tráfego mas não consigo manter o ROAS..."
