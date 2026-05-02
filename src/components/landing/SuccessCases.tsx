@@ -109,41 +109,33 @@ export function SuccessCases() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -24 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col gap-5 md:gap-6"
+              className="grid md:grid-cols-2 gap-5 md:gap-8 items-center"
             >
-              {/* Topo: foto à esquerda, info à direita */}
-              <div className="flex gap-4 md:gap-5 items-start">
-                <div className="relative flex-shrink-0 w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-2xl overflow-hidden bg-muted/10">
-                  <img
-                    src={current.image}
-                    alt={`Foto de ${current.name}, case de sucesso da Champion`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    width={400}
-                    height={400}
-                  />
-                </div>
-
-                <div className="flex flex-col min-w-0 flex-1">
-                  <div className="flex items-center gap-2 text-secondary mb-1.5">
-                    <Instagram className="w-4 h-4" />
-                    <span className="text-xs sm:text-sm font-semibold tracking-wide truncate">
-                      {current.instagram}
-                    </span>
-                  </div>
-                  <h3 className="text-foreground text-lg sm:text-xl md:text-2xl font-bold leading-tight mb-1">
-                    {current.name}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    {current.role}
-                  </p>
-                </div>
+              <div className="relative rounded-2xl overflow-hidden bg-muted/10 aspect-[4/5] md:aspect-[3/4]">
+                <img
+                  src={current.image}
+                  alt={`Foto de ${current.name}, case de sucesso da Champion`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  width={600}
+                  height={800}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
               </div>
 
-              {/* Bio ocupando toda a largura abaixo */}
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                {current.body}
-              </p>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2 text-secondary mb-2">
+                  <Instagram className="w-4 h-4" />
+                  <span className="text-sm font-semibold tracking-wide">{current.instagram}</span>
+                </div>
+                <h3 className="text-foreground text-2xl md:text-3xl font-bold mb-1">
+                  {current.name}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">{current.role}</p>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                  {current.body}
+                </p>
+              </div>
             </motion.div>
           </AnimatePresence>
 
