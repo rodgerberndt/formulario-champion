@@ -1988,11 +1988,6 @@ export default function AdminAnalytics() {
                                       💬 Chamou WhatsApp
                                     </Badge>
                                   )}
-                                  {typeof lead.nps_score === "number" && (
-                                    <Badge variant="outline" className="border-yellow-500 text-yellow-400 bg-yellow-500/10 w-fit text-[10px] px-1.5 py-0">
-                                      ⭐ Nota {lead.nps_score}/10
-                                    </Badge>
-                                  )}
                                 </div>
                               </td>
                               <td className="p-2">
@@ -2015,7 +2010,20 @@ export default function AdminAnalytics() {
                                   );
                                 })()}
                               </td>
-                              <td className="p-2 font-medium truncate max-w-[120px]" title={lead.nome_completo}>{lead.nome_completo}</td>
+                              <td className="p-2 font-medium max-w-[140px]" title={lead.nome_completo}>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="truncate">{lead.nome_completo}</span>
+                                  {typeof lead.nps_score === "number" && (
+                                    <span
+                                      title={`Nota IA: ${lead.nps_score}/10`}
+                                      className="inline-flex items-center gap-0.5 rounded-full border border-yellow-500/40 bg-yellow-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-yellow-400 leading-none shrink-0"
+                                    >
+                                      <span className="text-[10px]">⭐</span>
+                                      {lead.nps_score}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
                               <td className="p-2">
                                 <button
                                   type="button"
