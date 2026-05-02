@@ -162,9 +162,6 @@ export function QuizResult({
                 <span className="text-muted-foreground text-xs">Etapa 1 de 4</span>
               </div>
               <Progress value={progressAnimated} className="h-3 bg-muted/40 [&>div]:bg-gradient-to-r [&>div]:from-secondary [&>div]:to-champion-gold" />
-              <p className="text-xs text-muted-foreground">
-                Quando chegar em 100%, sua operação <strong className="text-secondary">vai estar em outro nível</strong>.
-              </p>
             </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-[250px] text-center">
