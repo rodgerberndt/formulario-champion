@@ -2027,6 +2027,11 @@ export default function AdminAnalytics() {
                                       📢 Ad
                                     </Badge>
                                   )}
+                                  {lead.skipped_queue && (
+                                    <Badge variant="outline" className="border-secondary text-secondary bg-secondary/10 w-fit text-[10px] px-1.5 py-0">
+                                      ⚡ Furou a fila
+                                    </Badge>
+                                  )}
                                 </div>
                               </td>
                               <td className="p-2">
