@@ -1948,6 +1948,7 @@ export default function AdminAnalytics() {
                           <th className="text-left p-2 w-28">Faturamento</th>
                           <th className="text-left p-2 w-20">SDR</th>
                           <th className="text-left p-2 w-24">Data</th>
+                          <th className="text-left p-2 w-24" title="Tempo entre chegada do lead e clique para abrir/ler">Tempo p/ chamar</th>
                           <th className="text-right p-2 w-12">Ações</th>
                         </tr>
                       </thead>
