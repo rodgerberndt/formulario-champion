@@ -1,18 +1,26 @@
-## Atualizar mensagem de atenção do quiz
+## Alteração
 
-Trocar o texto na tela de aviso (etapa intro do quiz) em `src/pages/Quiz.tsx` (linhas 744–749).
+Substituir todas as menções a "CGS" por "Assessoria Completa" no arquivo `src/components/landing/QuizResult.tsx` (componente usado na página `/obrigadomql`).
 
-**Texto atual:**
-> Ao preencher esse quiz, você concorda que **trabalha com o mercado digital**. Se você não trabalha com o mercado digital, **saia desse quiz agora**.
+### Mudanças exatas
 
-**Texto novo:**
-> Ao preencher esse quiz, você concorda que **trabalha com o digital**. Se você não trabalha com o digital, e não quer vender mais, **saia deste formulário imediatamente**.
+**Linha 61** (passo 3 — Call de diagnóstico):
+- Antes: `"...para entrar na CGS (nosso sistema de crescimento)."`
+- Depois: `"...para entrar na Assessoria Completa."`
 
-### Detalhes técnicos
-- Único arquivo alterado: `src/pages/Quiz.tsx`.
-- Mantém os mesmos `<span className="text-secondary font-bold">` para destacar em dourado:
-  - "trabalha com o digital"
-  - "saia deste formulário imediatamente"
-- Sem alterações em layout, animação da barra de progresso, timing, MQL, banco ou roteamento.
+**Linha 64** (título do passo 4):
+- Antes: `"Entrada na CGS + plano personalizado"`
+- Depois: `"Entrada na Assessoria Completa + plano personalizado"`
 
-> Dica: para edições simples de texto como esta, você pode usar o **Visual Edits** (botão no canto inferior esquerdo do chat) — é gratuito e instantâneo.
+**Linha 67** (texto do passo 4):
+- Antes: `"A entrega da CGS é personalizada..."`
+- Depois: `"A entrega da Assessoria Completa é personalizada..."`
+
+**Linha 170** (texto de progresso):
+- Antes: `"100% = você dentro da CGS com plano de crescimento definido."`
+- Depois: `"100% = você dentro da Assessoria Completa com plano de crescimento definido."`
+
+### Observação
+A frase "(nosso sistema de crescimento)" será removida no passo 3 para evitar redundância — "Assessoria Completa" já é autoexplicativa. Se preferir manter o parêntese explicativo, me avise.
+
+Nenhuma outra página é afetada — o termo "CGS" só aparece em `QuizResult.tsx`.
