@@ -14,7 +14,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { ChevronRight, ChevronLeft, Check, Loader2, ArrowLeft, Target, MessageCircle } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, Loader2, ArrowLeft, Target, MessageCircle, AlertTriangle } from "lucide-react";
 import {
   calculateLeadScore,
   MERCADO_OPTIONS,
@@ -45,12 +45,14 @@ interface QuizFormData {
   quer_vender_mais: string;
   lgpd: boolean;
   compromisso_whatsapp: boolean;
+  nps_score: number | null;
 }
 
-const STORAGE_KEY = "champion_quiz_progress";
+// Bumped to v2 to invalidate old cached state from before NPS step
+const STORAGE_KEY = "champion_quiz_progress_v2";
 const RESULT_STORAGE_KEY = "champion_quiz_result";
 
-// Step IDs for tracking
+// Step IDs for tracking (10 steps now: NPS added before loading)
 const STEP_IDS = [
 "q1_quer_vender",
 "q2_mercado",
@@ -60,7 +62,8 @@ const STEP_IDS = [
 "q6_insta",
 "q7_email",
 "q8_dor",
-"q9_loading"];
+"q9_nps",
+"q10_loading"];
 
 
 // Memoized background component
@@ -122,29 +125,125 @@ const QuizBackground = memo(function QuizBackground() {
 
 });
 
-// Loading step component (10s) — shows promo phrase while "loading answers"
-function LoadingCommitStep({ onFinish, onCommit }: {onFinish: () => void; onCommit: (v: boolean) => void;}) {
+// NPS slider step (0-10) — quick, mobile-friendly feedback on quiz UX
+function NpsStep({ value, onChange }: { value: number | null; onChange: (n: number) => void }) {
+  const numbers = Array.from({ length: 11 }, (_, i) => i);
+
+  const colorFor = (n: number) => {
+    if (n <= 3) return "bg-red-500/90 border-red-400 text-white";
+    if (n <= 6) return "bg-amber-500/90 border-amber-400 text-black";
+    if (n <= 8) return "bg-lime-500/90 border-lime-400 text-black";
+    return "bg-emerald-500/90 border-emerald-400 text-white";
+  };
+
+  return (
+    <div className="space-y-5 animate-fade-in">
+      <div className="bg-secondary/10 border border-secondary/20 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
+        <div className="flex items-center gap-2">
+          <Target className="w-4 h-4 sm:w-5 sm:h-5 text-secondary shrink-0" />
+          <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
+            Seu feedback nos ajuda a <span className="text-secondary font-semibold">melhorar</span> o formulário.
+          </p>
+        </div>
+      </div>
+
+      <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
+        De 0 a 10, que nota você dá pra esse formulário?
+      </label>
+      <p className="text-xs sm:text-sm text-muted-foreground -mt-3">
+        0 = travou ou bugou muito · 10 = funcionou perfeitamente
+      </p>
+
+      <div className="grid grid-cols-6 sm:grid-cols-11 gap-1.5 sm:gap-2 pt-1">
+        {numbers.map((n) => {
+          const selected = value === n;
+          return (
+            <button
+              key={n}
+              type="button"
+              onClick={() => onChange(n)}
+              className={`h-11 sm:h-12 rounded-lg border-2 text-sm sm:text-base font-bold transition-all duration-150 active:scale-95 ${
+                selected
+                  ? `${colorFor(n)} shadow-lg scale-[1.05]`
+                  : "bg-input text-foreground border-border/60 hover:border-primary/60"
+              }`}
+              aria-label={`Nota ${n}`}>
+              {n}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex justify-between text-[10px] sm:text-xs text-muted-foreground/80 px-1 pt-1">
+        <span>Bugou muito</span>
+        <span>Tudo perfeito</span>
+      </div>
+
+      {value !== null && (
+        <p className="text-center text-sm text-secondary font-semibold animate-fade-in pt-1">
+          Obrigado! Nota: <span className="text-base">{value}</span>/10
+        </p>
+      )}
+    </div>
+  );
+}
+
+// Loading step component — shows promo phrase while submitting answers
+function LoadingCommitStep({
+  onFinish,
+  onCommit,
+  submitFailed,
+  onRetry,
+}: {
+  onFinish: () => void;
+  onCommit: (v: boolean) => void;
+  submitFailed: boolean;
+  onRetry: () => void;
+}) {
   const onFinishRef = useRef(onFinish);
   const onCommitRef = useRef(onCommit);
   onFinishRef.current = onFinish;
   onCommitRef.current = onCommit;
+  const hasFiredRef = useRef(false);
 
   useEffect(() => {
-    // Auto-commit (legacy field kept true so payload stays consistent)
+    if (hasFiredRef.current) return;
+    hasFiredRef.current = true;
     onCommitRef.current(true);
     const t = setTimeout(() => {
       onFinishRef.current();
     }, 10000);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (submitFailed) {
+    return (
+      <div className="space-y-6 animate-fade-in text-center py-4">
+        <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto" />
+        <div className="space-y-2">
+          <p className="text-white text-base sm:text-lg font-semibold">
+            Tivemos um problema ao enviar
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Sem stress — clique abaixo para tentar de novo. Suas respostas estão salvas.
+          </p>
+        </div>
+        <Button
+          size="lg"
+          onClick={onRetry}
+          className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+          Tentar novamente
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-fade-in text-center py-4">
       <div className="space-y-4">
         <Loader2 className="w-12 h-12 sm:w-14 sm:h-14 text-secondary animate-spin mx-auto" />
         <p className="text-white text-base sm:text-lg font-semibold">
-          Carregando suas respostas...
+          Enviando suas respostas...
         </p>
         <div className="h-1.5 w-full max-w-[280px] mx-auto bg-muted/30 rounded-full overflow-hidden">
           <div
@@ -171,13 +270,20 @@ export default function Quiz() {
 
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitFailed, setSubmitFailed] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
+  const [introCanSkip, setIntroCanSkip] = useState(false);
 
-  // Forced 5s intro screen before quiz starts
+  // Allow skipping intro after 3s; auto-close after 10s
   useEffect(() => {
+    const skipTimer = setTimeout(() => setIntroCanSkip(true), 3000);
     const t = setTimeout(() => setShowIntro(false), 10000);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      clearTimeout(skipTimer);
+    };
   }, []);
+
   const formDataRef = useRef<QuizFormData | null>(null);
   const [phoneValid, setPhoneValid] = useState(false);
   const [formData, setFormData] = useState<QuizFormData>({
@@ -190,12 +296,15 @@ export default function Quiz() {
     dor_desejo: "",
     quer_vender_mais: "",
     lgpd: false,
-    compromisso_whatsapp: false
+    compromisso_whatsapp: false,
+    nps_score: null,
   });
 
-  const totalSteps = 9;
+  const totalSteps = 10;
   const hasTrackedQuizView = useRef(false);
   const lastTrackedStep = useRef<number | null>(null);
+  const hasSubmittedRef = useRef(false); // Hard guard against double-submit
+  const isAdvancingRef = useRef(false); // Prevents double-click on next button
 
   // Track quiz page view on mount
   useEffect(() => {
@@ -209,27 +318,32 @@ export default function Quiz() {
   useEffect(() => {
     if (lastTrackedStep.current !== step) {
       const stepId = STEP_IDS[step - 1];
-      trackStepView(stepId);
+      if (stepId) trackStepView(stepId);
       lastTrackedStep.current = step;
     }
   }, [step, trackStepView]);
 
+  // Restore from localStorage with safe clamping
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
+    if (!saved) return;
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed?.formData && typeof parsed.formData === "object") {
         setFormData((prev) => ({ ...prev, ...parsed.formData }));
-        if (parsed.step && parsed.step <= totalSteps) {
-          setStep(parsed.step);
-        }
-        if (parsed.formData?.whatsapp) {
-          setPhoneValid(isPhoneE164Valid(parsed.formData.whatsapp));
-        }
-      } catch {
-
-        // Invalid saved data
-      }}
+      }
+      // Clamp step to valid range and never resume on the loading/submit step
+      if (typeof parsed?.step === "number") {
+        const safeStep = Math.max(1, Math.min(parsed.step, totalSteps - 1));
+        setStep(safeStep);
+      }
+      if (parsed?.formData?.whatsapp) {
+        setPhoneValid(isPhoneE164Valid(parsed.formData.whatsapp));
+      }
+    } catch {
+      // Corrupted data — wipe it
+      localStorage.removeItem(STORAGE_KEY);
+    }
   }, []);
 
   // Keep ref in sync so handleSubmit always reads latest formData
@@ -237,12 +351,18 @@ export default function Quiz() {
     formDataRef.current = formData;
   }, [formData]);
 
+  // Persist progress (skip step 10 — loading is transient)
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ formData, step }));
+    if (step >= totalSteps) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ formData, step }));
+    } catch {
+      // Storage quota / private mode — silently ignore
+    }
   }, [formData, step]);
 
-  const updateField = useCallback((field: keyof QuizFormData, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const updateField = useCallback((field: keyof QuizFormData, value: string | boolean | number | null) => {
+    setFormData((prev) => ({ ...prev, [field]: value as never }));
   }, []);
 
   const canProceed = useCallback(() => {
@@ -267,19 +387,31 @@ export default function Quiz() {
       case 8:
         return formData.dor_desejo.trim().length >= 10;
       case 9:
+        return formData.nps_score !== null;
+      case 10:
         return true;
       default:
         return false;
     }
   }, [step, formData, phoneValid]);
 
-  const handleSubmit = async () => {
-    if (!canProceed() || isSubmitting) return;
+  const handleSubmit = useCallback(async () => {
+    // Hard guard: never run twice
+    if (hasSubmittedRef.current) return;
+    if (isSubmitting) return;
+    hasSubmittedRef.current = true;
+    setSubmitFailed(false);
 
-    // Use ref to always get the latest formData (avoids stale closure with compromisso_whatsapp)
     const currentData = formDataRef.current || formData;
-
     setIsSubmitting(true);
+
+    // Safety: if everything stalls, allow retry after 25s
+    const safetyTimer = setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitFailed(true);
+      hasSubmittedRef.current = false;
+    }, 25000);
+
     try {
       const result = calculateLeadScore({
         mercado: currentData.mercado,
@@ -287,7 +419,7 @@ export default function Quiz() {
         dor_desejo: currentData.dor_desejo
       });
 
-      // Fire IP capture in parallel (non-blocking) — attribution can be recovered server-side from session
+      // Fire IP capture in parallel (non-blocking)
       const clientIpPromise = supabase.functions
         .invoke('get-client-ip', { body: { action: 'get_ip_only' } })
         .then((r) => (r.data?.ip as string) || null)
@@ -296,7 +428,6 @@ export default function Quiz() {
           return null;
         });
 
-      // Wait briefly for IP (max 800ms) so we don't block the redirect
       const clientIp: string | null = await Promise.race([
         clientIpPromise,
         new Promise<null>((resolve) => setTimeout(() => resolve(null), 800)),
@@ -312,13 +443,13 @@ export default function Quiz() {
         dor_desejo: currentData.dor_desejo,
         score: result.score,
         tier: result.tier,
+        nps_score: currentData.nps_score,
         raw_answers_json: JSON.parse(JSON.stringify(currentData)),
         attribution_source: getAttributionSource(),
         ip_address: clientIp,
         ...getUtmPayload()
       };
 
-      // Generate ID client-side to avoid needing SELECT RLS policy
       const leadId = crypto.randomUUID();
       const { error } = await supabase.from("leads").insert([{ id: leadId, ...dbData }]);
 
@@ -326,21 +457,19 @@ export default function Quiz() {
 
       const insertedLead = { id: leadId };
 
-      // Generate shared event_ids for browser↔CAPI deduplication
       const eventTimestamp = Math.floor(Date.now() / 1000);
       const eventIds: Record<string, string> = {
         CompleteRegistration: `${insertedLead?.id}_CompleteRegistration_${eventTimestamp}`,
         MQL: `${insertedLead?.id}_MQL_${eventTimestamp}`,
       };
 
-      // Save event_ids + lead_id for thank-you pages to use in browser pixel
       localStorage.setItem('champion_event_ids', JSON.stringify({
         lead_id: insertedLead?.id,
         event_ids: eventIds,
         timestamp: eventTimestamp,
       }));
 
-      // Fire CAPI events (CompleteRegistration, Tier, MQL) in background
+      // CAPI events (background)
       if (insertedLead?.id) {
         supabase.functions.invoke('fire-capi-events', {
           body: { lead_db_id: insertedLead.id, event_ids: eventIds },
@@ -351,7 +480,7 @@ export default function Quiz() {
         });
       }
 
-      // Insert into quiz_leads on external Supabase (background — no need to block redirect)
+      // External quiz_leads insert (background)
       const utmData = getUtmPayload();
       const quizLeadPayload = {
         name: currentData.nome_completo ?? null,
@@ -367,6 +496,7 @@ export default function Quiz() {
           investimento_faixa: currentData.investimento_faixa,
           dor_desejo: currentData.dor_desejo,
           compromisso_whatsapp: currentData.compromisso_whatsapp,
+          nps_score: currentData.nps_score,
         },
         utm: {
           utm_source: utmData.utm_source ?? null,
@@ -385,13 +515,12 @@ export default function Quiz() {
         .then(({ data: quizLeadInsertData, error: quizLeadError }) => {
           if (quizLeadError) {
             console.error("QUIZ_LEADS_INSERT_ERROR", quizLeadError);
-            console.error("QUIZ_LEADS_INSERT_ERROR_PAYLOAD", quizLeadPayload);
           } else {
             console.log("QUIZ_LEADS_INSERT_SUCCESS", quizLeadInsertData);
           }
         });
 
-      // Send to n8n webhook via edge function (background)
+      // n8n webhook (background)
       const utmPayload = getUtmPayload();
       const n8nBody = {
         name: currentData.nome_completo,
@@ -406,6 +535,7 @@ export default function Quiz() {
           investimento_faixa: currentData.investimento_faixa,
           dor_desejo: currentData.dor_desejo,
           compromisso_whatsapp: currentData.compromisso_whatsapp,
+          nps_score: currentData.nps_score,
         },
         utm_source: utmPayload.utm_source || null,
         utm_medium: utmPayload.utm_medium || null,
@@ -426,7 +556,6 @@ export default function Quiz() {
           console.error("n8n webhook error:", n8nErr);
         });
 
-      // Track submit with lead data (fire and forget)
       trackSubmit({
         name: currentData.nome_completo,
         whatsapp: currentData.whatsapp,
@@ -438,7 +567,6 @@ export default function Quiz() {
 
       localStorage.removeItem(STORAGE_KEY);
 
-      // Save result data for the thank you page
       localStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify({
         nome_completo: currentData.nome_completo,
         whatsapp: currentData.whatsapp,
@@ -454,7 +582,9 @@ export default function Quiz() {
         description: "Em breve entraremos em contato."
       });
 
-      // Redirect MQL leads to dedicated page, others to standard thank-you
+      clearTimeout(safetyTimer);
+
+      // Routing — UNCHANGED
       const SDR_MIN_FATURAMENTO = [
         "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
         "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
@@ -467,6 +597,9 @@ export default function Quiz() {
       navigate(isMql ? "/obrigadomql" : "/obrigado");
     } catch (error) {
       console.error("Error submitting lead:", error);
+      clearTimeout(safetyTimer);
+      hasSubmittedRef.current = false;
+      setSubmitFailed(true);
       toast({
         title: "Erro ao enviar",
         description: "Tente novamente em alguns instantes.",
@@ -475,54 +608,56 @@ export default function Quiz() {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [formData, isSubmitting, navigate, getUtmPayload, trackSubmit]);
+
+  const retrySubmit = useCallback(() => {
+    setSubmitFailed(false);
+    hasSubmittedRef.current = false;
+    handleSubmit();
+  }, [handleSubmit]);
 
   const nextStep = async () => {
-    if (canProceed() && step < totalSteps) {
+    if (isAdvancingRef.current) return;
+    if (!canProceed()) return;
+
+    if (step < totalSteps) {
+      isAdvancingRef.current = true;
       const fromStepId = STEP_IDS[step - 1];
       const toStepId = STEP_IDS[step];
 
-      // Get the field value for the current step
       const fieldData: Record<string, string> = {};
       switch (step) {
-        case 1:
-          fieldData.quer_vender_mais = formData.quer_vender_mais;
-          break;
-        case 2:
-          fieldData.mercado = formData.mercado;
-          break;
-        case 3:
-          fieldData.investimento = formData.investimento_faixa;
-          break;
-        case 4:
-          fieldData.nome = formData.nome_completo;
-          break;
-        case 5:
-          fieldData.whatsapp = formData.whatsapp;
-          break;
-        case 6:
-          fieldData.instagram = formData.instagram;
-          break;
-        case 7:
-          fieldData.email = formData.email;
-          break;
-        case 8:
-          fieldData.dor_desejo = formData.dor_desejo;
-          break;
+        case 1: fieldData.quer_vender_mais = formData.quer_vender_mais; break;
+        case 2: fieldData.mercado = formData.mercado; break;
+        case 3: fieldData.investimento = formData.investimento_faixa; break;
+        case 4: fieldData.nome = formData.nome_completo; break;
+        case 5: fieldData.whatsapp = formData.whatsapp; break;
+        case 6: fieldData.instagram = formData.instagram; break;
+        case 7: fieldData.email = formData.email; break;
+        case 8: fieldData.dor_desejo = formData.dor_desejo; break;
+        case 9: fieldData.nps_score = String(formData.nps_score ?? ""); break;
       }
 
-      await trackStepNext(fromStepId, toStepId, fieldData);
+      try {
+        await trackStepNext(fromStepId, toStepId, fieldData);
+      } catch (e) {
+        console.warn("trackStepNext failed:", e);
+      }
       setStep(step + 1);
-    } else if (step === totalSteps && canProceed()) {
-      handleSubmit();
+      // Release lock on next tick
+      setTimeout(() => { isAdvancingRef.current = false; }, 250);
     }
   };
 
   const prevStep = async () => {
-    if (step > 1) {
+    if (step > 1 && step < totalSteps) {
       const fromStepId = STEP_IDS[step - 1];
       const toStepId = STEP_IDS[step - 2];
-      await trackStepBack(fromStepId, toStepId);
+      try {
+        await trackStepBack(fromStepId, toStepId);
+      } catch (e) {
+        console.warn("trackStepBack failed:", e);
+      }
       setStep(step - 1);
     }
   };
@@ -537,6 +672,17 @@ export default function Quiz() {
   const inputClasses = "w-full text-sm sm:text-base h-11 sm:h-12 md:h-14 bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200";
   const selectClasses = "w-full text-sm sm:text-base h-11 sm:h-12 md:h-14 bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 text-foreground focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200";
 
+  // Scroll focused input into view above mobile keyboard
+  const scrollIntoViewOnFocus = (e: React.FocusEvent<HTMLElement>) => {
+    setTimeout(() => {
+      try {
+        e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+      } catch {
+        /* ignore */
+      }
+    }, 280);
+  };
+
   const renderStep = () => {
     switch (step) {
       case 4:
@@ -549,8 +695,11 @@ export default function Quiz() {
               className={inputClasses}
               placeholder="Digite seu nome"
               value={formData.nome_completo}
+              autoComplete="name"
+              inputMode="text"
+              enterKeyHint="next"
+              onFocus={scrollIntoViewOnFocus}
               onChange={(e) => updateField("nome_completo", e.target.value)} />
-
           </div>);
 
       case 5:
@@ -574,9 +723,8 @@ export default function Quiz() {
                 checked={formData.lgpd}
                 onCheckedChange={(checked) => updateField("lgpd", checked === true)}
                 className="border-2 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5 mt-0.5 rounded-md shrink-0" />
-
-              <label htmlFor="lgpd" className="text-xs sm:text-sm text-muted-foreground cursor-pointer leading-relaxed">Concordo em receber contato sobre o diagnóstico, e responder o mais rápido possível.
-
+              <label htmlFor="lgpd" className="text-xs sm:text-sm text-muted-foreground cursor-pointer leading-relaxed">
+                Concordo em receber contato sobre o diagnóstico, e responder o mais rápido possível.
               </label>
             </div>
           </div>);
@@ -591,8 +739,12 @@ export default function Quiz() {
               className={inputClasses}
               placeholder="@seuinstagram"
               value={formData.instagram}
+              autoComplete="username"
+              inputMode="text"
+              enterKeyHint="next"
+              autoCapitalize="none"
+              onFocus={scrollIntoViewOnFocus}
               onChange={(e) => updateField("instagram", e.target.value)} />
-
           </div>);
 
       case 7:
@@ -606,6 +758,11 @@ export default function Quiz() {
               className={inputClasses}
               placeholder="seu@email.com"
               type="email"
+              autoComplete="email"
+              inputMode="email"
+              enterKeyHint="next"
+              autoCapitalize="none"
+              onFocus={scrollIntoViewOnFocus}
               value={formData.email}
               onChange={(e) => updateField("email", e.target.value)} />
           </div>);
@@ -619,7 +776,6 @@ export default function Quiz() {
             <Select
               value={formData.mercado}
               onValueChange={(value) => updateField("mercado", value)}>
-
               <SelectTrigger className={selectClasses}>
                 <SelectValue placeholder="Selecione o mercado" />
               </SelectTrigger>
@@ -629,7 +785,6 @@ export default function Quiz() {
                   key={option}
                   value={option}
                   className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3">
-
                     {option}
                   </SelectItem>
                 )}
@@ -646,7 +801,6 @@ export default function Quiz() {
             <Select
               value={formData.investimento_faixa}
               onValueChange={(value) => updateField("investimento_faixa", value)}>
-
               <SelectTrigger className={selectClasses}>
                 <SelectValue placeholder="Selecione o faturamento" />
               </SelectTrigger>
@@ -656,7 +810,6 @@ export default function Quiz() {
                   key={option}
                   value={option}
                   className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3">
-
                     {option}
                   </SelectItem>
                 )}
@@ -678,11 +831,18 @@ export default function Quiz() {
                     key={opt}
                     type="button"
                     onClick={async () => {
+                      if (isAdvancingRef.current) return;
+                      isAdvancingRef.current = true;
                       updateField("quer_vender_mais", opt);
                       const fromStepId = STEP_IDS[0];
                       const toStepId = STEP_IDS[1];
-                      await trackStepNext(fromStepId, toStepId, { quer_vender_mais: opt });
+                      try {
+                        await trackStepNext(fromStepId, toStepId, { quer_vender_mais: opt });
+                      } catch (e) {
+                        console.warn("trackStepNext failed:", e);
+                      }
                       setStep(2);
+                      setTimeout(() => { isAdvancingRef.current = false; }, 250);
                     }}
                     className={`h-12 sm:h-14 rounded-xl border-2 text-sm sm:text-base font-semibold transition-colors duration-200 ${
                       selected
@@ -699,7 +859,6 @@ export default function Quiz() {
       case 8:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
-            {/* Highlight block */}
             <div className="bg-secondary/10 border border-secondary/20 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
               <div className="flex items-center gap-2">
                 <Target className="w-4 h-4 sm:w-5 sm:h-5 text-secondary shrink-0" />
@@ -717,12 +876,26 @@ export default function Quiz() {
               className="w-full text-sm sm:text-base min-h-[90px] sm:min-h-[110px] resize-none bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200"
               placeholder="Ex: Quero escalar meu tráfego mas não consigo manter o ROAS..."
               value={formData.dor_desejo}
+              enterKeyHint="next"
+              onFocus={scrollIntoViewOnFocus}
               onChange={(e) => updateField("dor_desejo", e.target.value)} />
-
           </div>);
 
       case 9:
-        return <LoadingCommitStep onFinish={handleSubmit} onCommit={(v) => updateField("compromisso_whatsapp", v)} />;
+        return (
+          <NpsStep
+            value={formData.nps_score}
+            onChange={(n) => updateField("nps_score", n)}
+          />);
+
+      case 10:
+        return (
+          <LoadingCommitStep
+            onFinish={handleSubmit}
+            onCommit={(v) => updateField("compromisso_whatsapp", v)}
+            submitFailed={submitFailed}
+            onRetry={retrySubmit}
+          />);
       default:
         return null;
     }
@@ -732,7 +905,7 @@ export default function Quiz() {
     <div className="min-h-[100svh] relative w-full max-w-full overflow-x-hidden">
       <QuizBackground />
 
-      {/* Forced 5s intro / loading with promise */}
+      {/* Intro screen — auto-closes after 10s, allow skip after 3s */}
       {showIntro && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center px-5 bg-background/95 backdrop-blur-md animate-fade-in">
           <div className="max-w-md w-full text-center space-y-6">
@@ -754,6 +927,14 @@ export default function Quiz() {
                 style={{ animation: "quiz-intro-progress 10s linear forwards" }}
               />
             </div>
+            {introCanSkip && (
+              <button
+                type="button"
+                onClick={() => setShowIntro(false)}
+                className="text-sm text-white/80 hover:text-white underline underline-offset-4 transition-colors animate-fade-in">
+                Continuar agora
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -766,17 +947,15 @@ export default function Quiz() {
             size="sm"
             onClick={() => navigate("/")}
             className="gap-2 text-muted-foreground hover:text-foreground">
-
             <ArrowLeft className="w-4 h-4" />
             Voltar
           </Button>
         </div>
       </header>
 
-      {/* Quiz Content - Mobile optimized */}
+      {/* Quiz Content */}
       <main className="pt-16 pb-6 px-4 min-h-[100svh] flex items-center justify-center w-full max-w-full overflow-x-hidden" style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }}>
         <div className="w-full max-w-[92vw] sm:max-w-md mx-auto">
-          {/* Quiz Card - Compact and elegant */}
           <div
             className="backdrop-blur-xl border border-border/60 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl w-full overflow-hidden quiz-card-enter"
             style={{
@@ -784,59 +963,48 @@ export default function Quiz() {
               boxShadow: '0 8px 40px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset'
             }}>
 
-            {/* Header text - smaller on mobile */}
             <div className="mb-4 sm:mb-6">
               <p className="text-center text-muted-foreground text-xs sm:text-sm leading-relaxed opacity-80">
                 Responda o formulário rápido para que o próximo feedback seja você!
               </p>
             </div>
 
-            {/* Form content area */}
             <div className="min-h-[180px] sm:min-h-[200px] flex flex-col">
               <div key={step} className="flex-1 quiz-step-enter">
                 {renderStep()}
               </div>
 
-            {/* Navigation Buttons - Hidden on loading step */}
-            {step !== 9 && step !== 1 &&
-              <div className={`mt-6 sm:mt-8 ${step > 1 ? 'flex flex-col-reverse sm:flex-row gap-3' : ''}`}>
-                {step > 1 &&
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={prevStep}
-                  className="w-full sm:flex-1 h-11 sm:h-12 md:h-14 text-sm sm:text-base rounded-xl border-2 border-border/60 hover:bg-muted hover:border-border transition-colors duration-200 min-w-0">
-
-                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 shrink-0" />
-                    Voltar
-                  </Button>
-                }
-                <Button
-                  size="lg"
-                  onClick={nextStep}
-                  disabled={!canProceed() || isSubmitting}
-                  className="w-full sm:flex-1 h-11 sm:h-12 md:h-14 text-sm sm:text-base rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none min-w-0">
-
-                  {isSubmitting ?
-                  <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> :
-                  step === totalSteps - 1 ?
-                  <>
-                      Enviar
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2 shrink-0" />
-                    </> :
-
-                  <>
-                      Continuar
-                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2 shrink-0" />
-                    </>
+              {/* Navigation Buttons - Hidden on loading step (10) and step 1 (auto-advance) */}
+              {step !== totalSteps && step !== 1 &&
+                <div className={`mt-6 sm:mt-8 ${step > 1 ? 'flex flex-col-reverse sm:flex-row gap-3' : ''}`}>
+                  {step > 1 &&
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={prevStep}
+                    className="w-full sm:flex-1 h-11 sm:h-12 md:h-14 text-sm sm:text-base rounded-xl border-2 border-border/60 hover:bg-muted hover:border-border transition-colors duration-200 min-w-0">
+                      <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 shrink-0" />
+                      Voltar
+                    </Button>
                   }
-                </Button>
-              </div>
+                  <Button
+                    size="lg"
+                    onClick={nextStep}
+                    disabled={!canProceed() || isSubmitting}
+                    className="w-full sm:flex-1 h-11 sm:h-12 md:h-14 text-sm sm:text-base rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none min-w-0">
+                    {isSubmitting ?
+                    <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> :
+                    <>
+                        Continuar
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2 shrink-0" />
+                      </>
+                    }
+                  </Button>
+                </div>
               }
             </div>
           </div>
         </div>
       </main>
     </div>);
-
 }
