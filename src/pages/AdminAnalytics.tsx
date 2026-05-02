@@ -189,6 +189,9 @@ interface Lead {
   first_opened_at: string | null;
   skipped_queue?: boolean | null;
   skipped_queue_at?: string | null;
+  clicked_whatsapp?: boolean | null;
+  clicked_whatsapp_at?: string | null;
+  nps_score?: number | null;
 }
 
 
