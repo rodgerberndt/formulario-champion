@@ -4,6 +4,7 @@ import { QuizResultDara } from "./QuizResultDara";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+import { supabase } from "@/integrations/supabase/client";
 // Rodger removido — todos os leads vão para Caio
 const CAIO_WHATSAPP_NUMBER = "5581983990148";
 const SUPPORT_WHATSAPP_NUMBER = "5548996560104";
@@ -265,7 +266,27 @@ export function QuizResult({
         </p>
 
         <Button variant="championOutline" size="lg" className="w-full text-base" asChild>
-          <a href={skipLink} target="_blank" rel="noopener noreferrer">
+          <a
+            href={skipLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              try {
+                const leadId = localStorage.getItem('champion_lead_id');
+                if (leadId) {
+                  supabase
+                    .from('leads')
+                    .update({ skipped_queue: true, skipped_queue_at: new Date().toISOString() })
+                    .eq('id', leadId)
+                    .then(({ error }) => {
+                      if (error) console.warn('[skip-queue] update failed:', error);
+                    });
+                }
+              } catch (e) {
+                console.warn('[skip-queue] error:', e);
+              }
+            }}
+          >
             <MessageCircle className="w-5 h-5" />
             Pular a fila agora
           </a>
