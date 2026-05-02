@@ -58,13 +58,13 @@ const steps = [{
   title: "Call de diagnóstico (somente para quem está na fase certa)",
   status: "locked" as const,
   icon: Lock,
-  text: "Essa call só acontece quando entendemos claramente como podemos ajudar. Acontece apenas com clientes que estão na fase correta para entrar na CGS (nosso sistema de crescimento)."
+  text: "Essa call só acontece quando entendemos claramente como podemos ajudar. Acontece apenas com clientes que estão na fase correta para entrar na Assessoria Completa."
 }, {
   num: 4,
-  title: "Entrada na CGS + plano personalizado",
+  title: "Entrada na Assessoria Completa + plano personalizado",
   status: "locked" as const,
   icon: Trophy,
-  text: "A entrega da CGS é personalizada conforme sua necessidade, com base nas conversas do WhatsApp e também da call.",
+  text: "A entrega da Assessoria Completa é personalizada conforme sua necessidade, com base nas conversas do WhatsApp e também da call.",
   premium: true
 }];
 const statusColors = {
@@ -167,7 +167,7 @@ export function QuizResult({
             </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-[250px] text-center">
-            100% = você dentro da CGS com plano de crescimento definido.
+            100% = você dentro da Assessoria Completa com plano de crescimento definido.
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
