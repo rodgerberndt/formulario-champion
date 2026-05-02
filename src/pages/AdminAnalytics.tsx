@@ -1848,12 +1848,12 @@ export default function AdminAnalytics() {
                     <table className="w-full text-sm table-fixed">
                       <thead className="border-b bg-muted/50">
                         <tr>
-                          <th className="text-left p-2 w-12">
+                          <th className="text-left p-2 w-10">
                             <Checkbox
                               checked={selectedLeadIds.size === filteredLeads.length && filteredLeads.length > 0}
                               onCheckedChange={toggleSelectAll}
                               aria-label="Selecionar todos"
-                              className="h-5 w-5 border-2 border-secondary/70 bg-background data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:border-secondary"
+                              className="h-4 w-4 border-2 border-secondary/80 bg-background data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:border-secondary"
                             />
                           </th>
                           <th className="text-left p-2 w-8">#</th>
@@ -1888,7 +1888,7 @@ export default function AdminAnalytics() {
                           filteredLeads.map((lead, index) => (
                             <tr 
                               key={lead.id} 
-                              className={`border-b hover:bg-muted/30 cursor-pointer transition-colors ${!lead.lido ? "bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "bg-primary/10" : ""}`}
+                              className={`border-b hover:bg-muted/30 cursor-pointer ${!lead.lido ? "bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "!bg-secondary/20 ring-1 ring-inset ring-secondary/60" : ""}`}
                               onClick={() => openLeadDetail(lead)}
                             >
                               <td
@@ -1906,7 +1906,7 @@ export default function AdminAnalytics() {
                                 <Checkbox
                                   checked={selectedLeadIds.has(lead.id)}
                                   aria-label={`Selecionar ${lead.nome_completo}`}
-                                  className="h-5 w-5 border-2 border-secondary/70 bg-background data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:border-secondary pointer-events-none"
+                                  className="h-4 w-4 border-2 border-secondary/80 bg-background data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:border-secondary pointer-events-none"
                                 />
                               </td>
                               <td className="p-2 text-muted-foreground font-mono text-xs">{index + 1}</td>
@@ -2075,7 +2075,7 @@ export default function AdminAnalytics() {
                     return (
                       <Card 
                         key={lead.id}
-                        className={`cursor-pointer transition-colors ${!lead.lido ? "border-primary/30 bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "bg-primary/10 border-primary/50" : ""}`}
+                        className={`cursor-pointer ${!lead.lido ? "border-primary/30 bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "!bg-secondary/20 !border-secondary ring-2 ring-secondary/60" : ""}`}
                         onClick={() => openLeadDetail(lead)}
                       >
                         <CardContent className="p-4">
@@ -2095,7 +2095,7 @@ export default function AdminAnalytics() {
                               >
                                 <Checkbox
                                   checked={selectedLeadIds.has(lead.id)}
-                                  className="h-5 w-5 border-2 border-secondary/70 bg-background data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:border-secondary pointer-events-none"
+                                  className="h-4 w-4 border-2 border-secondary/80 bg-background data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:border-secondary pointer-events-none"
                                 />
                               </div>
                               <div className="min-w-0">
