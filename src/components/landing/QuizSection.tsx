@@ -447,6 +447,49 @@ Fico no aguardo.`;
             <p className="text-xs text-muted-foreground mb-4">
               Em poucas palavras, descreva exatamente sua maior dor hoje na sua operação
             </p>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {[
+                "Delegar para ganhar mais tempo",
+                "Criativos que não vendem",
+                "Criativos que aguentam escala",
+                "Lead qualificado",
+                "Reprovação de criativos",
+                "Otimizações com base em métricas",
+                "Falta de conhecimento",
+              ].map((dor) => {
+                const selected = formData.dor_desejo
+                  .split(/\r?\n|,\s*/)
+                  .map((s) => s.trim())
+                  .includes(dor);
+                return (
+                  <button
+                    type="button"
+                    key={dor}
+                    onClick={() => {
+                      const current = formData.dor_desejo.trim();
+                      if (selected) {
+                        const next = current
+                          .split(/\r?\n/)
+                          .filter((line) => line.trim() !== dor)
+                          .join("\n")
+                          .trim();
+                        updateField("dor_desejo", next);
+                      } else {
+                        const next = current ? `${current}\n${dor}` : dor;
+                        updateField("dor_desejo", next);
+                      }
+                    }}
+                    className={`text-xs md:text-sm px-3 py-1.5 rounded-full border transition-all ${
+                      selected
+                        ? "bg-secondary text-secondary-foreground border-secondary"
+                        : "bg-transparent text-foreground border-border hover:border-secondary/60"
+                    }`}
+                  >
+                    {dor}
+                  </button>
+                );
+              })}
+            </div>
             <Textarea
               className="champion-input w-full text-sm min-h-[120px] resize-none"
               placeholder="Conte-nos o que você quer resolver..."
