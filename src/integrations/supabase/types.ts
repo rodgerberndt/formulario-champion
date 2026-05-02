@@ -668,6 +668,7 @@ export type Database = {
           lido: boolean
           mercado: string
           nome_completo: string
+          nps_score: number | null
           objetivo: string | null
           orcamento_faixa: string | null
           placement: string | null
@@ -718,6 +719,7 @@ export type Database = {
           lido?: boolean
           mercado: string
           nome_completo: string
+          nps_score?: number | null
           objetivo?: string | null
           orcamento_faixa?: string | null
           placement?: string | null
@@ -768,6 +770,7 @@ export type Database = {
           lido?: boolean
           mercado?: string
           nome_completo?: string
+          nps_score?: number | null
           objetivo?: string | null
           orcamento_faixa?: string | null
           placement?: string | null
