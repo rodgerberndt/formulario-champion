@@ -183,16 +183,18 @@ export default function ObrigadoMql() {
       </header>
 
       <main className="pt-20 pb-12 px-4 min-h-[100svh]" style={{ paddingBottom: 'calc(48px + env(safe-area-inset-bottom))' }}>
-        <section className="-mx-4 mb-8" data-theme="void">
-          <SuccessCases />
-        </section>
-
-        <section className="-mx-4 mb-8" data-theme="void">
-          <SocialProofCarousel />
-        </section>
-
         <div className="container mx-auto max-w-lg">
-          <QuizResult nome={formData.nome_completo} estagio_negocio={formData.estagio_negocio} investimento_faixa={formData.investimento_faixa} />
+          <QuizResult
+            nome={formData.nome_completo}
+            estagio_negocio={formData.estagio_negocio}
+            investimento_faixa={formData.investimento_faixa}
+            casesSlot={
+              <div className="-mx-4 space-y-2">
+                <SuccessCases />
+                <SocialProofCarousel />
+              </div>
+            }
+          />
         </div>
       </main>
     </div>
