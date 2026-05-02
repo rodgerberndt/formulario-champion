@@ -48,10 +48,10 @@ const steps = [{
   text: "Você já completou a primeira etapa."
 }, {
   num: 2,
-  title: "Consultor te chama no WhatsApp (até 6 horas)",
+  title: "Caio te chama no WhatsApp (até 6 horas)",
   status: "active" as const,
   icon: Clock,
-  text: "Estamos estudando suas informações para que nosso melhor consultor te chame. Ele vai te fazer algumas perguntas rápidas para entender sua operação e confirmar se realmente conseguimos te ajudar."
+    text: "Estamos estudando suas informações para que o Caio te chame. Ele vai te fazer algumas perguntas rápidas para entender sua operação e confirmar se realmente conseguimos te ajudar."
 }, {
   num: 3,
   title: "Call de diagnóstico (somente para quem está na fase certa)",
