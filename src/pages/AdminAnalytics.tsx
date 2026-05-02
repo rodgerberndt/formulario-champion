@@ -49,6 +49,7 @@ import { PwaInstallButton } from "@/components/PwaInstallButton";
 import { useLeadNotifications } from "@/hooks/useLeadNotifications";
 import { NotificationsPopover } from "@/components/admin/NotificationsPopover";
 import { DailyReportReminder } from "@/components/admin/DailyReportReminder";
+import { ResponseTimer } from "@/components/admin/ResponseTimer";
 
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
