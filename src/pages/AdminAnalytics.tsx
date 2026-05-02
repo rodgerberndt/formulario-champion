@@ -547,6 +547,40 @@ export default function AdminAnalytics() {
     return () => window.clearInterval(id);
   }, [isAuthenticated, startISO, endISO]);
 
+  // Soft "tick" every 5s while there are leads still waiting to be called.
+  // Single global AudioContext (not per-row) so volume stays subtle.
+  const pendingLeadsCount = leads.filter((l) => !l.first_opened_at).length;
+  useEffect(() => {
+    if (!isAuthenticated || pendingLeadsCount === 0) return;
+    let ctx: AudioContext | null = null;
+    const playTick = () => {
+      try {
+        if (!ctx) {
+          const AC = (window as any).AudioContext || (window as any).webkitAudioContext;
+          if (!AC) return;
+          ctx = new AC();
+        }
+        if (ctx.state === "suspended") ctx.resume().catch(() => {});
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = 880;
+        const t = ctx.currentTime;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.035, t + 0.005);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.09);
+      } catch { /* ignore */ }
+    };
+    const id = window.setInterval(playTick, 5000);
+    return () => {
+      window.clearInterval(id);
+      try { ctx?.close(); } catch { /* ignore */ }
+    };
+  }, [isAuthenticated, pendingLeadsCount]);
+
   // Load leads from legacy table via edge function
   const loadLeads = async () => {
     setLeadsLoading(true);
