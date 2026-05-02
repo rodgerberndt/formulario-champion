@@ -1,7 +1,6 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Play, X } from "lucide-react";
 
 const testimonialVideos = [
   "/testimonials/video-1.mp4",
@@ -114,45 +113,7 @@ function VideoModal({ video, onClose }: { video: string; onClose: () => void }) 
 }
 
 export function SocialProofCarousel() {
-  const isMobile = useIsMobile();
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const updateScrollButtons = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
-    const children = Array.from(el.children) as HTMLElement[];
-    if (children.length === 0) return;
-    const center = el.scrollLeft + el.clientWidth / 2;
-    let closest = 0;
-    let minDist = Infinity;
-    children.forEach((child, i) => {
-      const c = child.offsetLeft + child.offsetWidth / 2;
-      const d = Math.abs(center - c);
-      if (d < minDist) { minDist = d; closest = i; }
-    });
-    setActiveIndex(closest);
-  }, []);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    el.addEventListener("scroll", updateScrollButtons, { passive: true });
-    updateScrollButtons();
-    return () => el.removeEventListener("scroll", updateScrollButtons);
-  }, [updateScrollButtons]);
-
-  const scrollDir = (dir: "left" | "right") => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const cardWidth = el.querySelector<HTMLElement>(":scope > div")?.offsetWidth ?? 200;
-    el.scrollBy({ left: dir === "left" ? -cardWidth * 2 : cardWidth * 2, behavior: "smooth" });
-  };
 
   return (
     <section className="py-8 md:py-12 overflow-hidden">
