@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { QuizResult } from "@/components/landing/QuizResult";
-import { SuccessCases } from "@/components/landing/SuccessCases";
+import { SuccessCasesCompact } from "@/components/landing/SuccessCasesCompact";
 import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
 
 declare global {
@@ -190,7 +190,7 @@ export default function ObrigadoMql() {
             investimento_faixa={formData.investimento_faixa}
             casesSlot={
               <div className="-mx-4 space-y-2 obrigadomql-cases">
-                <SuccessCases />
+                <SuccessCasesCompact />
                 <SocialProofCarousel />
               </div>
             }
