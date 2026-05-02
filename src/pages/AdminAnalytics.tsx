@@ -1848,11 +1848,12 @@ export default function AdminAnalytics() {
                     <table className="w-full text-sm table-fixed">
                       <thead className="border-b bg-muted/50">
                         <tr>
-                          <th className="text-left p-2 w-10">
+                          <th className="text-left p-2 w-12">
                             <Checkbox
                               checked={selectedLeadIds.size === filteredLeads.length && filteredLeads.length > 0}
                               onCheckedChange={toggleSelectAll}
                               aria-label="Selecionar todos"
+                              className="h-5 w-5 border-2 border-secondary/70 bg-background data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:border-secondary"
                             />
                           </th>
                           <th className="text-left p-2 w-8">#</th>
@@ -1890,21 +1891,22 @@ export default function AdminAnalytics() {
                               className={`border-b hover:bg-muted/30 cursor-pointer transition-colors ${!lead.lido ? "bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "bg-primary/10" : ""}`}
                               onClick={() => openLeadDetail(lead)}
                             >
-                              <td className="p-2" onClick={(e) => e.stopPropagation()}>
+                              <td
+                                className="p-2 cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedLeadIds((prev) => {
+                                    const newSet = new Set(prev);
+                                    if (newSet.has(lead.id)) newSet.delete(lead.id);
+                                    else newSet.add(lead.id);
+                                    return newSet;
+                                  });
+                                }}
+                              >
                                 <Checkbox
                                   checked={selectedLeadIds.has(lead.id)}
-                                  onCheckedChange={() => {
-                                    setSelectedLeadIds((prev) => {
-                                      const newSet = new Set(prev);
-                                      if (newSet.has(lead.id)) {
-                                        newSet.delete(lead.id);
-                                      } else {
-                                        newSet.add(lead.id);
-                                      }
-                                      return newSet;
-                                    });
-                                  }}
                                   aria-label={`Selecionar ${lead.nome_completo}`}
+                                  className="h-5 w-5 border-2 border-secondary/70 bg-background data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:border-secondary pointer-events-none"
                                 />
                               </td>
                               <td className="p-2 text-muted-foreground font-mono text-xs">{index + 1}</td>
@@ -2079,18 +2081,23 @@ export default function AdminAnalytics() {
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex items-start gap-3 min-w-0">
-                              <Checkbox
-                                checked={selectedLeadIds.has(lead.id)}
-                                onCheckedChange={() => {
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   setSelectedLeadIds((prev) => {
                                     const newSet = new Set(prev);
-                                    if (newSet.has(lead.id)) { newSet.delete(lead.id); } else { newSet.add(lead.id); }
+                                    if (newSet.has(lead.id)) newSet.delete(lead.id);
+                                    else newSet.add(lead.id);
                                     return newSet;
                                   });
                                 }}
-                                onClick={(e) => e.stopPropagation()}
-                                className="mt-1"
-                              />
+                                className="mt-1 -m-2 p-2 cursor-pointer"
+                              >
+                                <Checkbox
+                                  checked={selectedLeadIds.has(lead.id)}
+                                  className="h-5 w-5 border-2 border-secondary/70 bg-background data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:border-secondary pointer-events-none"
+                                />
+                              </div>
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <p className="font-semibold truncate">{lead.nome_completo}</p>
