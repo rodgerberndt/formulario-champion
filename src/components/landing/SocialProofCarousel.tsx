@@ -43,7 +43,7 @@ function VideoCard({ video, index, onPlay }: { video: string; index: number; onP
     <div
       ref={containerRef}
       onClick={onPlay}
-      className="relative flex-shrink-0 w-[300px] sm:w-[340px] md:w-[360px] rounded-2xl overflow-hidden bg-muted/20 border border-border/30 cursor-pointer group snap-center"
+      className="relative w-full rounded-2xl overflow-hidden bg-muted/20 border border-border/30 cursor-pointer group"
       style={{ aspectRatio: "9/16", contain: "layout style paint" }}
     >
       {inView ? (
@@ -166,69 +166,15 @@ export function SocialProofCarousel() {
           </p>
         </div>
 
-        <div className="relative group/carousel">
-          {/* Desktop arrows */}
-          {!isMobile && canScrollLeft && (
-            <button
-              type="button"
-              onClick={() => scrollDir("left")}
-              className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-card/80 backdrop-blur border border-border/40 flex items-center justify-center text-foreground hover:bg-card transition-colors shadow-lg opacity-0 group-hover/carousel:opacity-100"
-              aria-label="Anterior"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-          )}
-          {!isMobile && canScrollRight && (
-            <button
-              type="button"
-              onClick={() => scrollDir("right")}
-              className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-card/80 backdrop-blur border border-border/40 flex items-center justify-center text-foreground hover:bg-card transition-colors shadow-lg opacity-0 group-hover/carousel:opacity-100"
-              aria-label="Próximo"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          )}
-
-          <div
-            ref={scrollRef}
-            className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
-            style={{ WebkitOverflowScrolling: "touch" }}
-          >
-            {testimonialVideos.map((video, i) => (
-              <VideoCard
-                key={video}
-                video={video}
-                index={i}
-                onPlay={() => setSelectedVideo(video)}
-              />
-            ))}
-          </div>
-
-          {/* Dots indicator */}
-          <div className="flex justify-center items-center gap-1.5 mt-3">
-            {testimonialVideos.map((_, i) => (
-              <button
-                key={i}
-                aria-label={`Ir para vídeo ${i + 1}`}
-                type="button"
-                onClick={() => {
-                  const el = scrollRef.current;
-                  if (!el) return;
-                  const child = el.children[i] as HTMLElement | undefined;
-                  if (child) el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.offsetWidth) / 2, behavior: "smooth" });
-                }}
-                className="p-0.5"
-              >
-                <div
-                  className={`rounded-full transition-all duration-300 ease-out ${
-                    i === activeIndex
-                      ? "w-2.5 h-2.5 bg-secondary scale-100"
-                      : "w-2 h-2 bg-transparent border border-muted-foreground/40 scale-90"
-                  }`}
-                />
-              </button>
-            ))}
-          </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+          {testimonialVideos.map((video, i) => (
+            <VideoCard
+              key={video}
+              video={video}
+              index={i}
+              onPlay={() => setSelectedVideo(video)}
+            />
+          ))}
         </div>
       </div>
 
