@@ -547,6 +547,40 @@ export default function AdminAnalytics() {
     return () => window.clearInterval(id);
   }, [isAuthenticated, startISO, endISO]);
 
+  // Soft "tick" every 5s while there are leads still waiting to be called.
+  // Single global AudioContext (not per-row) so volume stays subtle.
+  const pendingLeadsCount = leads.filter((l) => !l.first_opened_at).length;
+  useEffect(() => {
+    if (!isAuthenticated || pendingLeadsCount === 0) return;
+    let ctx: AudioContext | null = null;
+    const playTick = () => {
+      try {
+        if (!ctx) {
+          const AC = (window as any).AudioContext || (window as any).webkitAudioContext;
+          if (!AC) return;
+          ctx = new AC();
+        }
+        if (ctx.state === "suspended") ctx.resume().catch(() => {});
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = 880;
+        const t = ctx.currentTime;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.035, t + 0.005);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.09);
+      } catch { /* ignore */ }
+    };
+    const id = window.setInterval(playTick, 5000);
+    return () => {
+      window.clearInterval(id);
+      try { ctx?.close(); } catch { /* ignore */ }
+    };
+  }, [isAuthenticated, pendingLeadsCount]);
+
   // Load leads from legacy table via edge function
   const loadLeads = async () => {
     setLeadsLoading(true);
@@ -1954,11 +1988,6 @@ export default function AdminAnalytics() {
                                       💬 Chamou WhatsApp
                                     </Badge>
                                   )}
-                                  {typeof lead.nps_score === "number" && (
-                                    <Badge variant="outline" className="border-yellow-500 text-yellow-400 bg-yellow-500/10 w-fit text-[10px] px-1.5 py-0">
-                                      ⭐ Nota {lead.nps_score}/10
-                                    </Badge>
-                                  )}
                                 </div>
                               </td>
                               <td className="p-2">
@@ -1981,7 +2010,20 @@ export default function AdminAnalytics() {
                                   );
                                 })()}
                               </td>
-                              <td className="p-2 font-medium truncate max-w-[120px]" title={lead.nome_completo}>{lead.nome_completo}</td>
+                              <td className="p-2 font-medium max-w-[140px]" title={lead.nome_completo}>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="truncate">{lead.nome_completo}</span>
+                                  {typeof lead.nps_score === "number" && (
+                                    <span
+                                      title={`Nota IA: ${lead.nps_score}/10`}
+                                      className="inline-flex items-center gap-0.5 rounded-full border border-yellow-500/40 bg-yellow-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-yellow-400 leading-none shrink-0"
+                                    >
+                                      <span className="text-[10px]">⭐</span>
+                                      {lead.nps_score}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
                               <td className="p-2">
                                 <button
                                   type="button"
