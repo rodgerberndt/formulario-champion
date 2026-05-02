@@ -254,9 +254,46 @@ function LoadingCommitStep({
       </div>
 
       <div className="bg-secondary/10 border border-secondary/30 rounded-2xl p-5 sm:p-6 max-w-md mx-auto">
-        <p className="text-base sm:text-lg text-white/95 font-medium leading-relaxed">
-          As pessoas que preencherem o formulário e no final falarem com o nosso time no WhatsApp, vão ganhar{" "}
-          <span className="text-secondary font-bold">algumas semanas da nossa Assessoria 100% Gratuita</span>.
+        {/* Equação visual: ✅ formulário + ⬜ responder time = 🎁 bônus surpresa */}
+        <div className="flex items-center justify-center gap-3 sm:gap-4">
+          {/* Caixinha 1 — formulário (já feito) */}
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-secondary border-2 border-secondary flex items-center justify-center shadow-lg shadow-secondary/30">
+              <Check className="w-6 h-6 sm:w-7 sm:h-7 text-background" strokeWidth={3} />
+            </div>
+            <span className="text-[10px] sm:text-xs text-white/80 font-medium leading-tight text-center max-w-[64px] sm:max-w-[72px]">
+              Preencher formulário
+            </span>
+          </div>
+
+          {/* Sinal de + */}
+          <span className="text-2xl sm:text-3xl font-bold text-white/70 -mt-5 select-none">+</span>
+
+          {/* Caixinha 2 — responder time (pendente) */}
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-white/5 border-2 border-dashed border-white/40 flex items-center justify-center animate-pulse">
+              <span className="block w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm border border-white/40" />
+            </div>
+            <span className="text-[10px] sm:text-xs text-white/80 font-medium leading-tight text-center max-w-[64px] sm:max-w-[72px]">
+              Responder nosso time
+            </span>
+          </div>
+        </div>
+
+        {/* Sinal de = */}
+        <div className="flex justify-center my-3 sm:my-4" aria-hidden="true">
+          <div className="flex flex-col gap-1">
+            <span className="block w-7 h-[3px] bg-secondary/80 rounded-full" />
+            <span className="block w-7 h-[3px] bg-secondary/80 rounded-full" />
+          </div>
+        </div>
+
+        {/* Bônus surpresa */}
+        <p className="text-base sm:text-lg text-white/95 font-medium leading-relaxed text-center">
+          🎁 Um <span className="text-secondary font-bold">presente surpresa</span> — até melhor que a Assessoria de Criativos.
+          <span className="block mt-1.5 text-sm sm:text-base text-white/75">
+            Você só descobre o que é se <span className="text-secondary font-semibold">responder o nosso time</span>.
+          </span>
         </p>
       </div>
     </div>
