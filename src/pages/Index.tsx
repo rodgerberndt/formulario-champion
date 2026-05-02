@@ -79,9 +79,10 @@ const Index = () => {
           <PainSection />
         </section>
 
-        <section data-theme="blue-temple" data-track-id="portfolio" data-track-order="4">
+        {/* Portfólio temporariamente removido — readicionar quando solicitado */}
+        {/* <section data-theme="blue-temple" data-track-id="portfolio" data-track-order="4">
           <PortfolioSection />
-        </section>
+        </section> */}
 
         <section data-theme="cave" data-track-id="metodo" data-track-order="5">
           <MetodoChampion />
