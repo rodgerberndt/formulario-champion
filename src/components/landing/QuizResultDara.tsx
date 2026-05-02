@@ -88,7 +88,7 @@ export function QuizResultDara({ nome }: QuizResultDaraProps) {
           className={`w-full text-base md:text-lg relative ${pulseVisible ? "animate-pulse-gentle" : ""}`}
           asChild
         >
-          <a href={DARA_WA_LINK} target="_blank" rel="noopener noreferrer">
+          <a href={DARA_WA_LINK} target="_blank" rel="noopener noreferrer" onClick={markSkippedQueue}>
             <MessageCircle className="w-5 h-5" />
             Chamar a Dara no WhatsApp
             <ArrowRight className="w-5 h-5" />
@@ -153,7 +153,7 @@ export function QuizResultDara({ nome }: QuizResultDaraProps) {
           É simples, rápido e você fala direto com quem vai cuidar do seu caso.
         </p>
         <Button variant="championOutline" size="lg" className="w-full text-base" asChild>
-          <a href={DARA_WA_LINK} target="_blank" rel="noopener noreferrer">
+          <a href={DARA_WA_LINK} target="_blank" rel="noopener noreferrer" onClick={markSkippedQueue}>
             <MessageCircle className="w-5 h-5" />
             Falar com a Dara agora
           </a>
