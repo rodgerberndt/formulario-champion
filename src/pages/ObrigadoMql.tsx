@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { QuizResult } from "@/components/landing/QuizResult";
+import { SuccessCases } from "@/components/landing/SuccessCases";
+import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
 
 declare global {
   interface Window {
@@ -184,6 +186,14 @@ export default function ObrigadoMql() {
         <div className="container mx-auto max-w-lg">
           <QuizResult nome={formData.nome_completo} estagio_negocio={formData.estagio_negocio} investimento_faixa={formData.investimento_faixa} />
         </div>
+
+        <section className="mt-12 -mx-4" data-theme="void">
+          <SuccessCases />
+        </section>
+
+        <section className="mt-4 -mx-4" data-theme="void">
+          <SocialProofCarousel />
+        </section>
       </main>
     </div>
   );
