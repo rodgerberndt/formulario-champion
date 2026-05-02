@@ -1,8 +1,25 @@
 import { useState, useEffect } from "react";
 import { Check, MessageCircle, AlertTriangle, ArrowRight, Clock, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const DARA_WA_LINK = "https://wa.me/5548996560104?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
+
+function markSkippedQueue() {
+  try {
+    const leadId = localStorage.getItem('champion_lead_id');
+    if (!leadId) return;
+    supabase
+      .from('leads')
+      .update({ skipped_queue: true, skipped_queue_at: new Date().toISOString() })
+      .eq('id', leadId)
+      .then(({ error }) => {
+        if (error) console.warn('[skip-queue] update failed:', error);
+      });
+  } catch (e) {
+    console.warn('[skip-queue] error:', e);
+  }
+}
 
 interface QuizResultDaraProps {
   nome: string;
