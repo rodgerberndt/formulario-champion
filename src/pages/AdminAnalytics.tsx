@@ -2173,6 +2173,10 @@ export default function AdminAnalytics() {
                                   >
                                     {lead.lido ? "Lido" : "Novo"}
                                   </Badge>
+                                  <ResponseTimer
+                                    createdAt={lead.created_at}
+                                    firstOpenedAt={lead.first_opened_at}
+                                  />
                                 </div>
                                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                                   <Badge 
