@@ -12,6 +12,7 @@ interface QuizResultProps {
   nome: string;
   estagio_negocio?: string;
   investimento_faixa?: string;
+  casesSlot?: React.ReactNode;
 }
 function useCountdown() {
   const [remaining, setRemaining] = useState<string | null>(null);
