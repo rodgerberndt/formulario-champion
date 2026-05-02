@@ -494,6 +494,9 @@ export default function Quiz() {
 
       const insertedLead = { id: leadId };
 
+      // Persist for "skip queue" tracking on /obrigado pages
+      try { localStorage.setItem('champion_lead_id', leadId); } catch {}
+
       const eventTimestamp = Math.floor(Date.now() / 1000);
       const eventIds: Record<string, string> = {
         CompleteRegistration: `${insertedLead?.id}_CompleteRegistration_${eventTimestamp}`,
