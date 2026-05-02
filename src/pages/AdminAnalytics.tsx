@@ -1955,13 +1955,13 @@ export default function AdminAnalytics() {
                       <tbody>
                         {leadsLoading ? (
                           <tr>
-                              <td colSpan={13} className="p-8 text-center">
+                              <td colSpan={14} className="p-8 text-center">
                               <Loader2 className="w-6 h-6 animate-spin mx-auto" />
                             </td>
                           </tr>
                         ) : filteredLeads.length === 0 ? (
                           <tr>
-                            <td colSpan={13} className="p-8 text-center text-muted-foreground">
+                            <td colSpan={14} className="p-8 text-center text-muted-foreground">
                               Nenhum lead encontrado
                             </td>
                           </tr>
@@ -2096,6 +2096,12 @@ export default function AdminAnalytics() {
                               </td>
                               <td className="p-2 text-muted-foreground text-xs">
                                 {format(new Date(lead.created_at), "dd/MM HH:mm", { locale: ptBR })}
+                              </td>
+                              <td className="p-2">
+                                <ResponseTimer
+                                  createdAt={lead.created_at}
+                                  firstOpenedAt={lead.first_opened_at}
+                                />
                               </td>
                               <td className="p-2 text-right">
                                 <Button
