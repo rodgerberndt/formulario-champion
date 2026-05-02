@@ -59,6 +59,45 @@ export function ResponseTimer({
     return () => clearInterval(id);
   }, [opened]);
 
+  // Soft "tick" sound every 5 seconds while waiting (Web Audio, low volume)
+  useEffect(() => {
+    if (opened) return;
+    let ctx: AudioContext | null = null;
+    const playTick = () => {
+      try {
+        if (!ctx) {
+          const AC =
+            (window as any).AudioContext || (window as any).webkitAudioContext;
+          if (!AC) return;
+          ctx = new AC();
+        }
+        if (ctx.state === "suspended") ctx.resume().catch(() => {});
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = 880;
+        const t = ctx.currentTime;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.04, t + 0.005);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.09);
+      } catch {
+        /* ignore */
+      }
+    };
+    const id = setInterval(playTick, 5000);
+    return () => {
+      clearInterval(id);
+      try {
+        ctx?.close();
+      } catch {
+        /* ignore */
+      }
+    };
+  }, [opened]);
+
   const createdTs = new Date(createdAt).getTime();
   const endTs = opened ? new Date(firstOpenedAt!).getTime() : now;
   const elapsed = endTs - createdTs;
