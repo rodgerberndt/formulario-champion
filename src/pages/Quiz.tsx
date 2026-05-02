@@ -743,9 +743,9 @@ export default function Quiz() {
               </h2>
               <p className="text-base sm:text-lg text-white/95 leading-relaxed font-medium">
                 Ao preencher esse quiz, você concorda que{" "}
-                <span className="text-secondary font-bold">trabalha com o mercado digital</span>.
-                {" "}Se você não trabalha com o mercado digital,{" "}
-                <span className="text-secondary font-bold">saia desse quiz agora</span>.
+                <span className="text-secondary font-bold">trabalha com o digital</span>.
+                {" "}Se você não trabalha com o digital, e não quer vender mais,{" "}
+                <span className="text-secondary font-bold">saia deste formulário imediatamente</span>.
               </p>
             </div>
             <div className="h-1.5 w-full bg-white/15 rounded-full overflow-hidden">
