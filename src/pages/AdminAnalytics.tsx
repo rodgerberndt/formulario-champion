@@ -189,6 +189,9 @@ interface Lead {
   first_opened_at: string | null;
   skipped_queue?: boolean | null;
   skipped_queue_at?: string | null;
+  clicked_whatsapp?: boolean | null;
+  clicked_whatsapp_at?: string | null;
+  nps_score?: number | null;
 }
 
 
@@ -1944,6 +1947,16 @@ export default function AdminAnalytics() {
                                       ⚡ Furou a fila
                                     </Badge>
                                   )}
+                                  {lead.clicked_whatsapp && (
+                                    <Badge variant="outline" className="border-emerald-500 text-emerald-400 bg-emerald-500/10 w-fit text-[10px] px-1.5 py-0">
+                                      💬 Chamou WhatsApp
+                                    </Badge>
+                                  )}
+                                  {typeof lead.nps_score === "number" && (
+                                    <Badge variant="outline" className="border-yellow-500 text-yellow-400 bg-yellow-500/10 w-fit text-[10px] px-1.5 py-0">
+                                      ⭐ Nota {lead.nps_score}/10
+                                    </Badge>
+                                  )}
                                 </div>
                               </td>
                               <td className="p-2">
@@ -2131,6 +2144,16 @@ export default function AdminAnalytics() {
                                   {lead.skipped_queue && (
                                     <Badge variant="outline" className="border-secondary text-secondary bg-secondary/10 text-[10px] px-1.5 py-0">
                                       ⚡ Furou a fila
+                                    </Badge>
+                                  )}
+                                  {lead.clicked_whatsapp && (
+                                    <Badge variant="outline" className="border-emerald-500 text-emerald-400 bg-emerald-500/10 text-[10px] px-1.5 py-0">
+                                      💬 Chamou WhatsApp
+                                    </Badge>
+                                  )}
+                                  {typeof lead.nps_score === "number" && (
+                                    <Badge variant="outline" className="border-yellow-500 text-yellow-400 bg-yellow-500/10 text-[10px] px-1.5 py-0">
+                                      ⭐ Nota {lead.nps_score}/10
                                     </Badge>
                                   )}
                                 </div>

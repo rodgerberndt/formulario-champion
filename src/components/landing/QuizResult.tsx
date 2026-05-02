@@ -270,13 +270,19 @@ export function QuizResult({
             href={skipLink}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => {
+              onClick={() => {
               try {
                 const leadId = localStorage.getItem('champion_lead_id');
                 if (leadId) {
+                  const now = new Date().toISOString();
                   supabase
                     .from('leads')
-                    .update({ skipped_queue: true, skipped_queue_at: new Date().toISOString() })
+                    .update({
+                      skipped_queue: true,
+                      skipped_queue_at: now,
+                      clicked_whatsapp: true,
+                      clicked_whatsapp_at: now,
+                    })
                     .eq('id', leadId)
                     .then(({ error }) => {
                       if (error) console.warn('[skip-queue] update failed:', error);

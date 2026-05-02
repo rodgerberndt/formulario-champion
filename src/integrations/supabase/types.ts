@@ -643,6 +643,8 @@ export type Database = {
           attribution_source: string | null
           campaign_id: string | null
           capi_events_sent: Json | null
+          clicked_whatsapp: boolean
+          clicked_whatsapp_at: string | null
           created_at: string
           decisor: boolean | null
           dor_desejo: string
@@ -696,6 +698,8 @@ export type Database = {
           attribution_source?: string | null
           campaign_id?: string | null
           capi_events_sent?: Json | null
+          clicked_whatsapp?: boolean
+          clicked_whatsapp_at?: string | null
           created_at?: string
           decisor?: boolean | null
           dor_desejo: string
@@ -749,6 +753,8 @@ export type Database = {
           attribution_source?: string | null
           campaign_id?: string | null
           capi_events_sent?: Json | null
+          clicked_whatsapp?: boolean
+          clicked_whatsapp_at?: string | null
           created_at?: string
           decisor?: boolean | null
           dor_desejo?: string
