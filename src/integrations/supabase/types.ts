@@ -658,6 +658,7 @@ export type Database = {
           gclid: string | null
           id: string
           instagram: string
+          instagram_follow_dispatched_at: string | null
           investimento_faixa: string | null
           ip_address: string | null
           is_duplicate_ip: boolean | null
@@ -713,6 +714,7 @@ export type Database = {
           gclid?: string | null
           id?: string
           instagram: string
+          instagram_follow_dispatched_at?: string | null
           investimento_faixa?: string | null
           ip_address?: string | null
           is_duplicate_ip?: boolean | null
@@ -768,6 +770,7 @@ export type Database = {
           gclid?: string | null
           id?: string
           instagram?: string
+          instagram_follow_dispatched_at?: string | null
           investimento_faixa?: string | null
           ip_address?: string | null
           is_duplicate_ip?: boolean | null
