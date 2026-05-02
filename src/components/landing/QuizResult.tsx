@@ -12,6 +12,7 @@ interface QuizResultProps {
   nome: string;
   estagio_negocio?: string;
   investimento_faixa?: string;
+  casesSlot?: React.ReactNode;
 }
 function useCountdown() {
   const [remaining, setRemaining] = useState<string | null>(null);
@@ -112,7 +113,8 @@ function getSdrSkipLink(_estagio?: string, investimento?: string): string {
 export function QuizResult({
   nome,
   estagio_negocio,
-  investimento_faixa
+  investimento_faixa,
+  casesSlot
 }: QuizResultProps) {
   const isDaraLead = !investimento_faixa || !SDR_MIN_FATURAMENTO.includes(investimento_faixa);
   const firstName = nome.split(" ")[0];
@@ -169,6 +171,8 @@ export function QuizResult({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+
+      {casesSlot}
 
       {/* ── STEPPER ── */}
       <div className="bg-card/70 backdrop-blur-xl border border-border/50 rounded-2xl p-5 md:p-6 space-y-0">
