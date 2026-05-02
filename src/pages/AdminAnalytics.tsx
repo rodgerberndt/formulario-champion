@@ -548,8 +548,10 @@ export default function AdminAnalytics() {
   }, [isAuthenticated, startISO, endISO]);
 
   // Soft "tick" every 5s while there are leads still waiting to be called.
-  // Single global AudioContext (not per-row) so volume stays subtle.
-  const pendingLeadsCount = leads.filter((l) => !l.first_opened_at).length;
+  // Only for Caio's leads (MQL). Dara's leads do not trigger the sound.
+  const pendingLeadsCount = leads.filter(
+    (l) => !l.first_opened_at && getLeadSdr(l) === "Caio"
+  ).length;
   useEffect(() => {
     if (!isAuthenticated || pendingLeadsCount === 0) return;
     let ctx: AudioContext | null = null;
