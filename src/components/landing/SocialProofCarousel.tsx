@@ -43,7 +43,7 @@ function VideoCard({ video, index, onPlay }: { video: string; index: number; onP
     <div
       ref={containerRef}
       onClick={onPlay}
-      className="relative flex-shrink-0 w-[180px] md:w-[200px] rounded-2xl overflow-hidden bg-muted/20 border border-border/30 cursor-pointer group snap-center"
+      className="relative flex-shrink-0 w-[300px] sm:w-[340px] md:w-[360px] rounded-2xl overflow-hidden bg-muted/20 border border-border/30 cursor-pointer group snap-center"
       style={{ aspectRatio: "9/16", contain: "layout style paint" }}
     >
       {inView ? (
