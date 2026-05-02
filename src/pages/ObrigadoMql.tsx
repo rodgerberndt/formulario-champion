@@ -189,7 +189,7 @@ export default function ObrigadoMql() {
             estagio_negocio={formData.estagio_negocio}
             investimento_faixa={formData.investimento_faixa}
             casesSlot={
-              <div className="-mx-4 space-y-2">
+              <div className="-mx-4 space-y-2 obrigadomql-cases">
                 <SuccessCases />
                 <SocialProofCarousel />
               </div>
