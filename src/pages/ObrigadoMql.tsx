@@ -187,11 +187,11 @@ export default function ObrigadoMql() {
           <QuizResult nome={formData.nome_completo} estagio_negocio={formData.estagio_negocio} investimento_faixa={formData.investimento_faixa} />
         </div>
 
-        <section className="mt-12" data-theme="void">
+        <section className="mt-12 -mx-4" data-theme="void">
           <SuccessCases />
         </section>
 
-        <section className="mt-4" data-theme="void">
+        <section className="mt-4 -mx-4" data-theme="void">
           <SocialProofCarousel />
         </section>
       </main>
