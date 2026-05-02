@@ -49,6 +49,7 @@ import { PwaInstallButton } from "@/components/PwaInstallButton";
 import { useLeadNotifications } from "@/hooks/useLeadNotifications";
 import { NotificationsPopover } from "@/components/admin/NotificationsPopover";
 import { DailyReportReminder } from "@/components/admin/DailyReportReminder";
+import { ResponseTimer } from "@/components/admin/ResponseTimer";
 
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -1948,19 +1949,20 @@ export default function AdminAnalytics() {
                           <th className="text-left p-2 w-28">Faturamento</th>
                           <th className="text-left p-2 w-20">SDR</th>
                           <th className="text-left p-2 w-24">Data</th>
+                          <th className="text-left p-2 w-24" title="Tempo entre chegada do lead e clique para abrir/ler">Tempo p/ chamar</th>
                           <th className="text-right p-2 w-12">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
                         {leadsLoading ? (
                           <tr>
-                              <td colSpan={13} className="p-8 text-center">
+                              <td colSpan={14} className="p-8 text-center">
                               <Loader2 className="w-6 h-6 animate-spin mx-auto" />
                             </td>
                           </tr>
                         ) : filteredLeads.length === 0 ? (
                           <tr>
-                            <td colSpan={13} className="p-8 text-center text-muted-foreground">
+                            <td colSpan={14} className="p-8 text-center text-muted-foreground">
                               Nenhum lead encontrado
                             </td>
                           </tr>
@@ -2096,6 +2098,12 @@ export default function AdminAnalytics() {
                               <td className="p-2 text-muted-foreground text-xs">
                                 {format(new Date(lead.created_at), "dd/MM HH:mm", { locale: ptBR })}
                               </td>
+                              <td className="p-2">
+                                <ResponseTimer
+                                  createdAt={lead.created_at}
+                                  firstOpenedAt={lead.first_opened_at}
+                                />
+                              </td>
                               <td className="p-2 text-right">
                                 <Button
                                   variant="ghost"
@@ -2165,6 +2173,10 @@ export default function AdminAnalytics() {
                                   >
                                     {lead.lido ? "Lido" : "Novo"}
                                   </Badge>
+                                  <ResponseTimer
+                                    createdAt={lead.created_at}
+                                    firstOpenedAt={lead.first_opened_at}
+                                  />
                                 </div>
                                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                                   <Badge 
