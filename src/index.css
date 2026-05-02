@@ -569,3 +569,16 @@ html, body { overflow-x: hidden; }
   .hero-sparkle, .hero-sparkle-2, .hero-sparkle-3,
   .hero-sparkle-slow, .hero-sparkle-slow-2, .hero-sparkle-slow-3 { animation: none; }
 }
+
+/* ObrigadoMQL: reduce SuccessCases title size only on this page */
+.obrigadomql-cases h2 {
+  font-size: 1.5rem !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.01em;
+}
+@media (min-width: 768px) {
+  .obrigadomql-cases h2 {
+    font-size: 2rem !important;
+  }
+}
+.obrigadomql-cases #success-cases { padding-top: 1.5rem; padding-bottom: 1.5rem; }
