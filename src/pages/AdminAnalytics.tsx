@@ -187,6 +187,8 @@ interface Lead {
   raw_answers_json: Record<string, unknown> | null;
   attribution_source: string | null;
   first_opened_at: string | null;
+  skipped_queue?: boolean | null;
+  skipped_queue_at?: string | null;
 }
 
 
@@ -2025,6 +2027,11 @@ export default function AdminAnalytics() {
                                       📢 Ad
                                     </Badge>
                                   )}
+                                  {lead.skipped_queue && (
+                                    <Badge variant="outline" className="border-secondary text-secondary bg-secondary/10 w-fit text-[10px] px-1.5 py-0">
+                                      ⚡ Furou a fila
+                                    </Badge>
+                                  )}
                                 </div>
                               </td>
                               <td className="p-2">
@@ -2208,6 +2215,11 @@ export default function AdminAnalytics() {
                                   )}
                                   {lead.attribution_source === "direct_ad" && (
                                     <Badge variant="outline" className="border-sky-600 text-sky-400 bg-sky-500/10 text-[10px] px-1.5 py-0">📢 Ad</Badge>
+                                  )}
+                                  {lead.skipped_queue && (
+                                    <Badge variant="outline" className="border-secondary text-secondary bg-secondary/10 text-[10px] px-1.5 py-0">
+                                      ⚡ Furou a fila
+                                    </Badge>
                                   )}
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-1">{lead.mercado}</p>

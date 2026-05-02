@@ -677,6 +677,8 @@ export type Database = {
           sdr_override: string | null
           segmento: string | null
           site_source_name: string | null
+          skipped_queue: boolean
+          skipped_queue_at: string | null
           ticket_faixa: string | null
           tier: string | null
           timing: string | null
@@ -728,6 +730,8 @@ export type Database = {
           sdr_override?: string | null
           segmento?: string | null
           site_source_name?: string | null
+          skipped_queue?: boolean
+          skipped_queue_at?: string | null
           ticket_faixa?: string | null
           tier?: string | null
           timing?: string | null
@@ -779,6 +783,8 @@ export type Database = {
           sdr_override?: string | null
           segmento?: string | null
           site_source_name?: string | null
+          skipped_queue?: boolean
+          skipped_queue_at?: string | null
           ticket_faixa?: string | null
           tier?: string | null
           timing?: string | null
