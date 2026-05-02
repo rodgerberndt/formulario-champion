@@ -954,7 +954,7 @@ export default function Quiz() {
 
             <Textarea
               className="w-full text-sm sm:text-base min-h-[90px] sm:min-h-[110px] resize-none bg-input border-2 border-border/60 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 transition-colors duration-200"
-              placeholder="Ex: Quero escalar meu tráfego mas não consigo manter o ROAS..."
+              placeholder="Outra"
               value={formData.dor_desejo}
               enterKeyHint="next"
               onFocus={scrollIntoViewOnFocus}
