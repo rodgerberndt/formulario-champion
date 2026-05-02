@@ -582,3 +582,8 @@ html, body { overflow-x: hidden; }
   }
 }
 .obrigadomql-cases #success-cases { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+
+/* ObrigadoMQL: SocialProofCarousel — force 2 columns instead of 3 for larger thumbnails */
+.obrigadomql-cases .grid.grid-cols-1.sm\:grid-cols-2.md\:grid-cols-3 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
