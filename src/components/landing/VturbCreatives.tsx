@@ -4,18 +4,26 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useReveal } from "@/hooks/useReveal";
 import { KeywordGlow } from "./TextEffects";
 
-const VIDEO_IDS = [
-  "69f7bc652c68b8e06e0b5d3d",
-  "69f7bc5c2cdb6c72eb25d070",
-  "69f7bc54ac9b67e415cfb9c4",
-  "69f7bc48429b5d0eef53891b",
-  "69f7bc42858bd31866f50afd",
-  "69f7bc31c234cac35bc5b20a",
+type Niche = "Info" | "Lowticket" | "Nutra" | "Hot";
+const VIDEOS: { id: string; niche: Niche }[] = [
+  { id: "69f7bc652c68b8e06e0b5d3d", niche: "Info" },
+  { id: "69f7bc5c2cdb6c72eb25d070", niche: "Lowticket" },
+  { id: "69f7bc54ac9b67e415cfb9c4", niche: "Info" },
+  { id: "69f7bc48429b5d0eef53891b", niche: "Lowticket" },
+  { id: "69f7bc42858bd31866f50afd", niche: "Nutra" },
+  { id: "69f7bc31c234cac35bc5b20a", niche: "Hot" },
 ];
+
+const NICHE_STYLES: Record<Niche, string> = {
+  Info: "bg-secondary/15 text-secondary border-secondary/40",
+  Lowticket: "bg-primary/20 text-primary-foreground border-primary/50",
+  Nutra: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40",
+  Hot: "bg-rose-500/15 text-rose-300 border-rose-500/40",
+};
 
 const ACCOUNT_ID = "3b4a85ca-8939-45e7-ae40-d0be1d6af49b";
 
-function VturbPlayer({ id, index }: { id: string; index: number }) {
+function VturbPlayer({ id, index, niche }: { id: string; index: number; niche: Niche }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(index < 2); // first row eager
   const [scriptLoaded, setScriptLoaded] = useState(false);
@@ -56,6 +64,11 @@ function VturbPlayer({ id, index }: { id: string; index: number }) {
       className="group relative rounded-2xl overflow-hidden border border-secondary/15 bg-gradient-to-b from-card/60 to-background/40 backdrop-blur-sm shadow-lg shadow-black/30 hover:border-secondary/40 hover:shadow-secondary/10 transition-all duration-300"
     >
       <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-tr from-secondary/5 via-transparent to-primary/10" />
+      <div className="absolute top-3 left-3 z-10">
+        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] md:text-xs font-semibold uppercase tracking-wider border backdrop-blur-md ${NICHE_STYLES[niche]}`}>
+          {niche}
+        </span>
+      </div>
       <div className="relative p-2 sm:p-3">
         <div
           className="relative w-full overflow-hidden rounded-xl bg-black/40"
@@ -165,18 +178,18 @@ export function VturbCreatives() {
             className="flex gap-5 md:gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
             style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}
           >
-            {VIDEO_IDS.map((id, i) => (
+            {VIDEOS.map((v, i) => (
               <div
-                key={id}
+                key={v.id}
                 className="flex-shrink-0 snap-center w-[78vw] sm:w-[46vw] md:w-[320px] lg:w-[340px]"
               >
-                <VturbPlayer id={id} index={i} />
+                <VturbPlayer id={v.id} index={i} niche={v.niche} />
               </div>
             ))}
           </div>
 
           <div className="flex justify-center items-center gap-1.5 mt-4">
-            {VIDEO_IDS.map((_, i) => (
+            {VIDEOS.map((_, i) => (
               <button
                 key={i}
                 type="button"
