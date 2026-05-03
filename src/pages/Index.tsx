@@ -7,6 +7,7 @@ import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
 import { SuccessCases } from "@/components/landing/SuccessCases";
 import { PainSection } from "@/components/landing/PainSection";
 import { PortfolioSection } from "@/components/landing/PortfolioSection";
+import { VturbCreatives } from "@/components/landing/VturbCreatives";
 import { MetodoChampion } from "@/components/landing/MetodoChampion";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { GanchoCorpoSection } from "@/components/landing/GanchoCorpoSection";
@@ -79,10 +80,9 @@ const Index = () => {
           <PainSection />
         </section>
 
-        {/* Portfólio temporariamente removido — readicionar quando solicitado */}
-        {/* <section data-theme="blue-temple" data-track-id="portfolio" data-track-order="4">
-          <PortfolioSection />
-        </section> */}
+        <section data-theme="blue-temple" data-track-id="criativos" data-track-order="4">
+          <VturbCreatives />
+        </section>
 
         <section data-theme="cave" data-track-id="metodo" data-track-order="5">
           <MetodoChampion />
