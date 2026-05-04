@@ -547,10 +547,11 @@ export default function AdminAnalytics() {
     return () => window.clearInterval(id);
   }, [isAuthenticated, startISO, endISO]);
 
-  // Soft "tick" every 5s while there are leads still waiting to be called.
-  // Only for Caio's leads (MQL). Dara's leads do not trigger the sound.
+  // Soft "tick" every 5s while there are MQL leads still waiting to be called.
+  // Apenas leads com faturamento >= R$ 5 mil disparam o bip.
+  // Leads <5k (Dara/Desqualificado) NÃO devem apitar, independente de sdr_override.
   const pendingLeadsCount = leads.filter(
-    (l) => !l.first_opened_at && getLeadSdr(l) === "Caio"
+    (l) => !l.first_opened_at && !!l.investimento_faixa && SDR_CAIO_FAT.includes(l.investimento_faixa)
   ).length;
   useEffect(() => {
     if (!isAuthenticated || pendingLeadsCount === 0) return;
