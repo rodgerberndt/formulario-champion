@@ -138,14 +138,14 @@ export function QuizResult({
         </div>
 
         <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
-          Seu cadastro foi concluído com sucesso.{" "}
+          Parabéns, <span className="champion-gradient-text">{firstName}</span>! Seu cadastro foi concluído com sucesso.{" "}
           <span className="champion-gradient-text">
-            Em até 6h nosso time entrará em contato com você!
+            Você está quase garantindo sua call de diagnóstico gratuita.
           </span>
         </h1>
 
         <p className="text-muted-foreground text-base">
-          Parabéns, <strong className="text-foreground">{firstName}</strong>! Seu cadastro está realizado com sucesso!
+          Em até 6h nosso time entra em contato pelo WhatsApp. Basta responder a conversa pra liberar sua call e receber o plano de ação da sua operação.
         </p>
       </div>
 
