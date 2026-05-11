@@ -75,6 +75,9 @@ interface CreativeData {
   creative_source_field: string;
   leads_count: number;
   mql_count: number;
+  clicks: number;
+  impressions: number;
+  ctl: number | null;
   tier_small_count: number;
   tier_medium_count: number;
   tier_large_count: number;
@@ -116,6 +119,9 @@ interface CreativesResponse {
     spend: number;
     leads: number;
     mql: number;
+    clicks: number;
+    impressions: number;
+    ctl: number | null;
     tier_small: number;
     tier_medium: number;
     tier_large: number;
@@ -368,7 +374,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Drag & drop column ordering (persisted)
   const DEFAULT_COLUMN_ORDER = [
-    "creative", "spend", "lpv", "leads", "mql_cpmql", "mql_per_view",
+    "creative", "spend", "lpv", "leads", "ctl", "mql_cpmql", "mql_per_view",
     "qualified_5_10k", "meetings", "booking_rate", "call_conv", "sales_cac",
     "cac_sprint", "cac_assessoria", "win_rate", "revenue", "roas",
   ] as const;
@@ -861,6 +867,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     .sort((a, b) => {
       const getValue = (c: CreativeData) => {
         if (sortField === "cpl") return c.spend > 0 && c.leads_count > 0 ? c.spend / c.leads_count : null;
+        if (sortField === "ctl") return c.clicks > 0 ? (c.leads_count / c.clicks) * 100 : null;
         const extras = creativeExtrasRaw.get(c.creative_key);
         if (sortField === "call_conv_rate") return extras?.callConvRate ?? null;
         if (sortField === "booking_rate") return extras?.bookingRate ?? null;
