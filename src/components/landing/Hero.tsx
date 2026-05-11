@@ -35,15 +35,14 @@ export function Hero({
               {/* Headline */}
               <h1 className="font-medium text-foreground mb-4 leading-tight text-4xl">
                 <ShimmerText isVisible={isVisible}>
-                  SE O SEU CRIATIVO FEZ MAIS DE DUAS VENDAS,{" "}
+                  APLIQUE CRIATIVOS ANDRÔMEDA NA SUA OPERAÇÃO E TENHA ATÉ{" "}
                 </ShimmerText>
-                <KeywordGlow>ELE NÃO VALIDOU.</KeywordGlow>
+                <KeywordGlow>3X MAIS LUCRO.</KeywordGlow>
               </h1>
 
               {/* Subheadline */}
               <p className="text-sm md:text-base text-muted-foreground max-w-sm mx-auto md:mx-0 mb-6">
-                A Assessoria de criativos da Champion pode te ajudar.
-                <br />
+                A assessoria de criativos da Champion já ajudou centenas de operações do mercado digital — seja de infoprodutos, nutracêuticos, X1 do WhatsApp, mercado na gringa ou no Brasil — a escalar em múltiplos 6, 7 e até 8 dígitos.
               </p>
 
 
