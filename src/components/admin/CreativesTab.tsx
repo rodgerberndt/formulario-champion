@@ -1247,7 +1247,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card>
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Tráfego</p>
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-5 gap-4">
                   <MetricItem label="Total Spend" value={formatCurrency(totals.spend) || "—"} />
                   <MetricItem
                     label="LPV"
@@ -1261,6 +1261,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     sub={`⏱ Resp: ${avgResponseAll}${funnelMetrics && funnelMetrics.completed > 0 ? ` · ${((totals.leads / funnelMetrics.completed) * 100).toFixed(1)}% conclusões` : ""}`}
                   />
                   <MetricItem label="CPL" value={formatCurrency(totals.cpl) || "—"} sub="Spend ÷ Leads" />
+                  <MetricItem
+                    label="CTL"
+                    value={totals.ctl !== null && totals.ctl !== undefined ? `${totals.ctl.toFixed(2)}%` : "—"}
+                    color="text-emerald-400"
+                    sub={`Leads ÷ Cliques · ${formatNumber(totals.clicks || 0)} cliques`}
+                  />
                 </div>
               </CardContent>
             </Card>
