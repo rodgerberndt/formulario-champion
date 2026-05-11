@@ -56,16 +56,10 @@ const steps = [{
     text: "Estamos estudando suas informações para que o Caio te chame. Ele vai te fazer algumas perguntas rápidas para entender sua operação e confirmar se realmente conseguimos te ajudar."
 }, {
   num: 3,
-  title: "Call de diagnóstico (somente para quem está na fase certa)",
-  status: "locked" as const,
-  icon: Lock,
-  text: "Essa call só acontece quando entendemos claramente como podemos ajudar. Acontece apenas com clientes que estão na fase correta para entrar na Assessoria Completa."
-}, {
-  num: 4,
-  title: "Entrada na Assessoria Completa + plano personalizado",
+  title: "Call de diagnóstico gratuita",
   status: "locked" as const,
   icon: Trophy,
-  text: "A entrega da Assessoria Completa é personalizada conforme sua necessidade, com base nas conversas do WhatsApp e também da call.",
+  text: "Uma call pra entender o cenário da sua operação hoje. Você sai dela com insights práticos do que pode melhorar, várias dicas aplicáveis no dia a dia e um plano de ação claro dos próximos passos pra crescer.",
   premium: true
 }];
 const statusColors = {
