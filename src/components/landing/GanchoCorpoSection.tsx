@@ -329,7 +329,7 @@ export function GanchoCorpoSection() {
         >
           <p className="text-base md:text-lg text-foreground/90 font-medium mb-6 leading-relaxed max-w-xl">
             Não é sobre fazer mais criativos. É sobre falar com mais{" "}
-            <span className="text-secondary font-bold">PERSONAS</span> — do jeito certo.
+            <span className="text-secondary font-bold">PERSONAS</span>, do jeito certo.
           </p>
           <Button
             size="lg"
