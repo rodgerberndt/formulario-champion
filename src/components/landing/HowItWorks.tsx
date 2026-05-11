@@ -21,7 +21,7 @@ const steps = [
     bullets: [
       "Novos criativos semanais baseados em dados e ângulos validados",
       "Testes estruturados (A/B/C) com otimização contínua",
-      "Cada peça é desenhada pra performar — não pra enfeitar",
+      "Cada peça é desenhada pra performar, não pra enfeitar",
     ],
   },
   {
@@ -75,7 +75,7 @@ export function HowItWorks() {
                     <span className="text-xs font-bold text-secondary" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                       STEP {i + 1}
                     </span>
-                    <span className="text-xs text-muted-foreground">— {step.subtitle}</span>
+                    <span className="text-xs text-muted-foreground">{step.subtitle}</span>
                   </div>
                   <h3 className="gold-text mb-2" style={{ fontSize: "1.25rem" }}>
                     {step.title}
