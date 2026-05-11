@@ -75,6 +75,9 @@ interface CreativeData {
   creative_source_field: string;
   leads_count: number;
   mql_count: number;
+  clicks: number;
+  impressions: number;
+  ctl: number | null;
   tier_small_count: number;
   tier_medium_count: number;
   tier_large_count: number;
@@ -116,6 +119,9 @@ interface CreativesResponse {
     spend: number;
     leads: number;
     mql: number;
+    clicks: number;
+    impressions: number;
+    ctl: number | null;
     tier_small: number;
     tier_medium: number;
     tier_large: number;
@@ -368,7 +374,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Drag & drop column ordering (persisted)
   const DEFAULT_COLUMN_ORDER = [
-    "creative", "spend", "lpv", "leads", "mql_cpmql", "mql_per_view",
+    "creative", "spend", "lpv", "leads", "ctl", "mql_cpmql", "mql_per_view",
     "qualified_5_10k", "meetings", "booking_rate", "call_conv", "sales_cac",
     "cac_sprint", "cac_assessoria", "win_rate", "revenue", "roas",
   ] as const;
@@ -861,6 +867,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     .sort((a, b) => {
       const getValue = (c: CreativeData) => {
         if (sortField === "cpl") return c.spend > 0 && c.leads_count > 0 ? c.spend / c.leads_count : null;
+        if (sortField === "ctl") return c.clicks > 0 ? (c.leads_count / c.clicks) * 100 : null;
         const extras = creativeExtrasRaw.get(c.creative_key);
         if (sortField === "call_conv_rate") return extras?.callConvRate ?? null;
         if (sortField === "booking_rate") return extras?.bookingRate ?? null;
@@ -1240,7 +1247,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card>
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">Tráfego</p>
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-5 gap-4">
                   <MetricItem label="Total Spend" value={formatCurrency(totals.spend) || "—"} />
                   <MetricItem
                     label="LPV"
@@ -1254,6 +1261,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     sub={`⏱ Resp: ${avgResponseAll}${funnelMetrics && funnelMetrics.completed > 0 ? ` · ${((totals.leads / funnelMetrics.completed) * 100).toFixed(1)}% conclusões` : ""}`}
                   />
                   <MetricItem label="CPL" value={formatCurrency(totals.cpl) || "—"} sub="Spend ÷ Leads" />
+                  <MetricItem
+                    label="CTL"
+                    value={totals.ctl !== null && totals.ctl !== undefined ? `${totals.ctl.toFixed(2)}%` : "—"}
+                    color="text-emerald-400"
+                    sub={`Leads ÷ Cliques · ${formatNumber(totals.clicks || 0)} cliques`}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -1655,6 +1668,23 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 leads: {
                   id: "leads", label: "Leads", width: "6%", sortField: "leads_count",
                   renderCell: (c) => <div className="font-semibold">{c.leads_count}</div>,
+                },
+                ctl: {
+                  id: "ctl", label: "CTL", width: "5%", sortField: "ctl",
+                  title: "Click-To-Lead: Leads ÷ Cliques no anúncio × 100",
+                  renderCell: (c) => {
+                    const ctl = c.clicks > 0 ? (c.leads_count / c.clicks) * 100 : null;
+                    return (
+                      <span className="text-emerald-300">
+                        {ctl !== null ? (
+                          <>
+                            <div className="font-semibold">{ctl.toFixed(2)}%</div>
+                            <div className="text-[9px] text-muted-foreground">{formatNumber(c.clicks)} cliques</div>
+                          </>
+                        ) : <span className="text-muted-foreground">—</span>}
+                      </span>
+                    );
+                  },
                 },
                 mql_cpmql: {
                   id: "mql_cpmql", label: "MQL", width: "7%", sortField: "mql_count",

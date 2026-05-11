@@ -1533,6 +1533,8 @@ Deno.serve(async (req: Request) => {
         tier_enterprise_plus_count: number;
         leads_5_10k_count: number;
         spend: number;
+        clicks: number;
+        impressions: number;
         sales_count: number;
         sales_sprint_count: number;
         sales_assessoria_count: number;
@@ -1564,6 +1566,8 @@ Deno.serve(async (req: Request) => {
             tier_enterprise_plus_count: 0,
             leads_5_10k_count: 0,
             spend: 0,
+            clicks: 0,
+            impressions: 0,
             sales_count: 0,
             sales_sprint_count: 0,
             sales_assessoria_count: 0,
@@ -1717,6 +1721,8 @@ Deno.serve(async (req: Request) => {
         spendMapped += amount;
         const agg = getOrCreate(ck, rawKey, s.utm_content ? "utm_content" : "fallback");
         agg.spend += amount;
+        agg.clicks += Number(s.clicks) || 0;
+        agg.impressions += Number(s.impressions) || 0;
         agg.landing_page_views += Number(s.landing_page_views) || 0;
         if (s.campaign_name) agg.campaigns.add(s.campaign_name);
         const spendDate = s.date;
@@ -1828,6 +1834,7 @@ Deno.serve(async (req: Request) => {
         const cost_per_meeting = c.meetings_count > 0 ? c.spend / c.meetings_count : null;
         const mql_per_view = c.landing_page_views > 0 ? c.mql_count / c.landing_page_views : null;
         const lead_per_view = c.landing_page_views > 0 ? c.leads_count / c.landing_page_views : null;
+        const ctl = c.clicks > 0 ? (c.leads_count / c.clicks) * 100 : null;
         const is_active = recentSpendKeys.has(c.creative_key);
         return {
           ...c,
@@ -1847,6 +1854,7 @@ Deno.serve(async (req: Request) => {
           cost_per_meeting,
           mql_per_view,
           lead_per_view,
+          ctl,
           meetings_count: c.meetings_count,
           meetings_attended_count: c.meetings_attended_count,
           is_active,
@@ -1873,6 +1881,8 @@ Deno.serve(async (req: Request) => {
       const totalRevenueAssessoria = creatives.reduce((s, c) => s + c.revenue_assessoria, 0);
       const totalLandingPageViews = creatives.reduce((s, c) => s + c.landing_page_views, 0);
       const totalQualified = creatives.reduce((s, c) => s + c.leads_5_10k_count, 0);
+      const totalClicks = creatives.reduce((s, c) => s + (c.clicks || 0), 0);
+      const totalImpressions = creatives.reduce((s, c) => s + (c.impressions || 0), 0);
 
       return new Response(
         JSON.stringify({
@@ -1881,6 +1891,9 @@ Deno.serve(async (req: Request) => {
             spend: totalSpend,
             leads: totalLeads,
             mql: totalMql,
+            clicks: totalClicks,
+            impressions: totalImpressions,
+            ctl: totalClicks > 0 ? (totalLeads / totalClicks) * 100 : null,
             landing_page_views: totalLandingPageViews,
             mql_per_view: totalLandingPageViews > 0 ? totalMql / totalLandingPageViews : null,
             lead_per_view: totalLandingPageViews > 0 ? totalLeads / totalLandingPageViews : null,
