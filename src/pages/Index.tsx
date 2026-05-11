@@ -12,6 +12,7 @@ import { MetodoChampion } from "@/components/landing/MetodoChampion";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { GanchoCorpoSection } from "@/components/landing/GanchoCorpoSection";
 import { FAQSection } from "@/components/landing/FAQSection";
+import { DiagnosticoSection } from "@/components/landing/DiagnosticoSection";
 
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
@@ -91,7 +92,7 @@ const Index = () => {
         <section data-theme="cave" data-track-id="cta_intermediario" data-track-order="6" className="py-10 md:py-16">
           <div className="container mx-auto px-5 text-center max-w-md">
             <p className="text-sm md:text-base text-muted-foreground mb-6">
-              Responda o formulário rápido para que o próximo feedback seja você!
+              Faça o diagnóstico rápido para que o próximo feedback seja você!
             </p>
             <Button
               size="lg"
@@ -122,6 +123,10 @@ const Index = () => {
 
         <section data-theme="blue-temple" data-track-id="como_funciona" data-track-order="8">
           <HowItWorks />
+        </section>
+
+        <section data-theme="cave" data-track-id="diagnostico_explicado" data-track-order="8.5">
+          <DiagnosticoSection />
         </section>
 
         <section data-theme="cave" data-track-id="faq" data-track-order="9">
