@@ -225,7 +225,7 @@ function LoadingCommitStep({
             Tivemos um problema ao enviar
           </p>
           <p className="text-sm text-muted-foreground">
-            Sem stress — clique abaixo para tentar de novo. Suas respostas estão salvas.
+            Sem stress, clique abaixo para tentar de novo. Suas respostas estão salvas.
           </p>
         </div>
         <Button
@@ -290,7 +290,7 @@ function LoadingCommitStep({
 
         {/* Bônus surpresa */}
         <p className="text-base sm:text-lg text-white/95 font-medium leading-relaxed text-center">
-          🎁 Um <span className="text-secondary font-bold">presente surpresa</span> — até melhor que a Assessoria de Criativos.
+          🎁 Um <span className="text-secondary font-bold">presente surpresa</span>, até melhor que a Assessoria de Criativos.
           <span className="block mt-1.5 text-sm sm:text-base text-white/75">
             Você só descobre o que é se <span className="text-secondary font-semibold">responder o nosso time</span>.
           </span>

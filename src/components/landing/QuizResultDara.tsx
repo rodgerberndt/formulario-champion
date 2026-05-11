@@ -80,7 +80,7 @@ export function QuizResultDara({ nome }: QuizResultDaraProps) {
               Clique abaixo e fale com a Dara agora
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              A Dara é a consultora responsável pelo seu caso. Ela já recebeu seus dados e está pronta para te atender —{" "}
+              A Dara é a consultora responsável pelo seu caso. Ela já recebeu seus dados e está pronta para te atender,{" "}
               <strong className="text-foreground">
                 mas o próximo passo precisa partir de você.
               </strong>

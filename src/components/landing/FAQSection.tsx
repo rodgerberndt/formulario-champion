@@ -8,15 +8,15 @@ const faqSlug = (i: number) => `faq_q${i + 1}`;
 const faqs = [
   {
     q: "Meu criativo performa no teste, mas morre quando escalo. Vocês resolvem isso?",
-    a: "Sim. Esse é exatamente o problema que a gente ataca todos os dias. Criativo que valida em R$50/dia e morre em R$500 não é criativo validado — é coincidência estatística. A nossa metodologia (Gancho + Corpo + Sustentação) nasceu para construir criativos que aguentam orçamento alto sem saturar em 48h. Se um criativo seu não fez no mínimo 2 vendas no teste, ele NÃO validou — e a gente te mostra o porquê.",
+    a: "Sim. Esse é exatamente o problema que a gente ataca todos os dias. Criativo que valida em R$50/dia e morre em R$500 não é criativo validado, é coincidência estatística. A nossa metodologia (Gancho + Corpo + Sustentação) nasceu para construir criativos que aguentam orçamento alto sem saturar em 48h. Se um criativo seu não fez no mínimo 2 vendas no teste, ele NÃO validou, e a gente te mostra o porquê.",
   },
   {
     q: "Eu já tenho um time interno / uma agência. Por que contratar a Champion?",
-    a: "A maioria dos times internos e agências entrega VOLUME de criativo — não ESCALA. A gente não compete com seu time: a gente entrega o ativo que falta, o criativo de escala. Vários clientes nossos mantêm o time interno rodando o operacional e usam a Champion para o criativo principal que sustenta a conta.",
+    a: "A maioria dos times internos e agências entrega VOLUME de criativo, não ESCALA. A gente não compete com seu time: a gente entrega o ativo que falta, o criativo de escala. Vários clientes nossos mantêm o time interno rodando o operacional e usam a Champion para o criativo principal que sustenta a conta.",
   },
   {
     q: "Em quanto tempo eu vejo resultado?",
-    a: "Os primeiros criativos sobem em até 7 dias após o onboarding. A leitura real de performance acontece entre 14 e 30 dias, porque é o tempo necessário para validar com volume de spend — não com achismo. Quem promete resultado em 48h está vendendo sorte, não método.",
+    a: "Os primeiros criativos sobem em até 7 dias após o onboarding. A leitura real de performance acontece entre 14 e 30 dias, porque é o tempo necessário para validar com volume de spend, não com achismo. Quem promete resultado em 48h está vendendo sorte, não método.",
   },
   {
     q: "Funciona pro meu nicho? (Infoproduto, e-commerce, low ticket, high ticket, SaaS, afiliado…)",
@@ -24,7 +24,7 @@ const faqs = [
   },
   {
     q: "Qual o investimento? Cabe no meu orçamento?",
-    a: "A Assessoria Champion é feita para quem já fatura no mínimo R$10k/mês com tráfego pago — porque abaixo disso o problema raramente é criativo, é oferta. O valor exato é apresentado na call de diagnóstico, depois que a gente entende seu cenário. O ROI médio dos clientes paga a mensalidade nas primeiras 2 semanas.",
+    a: "A Assessoria Champion é feita para quem já fatura no mínimo R$10k/mês com tráfego pago, porque abaixo disso o problema raramente é criativo, é oferta. O valor exato é apresentado na call de diagnóstico, depois que a gente entende seu cenário. O ROI médio dos clientes paga a mensalidade nas primeiras 2 semanas.",
   },
   {
     q: "Eu não tenho equipe de filmagem nem ator. Vocês produzem o criativo?",
@@ -32,15 +32,15 @@ const faqs = [
   },
   {
     q: "Como vocês garantem que o criativo vai performar?",
-    a: "A gente NÃO garante performance — quem garante mente. O que garantimos é metodologia, processo e iteração rápida. Cada criativo passa por uma matriz de validação antes de ir pro ar, e refazemos rapidamente o que não bate o benchmark. Performance é consequência de método, e é assim que escalamos contas de R$30k pra R$300k/mês.",
+    a: "A gente NÃO garante performance, quem garante mente. O que garantimos é metodologia, processo e iteração rápida. Cada criativo passa por uma matriz de validação antes de ir pro ar, e refazemos rapidamente o que não bate o benchmark. Performance é consequência de método, e é assim que escalamos contas de R$30k pra R$300k/mês.",
   },
   {
     q: "Qual a diferença entre a Sprint e a Assessoria Completa?",
-    a: "A Sprint é uma imersão pontual de criativos para resolver um gargalo específico (ex: lançamento, escala de uma oferta). A Assessoria é a parceria contínua, com produção semanal de criativos, leitura de performance e ajuste de rota — pra quem quer estabilidade de escala mês após mês. No diagnóstico a gente recomenda o formato certo pro seu momento.",
+    a: "A Sprint é uma imersão pontual de criativos para resolver um gargalo específico (ex: lançamento, escala de uma oferta). A Assessoria é a parceria contínua, com produção semanal de criativos, leitura de performance e ajuste de rota, pra quem quer estabilidade de escala mês após mês. No diagnóstico a gente recomenda o formato certo pro seu momento.",
   },
   {
     q: "Por que eu tenho que responder um quiz antes de falar com vocês?",
-    a: "Porque a gente não atende todo mundo. O diagnóstico filtra quem realmente tem fit com a Champion (faturamento, mercado, momento) e prepara a call para ser objetiva — sem perder seu tempo nem o nosso. Se você não tem fit, a gente fala na hora e indica o caminho certo.",
+    a: "Porque a gente não atende todo mundo. O diagnóstico filtra quem realmente tem fit com a Champion (faturamento, mercado, momento) e prepara a call para ser objetiva, sem perder seu tempo nem o nosso. Se você não tem fit, a gente fala na hora e indica o caminho certo.",
   },
   {
     q: "E se eu não gostar dos criativos?",
