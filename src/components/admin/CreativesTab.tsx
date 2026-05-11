@@ -1663,6 +1663,23 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   id: "leads", label: "Leads", width: "6%", sortField: "leads_count",
                   renderCell: (c) => <div className="font-semibold">{c.leads_count}</div>,
                 },
+                ctl: {
+                  id: "ctl", label: "CTL", width: "5%", sortField: "ctl",
+                  title: "Click-To-Lead: Leads ÷ Cliques no anúncio × 100",
+                  renderCell: (c) => {
+                    const ctl = c.clicks > 0 ? (c.leads_count / c.clicks) * 100 : null;
+                    return (
+                      <span className="text-emerald-300">
+                        {ctl !== null ? (
+                          <>
+                            <div className="font-semibold">{ctl.toFixed(2)}%</div>
+                            <div className="text-[9px] text-muted-foreground">{formatNumber(c.clicks)} cliques</div>
+                          </>
+                        ) : <span className="text-muted-foreground">—</span>}
+                      </span>
+                    );
+                  },
+                },
                 mql_cpmql: {
                   id: "mql_cpmql", label: "MQL", width: "7%", sortField: "mql_count",
                   title: "MQL: contagem · %MQL (Leads → MQL) · CPMQL (Spend ÷ MQL)",
