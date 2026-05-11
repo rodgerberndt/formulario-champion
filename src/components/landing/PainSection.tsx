@@ -15,12 +15,12 @@ const pains = [
   {
     icon: Clock,
     title: "Sem tempo pra criar",
-    desc: "Você é gargalo do próprio negócio. Sem delegar, não escala — e ninguém entrega no seu nível.",
+    desc: "Você é gargalo do próprio negócio. Sem delegar, não escala, e ninguém entrega no seu nível.",
   },
   {
     icon: XCircle,
     title: "Criativos que não vendem",
-    desc: "Você posta, roda, espera — e o resultado é silêncio. Visualização não vira venda.",
+    desc: "Você posta, roda, espera, e o resultado é silêncio. Visualização não vira venda.",
   },
   {
     icon: TrendingUp,
@@ -45,7 +45,7 @@ const pains = [
   {
     icon: GraduationCap,
     title: "Falta repertório técnico",
-    desc: "Você aprendeu copiando guru. Falta método, falta estrutura — e isso te custa caro todo mês.",
+    desc: "Você aprendeu copiando guru. Falta método, falta estrutura, e isso te custa caro todo mês.",
   },
 ];
 
