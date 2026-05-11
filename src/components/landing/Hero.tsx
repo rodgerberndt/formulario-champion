@@ -42,7 +42,7 @@ export function Hero({
 
               {/* Subheadline */}
               <p className="text-sm md:text-base text-muted-foreground max-w-sm mx-auto md:mx-0 mb-6">
-                A assessoria de criativos da Champion já ajudou centenas de operações do mercado digital — seja de infoprodutos, nutracêuticos, X1 do WhatsApp, mercado na gringa ou no Brasil — a escalar em múltiplos 6, 7 e até 8 dígitos.
+                A assessoria de criativos da Champion já ajudou centenas de operações do mercado digital, seja de infoprodutos, nutracêuticos, X1 do WhatsApp, mercado na gringa ou no Brasil, a escalar em múltiplos 6, 7 e até 8 dígitos.
               </p>
 
 
