@@ -56,16 +56,10 @@ const steps = [{
     text: "Estamos estudando suas informações para que o Caio te chame. Ele vai te fazer algumas perguntas rápidas para entender sua operação e confirmar se realmente conseguimos te ajudar."
 }, {
   num: 3,
-  title: "Call de diagnóstico (somente para quem está na fase certa)",
-  status: "locked" as const,
-  icon: Lock,
-  text: "Essa call só acontece quando entendemos claramente como podemos ajudar. Acontece apenas com clientes que estão na fase correta para entrar na Assessoria Completa."
-}, {
-  num: 4,
-  title: "Entrada na Assessoria Completa + plano personalizado",
+  title: "Call de diagnóstico gratuita",
   status: "locked" as const,
   icon: Trophy,
-  text: "A entrega da Assessoria Completa é personalizada conforme sua necessidade, com base nas conversas do WhatsApp e também da call.",
+  text: "Uma call pra entender o cenário da sua operação hoje. Você sai dela com insights práticos do que pode melhorar, várias dicas aplicáveis no dia a dia e um plano de ação claro dos próximos passos pra crescer.",
   premium: true
 }];
 const statusColors = {
@@ -122,7 +116,7 @@ export function QuizResult({
   const countdown = useCountdown();
   const [progressAnimated, setProgressAnimated] = useState(0);
   useEffect(() => {
-    const timer = setTimeout(() => setProgressAnimated(25), 400);
+    const timer = setTimeout(() => setProgressAnimated(33), 400);
     return () => clearTimeout(timer);
   }, []);
 
@@ -162,13 +156,13 @@ export function QuizResult({
             <div className="bg-card/70 backdrop-blur-xl border border-border/50 rounded-2xl p-5 space-y-3 cursor-default">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-semibold text-foreground">Progresso: {progressAnimated}%</span>
-                <span className="text-muted-foreground text-xs">Etapa 1 de 4</span>
+                <span className="text-muted-foreground text-xs">Etapa 1 de 3</span>
               </div>
               <Progress value={progressAnimated} className="h-3 bg-muted/40 [&>div]:bg-gradient-to-r [&>div]:from-secondary [&>div]:to-champion-gold" />
             </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-[250px] text-center">
-            100% = você dentro da Assessoria Completa com plano de crescimento definido.
+            100% = você na call de diagnóstico com plano de ação definido.
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
