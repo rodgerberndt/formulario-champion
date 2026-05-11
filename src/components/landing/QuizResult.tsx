@@ -156,13 +156,13 @@ export function QuizResult({
             <div className="bg-card/70 backdrop-blur-xl border border-border/50 rounded-2xl p-5 space-y-3 cursor-default">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-semibold text-foreground">Progresso: {progressAnimated}%</span>
-                <span className="text-muted-foreground text-xs">Etapa 1 de 4</span>
+                <span className="text-muted-foreground text-xs">Etapa 1 de 3</span>
               </div>
               <Progress value={progressAnimated} className="h-3 bg-muted/40 [&>div]:bg-gradient-to-r [&>div]:from-secondary [&>div]:to-champion-gold" />
             </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-[250px] text-center">
-            100% = você dentro da Assessoria Completa com plano de crescimento definido.
+            100% = você na call de diagnóstico com plano de ação definido.
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
