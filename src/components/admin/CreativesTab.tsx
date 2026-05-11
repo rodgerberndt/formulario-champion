@@ -108,7 +108,6 @@ interface CreativeData {
   meetings_attended_count: number;
   cost_per_meeting: number | null;
   landing_page_views: number;
-  mql_per_view: number | null;
   lead_per_view: number | null;
   is_active: boolean;
 }
@@ -136,7 +135,6 @@ interface CreativesResponse {
     meetings: number;
     meetings_attended: number;
     landing_page_views: number;
-    mql_per_view: number | null;
     lead_per_view: number | null;
     cpl: number | null;
     cpmql: number | null;
@@ -374,7 +372,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Drag & drop column ordering (persisted)
   const DEFAULT_COLUMN_ORDER = [
-    "creative", "spend", "lpv", "leads", "ctl", "mql_cpmql", "mql_per_view",
+    "creative", "spend", "lpv", "leads", "ctl", "mql_cpmql",
     "qualified_5_10k", "meetings", "booking_rate", "call_conv", "sales_cac",
     "cac_sprint", "cac_assessoria", "win_rate", "revenue", "roas",
   ] as const;
@@ -1276,12 +1274,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">MQLs</p>
                 <div className="grid grid-cols-6 gap-4">
                   <MetricItem label="% MQL" value={totals.leads > 0 ? `${((totals.mql / totals.leads) * 100).toFixed(1)}%` : "—"} color="text-green-300" sub="Leads → MQL" />
-                  <MetricItem
-                    label="% MQL/LPV"
-                    value={totals.mql_per_view !== null && totals.mql_per_view !== undefined ? `${(totals.mql_per_view * 100).toFixed(2)}%` : "—"}
-                    color="text-sky-300"
-                    sub="MQL ÷ LPV"
-                  />
                   <MetricItem label="Total MQL" value={formatNumber(totals.mql)} color="text-green-400" sub={`⏱ Resp: ${avgResponseMql}`} />
                   <MetricItem label="Leads ≥5k" value={formatNumber(qualifiedLeads)} color="text-cyan-300" sub={`⏱ Resp: ${avgResponse5k}`} />
                   <MetricItem label="CPMQL" value={formatCurrency(totals.cpmql) || "—"} />
@@ -1695,17 +1687,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       <div className="text-[9px] text-muted-foreground">{formatPercent(c.mql_rate)}</div>
                       <div className={`text-[9px] ${isBestCpmql2 ? "font-bold text-green-400" : "text-muted-foreground"}`}>{formatCurrency(c.cost_per_mql)}</div>
                     </div>
-                  ),
-                },
-                mql_per_view: {
-                  id: "mql_per_view", label: "MQLPV%", width: "5%", sortField: "mql_per_view",
-                  title: "MQL ÷ Landing Page Views",
-                  renderCell: (c) => (
-                    <span className="text-sky-300">
-                      {c.mql_per_view !== null && c.mql_per_view !== undefined
-                        ? `${(c.mql_per_view * 100).toFixed(2)}%`
-                        : <span className="text-muted-foreground">—</span>}
-                    </span>
                   ),
                 },
                 qualified_5_10k: {
