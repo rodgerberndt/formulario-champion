@@ -1832,7 +1832,6 @@ Deno.serve(async (req: Request) => {
         const cac_assessoria = c.sales_assessoria_count > 0 ? c.spend / c.sales_assessoria_count : null;
         const roas = c.spend > 0 ? c.revenue / c.spend : null;
         const cost_per_meeting = c.meetings_count > 0 ? c.spend / c.meetings_count : null;
-        const mql_per_view = c.landing_page_views > 0 ? c.mql_count / c.landing_page_views : null;
         const lead_per_view = c.landing_page_views > 0 ? c.leads_count / c.landing_page_views : null;
         const ctl = c.clicks > 0 ? (c.leads_count / c.clicks) * 100 : null;
         const is_active = recentSpendKeys.has(c.creative_key);
@@ -1852,7 +1851,6 @@ Deno.serve(async (req: Request) => {
           cac_assessoria,
           roas,
           cost_per_meeting,
-          mql_per_view,
           lead_per_view,
           ctl,
           meetings_count: c.meetings_count,
@@ -1895,7 +1893,6 @@ Deno.serve(async (req: Request) => {
             impressions: totalImpressions,
             ctl: totalClicks > 0 ? (totalLeads / totalClicks) * 100 : null,
             landing_page_views: totalLandingPageViews,
-            mql_per_view: totalLandingPageViews > 0 ? totalMql / totalLandingPageViews : null,
             lead_per_view: totalLandingPageViews > 0 ? totalLeads / totalLandingPageViews : null,
             tier_small: totalTierSmall,
             tier_medium: totalTierMedium,
