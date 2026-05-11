@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -35,6 +35,19 @@ const Index = () => {
   useSectionThemes();
   useLandingTracking("/");
   useLandingHit();
+
+  // Prefetch the Quiz chunk so navigation to /quiz is instant.
+  useEffect(() => {
+    const prefetch = () => {
+      import("./Quiz").catch(() => { /* ignore */ });
+    };
+    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
+    if (typeof w.requestIdleCallback === "function") {
+      w.requestIdleCallback(prefetch);
+    } else {
+      setTimeout(prefetch, 800);
+    }
+  }, []);
 
   const [loadingBtn, setLoadingBtn] = useState<string | null>(null);
   const lastClickRef = useRef<number>(0);
