@@ -7,9 +7,9 @@ const steps = [
   {
     icon: ClipboardCheck,
     title: "Diagnóstico",
-    subtitle: "Quiz + entendimento",
+    subtitle: "Diagnóstico + entendimento",
     bullets: [
-      "Preencha o quiz de 2 minutos",
+      "Faça o diagnóstico de 2 minutos",
       "Nosso time analisa seu cenário, mercado e estrutura atual",
       "Você recebe um plano personalizado com os próximos passos",
     ],
