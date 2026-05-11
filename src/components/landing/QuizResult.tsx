@@ -116,7 +116,7 @@ export function QuizResult({
   const countdown = useCountdown();
   const [progressAnimated, setProgressAnimated] = useState(0);
   useEffect(() => {
-    const timer = setTimeout(() => setProgressAnimated(25), 400);
+    const timer = setTimeout(() => setProgressAnimated(33), 400);
     return () => clearTimeout(timer);
   }, []);
 
