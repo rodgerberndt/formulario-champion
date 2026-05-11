@@ -9,7 +9,7 @@ import { generateClickId } from "@/hooks/useLandingHit";
 import { ShimmerText, KeywordGlow, LineReveal } from "./TextEffects";
 
 const steps = [
-  { icon: ClipboardCheck, text: "Preencha o formulário (1–2 min)" },
+  { icon: ClipboardCheck, text: "Faça o diagnóstico (1–2 min)" },
   { icon: BarChart3, text: "Análise do seu cenário (hoje)" },
   { icon: PhoneCall, text: "Especialista te chama" },
   { icon: Rocket, text: "Plano de criativos + próximos passos" },
@@ -50,7 +50,7 @@ export function FinalCTA() {
 
           <LineReveal isVisible={isVisible} delay={200}>
             <p className="text-sm text-muted-foreground mb-8 max-w-md mx-auto">
-              Preencha o formulário de 2 minutos, e descubra como a Champion pode transformar seus resultados.
+              Faça o diagnóstico de 2 minutos e descubra como a Champion pode transformar seus resultados.
             </p>
           </LineReveal>
 
@@ -86,7 +86,7 @@ export function FinalCTA() {
                 </>
               ) : (
                 <>
-                  QUERO PREENCHER O FORMULÁRIO
+                  QUERO FAZER MEU DIAGNÓSTICO
                   <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
                 </>
               )}
