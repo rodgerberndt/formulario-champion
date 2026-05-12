@@ -1,9 +1,5 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { QuizResult } from "@/components/landing/QuizResult";
-import { supabase } from "@/integrations/supabase/client";
 
 // Declare fbq for TypeScript
 declare global {
