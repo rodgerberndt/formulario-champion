@@ -78,36 +78,30 @@ function PageBackground() {
 
 export default function Obrigado() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<QuizFormData | null>(null);
-  const conversionEventFired = useRef(false);
-
-  // Fire CompleteRegistration with shared event_id for CAPI deduplication
-  useEffect(() => {
-    if (formData && !conversionEventFired.current) {
-      if (typeof window.fbq === 'function') {
-        // Read shared event_id generated during quiz submit
-        let eventID: string | undefined;
-        try {
-          const stored = localStorage.getItem('champion_event_ids');
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            eventID = parsed.event_ids?.CompleteRegistration;
-          }
-        } catch { /* ignore */ }
-
-        window.fbq('track', 'CompleteRegistration', {}, { eventID });
-        console.log('Facebook Pixel: CompleteRegistration event fired with eventID:', eventID);
-        conversionEventFired.current = true;
-      }
-    }
-  }, [formData]);
 
   useEffect(() => {
     const saved = localStorage.getItem(RESULT_STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setFormData(parsed);
+
+        // Fire CompleteRegistration pixel before redirect
+        if (typeof window.fbq === 'function') {
+          let eventID: string | undefined;
+          try {
+            const stored = localStorage.getItem('champion_event_ids');
+            if (stored) {
+              const parsedIds = JSON.parse(stored);
+              eventID = parsedIds.event_ids?.CompleteRegistration;
+            }
+          } catch { /* ignore */ }
+
+          window.fbq('track', 'CompleteRegistration', {}, { eventID });
+          console.log('Facebook Pixel: CompleteRegistration event fired with eventID:', eventID);
+        }
+
+        // Immediate redirect — no page rendered
+        window.location.replace("https://education.championadstudio.com");
       } catch {
         navigate("/quiz");
       }
@@ -116,44 +110,6 @@ export default function Obrigado() {
     }
   }, [navigate]);
 
-  // Redirect to education page after pixel fires
-  useEffect(() => {
-    if (formData) {
-      const timer = setTimeout(() => {
-        window.location.href = "https://education.championadstudio.com";
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-  }, [formData]);
-
-  if (!formData) {
-    return null; // Loading or redirecting
-  }
-
-  return (
-    <div className="min-h-[100svh] relative w-full max-w-full overflow-x-hidden">
-      <PageBackground />
-      
-      {/* Top Bar */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/50">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-xl">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/")}
-            className="gap-2 text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Voltar
-          </Button>
-        </div>
-      </header>
-
-      <main className="pt-20 pb-12 px-4 min-h-[100svh]" style={{ paddingBottom: 'calc(48px + env(safe-area-inset-bottom))' }}>
-        <div className="container mx-auto max-w-lg">
-          <QuizResult nome={formData.nome_completo} estagio_negocio={formData.estagio_negocio} investimento_faixa={formData.investimento_faixa} />
-        </div>
-      </main>
-    </div>
-  );
+  // Never renders the thank-you page content
+  return null;
 }
