@@ -109,14 +109,22 @@ export default function Obrigado() {
         const parsed = JSON.parse(saved);
         setFormData(parsed);
       } catch {
-        // Invalid data, redirect to quiz
         navigate("/quiz");
       }
     } else {
-      // No data, redirect to quiz
       navigate("/quiz");
     }
   }, [navigate]);
+
+  // Redirect to education page after pixel fires
+  useEffect(() => {
+    if (formData) {
+      const timer = setTimeout(() => {
+        window.location.href = "https://education.championadstudio.com";
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [formData]);
 
   if (!formData) {
     return null; // Loading or redirecting
