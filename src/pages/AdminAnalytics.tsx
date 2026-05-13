@@ -824,7 +824,13 @@ export default function AdminAnalytics() {
     
     // Adset (conjunto de anúncio / criativo) filter
     if (leadsAdsetFilter !== "all" && lead.utm_content !== leadsAdsetFilter) return false;
-    
+
+    // Conversion filter (reunião agendada / venda)
+    if (leadsConversionFilter === "with_meeting" && !meetingLeadIds.has(lead.id)) return false;
+    if (leadsConversionFilter === "with_sale" && !saleLeadIds.has(lead.id)) return false;
+    if (leadsConversionFilter === "with_any" && !meetingLeadIds.has(lead.id) && !saleLeadIds.has(lead.id)) return false;
+    if (leadsConversionFilter === "none" && (meetingLeadIds.has(lead.id) || saleLeadIds.has(lead.id))) return false;
+
     // Date filtering is now done server-side in loadLeads
     
     return true;
