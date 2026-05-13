@@ -524,6 +524,7 @@ export default function AdminAnalytics() {
       loadMetrics();
       loadLeads();
       loadCampaignMetrics();
+      loadConversions();
     }
   }, [isAuthenticated, startISO, endISO]);
 
