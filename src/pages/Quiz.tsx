@@ -847,7 +847,32 @@ export default function Quiz() {
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
-              Qual é o seu faturamento mensal?
+              Quantas operações você tem ativas ou em fase de construção?
+            </label>
+            <Select
+              value={formData.operacoes_ativas !== null ? String(formData.operacoes_ativas) : ""}
+              onValueChange={(value) => updateField("operacoes_ativas", parseInt(value, 10))}>
+              <SelectTrigger className={selectClasses}>
+                <SelectValue placeholder="Selecione o número de operações" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
+                {Array.from({ length: 11 }, (_, i) => (
+                  <SelectItem
+                    key={i}
+                    value={String(i)}
+                    className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3">
+                    {i === 0 ? "Nenhuma" : `${i} operação${i > 1 ? 's' : ''}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>);
+
+      case 4:
+        return (
+          <div className="space-y-4 sm:space-y-5 animate-fade-in">
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
+              Quanto de faturamento você tem hoje no seu ecossistema?
             </label>
             <Select
               value={formData.investimento_faixa}
