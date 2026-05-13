@@ -1842,6 +1842,18 @@ export default function AdminAnalytics() {
                     ))}
                   </SelectContent>
                 </Select>
+                <Select value={leadsConversionFilter} onValueChange={setLeadsConversionFilter}>
+                  <SelectTrigger className="w-full md:w-48">
+                    <SelectValue placeholder="Conversão" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas conversões</SelectItem>
+                    <SelectItem value="with_any">Reunião ou venda</SelectItem>
+                    <SelectItem value="with_meeting">Apenas reunião agendada</SelectItem>
+                    <SelectItem value="with_sale">Apenas venda</SelectItem>
+                    <SelectItem value="none">Sem conversão</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               {/* Actions - note: date filter is now in the global header */}
@@ -1854,7 +1866,7 @@ export default function AdminAnalytics() {
                   <Download className="w-4 h-4 mr-2" />
                   Exportar CSV
                 </Button>
-                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all" || leadsAdsetFilter !== "all") && (
+                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all" || leadsAdsetFilter !== "all" || leadsConversionFilter !== "all") && (
                   <Button 
                     variant="ghost" 
                     onClick={() => {
@@ -1864,6 +1876,7 @@ export default function AdminAnalytics() {
                       setLeadsTierFilter("all");
                       setLeadsSdrFilter("all");
                       setLeadsAdsetFilter("all");
+                      setLeadsConversionFilter("all");
                     }}
                   >
                     <XCircle className="w-4 h-4 mr-2" />
