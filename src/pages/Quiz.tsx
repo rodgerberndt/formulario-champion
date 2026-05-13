@@ -40,6 +40,7 @@ interface QuizFormData {
   instagram: string;
   email: string;
   mercado: string;
+  operacoes_ativas: number | null;
   investimento_faixa: string;
   dor_desejo: string;
   quer_vender_mais: string;
@@ -52,18 +53,20 @@ interface QuizFormData {
 const STORAGE_KEY = "champion_quiz_progress_v2";
 const RESULT_STORAGE_KEY = "champion_quiz_result";
 
-// Step IDs for tracking (10 steps now: NPS added before loading)
+// Step IDs for tracking (11 steps now: operacoes_ativas added before faturamento)
 const STEP_IDS = [
-"q1_quer_vender",
-"q2_mercado",
-"q3_faturamento",
-"q4_nome",
-"q5_whats",
-"q6_insta",
-"q7_email",
-"q8_dor",
-"q9_nps",
-"q10_loading"];
+  "q1_quer_vender",
+  "q2_mercado",
+  "q3_operacoes",
+  "q4_faturamento",
+  "q5_nome",
+  "q6_whats",
+  "q7_insta",
+  "q8_email",
+  "q9_dor",
+  "q10_nps",
+  "q11_loading",
+];
 
 
 // Memoized background component
@@ -329,6 +332,7 @@ export default function Quiz() {
     instagram: "",
     email: "",
     mercado: "",
+    operacoes_ativas: null,
     investimento_faixa: "",
     dor_desejo: "",
     quer_vender_mais: "",
@@ -337,7 +341,7 @@ export default function Quiz() {
     nps_score: null,
   });
 
-  const totalSteps = 10;
+  const totalSteps = 11;
   const hasTrackedQuizView = useRef(false);
   const lastTrackedStep = useRef<number | null>(null);
   const hasSubmittedRef = useRef(false); // Hard guard against double-submit
@@ -409,23 +413,25 @@ export default function Quiz() {
       case 2:
         return formData.mercado !== "";
       case 3:
-        return formData.investimento_faixa !== "";
+        return formData.operacoes_ativas !== null;
       case 4:
+        return formData.investimento_faixa !== "";
+      case 5:
         return formData.nome_completo.trim().length >= 3;
-      case 5: {
+      case 6: {
         return phoneValid && isPhoneE164Valid(formData.whatsapp) && formData.lgpd;
       }
-      case 6:
+      case 7:
         return formData.instagram.trim().length >= 1;
-      case 7: {
+      case 8: {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(formData.email.trim());
       }
-      case 8:
-        return formData.dor_desejo.trim().length >= 10;
       case 9:
-        return formData.nps_score !== null;
+        return formData.dor_desejo.trim().length >= 10;
       case 10:
+        return formData.nps_score !== null;
+      case 11:
         return true;
       default:
         return false;
@@ -476,6 +482,7 @@ export default function Quiz() {
         instagram: currentData.instagram,
         email: currentData.email,
         mercado: currentData.mercado,
+        operacoes_ativas: currentData.operacoes_ativas,
         investimento_faixa: currentData.investimento_faixa,
         dor_desejo: currentData.dor_desejo,
         score: result.score,
@@ -533,6 +540,7 @@ export default function Quiz() {
           instagram: currentData.instagram,
           email: currentData.email,
           mercado: currentData.mercado,
+          operacoes_ativas: currentData.operacoes_ativas,
           investimento_faixa: currentData.investimento_faixa,
           dor_desejo: currentData.dor_desejo,
           compromisso_whatsapp: currentData.compromisso_whatsapp,
@@ -572,6 +580,7 @@ export default function Quiz() {
           instagram: currentData.instagram,
           email: currentData.email,
           mercado: currentData.mercado,
+          operacoes_ativas: currentData.operacoes_ativas,
           investimento_faixa: currentData.investimento_faixa,
           dor_desejo: currentData.dor_desejo,
           compromisso_whatsapp: currentData.compromisso_whatsapp,
@@ -613,6 +622,7 @@ export default function Quiz() {
         instagram: currentData.instagram,
         email: currentData.email,
         mercado: currentData.mercado,
+        operacoes_ativas: currentData.operacoes_ativas,
         investimento_faixa: currentData.investimento_faixa,
         dor_desejo: currentData.dor_desejo
       }));
@@ -669,13 +679,14 @@ export default function Quiz() {
       switch (step) {
         case 1: fieldData.quer_vender_mais = formData.quer_vender_mais; break;
         case 2: fieldData.mercado = formData.mercado; break;
-        case 3: fieldData.investimento = formData.investimento_faixa; break;
-        case 4: fieldData.nome = formData.nome_completo; break;
-        case 5: fieldData.whatsapp = formData.whatsapp; break;
-        case 6: fieldData.instagram = formData.instagram; break;
-        case 7: fieldData.email = formData.email; break;
-        case 8: fieldData.dor_desejo = formData.dor_desejo; break;
-        case 9: fieldData.nps_score = String(formData.nps_score ?? ""); break;
+        case 3: fieldData.operacoes = String(formData.operacoes_ativas ?? ""); break;
+        case 4: fieldData.investimento = formData.investimento_faixa; break;
+        case 5: fieldData.nome = formData.nome_completo; break;
+        case 6: fieldData.whatsapp = formData.whatsapp; break;
+        case 7: fieldData.instagram = formData.instagram; break;
+        case 8: fieldData.email = formData.email; break;
+        case 9: fieldData.dor_desejo = formData.dor_desejo; break;
+        case 10: fieldData.nps_score = String(formData.nps_score ?? ""); break;
       }
 
       try {
@@ -725,7 +736,7 @@ export default function Quiz() {
 
   const renderStep = () => {
     switch (step) {
-      case 4:
+      case 5:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -742,7 +753,7 @@ export default function Quiz() {
               onChange={(e) => updateField("nome_completo", e.target.value)} />
           </div>);
 
-      case 5:
+      case 6:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -769,7 +780,7 @@ export default function Quiz() {
             </div>
           </div>);
 
-      case 6:
+      case 7:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -787,7 +798,7 @@ export default function Quiz() {
               onChange={(e) => updateField("instagram", e.target.value)} />
           </div>);
 
-      case 7:
+      case 8:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
@@ -836,7 +847,32 @@ export default function Quiz() {
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
-              Qual é o seu faturamento mensal?
+              Quantas operações você tem ativas ou em fase de construção?
+            </label>
+            <Select
+              value={formData.operacoes_ativas !== null ? String(formData.operacoes_ativas) : ""}
+              onValueChange={(value) => updateField("operacoes_ativas", parseInt(value, 10))}>
+              <SelectTrigger className={selectClasses}>
+                <SelectValue placeholder="Selecione o número de operações" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
+                {Array.from({ length: 11 }, (_, i) => (
+                  <SelectItem
+                    key={i}
+                    value={String(i)}
+                    className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3">
+                    {i === 0 ? "Nenhuma" : `${i} operação${i > 1 ? 's' : ''}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>);
+
+      case 4:
+        return (
+          <div className="space-y-4 sm:space-y-5 animate-fade-in">
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
+              Quanto de faturamento você tem hoje no seu ecossistema?
             </label>
             <Select
               value={formData.investimento_faixa}
@@ -896,7 +932,7 @@ export default function Quiz() {
             </div>
           </div>);
 
-      case 8:
+      case 9:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <div className="bg-secondary/10 border border-secondary/20 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
@@ -964,14 +1000,14 @@ export default function Quiz() {
               onChange={(e) => updateField("dor_desejo", e.target.value)} />
           </div>);
 
-      case 9:
+      case 10:
         return (
           <NpsStep
             value={formData.nps_score}
             onChange={(n) => updateField("nps_score", n)}
           />);
 
-      case 10:
+      case 11:
         return (
           <LoadingCommitStep
             onFinish={handleSubmit}
@@ -1057,7 +1093,7 @@ export default function Quiz() {
                 {renderStep()}
               </div>
 
-              {/* Navigation Buttons - Hidden on loading step (10) and step 1 (auto-advance) */}
+              {/* Navigation Buttons - Hidden on loading step (11) and step 1 (auto-advance) */}
               {step !== totalSteps && step !== 1 &&
                 <div className={`mt-6 sm:mt-8 ${step > 1 ? 'flex flex-col-reverse sm:flex-row gap-3' : ''}`}>
                   {step > 1 &&

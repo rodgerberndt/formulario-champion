@@ -673,6 +673,7 @@ export type Database = {
           nome_completo: string
           nps_score: number | null
           objetivo: string | null
+          operacoes_ativas: number | null
           orcamento_faixa: string | null
           placement: string | null
           raw_answers_json: Json | null
@@ -729,6 +730,7 @@ export type Database = {
           nome_completo: string
           nps_score?: number | null
           objetivo?: string | null
+          operacoes_ativas?: number | null
           orcamento_faixa?: string | null
           placement?: string | null
           raw_answers_json?: Json | null
@@ -785,6 +787,7 @@ export type Database = {
           nome_completo?: string
           nps_score?: number | null
           objetivo?: string | null
+          operacoes_ativas?: number | null
           orcamento_faixa?: string | null
           placement?: string | null
           raw_answers_json?: Json | null
