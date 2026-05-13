@@ -56,10 +56,10 @@ const steps = [{
     text: "Estamos estudando suas informações para que o Caio te chame. Ele vai te fazer algumas perguntas rápidas para entender sua operação e confirmar se realmente conseguimos te ajudar."
 }, {
   num: 3,
-  title: "Call de diagnóstico gratuita",
+  title: "Call de diagnóstico gratuita (antes R$ 2.000)",
   status: "locked" as const,
   icon: Trophy,
-  text: "Uma call pra entender o cenário da sua operação hoje. Você sai dela com insights práticos do que pode melhorar, várias dicas aplicáveis no dia a dia e um plano de ação claro dos próximos passos pra crescer.",
+  text: "Uma call pra entender o cenário da sua operação hoje. Você sai dela com insights práticos do que pode melhorar, várias dicas aplicáveis no dia a dia e um plano de ação claro dos próximos passos pra crescer. Essa call era vendida por R$ 2.000 e agora está gratuita pra quem preenche o formulário.",
   premium: true
 }];
 const statusColors = {
@@ -140,7 +140,7 @@ export function QuizResult({
         <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
           Parabéns, <span className="champion-gradient-text">{firstName}</span>! Seu cadastro foi concluído com sucesso.{" "}
           <span className="champion-gradient-text">
-            Você está quase garantindo sua call de diagnóstico gratuita.
+            Você está quase garantindo sua call de diagnóstico gratuita — antes vendida por R$ 2.000.
           </span>
         </h1>
 
@@ -162,7 +162,7 @@ export function QuizResult({
             </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-[250px] text-center">
-            100% = você na call de diagnóstico com plano de ação definido.
+            100% = você na call de diagnóstico gratuita (antes R$ 2.000) com plano de ação definido.
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -252,7 +252,7 @@ export function QuizResult({
         </p>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Ao invés de esperar nosso time entrar em contato e marcar o diagnóstico, você pode <strong className="text-secondary">pular a fila</strong> e conseguir entrar em contato com o nosso time, caso ainda não entramos em contato com você.
+          Ao invés de esperar nosso time entrar em contato e marcar a call, você pode <strong className="text-secondary">pular a fila</strong> e conseguir entrar em contato com o nosso time, caso ainda não entramos em contato com você.
         </p>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
