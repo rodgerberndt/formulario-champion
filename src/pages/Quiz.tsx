@@ -330,6 +330,7 @@ export default function Quiz() {
     instagram: "",
     email: "",
     mercado: "",
+    operacoes_ativas: null,
     investimento_faixa: "",
     dor_desejo: "",
     quer_vender_mais: "",
