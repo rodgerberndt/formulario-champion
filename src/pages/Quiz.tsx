@@ -295,9 +295,9 @@ function LoadingCommitStep({
 
         {/* Bônus surpresa */}
         <p className="text-base sm:text-lg text-white/95 font-medium leading-relaxed text-center">
-          🎁 Um <span className="text-secondary font-bold">presente surpresa</span>, até melhor que a Assessoria de Criativos.
+          🎁 Uma <span className="text-secondary font-bold">call de diagnóstico gratuita</span> — antes vendida por R$ 2.000.
           <span className="block mt-1.5 text-sm sm:text-base text-white/75">
-            Você só descobre o que é se <span className="text-secondary font-semibold">responder o nosso time</span>.
+            Você só garante se <span className="text-secondary font-semibold">responder o nosso time</span> no WhatsApp.
           </span>
         </p>
       </div>
@@ -781,7 +781,7 @@ export default function Quiz() {
                 onCheckedChange={(checked) => updateField("lgpd", checked === true)}
                 className="border-2 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5 mt-0.5 rounded-md shrink-0" />
               <label htmlFor="lgpd" className="text-xs sm:text-sm text-muted-foreground cursor-pointer leading-relaxed">
-                Concordo em receber contato sobre o diagnóstico, e responder o mais rápido possível.
+                Concordo em receber contato sobre a call de diagnóstico (antes R$ 2.000, agora gratuita), e responder o mais rápido possível.
               </label>
             </div>
           </div>);
@@ -945,7 +945,7 @@ export default function Quiz() {
               <div className="flex items-center gap-2">
                 <Target className="w-4 h-4 sm:w-5 sm:h-5 text-secondary shrink-0" />
                 <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
-                  Quanto mais <span className="text-secondary font-semibold">detalhada</span> sua resposta, mais <span className="text-secondary font-semibold">preciso</span> será o seu diagnóstico.
+                  Quanto mais <span className="text-secondary font-semibold">detalhada</span> sua resposta, mais <span className="text-secondary font-semibold">preciso</span> será o seu diagnóstico na call.
                 </p>
               </div>
             </div>
@@ -1026,7 +1026,7 @@ export default function Quiz() {
             </div>
 
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
-              Você estaria disposto a fazer uma call de diagnóstico com o nosso time para analisarmos a sua operação e te passarmos o que pode melhorar?
+              Você estaria disposto a fazer uma call de diagnóstico com o nosso time para analisarmos a sua operação e te passarmos o que pode melhorar? Essa call era vendida por R$ 2.000 e agora está <span className="text-secondary">totalmente gratuita</span> para quem preenche o formulário.
             </label>
 
             <div className="grid grid-cols-2 gap-3">
