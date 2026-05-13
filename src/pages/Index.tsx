@@ -53,6 +53,31 @@ const Index = () => {
   const lastClickRef = useRef<number>(0);
   const DEBOUNCE_MS = 1500;
 
+  // Show mobile sticky CTA only after user scrolls past SuccessCases section
+  const [showStickyCta, setShowStickyCta] = useState(false);
+  const successCasesRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const el = successCasesRef.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      const rect = el.getBoundingClientRect();
+      // Show once the bottom of the cases section has scrolled above the viewport top
+      if (rect.bottom <= 0) setShowStickyCta(true);
+      else setShowStickyCta(false);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [isMobile]);
+
   const handleStartClick = async (buttonId: string) => {
     const now = Date.now();
     if (loadingBtn) return;
@@ -86,7 +111,7 @@ const Index = () => {
           <SocialProofCarousel />
         </section>
 
-        <section data-theme="void" data-track-id="success_cases" data-track-order="2.5">
+        <section ref={successCasesRef} data-theme="void" data-track-id="success_cases" data-track-order="2.5">
           <SuccessCases />
         </section>
 
@@ -153,9 +178,9 @@ const Index = () => {
 
       <Footer />
 
-      {/* Mobile sticky CTA */}
-      {isMobile && (
-        <div className="fixed bottom-3 left-3 right-3 z-50 md:hidden">
+      {/* Mobile sticky CTA - appears only after user scrolls past success cases */}
+      {isMobile && showStickyCta && (
+        <div className="fixed bottom-3 left-3 right-3 z-50 md:hidden animate-fade-in">
           <Button
             size="sm"
             onClick={() => handleStartClick("mobile_sticky_cta")}
