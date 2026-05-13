@@ -1025,10 +1025,14 @@ export default function Quiz() {
               </div>
             </div>
 
-            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug whitespace-pre-line">
-              Você estaria disposto a fazer uma call de diagnóstico com o nosso time para analisarmos a sua operação e te passarmos o que pode melhorar?{"\n\n"}
-              Essa call é vendida por R$ 2.000, mas somente para quem preenche o formulário, recebe ela gratuitamente.
-            </label>
+            <div className="space-y-3">
+              <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
+                Você estaria disposto a fazer uma call de diagnóstico com o nosso time para analisarmos a sua operação e te passarmos o que pode melhorar?
+              </label>
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                Essa call é vendida por <span className="text-secondary font-semibold">R$ 2.000</span>, mas somente para quem preenche o formulário, recebe ela gratuitamente.
+              </p>
+            </div>
 
             <div className="grid grid-cols-2 gap-3">
               {["Sim", "Não"].map((opt) => {
