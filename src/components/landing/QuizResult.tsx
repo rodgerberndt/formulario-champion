@@ -252,7 +252,7 @@ export function QuizResult({
         </p>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Ao invés de esperar nosso time entrar em contato e marcar o diagnóstico, você pode <strong className="text-secondary">pular a fila</strong> e conseguir entrar em contato com o nosso time, caso ainda não entramos em contato com você.
+          Ao invés de esperar nosso time entrar em contato e marcar a call, você pode <strong className="text-secondary">pular a fila</strong> e conseguir entrar em contato com o nosso time, caso ainda não entramos em contato com você.
         </p>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
