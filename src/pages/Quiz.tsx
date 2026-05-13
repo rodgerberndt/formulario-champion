@@ -675,13 +675,14 @@ export default function Quiz() {
       switch (step) {
         case 1: fieldData.quer_vender_mais = formData.quer_vender_mais; break;
         case 2: fieldData.mercado = formData.mercado; break;
-        case 3: fieldData.investimento = formData.investimento_faixa; break;
-        case 4: fieldData.nome = formData.nome_completo; break;
-        case 5: fieldData.whatsapp = formData.whatsapp; break;
-        case 6: fieldData.instagram = formData.instagram; break;
-        case 7: fieldData.email = formData.email; break;
-        case 8: fieldData.dor_desejo = formData.dor_desejo; break;
-        case 9: fieldData.nps_score = String(formData.nps_score ?? ""); break;
+        case 3: fieldData.operacoes = String(formData.operacoes_ativas ?? ""); break;
+        case 4: fieldData.investimento = formData.investimento_faixa; break;
+        case 5: fieldData.nome = formData.nome_completo; break;
+        case 6: fieldData.whatsapp = formData.whatsapp; break;
+        case 7: fieldData.instagram = formData.instagram; break;
+        case 8: fieldData.email = formData.email; break;
+        case 9: fieldData.dor_desejo = formData.dor_desejo; break;
+        case 10: fieldData.nps_score = String(formData.nps_score ?? ""); break;
       }
 
       try {
