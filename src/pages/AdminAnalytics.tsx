@@ -42,6 +42,7 @@ import {
   Clock,
   Globe,
   DollarSign,
+  CalendarCheck,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -335,6 +336,9 @@ export default function AdminAnalytics() {
   const [leadsTierFilter, setLeadsTierFilter] = useState<string>("all");
   const [leadsSdrFilter, setLeadsSdrFilter] = useState<string>("all");
   const [leadsAdsetFilter, setLeadsAdsetFilter] = useState<string>("all");
+  const [leadsConversionFilter, setLeadsConversionFilter] = useState<string>("all");
+  const [meetingLeadIds, setMeetingLeadIds] = useState<Set<string>>(new Set());
+  const [saleLeadIds, setSaleLeadIds] = useState<Set<string>>(new Set());
 
   // Recalculate score/tier from lead answers (direct faturamento mapping)
   const recalcLeadScore = (lead: Lead) => {
@@ -520,6 +524,7 @@ export default function AdminAnalytics() {
       loadMetrics();
       loadLeads();
       loadCampaignMetrics();
+      loadConversions();
     }
   }, [isAuthenticated, startISO, endISO]);
 
@@ -601,6 +606,7 @@ export default function AdminAnalytics() {
       setLeadsLoading(false);
     }
   };
+
 
 
 
@@ -818,7 +824,13 @@ export default function AdminAnalytics() {
     
     // Adset (conjunto de anúncio / criativo) filter
     if (leadsAdsetFilter !== "all" && lead.utm_content !== leadsAdsetFilter) return false;
-    
+
+    // Conversion filter (reunião agendada / venda)
+    if (leadsConversionFilter === "with_meeting" && !meetingLeadIds.has(lead.id)) return false;
+    if (leadsConversionFilter === "with_sale" && !saleLeadIds.has(lead.id)) return false;
+    if (leadsConversionFilter === "with_any" && !meetingLeadIds.has(lead.id) && !saleLeadIds.has(lead.id)) return false;
+    if (leadsConversionFilter === "none" && (meetingLeadIds.has(lead.id) || saleLeadIds.has(lead.id))) return false;
+
     // Date filtering is now done server-side in loadLeads
     
     return true;
@@ -965,6 +977,24 @@ export default function AdminAnalytics() {
       console.error("Error loading metrics:", error);
     }
   };
+
+  // Load meetings + manual sales to flag leads with meeting/sale conversion
+  const loadConversions = useCallback(async () => {
+    try {
+      const [meetingsData, salesData] = await Promise.all([
+        fetchAdminData("/meetings").catch(() => []),
+        fetchAdminData("/manual-sales").catch(() => []),
+      ]);
+      const mSet = new Set<string>();
+      (meetingsData || []).forEach((m: { lead_id?: string }) => { if (m?.lead_id) mSet.add(m.lead_id); });
+      const sSet = new Set<string>();
+      (salesData || []).forEach((s: { lead_id?: string }) => { if (s?.lead_id) sSet.add(s.lead_id); });
+      setMeetingLeadIds(mSet);
+      setSaleLeadIds(sSet);
+    } catch (e) {
+      console.warn("[AdminAnalytics] Failed to load conversions:", e);
+    }
+  }, [fetchAdminData]);
 
   const loadCampaignMetrics = async () => {
     setCampaignMetricsLoading(true);
@@ -1812,6 +1842,18 @@ export default function AdminAnalytics() {
                     ))}
                   </SelectContent>
                 </Select>
+                <Select value={leadsConversionFilter} onValueChange={setLeadsConversionFilter}>
+                  <SelectTrigger className="w-full md:w-48">
+                    <SelectValue placeholder="Conversão" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas conversões</SelectItem>
+                    <SelectItem value="with_any">Reunião ou venda</SelectItem>
+                    <SelectItem value="with_meeting">Apenas reunião agendada</SelectItem>
+                    <SelectItem value="with_sale">Apenas venda</SelectItem>
+                    <SelectItem value="none">Sem conversão</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               {/* Actions - note: date filter is now in the global header */}
@@ -1824,7 +1866,7 @@ export default function AdminAnalytics() {
                   <Download className="w-4 h-4 mr-2" />
                   Exportar CSV
                 </Button>
-                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all" || leadsAdsetFilter !== "all") && (
+                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all" || leadsAdsetFilter !== "all" || leadsConversionFilter !== "all") && (
                   <Button 
                     variant="ghost" 
                     onClick={() => {
@@ -1834,6 +1876,7 @@ export default function AdminAnalytics() {
                       setLeadsTierFilter("all");
                       setLeadsSdrFilter("all");
                       setLeadsAdsetFilter("all");
+                      setLeadsConversionFilter("all");
                     }}
                   >
                     <XCircle className="w-4 h-4 mr-2" />
@@ -1989,6 +2032,16 @@ export default function AdminAnalytics() {
                                   {lead.clicked_whatsapp && (
                                     <Badge variant="outline" className="border-emerald-500 text-emerald-400 bg-emerald-500/10 w-fit text-[10px] px-1.5 py-0">
                                       💬 Chamou WhatsApp
+                                    </Badge>
+                                  )}
+                                  {meetingLeadIds.has(lead.id) && (
+                                    <Badge variant="outline" className="border-blue-500 text-blue-400 bg-blue-500/10 w-fit text-[10px] px-1.5 py-0 gap-0.5">
+                                      <CalendarCheck className="w-2.5 h-2.5" /> Reunião
+                                    </Badge>
+                                  )}
+                                  {saleLeadIds.has(lead.id) && (
+                                    <Badge variant="outline" className="border-secondary text-secondary bg-secondary/10 w-fit text-[10px] px-1.5 py-0 gap-0.5">
+                                      <DollarSign className="w-2.5 h-2.5" /> Venda
                                     </Badge>
                                   )}
                                 </div>

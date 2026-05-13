@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,13 +54,10 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
-  CalendarCheck,
-  DollarSign,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getTierFromFaturamento } from "@/lib/leadScoring";
-import { fetchAdmin } from "@/lib/adminAuth";
 
 interface Lead {
   id: string;
@@ -501,9 +498,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
   const [sourceFilter, setSourceFilter] = useState("all");
   const [faturamentoFilter, setFaturamentoFilter] = useState("all");
   const [estagioFilter, setEstagioFilter] = useState("all");
-  const [conversionFilter, setConversionFilter] = useState("all");
-  const [meetingLeadIds, setMeetingLeadIds] = useState<Set<string>>(new Set());
-  const [saleLeadIds, setSaleLeadIds] = useState<Set<string>>(new Set());
 
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -518,30 +512,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
     return n;
   });
 
-  // Fetch meetings + manual sales to flag leads that converted
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const base = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data`;
-        const [meetingsRes, salesRes] = await Promise.all([
-          fetchAdmin(`${base}/meetings`).then(r => r.ok ? r.json() : []),
-          fetchAdmin(`${base}/manual-sales`).then(r => r.ok ? r.json() : []),
-        ]);
-        if (cancelled) return;
-        const mSet = new Set<string>();
-        (meetingsRes || []).forEach((m: any) => { if (m?.lead_id) mSet.add(m.lead_id); });
-        const sSet = new Set<string>();
-        (salesRes || []).forEach((s: any) => { if (s?.lead_id) sSet.add(s.lead_id); });
-        setMeetingLeadIds(mSet);
-        setSaleLeadIds(sSet);
-      } catch (e) {
-        console.warn("[LeadReportsTab] Failed to load meetings/sales:", e);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, []);
-
   const filtered = useMemo(() => {
     return leads.filter(l => {
       if (statusFilter === "mql" && !isMql(l)) return false;
@@ -550,13 +520,9 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
       if (sourceFilter !== "all" && (l.utm_source || "Direto") !== sourceFilter) return false;
       if (faturamentoFilter !== "all" && (l.investimento_faixa || "Não informado") !== faturamentoFilter) return false;
       if (estagioFilter !== "all" && (l.estagio_negocio || "Não informado") !== estagioFilter) return false;
-      if (conversionFilter === "with_meeting" && !meetingLeadIds.has(l.id)) return false;
-      if (conversionFilter === "with_sale" && !saleLeadIds.has(l.id)) return false;
-      if (conversionFilter === "with_any" && !meetingLeadIds.has(l.id) && !saleLeadIds.has(l.id)) return false;
-      if (conversionFilter === "none" && (meetingLeadIds.has(l.id) || saleLeadIds.has(l.id))) return false;
       return true;
     });
-  }, [leads, statusFilter, mercadoFilter, sourceFilter, faturamentoFilter, estagioFilter, conversionFilter, meetingLeadIds, saleLeadIds]);
+  }, [leads, statusFilter, mercadoFilter, sourceFilter, faturamentoFilter, estagioFilter]);
 
   const mqls = useMemo(() => filtered.filter(isMql), [filtered]);
 
@@ -632,14 +598,12 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
   };
 
   const exportCSV = useCallback(() => {
-    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento", "Dor/Desejo", "Tier", "MQL", "Reunião", "Venda", "UTM Source", "UTM Campaign", "UTM Content"];
+    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento", "Dor/Desejo", "Tier", "MQL", "UTM Source", "UTM Campaign", "UTM Content"];
     const rows = tableLeads.map(l => [
       format(new Date(l.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }),
       l.nome_completo, l.whatsapp, l.instagram, l.email || "", normalizeMercado(l.mercado),
       l.estagio_negocio || "", l.investimento_faixa || "", `"${(l.dor_desejo || "").replace(/"/g, '""')}"`,
       getTierFromFaturamento(l.investimento_faixa), isMql(l) ? "Sim" : "Não",
-      meetingLeadIds.has(l.id) ? "Sim" : "Não",
-      saleLeadIds.has(l.id) ? "Sim" : "Não",
       l.utm_source || "", l.utm_campaign || "", l.utm_content || "",
     ]);
     const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
@@ -650,7 +614,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
     a.download = `relatorio-leads-${format(new Date(), "yyyy-MM-dd")}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [tableLeads, meetingLeadIds, saleLeadIds]);
+  }, [tableLeads]);
 
   const SectionHeader = ({ id, icon: Icon, title, subtitle }: { id: string; icon: React.ElementType; title: string; subtitle?: string }) => (
     <div
@@ -753,7 +717,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
 
       <Card className="border-border/50">
         <CardContent className="pt-4 pb-4">
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             <Select value={statusFilter} onValueChange={v => { setStatusFilter(v); setPage(1); }}>
               <SelectTrigger className="text-xs h-9"><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>
@@ -788,16 +752,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
               <SelectContent>
                 <SelectItem value="all">Todos estágios</SelectItem>
                 {uniqueEstagios.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <Select value={conversionFilter} onValueChange={v => { setConversionFilter(v); setPage(1); }}>
-              <SelectTrigger className="text-xs h-9"><SelectValue placeholder="Conversão" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas conversões</SelectItem>
-                <SelectItem value="with_any">Reunião ou venda</SelectItem>
-                <SelectItem value="with_meeting">Apenas reunião agendada</SelectItem>
-                <SelectItem value="with_sale">Apenas venda</SelectItem>
-                <SelectItem value="none">Sem conversão</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -1175,7 +1129,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                         Tier {sortCol === "tier" && (sortDir === "asc" ? "↑" : "↓")}
                       </TableHead>
                       <TableHead className="text-xs">MQL</TableHead>
-                      <TableHead className="text-xs">Conversão</TableHead>
                       <TableHead className="text-xs">Origem</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -1202,28 +1155,11 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                             <span className="text-muted-foreground text-xs">Não</span>
                           )}
                         </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {saleLeadIds.has(lead.id) && (
-                              <Badge className="bg-secondary/20 text-secondary border-secondary/40 text-[10px] gap-1">
-                                <DollarSign className="w-3 h-3" /> Venda
-                              </Badge>
-                            )}
-                            {meetingLeadIds.has(lead.id) && (
-                              <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-[10px] gap-1">
-                                <CalendarCheck className="w-3 h-3" /> Reunião
-                              </Badge>
-                            )}
-                            {!saleLeadIds.has(lead.id) && !meetingLeadIds.has(lead.id) && (
-                              <span className="text-muted-foreground text-xs">—</span>
-                            )}
-                          </div>
-                        </TableCell>
                         <TableCell className="text-xs">{lead.utm_source || "—"}</TableCell>
                       </TableRow>
                     ))}
                     {pagedLeads.length === 0 && (
-                      <TableRow><TableCell colSpan={10} className="text-center text-muted-foreground py-12">Nenhum lead encontrado</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-12">Nenhum lead encontrado</TableCell></TableRow>
                     )}
                   </TableBody>
                 </Table>
@@ -1255,16 +1191,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                 <DialogTitle className="flex items-center gap-2">
                   {selectedLead.nome_completo}
                   {isMql(selectedLead) && <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">MQL</Badge>}
-                  {meetingLeadIds.has(selectedLead.id) && (
-                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs gap-1">
-                      <CalendarCheck className="w-3 h-3" /> Reunião
-                    </Badge>
-                  )}
-                  {saleLeadIds.has(selectedLead.id) && (
-                    <Badge className="bg-secondary/20 text-secondary border-secondary/40 text-xs gap-1">
-                      <DollarSign className="w-3 h-3" /> Venda
-                    </Badge>
-                  )}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
