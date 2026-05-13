@@ -2034,6 +2034,16 @@ export default function AdminAnalytics() {
                                       💬 Chamou WhatsApp
                                     </Badge>
                                   )}
+                                  {meetingLeadIds.has(lead.id) && (
+                                    <Badge variant="outline" className="border-blue-500 text-blue-400 bg-blue-500/10 w-fit text-[10px] px-1.5 py-0 gap-0.5">
+                                      <CalendarCheck className="w-2.5 h-2.5" /> Reunião
+                                    </Badge>
+                                  )}
+                                  {saleLeadIds.has(lead.id) && (
+                                    <Badge variant="outline" className="border-secondary text-secondary bg-secondary/10 w-fit text-[10px] px-1.5 py-0 gap-0.5">
+                                      <DollarSign className="w-2.5 h-2.5" /> Venda
+                                    </Badge>
+                                  )}
                                 </div>
                               </td>
                               <td className="p-2">
