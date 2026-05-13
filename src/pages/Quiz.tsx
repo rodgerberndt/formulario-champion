@@ -142,16 +142,16 @@ function NpsStep({ value, onChange }: { value: number | null; onChange: (n: numb
         <div className="flex items-center gap-2">
           <Target className="w-4 h-4 sm:w-5 sm:h-5 text-secondary shrink-0" />
           <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
-            Seu feedback nos ajuda a <span className="text-secondary font-semibold">melhorar</span> o diagnóstico.
+            Sua resposta nos ajuda a <span className="text-secondary font-semibold">entender</span> se você leu a página.
           </p>
         </div>
       </div>
 
       <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
-        De 0 a 10, que nota você dá pra esse diagnóstico?
+        De 0 a 10, quanto você acha que a Champion pode resolver o seu problema?
       </label>
       <p className="text-xs sm:text-sm text-muted-foreground -mt-3">
-        0 = travou ou bugou muito · 10 = funcionou perfeitamente
+        0 = não leu a página · 5 = leu mas não entendeu · 10 = leu e entendeu
       </p>
 
       <div className="grid grid-cols-6 sm:grid-cols-11 gap-1.5 sm:gap-2 pt-1">
@@ -175,8 +175,8 @@ function NpsStep({ value, onChange }: { value: number | null; onChange: (n: numb
       </div>
 
       <div className="flex justify-between text-[10px] sm:text-xs text-muted-foreground/80 px-1 pt-1">
-        <span>Bugou muito</span>
-        <span>Tudo perfeito</span>
+        <span>Não leu</span>
+        <span>Leu e entendeu</span>
       </div>
 
       {value !== null && (
