@@ -751,7 +751,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
 
       <Card className="border-border/50">
         <CardContent className="pt-4 pb-4">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
             <Select value={statusFilter} onValueChange={v => { setStatusFilter(v); setPage(1); }}>
               <SelectTrigger className="text-xs h-9"><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>
@@ -786,6 +786,16 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
               <SelectContent>
                 <SelectItem value="all">Todos estágios</SelectItem>
                 {uniqueEstagios.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={conversionFilter} onValueChange={v => { setConversionFilter(v); setPage(1); }}>
+              <SelectTrigger className="text-xs h-9"><SelectValue placeholder="Conversão" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas conversões</SelectItem>
+                <SelectItem value="with_any">Reunião ou venda</SelectItem>
+                <SelectItem value="with_meeting">Apenas reunião agendada</SelectItem>
+                <SelectItem value="with_sale">Apenas venda</SelectItem>
+                <SelectItem value="none">Sem conversão</SelectItem>
               </SelectContent>
             </Select>
           </div>
