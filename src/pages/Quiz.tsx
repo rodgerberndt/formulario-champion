@@ -1007,7 +1007,7 @@ export default function Quiz() {
             onChange={(n) => updateField("nps_score", n)}
           />);
 
-      case 10:
+      case 11:
         return (
           <LoadingCommitStep
             onFinish={handleSubmit}
