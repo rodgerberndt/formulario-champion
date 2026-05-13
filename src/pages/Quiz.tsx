@@ -341,7 +341,7 @@ export default function Quiz() {
     nps_score: null,
   });
 
-  const totalSteps = 10;
+  const totalSteps = 11;
   const hasTrackedQuizView = useRef(false);
   const lastTrackedStep = useRef<number | null>(null);
   const hasSubmittedRef = useRef(false); // Hard guard against double-submit
