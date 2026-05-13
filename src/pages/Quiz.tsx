@@ -40,6 +40,7 @@ interface QuizFormData {
   instagram: string;
   email: string;
   mercado: string;
+  operacoes_ativas: number | null;
   investimento_faixa: string;
   dor_desejo: string;
   quer_vender_mais: string;
