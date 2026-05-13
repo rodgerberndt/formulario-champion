@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,13 +54,10 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
-  CalendarCheck,
-  DollarSign,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getTierFromFaturamento } from "@/lib/leadScoring";
-import { fetchAdmin } from "@/lib/adminAuth";
 
 interface Lead {
   id: string;
@@ -501,9 +498,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
   const [sourceFilter, setSourceFilter] = useState("all");
   const [faturamentoFilter, setFaturamentoFilter] = useState("all");
   const [estagioFilter, setEstagioFilter] = useState("all");
-  const [conversionFilter, setConversionFilter] = useState("all");
-  const [meetingLeadIds, setMeetingLeadIds] = useState<Set<string>>(new Set());
-  const [saleLeadIds, setSaleLeadIds] = useState<Set<string>>(new Set());
 
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -518,30 +512,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
     return n;
   });
 
-  // Fetch meetings + manual sales to flag leads that converted
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const base = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data`;
-        const [meetingsRes, salesRes] = await Promise.all([
-          fetchAdmin(`${base}/meetings`).then(r => r.ok ? r.json() : []),
-          fetchAdmin(`${base}/manual-sales`).then(r => r.ok ? r.json() : []),
-        ]);
-        if (cancelled) return;
-        const mSet = new Set<string>();
-        (meetingsRes || []).forEach((m: any) => { if (m?.lead_id) mSet.add(m.lead_id); });
-        const sSet = new Set<string>();
-        (salesRes || []).forEach((s: any) => { if (s?.lead_id) sSet.add(s.lead_id); });
-        setMeetingLeadIds(mSet);
-        setSaleLeadIds(sSet);
-      } catch (e) {
-        console.warn("[LeadReportsTab] Failed to load meetings/sales:", e);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, []);
-
   const filtered = useMemo(() => {
     return leads.filter(l => {
       if (statusFilter === "mql" && !isMql(l)) return false;
@@ -550,13 +520,9 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
       if (sourceFilter !== "all" && (l.utm_source || "Direto") !== sourceFilter) return false;
       if (faturamentoFilter !== "all" && (l.investimento_faixa || "Não informado") !== faturamentoFilter) return false;
       if (estagioFilter !== "all" && (l.estagio_negocio || "Não informado") !== estagioFilter) return false;
-      if (conversionFilter === "with_meeting" && !meetingLeadIds.has(l.id)) return false;
-      if (conversionFilter === "with_sale" && !saleLeadIds.has(l.id)) return false;
-      if (conversionFilter === "with_any" && !meetingLeadIds.has(l.id) && !saleLeadIds.has(l.id)) return false;
-      if (conversionFilter === "none" && (meetingLeadIds.has(l.id) || saleLeadIds.has(l.id))) return false;
       return true;
     });
-  }, [leads, statusFilter, mercadoFilter, sourceFilter, faturamentoFilter, estagioFilter, conversionFilter, meetingLeadIds, saleLeadIds]);
+  }, [leads, statusFilter, mercadoFilter, sourceFilter, faturamentoFilter, estagioFilter]);
 
   const mqls = useMemo(() => filtered.filter(isMql), [filtered]);
 
@@ -632,14 +598,12 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
   };
 
   const exportCSV = useCallback(() => {
-    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento", "Dor/Desejo", "Tier", "MQL", "Reunião", "Venda", "UTM Source", "UTM Campaign", "UTM Content"];
+    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento", "Dor/Desejo", "Tier", "MQL", "UTM Source", "UTM Campaign", "UTM Content"];
     const rows = tableLeads.map(l => [
       format(new Date(l.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }),
       l.nome_completo, l.whatsapp, l.instagram, l.email || "", normalizeMercado(l.mercado),
       l.estagio_negocio || "", l.investimento_faixa || "", `"${(l.dor_desejo || "").replace(/"/g, '""')}"`,
       getTierFromFaturamento(l.investimento_faixa), isMql(l) ? "Sim" : "Não",
-      meetingLeadIds.has(l.id) ? "Sim" : "Não",
-      saleLeadIds.has(l.id) ? "Sim" : "Não",
       l.utm_source || "", l.utm_campaign || "", l.utm_content || "",
     ]);
     const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
@@ -650,7 +614,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
     a.download = `relatorio-leads-${format(new Date(), "yyyy-MM-dd")}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [tableLeads, meetingLeadIds, saleLeadIds]);
+  }, [tableLeads]);
 
   const SectionHeader = ({ id, icon: Icon, title, subtitle }: { id: string; icon: React.ElementType; title: string; subtitle?: string }) => (
     <div
