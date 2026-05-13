@@ -1093,7 +1093,7 @@ export default function Quiz() {
                 {renderStep()}
               </div>
 
-              {/* Navigation Buttons - Hidden on loading step (10) and step 1 (auto-advance) */}
+              {/* Navigation Buttons - Hidden on loading step (11) and step 1 (auto-advance) */}
               {step !== totalSteps && step !== 1 &&
                 <div className={`mt-6 sm:mt-8 ${step > 1 ? 'flex flex-col-reverse sm:flex-row gap-3' : ''}`}>
                   {step > 1 &&
