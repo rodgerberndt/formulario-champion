@@ -971,6 +971,24 @@ export default function AdminAnalytics() {
     }
   };
 
+  // Load meetings + manual sales to flag leads with meeting/sale conversion
+  const loadConversions = useCallback(async () => {
+    try {
+      const [meetingsData, salesData] = await Promise.all([
+        fetchAdminData("/meetings").catch(() => []),
+        fetchAdminData("/manual-sales").catch(() => []),
+      ]);
+      const mSet = new Set<string>();
+      (meetingsData || []).forEach((m: { lead_id?: string }) => { if (m?.lead_id) mSet.add(m.lead_id); });
+      const sSet = new Set<string>();
+      (salesData || []).forEach((s: { lead_id?: string }) => { if (s?.lead_id) sSet.add(s.lead_id); });
+      setMeetingLeadIds(mSet);
+      setSaleLeadIds(sSet);
+    } catch (e) {
+      console.warn("[AdminAnalytics] Failed to load conversions:", e);
+    }
+  }, [fetchAdminData]);
+
   const loadCampaignMetrics = async () => {
     setCampaignMetricsLoading(true);
     try {
