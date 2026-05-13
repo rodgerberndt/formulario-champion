@@ -632,12 +632,14 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
   };
 
   const exportCSV = useCallback(() => {
-    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento", "Dor/Desejo", "Tier", "MQL", "UTM Source", "UTM Campaign", "UTM Content"];
+    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento", "Dor/Desejo", "Tier", "MQL", "Reunião", "Venda", "UTM Source", "UTM Campaign", "UTM Content"];
     const rows = tableLeads.map(l => [
       format(new Date(l.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }),
       l.nome_completo, l.whatsapp, l.instagram, l.email || "", normalizeMercado(l.mercado),
       l.estagio_negocio || "", l.investimento_faixa || "", `"${(l.dor_desejo || "").replace(/"/g, '""')}"`,
       getTierFromFaturamento(l.investimento_faixa), isMql(l) ? "Sim" : "Não",
+      meetingLeadIds.has(l.id) ? "Sim" : "Não",
+      saleLeadIds.has(l.id) ? "Sim" : "Não",
       l.utm_source || "", l.utm_campaign || "", l.utm_content || "",
     ]);
     const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
@@ -648,7 +650,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
     a.download = `relatorio-leads-${format(new Date(), "yyyy-MM-dd")}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [tableLeads]);
+  }, [tableLeads, meetingLeadIds, saleLeadIds]);
 
   const SectionHeader = ({ id, icon: Icon, title, subtitle }: { id: string; icon: React.ElementType; title: string; subtitle?: string }) => (
     <div
