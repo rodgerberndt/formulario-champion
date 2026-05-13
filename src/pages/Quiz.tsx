@@ -1000,7 +1000,7 @@ export default function Quiz() {
               onChange={(e) => updateField("dor_desejo", e.target.value)} />
           </div>);
 
-      case 9:
+      case 10:
         return (
           <NpsStep
             value={formData.nps_score}
