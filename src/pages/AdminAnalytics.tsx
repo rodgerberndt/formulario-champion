@@ -42,6 +42,7 @@ import {
   Clock,
   Globe,
   DollarSign,
+  CalendarCheck,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -335,6 +336,9 @@ export default function AdminAnalytics() {
   const [leadsTierFilter, setLeadsTierFilter] = useState<string>("all");
   const [leadsSdrFilter, setLeadsSdrFilter] = useState<string>("all");
   const [leadsAdsetFilter, setLeadsAdsetFilter] = useState<string>("all");
+  const [leadsConversionFilter, setLeadsConversionFilter] = useState<string>("all");
+  const [meetingLeadIds, setMeetingLeadIds] = useState<Set<string>>(new Set());
+  const [saleLeadIds, setSaleLeadIds] = useState<Set<string>>(new Set());
 
   // Recalculate score/tier from lead answers (direct faturamento mapping)
   const recalcLeadScore = (lead: Lead) => {
