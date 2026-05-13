@@ -798,7 +798,7 @@ export default function Quiz() {
               onChange={(e) => updateField("instagram", e.target.value)} />
           </div>);
 
-      case 7:
+      case 8:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
