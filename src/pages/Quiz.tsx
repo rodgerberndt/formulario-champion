@@ -413,23 +413,25 @@ export default function Quiz() {
       case 2:
         return formData.mercado !== "";
       case 3:
-        return formData.investimento_faixa !== "";
+        return formData.operacoes_ativas !== null;
       case 4:
+        return formData.investimento_faixa !== "";
+      case 5:
         return formData.nome_completo.trim().length >= 3;
-      case 5: {
+      case 6: {
         return phoneValid && isPhoneE164Valid(formData.whatsapp) && formData.lgpd;
       }
-      case 6:
+      case 7:
         return formData.instagram.trim().length >= 1;
-      case 7: {
+      case 8: {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(formData.email.trim());
       }
-      case 8:
-        return formData.dor_desejo.trim().length >= 10;
       case 9:
-        return formData.nps_score !== null;
+        return formData.dor_desejo.trim().length >= 10;
       case 10:
+        return formData.nps_score !== null;
+      case 11:
         return true;
       default:
         return false;
