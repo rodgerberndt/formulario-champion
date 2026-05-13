@@ -482,6 +482,7 @@ export default function Quiz() {
         instagram: currentData.instagram,
         email: currentData.email,
         mercado: currentData.mercado,
+        operacoes_ativas: currentData.operacoes_ativas,
         investimento_faixa: currentData.investimento_faixa,
         dor_desejo: currentData.dor_desejo,
         score: result.score,
