@@ -932,7 +932,7 @@ export default function Quiz() {
             </div>
           </div>);
 
-      case 8:
+      case 9:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <div className="bg-secondary/10 border border-secondary/20 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
