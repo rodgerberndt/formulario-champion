@@ -47,13 +47,14 @@ interface QuizFormData {
   lgpd: boolean;
   compromisso_whatsapp: boolean;
   nps_score: number | null;
+  aceita_call_diagnostico: string;
 }
 
-// Bumped to v2 to invalidate old cached state from before NPS step
-const STORAGE_KEY = "champion_quiz_progress_v2";
+// Bumped to v3 to invalidate old cached state from before "aceita_call_diagnostico" step
+const STORAGE_KEY = "champion_quiz_progress_v3";
 const RESULT_STORAGE_KEY = "champion_quiz_result";
 
-// Step IDs for tracking (11 steps now: operacoes_ativas added before faturamento)
+// Step IDs for tracking (12 steps now: aceita_call_diagnostico added before loading)
 const STEP_IDS = [
   "q1_quer_vender",
   "q2_mercado",
@@ -65,7 +66,8 @@ const STEP_IDS = [
   "q8_email",
   "q9_dor",
   "q10_nps",
-  "q11_loading",
+  "q11_aceita_call",
+  "q12_loading",
 ];
 
 
@@ -265,7 +267,7 @@ function LoadingCommitStep({
               <Check className="w-6 h-6 sm:w-7 sm:h-7 text-background" strokeWidth={3} />
             </div>
             <span className="text-[10px] sm:text-xs text-white/80 font-medium leading-tight text-center max-w-[64px] sm:max-w-[72px]">
-              Fazer diagnóstico
+              Preencher formulário
             </span>
           </div>
 
@@ -339,9 +341,10 @@ export default function Quiz() {
     lgpd: false,
     compromisso_whatsapp: false,
     nps_score: null,
+    aceita_call_diagnostico: "",
   });
 
-  const totalSteps = 11;
+  const totalSteps = 12;
   const hasTrackedQuizView = useRef(false);
   const lastTrackedStep = useRef<number | null>(null);
   const hasSubmittedRef = useRef(false); // Hard guard against double-submit
@@ -432,6 +435,8 @@ export default function Quiz() {
       case 10:
         return formData.nps_score !== null;
       case 11:
+        return formData.aceita_call_diagnostico !== "";
+      case 12:
         return true;
       default:
         return false;
@@ -628,7 +633,7 @@ export default function Quiz() {
       }));
 
       toast({
-        title: "Diagnóstico enviado!",
+        title: "Formulário enviado!",
         description: "Em breve entraremos em contato."
       });
 
@@ -687,6 +692,7 @@ export default function Quiz() {
         case 8: fieldData.email = formData.email; break;
         case 9: fieldData.dor_desejo = formData.dor_desejo; break;
         case 10: fieldData.nps_score = String(formData.nps_score ?? ""); break;
+        case 11: fieldData.aceita_call_diagnostico = formData.aceita_call_diagnostico; break;
       }
 
       try {
@@ -939,7 +945,7 @@ export default function Quiz() {
               <div className="flex items-center gap-2">
                 <Target className="w-4 h-4 sm:w-5 sm:h-5 text-secondary shrink-0" />
                 <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
-                  Quanto mais <span className="text-secondary font-semibold">detalhada</span> sua resposta, mais <span className="text-secondary font-semibold">preciso</span> será o diagnóstico.
+                  Quanto mais <span className="text-secondary font-semibold">detalhada</span> sua resposta, mais <span className="text-secondary font-semibold">preciso</span> será o seu diagnóstico.
                 </p>
               </div>
             </div>
@@ -1009,6 +1015,42 @@ export default function Quiz() {
 
       case 11:
         return (
+          <div className="space-y-4 sm:space-y-5 animate-fade-in">
+            <div className="bg-secondary/10 border border-secondary/20 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-secondary shrink-0" />
+                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
+                  Última pergunta antes de finalizar.
+                </p>
+              </div>
+            </div>
+
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
+              Você estaria disposto a fazer uma call de diagnóstico com o nosso time para analisarmos a sua operação e te passarmos o que pode melhorar?
+            </label>
+
+            <div className="grid grid-cols-2 gap-3">
+              {["Sim", "Não"].map((opt) => {
+                const selected = formData.aceita_call_diagnostico === opt;
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => updateField("aceita_call_diagnostico", opt)}
+                    className={`h-12 sm:h-14 rounded-xl border-2 text-sm sm:text-base font-semibold transition-colors duration-200 ${
+                      selected
+                        ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25"
+                        : "bg-input text-foreground border-border/60 hover:border-primary/60"
+                    }`}>
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+          </div>);
+
+      case 12:
+        return (
           <LoadingCommitStep
             onFinish={handleSubmit}
             onCommit={(v) => updateField("compromisso_whatsapp", v)}
@@ -1034,10 +1076,10 @@ export default function Quiz() {
                 Atenção antes de continuar
               </h2>
               <p className="text-base sm:text-lg text-white/95 leading-relaxed font-medium">
-                Ao fazer este diagnóstico, você concorda que{" "}
+                Ao preencher este formulário, você concorda que{" "}
                 <span className="text-secondary font-bold">trabalha com o digital</span>.
                 {" "}Se você não trabalha com o digital, e não quer vender mais,{" "}
-                <span className="text-secondary font-bold">saia deste diagnóstico imediatamente</span>.
+                <span className="text-secondary font-bold">saia deste formulário imediatamente</span>.
               </p>
             </div>
             <div className="h-1.5 w-full bg-white/15 rounded-full overflow-hidden">
@@ -1084,7 +1126,7 @@ export default function Quiz() {
 
             <div className="mb-4 sm:mb-6">
               <p className="text-center text-muted-foreground text-xs sm:text-sm leading-relaxed opacity-80">
-                Faça o diagnóstico rápido para que o próximo feedback seja você!
+                Preencha o formulário rápido para falarmos com você!
               </p>
             </div>
 
