@@ -717,7 +717,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
 
       <Card className="border-border/50">
         <CardContent className="pt-4 pb-4">
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             <Select value={statusFilter} onValueChange={v => { setStatusFilter(v); setPage(1); }}>
               <SelectTrigger className="text-xs h-9"><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>
@@ -752,16 +752,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
               <SelectContent>
                 <SelectItem value="all">Todos estágios</SelectItem>
                 {uniqueEstagios.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <Select value={conversionFilter} onValueChange={v => { setConversionFilter(v); setPage(1); }}>
-              <SelectTrigger className="text-xs h-9"><SelectValue placeholder="Conversão" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas conversões</SelectItem>
-                <SelectItem value="with_any">Reunião ou venda</SelectItem>
-                <SelectItem value="with_meeting">Apenas reunião agendada</SelectItem>
-                <SelectItem value="with_sale">Apenas venda</SelectItem>
-                <SelectItem value="none">Sem conversão</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -1139,7 +1129,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                         Tier {sortCol === "tier" && (sortDir === "asc" ? "↑" : "↓")}
                       </TableHead>
                       <TableHead className="text-xs">MQL</TableHead>
-                      <TableHead className="text-xs">Conversão</TableHead>
                       <TableHead className="text-xs">Origem</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -1166,28 +1155,11 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                             <span className="text-muted-foreground text-xs">Não</span>
                           )}
                         </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {saleLeadIds.has(lead.id) && (
-                              <Badge className="bg-secondary/20 text-secondary border-secondary/40 text-[10px] gap-1">
-                                <DollarSign className="w-3 h-3" /> Venda
-                              </Badge>
-                            )}
-                            {meetingLeadIds.has(lead.id) && (
-                              <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-[10px] gap-1">
-                                <CalendarCheck className="w-3 h-3" /> Reunião
-                              </Badge>
-                            )}
-                            {!saleLeadIds.has(lead.id) && !meetingLeadIds.has(lead.id) && (
-                              <span className="text-muted-foreground text-xs">—</span>
-                            )}
-                          </div>
-                        </TableCell>
                         <TableCell className="text-xs">{lead.utm_source || "—"}</TableCell>
                       </TableRow>
                     ))}
                     {pagedLeads.length === 0 && (
-                      <TableRow><TableCell colSpan={10} className="text-center text-muted-foreground py-12">Nenhum lead encontrado</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-12">Nenhum lead encontrado</TableCell></TableRow>
                     )}
                   </TableBody>
                 </Table>
@@ -1219,16 +1191,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                 <DialogTitle className="flex items-center gap-2">
                   {selectedLead.nome_completo}
                   {isMql(selectedLead) && <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">MQL</Badge>}
-                  {meetingLeadIds.has(selectedLead.id) && (
-                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs gap-1">
-                      <CalendarCheck className="w-3 h-3" /> Reunião
-                    </Badge>
-                  )}
-                  {saleLeadIds.has(selectedLead.id) && (
-                    <Badge className="bg-secondary/20 text-secondary border-secondary/40 text-xs gap-1">
-                      <DollarSign className="w-3 h-3" /> Venda
-                    </Badge>
-                  )}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
