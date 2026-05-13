@@ -753,7 +753,7 @@ export default function Quiz() {
               onChange={(e) => updateField("nome_completo", e.target.value)} />
           </div>);
 
-      case 5:
+      case 6:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in" onKeyDown={handleKeyDown}>
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
