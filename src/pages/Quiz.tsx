@@ -53,18 +53,20 @@ interface QuizFormData {
 const STORAGE_KEY = "champion_quiz_progress_v2";
 const RESULT_STORAGE_KEY = "champion_quiz_result";
 
-// Step IDs for tracking (10 steps now: NPS added before loading)
+// Step IDs for tracking (11 steps now: operacoes_ativas added before faturamento)
 const STEP_IDS = [
-"q1_quer_vender",
-"q2_mercado",
-"q3_faturamento",
-"q4_nome",
-"q5_whats",
-"q6_insta",
-"q7_email",
-"q8_dor",
-"q9_nps",
-"q10_loading"];
+  "q1_quer_vender",
+  "q2_mercado",
+  "q3_operacoes",
+  "q4_faturamento",
+  "q5_nome",
+  "q6_whats",
+  "q7_insta",
+  "q8_email",
+  "q9_dor",
+  "q10_nps",
+  "q11_loading",
+];
 
 
 // Memoized background component
