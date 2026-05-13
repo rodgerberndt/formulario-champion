@@ -1255,6 +1255,16 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                 <DialogTitle className="flex items-center gap-2">
                   {selectedLead.nome_completo}
                   {isMql(selectedLead) && <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">MQL</Badge>}
+                  {meetingLeadIds.has(selectedLead.id) && (
+                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs gap-1">
+                      <CalendarCheck className="w-3 h-3" /> Reunião
+                    </Badge>
+                  )}
+                  {saleLeadIds.has(selectedLead.id) && (
+                    <Badge className="bg-secondary/20 text-secondary border-secondary/40 text-xs gap-1">
+                      <DollarSign className="w-3 h-3" /> Venda
+                    </Badge>
+                  )}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
