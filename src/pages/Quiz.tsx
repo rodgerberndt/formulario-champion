@@ -1025,8 +1025,9 @@ export default function Quiz() {
               </div>
             </div>
 
-            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
-              Você estaria disposto a fazer uma call de diagnóstico com o nosso time para analisarmos a sua operação e te passarmos o que pode melhorar? Essa call era vendida por R$ 2.000 e agora está <span className="text-secondary">totalmente gratuita</span> para quem preenche o formulário.
+            <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug whitespace-pre-line">
+              Você estaria disposto a fazer uma call de diagnóstico com o nosso time para analisarmos a sua operação e te passarmos o que pode melhorar?{"\n\n"}
+              Essa call é vendida por R$ 2.000, mas somente para quem preenche o formulário, recebe ela gratuitamente.
             </label>
 
             <div className="grid grid-cols-2 gap-3">
