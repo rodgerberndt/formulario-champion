@@ -83,7 +83,7 @@ export function DiagnosticoSection() {
             </span>
           </div>
           <h2 className="text-foreground mb-4 leading-tight">
-            <ShimmerText isVisible={isVisible}>O QUE É O{" "}</ShimmerText>
+            <ShimmerText isVisible={isVisible}>O QUE É O</ShimmerText>{" "}
             <KeywordGlow>DIAGNÓSTICO CHAMPION</KeywordGlow>
           </h2>
           <LineReveal isVisible={isVisible} delay={150}>
