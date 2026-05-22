@@ -152,6 +152,7 @@ interface Lead {
   whatsapp: string;
   instagram: string;
   mercado: string;
+  operacoes_ativas: number | null;
   estagio_negocio: string;
   investimento_faixa: string | null;
   dor_desejo: string;
