@@ -964,26 +964,13 @@ export default function Quiz() {
                 "Otimizações com base em métricas",
                 "Falta de conhecimento",
               ].map((dor) => {
-                const lines = formData.dor_desejo.split(/\r?\n/).map((s) => s.trim());
-                const selected = lines.includes(dor);
+                const selected = formData.dor_desejo.trim() === dor;
                 return (
                   <button
                     type="button"
                     key={dor}
                     onClick={() => {
-                      const current = formData.dor_desejo;
-                      if (selected) {
-                        const next = current
-                          .split(/\r?\n/)
-                          .filter((line) => line.trim() !== dor)
-                          .join("\n")
-                          .replace(/\n{3,}/g, "\n\n")
-                          .trim();
-                        updateField("dor_desejo", next);
-                      } else {
-                        const next = current.trim() ? `${current.trim()}\n${dor}` : dor;
-                        updateField("dor_desejo", next);
-                      }
+                      updateField("dor_desejo", selected ? "" : dor);
                     }}
                     className={`text-xs sm:text-sm px-3 py-1.5 rounded-full border transition-all ${
                       selected

@@ -457,27 +457,13 @@ Fico no aguardo.`;
                 "Otimizações com base em métricas",
                 "Falta de conhecimento",
               ].map((dor) => {
-                const selected = formData.dor_desejo
-                  .split(/\r?\n|,\s*/)
-                  .map((s) => s.trim())
-                  .includes(dor);
+                const selected = formData.dor_desejo.trim() === dor;
                 return (
                   <button
                     type="button"
                     key={dor}
                     onClick={() => {
-                      const current = formData.dor_desejo.trim();
-                      if (selected) {
-                        const next = current
-                          .split(/\r?\n/)
-                          .filter((line) => line.trim() !== dor)
-                          .join("\n")
-                          .trim();
-                        updateField("dor_desejo", next);
-                      } else {
-                        const next = current ? `${current}\n${dor}` : dor;
-                        updateField("dor_desejo", next);
-                      }
+                      updateField("dor_desejo", selected ? "" : dor);
                     }}
                     className={`text-xs md:text-sm px-3 py-1.5 rounded-full border transition-all ${
                       selected
