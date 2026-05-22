@@ -152,7 +152,7 @@ interface Lead {
   whatsapp: string;
   instagram: string;
   mercado: string;
-  operacoes_ativas: number | null;
+  operacoes_ativas?: number | null;
   estagio_negocio: string;
   investimento_faixa: string | null;
   dor_desejo: string;
@@ -195,6 +195,42 @@ interface Lead {
   clicked_whatsapp_at?: string | null;
   nps_score?: number | null;
 }
+
+const QUIZ_LABELS: Record<string, string> = {
+  quer_vender_mais: "Quer vender mais?",
+  operacoes_ativas: "Operações ativas",
+  nps_score: "NPS (0-10)",
+  compromisso_whatsapp: "Compromisso WhatsApp",
+  aceita_call_diagnostico: "Aceita call de diagnóstico",
+  lgpd: "Aceitou LGPD",
+};
+
+const HIDE_QUIZ_KEYS = new Set([
+  "nome_completo", "whatsapp", "instagram", "email", "mercado",
+  "investimento_faixa", "dor_desejo", "empresa", "estagio_negocio",
+  "faturamento_faixa", "trafego_faixa", "ticket_faixa", "gargalo",
+  "objetivo", "timing", "orcamento_faixa", "segmento", "decisor",
+]);
+
+const formatQuizValue = (value: unknown): string => {
+  if (value === null || value === undefined || value === "") return "—";
+  if (typeof value === "boolean") return value ? "Sim" : "Não";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+};
+
+const getQuizEntries = (lead: Lead): [string, unknown][] => {
+  const raw = lead.raw_answers_json && typeof lead.raw_answers_json === "object" ? lead.raw_answers_json : {};
+  const merged: Record<string, unknown> = {
+    ...raw,
+    operacoes_ativas: raw.operacoes_ativas ?? lead.operacoes_ativas,
+    nps_score: raw.nps_score ?? lead.nps_score,
+  };
+
+  return Object.entries(merged).filter(
+    ([key, value]) => !HIDE_QUIZ_KEYS.has(key) && value !== null && value !== undefined && value !== ""
+  );
+};
 
 
 export default function AdminAnalytics() {
