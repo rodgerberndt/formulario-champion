@@ -1267,6 +1267,47 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                     </div>
                   </div>
                 )}
+
+                {selectedLead.raw_answers_json && (() => {
+                  const raw = selectedLead.raw_answers_json as Record<string, unknown>;
+                  const QUIZ_LABELS: Record<string, string> = {
+                    quer_vender_mais: "Quer vender mais?",
+                    operacoes_ativas: "Operações ativas",
+                    nps_score: "NPS (0-10)",
+                    compromisso_whatsapp: "Compromisso WhatsApp",
+                    aceita_call_diagnostico: "Aceita call de diagnóstico",
+                    lgpd: "Aceitou LGPD",
+                  };
+                  const HIDE_KEYS = new Set([
+                    "nome_completo","whatsapp","instagram","email","mercado",
+                    "investimento_faixa","dor_desejo","empresa","estagio_negocio",
+                    "faturamento_faixa","trafego_faixa","ticket_faixa","gargalo",
+                    "objetivo","timing","orcamento_faixa","segmento","decisor",
+                  ]);
+                  const formatVal = (v: unknown): string => {
+                    if (v === null || v === undefined || v === "") return "—";
+                    if (typeof v === "boolean") return v ? "Sim" : "Não";
+                    if (typeof v === "object") return JSON.stringify(v);
+                    return String(v);
+                  };
+                  const entries = Object.entries(raw).filter(
+                    ([k, v]) => !HIDE_KEYS.has(k) && v !== null && v !== undefined && v !== ""
+                  );
+                  if (entries.length === 0) return null;
+                  return (
+                    <div className="space-y-2">
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Respostas do Quiz</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {entries.map(([k, v]) => (
+                          <div key={k} className="p-2 bg-muted/20 rounded text-xs">
+                            <span className="text-muted-foreground">{QUIZ_LABELS[k] || k}: </span>
+                            <span className="font-medium">{formatVal(v)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </>
           )}
