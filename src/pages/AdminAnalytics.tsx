@@ -2306,6 +2306,7 @@ export default function AdminAnalytics() {
                                   )}
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-1">{lead.mercado}</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">Operações: {getOperacoesAtivas(lead)}</p>
                                 {lead.investimento_faixa && (
                                   <p className="text-xs text-green-500 mt-0.5">💰 {lead.investimento_faixa}</p>
                                 )}
