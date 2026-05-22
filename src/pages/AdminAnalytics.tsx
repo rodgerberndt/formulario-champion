@@ -219,6 +219,12 @@ const formatQuizValue = (value: unknown): string => {
   return String(value);
 };
 
+const getOperacoesAtivas = (lead: Lead): string => {
+  const raw = lead.raw_answers_json && typeof lead.raw_answers_json === "object" ? lead.raw_answers_json : {};
+  const value = raw.operacoes_ativas ?? lead.operacoes_ativas;
+  return value === null || value === undefined || value === "" ? "-" : String(value);
+};
+
 const getQuizEntries = (lead: Lead): [string, unknown][] => {
   const raw = lead.raw_answers_json && typeof lead.raw_answers_json === "object" ? lead.raw_answers_json : {};
   const merged: Record<string, unknown> = {
@@ -1980,7 +1986,7 @@ export default function AdminAnalytics() {
                           <th className="text-left p-2 w-28">WhatsApp</th>
                           <th className="text-left p-2">Instagram</th>
                           <th className="text-left p-2 w-24">Mercado</th>
-                          
+                          <th className="text-left p-2 w-24" title="Operações ativas ou em fase de construção">Operações</th>
                           <th className="text-left p-2 w-28">Faturamento</th>
                           <th className="text-left p-2 w-20">SDR</th>
                           <th className="text-left p-2 w-24">Data</th>
@@ -2144,7 +2150,7 @@ export default function AdminAnalytics() {
                                 </button>
                               </td>
                               <td className="p-2 text-muted-foreground text-xs truncate" title={lead.mercado}>{lead.mercado}</td>
-                              
+                              <td className="p-2 text-muted-foreground text-xs truncate" title={getOperacoesAtivas(lead)}>{getOperacoesAtivas(lead)}</td>
                               <td className="p-2 text-muted-foreground text-xs truncate" title={lead.investimento_faixa || "-"}>{lead.investimento_faixa || "-"}</td>
                               <td className="p-2">
                                 {(() => {
@@ -2300,6 +2306,7 @@ export default function AdminAnalytics() {
                                   )}
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-1">{lead.mercado}</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">Operações: {getOperacoesAtivas(lead)}</p>
                                 {lead.investimento_faixa && (
                                   <p className="text-xs text-green-500 mt-0.5">💰 {lead.investimento_faixa}</p>
                                 )}
