@@ -65,6 +65,7 @@ interface Lead {
   whatsapp: string;
   instagram: string;
   mercado: string;
+  operacoes_ativas?: number | null;
   estagio_negocio: string;
   investimento_faixa: string | null;
   dor_desejo: string;
@@ -98,8 +99,45 @@ interface Lead {
   site_source_name: string | null;
   sdr_override: string | null;
   decisor: boolean | null;
+  nps_score?: number | null;
   raw_answers_json: Record<string, unknown> | null;
 }
+
+const QUIZ_LABELS: Record<string, string> = {
+  quer_vender_mais: "Quer vender mais?",
+  operacoes_ativas: "Operações ativas",
+  nps_score: "NPS (0-10)",
+  compromisso_whatsapp: "Compromisso WhatsApp",
+  aceita_call_diagnostico: "Aceita call de diagnóstico",
+  lgpd: "Aceitou LGPD",
+};
+
+const HIDE_QUIZ_KEYS = new Set([
+  "nome_completo", "whatsapp", "instagram", "email", "mercado",
+  "investimento_faixa", "dor_desejo", "empresa", "estagio_negocio",
+  "faturamento_faixa", "trafego_faixa", "ticket_faixa", "gargalo",
+  "objetivo", "timing", "orcamento_faixa", "segmento", "decisor",
+]);
+
+const formatQuizValue = (value: unknown): string => {
+  if (value === null || value === undefined || value === "") return "—";
+  if (typeof value === "boolean") return value ? "Sim" : "Não";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+};
+
+const getQuizEntries = (lead: Lead): [string, unknown][] => {
+  const raw = lead.raw_answers_json && typeof lead.raw_answers_json === "object" ? lead.raw_answers_json : {};
+  const merged: Record<string, unknown> = {
+    ...raw,
+    operacoes_ativas: raw.operacoes_ativas ?? lead.operacoes_ativas,
+    nps_score: raw.nps_score ?? lead.nps_score,
+  };
+
+  return Object.entries(merged).filter(
+    ([key, value]) => !HIDE_QUIZ_KEYS.has(key) && value !== null && value !== undefined && value !== ""
+  );
+};
 
 interface LeadReportsTabProps {
   leads: Lead[];
@@ -1268,31 +1306,8 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                   </div>
                 )}
 
-                {selectedLead.raw_answers_json && (() => {
-                  const raw = selectedLead.raw_answers_json as Record<string, unknown>;
-                  const QUIZ_LABELS: Record<string, string> = {
-                    quer_vender_mais: "Quer vender mais?",
-                    operacoes_ativas: "Operações ativas",
-                    nps_score: "NPS (0-10)",
-                    compromisso_whatsapp: "Compromisso WhatsApp",
-                    aceita_call_diagnostico: "Aceita call de diagnóstico",
-                    lgpd: "Aceitou LGPD",
-                  };
-                  const HIDE_KEYS = new Set([
-                    "nome_completo","whatsapp","instagram","email","mercado",
-                    "investimento_faixa","dor_desejo","empresa","estagio_negocio",
-                    "faturamento_faixa","trafego_faixa","ticket_faixa","gargalo",
-                    "objetivo","timing","orcamento_faixa","segmento","decisor",
-                  ]);
-                  const formatVal = (v: unknown): string => {
-                    if (v === null || v === undefined || v === "") return "—";
-                    if (typeof v === "boolean") return v ? "Sim" : "Não";
-                    if (typeof v === "object") return JSON.stringify(v);
-                    return String(v);
-                  };
-                  const entries = Object.entries(raw).filter(
-                    ([k, v]) => !HIDE_KEYS.has(k) && v !== null && v !== undefined && v !== ""
-                  );
+                {(() => {
+                  const entries = getQuizEntries(selectedLead);
                   if (entries.length === 0) return null;
                   return (
                     <div className="space-y-2">
@@ -1301,7 +1316,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                         {entries.map(([k, v]) => (
                           <div key={k} className="p-2 bg-muted/20 rounded text-xs">
                             <span className="text-muted-foreground">{QUIZ_LABELS[k] || k}: </span>
-                            <span className="font-medium">{formatVal(v)}</span>
+                            <span className="font-medium">{formatQuizValue(v)}</span>
                           </div>
                         ))}
                       </div>
