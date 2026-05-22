@@ -219,6 +219,12 @@ const formatQuizValue = (value: unknown): string => {
   return String(value);
 };
 
+const getOperacoesAtivas = (lead: Lead): string => {
+  const raw = lead.raw_answers_json && typeof lead.raw_answers_json === "object" ? lead.raw_answers_json : {};
+  const value = raw.operacoes_ativas ?? lead.operacoes_ativas;
+  return value === null || value === undefined || value === "" ? "-" : String(value);
+};
+
 const getQuizEntries = (lead: Lead): [string, unknown][] => {
   const raw = lead.raw_answers_json && typeof lead.raw_answers_json === "object" ? lead.raw_answers_json : {};
   const merged: Record<string, unknown> = {
