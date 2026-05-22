@@ -65,7 +65,7 @@ interface Lead {
   whatsapp: string;
   instagram: string;
   mercado: string;
-  operacoes_ativas: number | null;
+  operacoes_ativas?: number | null;
   estagio_negocio: string;
   investimento_faixa: string | null;
   dor_desejo: string;
@@ -99,7 +99,7 @@ interface Lead {
   site_source_name: string | null;
   sdr_override: string | null;
   decisor: boolean | null;
-  nps_score: number | null;
+  nps_score?: number | null;
   raw_answers_json: Record<string, unknown> | null;
 }
 
