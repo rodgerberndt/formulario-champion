@@ -2532,6 +2532,23 @@ export default function AdminAnalytics() {
                         );
                       })()}
 
+                      {(() => {
+                        const entries = getQuizEntries(selectedLead);
+                        if (entries.length === 0) return null;
+                        return (
+                          <div className="space-y-2">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">Respostas do Quiz</p>
+                            <div className="grid grid-cols-2 gap-3">
+                              {entries.map(([key, value]) => (
+                                <div key={key} className="p-4 bg-muted/30 rounded-lg">
+                                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{QUIZ_LABELS[key] || key}</p>
+                                  <p className="font-medium">{formatQuizValue(value)}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
 
                       {/* Score & Tier (internal) */}
                       {selectedLead && (
