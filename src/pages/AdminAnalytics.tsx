@@ -1986,7 +1986,7 @@ export default function AdminAnalytics() {
                           <th className="text-left p-2 w-28">WhatsApp</th>
                           <th className="text-left p-2">Instagram</th>
                           <th className="text-left p-2 w-24">Mercado</th>
-                          
+                          <th className="text-left p-2 w-24" title="Operações ativas ou em fase de construção">Operações</th>
                           <th className="text-left p-2 w-28">Faturamento</th>
                           <th className="text-left p-2 w-20">SDR</th>
                           <th className="text-left p-2 w-24">Data</th>
@@ -2150,7 +2150,7 @@ export default function AdminAnalytics() {
                                 </button>
                               </td>
                               <td className="p-2 text-muted-foreground text-xs truncate" title={lead.mercado}>{lead.mercado}</td>
-                              
+                              <td className="p-2 text-muted-foreground text-xs truncate" title={getOperacoesAtivas(lead)}>{getOperacoesAtivas(lead)}</td>
                               <td className="p-2 text-muted-foreground text-xs truncate" title={lead.investimento_faixa || "-"}>{lead.investimento_faixa || "-"}</td>
                               <td className="p-2">
                                 {(() => {
