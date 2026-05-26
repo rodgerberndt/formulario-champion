@@ -321,33 +321,68 @@ export function MetodoChampion() {
         {/* ───────── PILAR 03 · VOLUME · ESTEIRA SEMANAL ───────── */}
         <PillarBlock n="03" title="Volume: Esteira Semanal" icon={Layers} subtitle="Um ciclo completo, toda semana. É assim que a oxigenação acontece.">
           <div className={`reveal-up ${isVisible ? "visible" : ""}`} style={{ transitionDelay: "200ms" }}>
-            {/* Flow of steps */}
-            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
-              {esteiraSteps.map((step, i) => (
-                <div key={step} className="flex items-center gap-2 md:gap-3">
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.4 }}
-                    transition={{ delay: i * 0.06, duration: 0.4 }}
-                    className="relative flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl border border-secondary/40 bg-[hsl(42_90%_58%/0.08)] shadow-[0_0_15px_-5px_hsl(42_90%_58%/0.25)]"
-                  >
-                    <span className="text-[10px] md:text-xs font-black text-secondary/70" style={{ fontFamily: "'Oswald', sans-serif" }}>
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="text-[11px] md:text-sm font-bold uppercase tracking-wider text-secondary">
-                      {step}
-                    </span>
-                  </motion.div>
-                  {i < esteiraSteps.length - 1 && (
-                    <span className="text-secondary/50 text-base md:text-lg select-none">→</span>
-                  )}
-                </div>
-              ))}
+            {/* Esteira label */}
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <span className="h-px w-10 md:w-16 bg-secondary/40" />
+              <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-secondary/80">
+                ↳ Esteira de produção semanal ↲
+              </span>
+              <span className="h-px w-10 md:w-16 bg-secondary/40" />
             </div>
 
-            {/* Repete o ciclo */}
-            <div className="flex justify-center mt-6 md:mt-8">
+            {/* Conveyor belt container */}
+            <div className="relative rounded-2xl border border-secondary/30 bg-[hsl(42_90%_58%/0.04)] px-3 md:px-6 py-5 md:py-7 overflow-hidden shadow-[inset_0_0_30px_-10px_hsl(42_90%_58%/0.25)]">
+              {/* Animated belt rails (top + bottom) */}
+              <div
+                className="pointer-events-none absolute left-0 right-0 top-0 h-2 opacity-60"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(90deg, hsl(42 90% 58% / 0.55) 0 12px, transparent 12px 24px)",
+                  animation: "esteira-scroll 1.6s linear infinite",
+                }}
+              />
+              <div
+                className="pointer-events-none absolute left-0 right-0 bottom-0 h-2 opacity-60"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(90deg, hsl(42 90% 58% / 0.55) 0 12px, transparent 12px 24px)",
+                  animation: "esteira-scroll 1.6s linear infinite",
+                }}
+              />
+
+              {/* Steps flowing on the belt */}
+              <div className="relative flex flex-wrap items-center justify-center gap-2 md:gap-3">
+                {esteiraSteps.map((step, i) => (
+                  <div key={step} className="flex items-center gap-2 md:gap-3">
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, amount: 0.4 }}
+                      transition={{ delay: i * 0.06, duration: 0.4 }}
+                      className="relative flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl border border-secondary/40 bg-[hsl(42_90%_58%/0.10)] shadow-[0_0_15px_-5px_hsl(42_90%_58%/0.3)]"
+                    >
+                      <span className="text-[10px] md:text-xs font-black text-secondary/70" style={{ fontFamily: "'Oswald', sans-serif" }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="text-[11px] md:text-sm font-bold uppercase tracking-wider text-secondary">
+                        {step}
+                      </span>
+                    </motion.div>
+                    {i < esteiraSteps.length - 1 && (
+                      <span className="text-secondary/50 text-base md:text-lg select-none">›››</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Loop back arrow */}
+            <div className="flex justify-center mt-3">
+              <span className="text-secondary/60 text-xl leading-none">⤴</span>
+            </div>
+
+            {/* Repete o ciclo — esteira nunca para */}
+            <div className="flex justify-center mt-2">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -355,9 +390,9 @@ export function MetodoChampion() {
                 transition={{ delay: 0.5, duration: 0.5 }}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-secondary/60 bg-[hsl(42_90%_58%/0.15)] shadow-[0_0_25px_-5px_hsl(42_90%_58%/0.4)]"
               >
-                <span className="text-secondary text-lg">↻</span>
+                <span className="text-secondary text-lg animate-spin" style={{ animationDuration: "4s" }}>↻</span>
                 <span className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-secondary drop-shadow-[0_0_6px_hsl(42_90%_58%/0.5)]">
-                  Repete o ciclo
+                  Esteira em loop · toda semana
                 </span>
               </motion.div>
             </div>

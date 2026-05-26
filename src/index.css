@@ -523,6 +523,12 @@ html, body { overflow-x: hidden; }
   0%, 100% { opacity: 0; transform: scale(0.5); }
   50%      { opacity: 1; transform: scale(1.4); }
 }
+
+/* Conveyor belt scrolling stripes */
+@keyframes esteira-scroll {
+  0%   { background-position: 0 0; }
+  100% { background-position: 24px 0; }
+}
 .hero-logo-3d {
   animation: hero-logo-float 6s ease-in-out infinite;
   transform-style: preserve-3d;
