@@ -12,8 +12,6 @@ import { MetodoChampion } from "@/components/landing/MetodoChampion";
 import { GanchoCorpoSection } from "@/components/landing/GanchoCorpoSection";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FAQSection } from "@/components/landing/FAQSection";
-import { DiagnosticoSection } from "@/components/landing/DiagnosticoSection";
-
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import { Button } from "@/components/ui/button";
@@ -161,10 +159,6 @@ const Index = () => {
 
         <section data-theme="blue-temple" data-track-id="como_funciona" data-track-order="8">
           <HowItWorks />
-        </section>
-
-        <section data-theme="cave" data-track-id="diagnostico_explicado" data-track-order="8.5">
-          <DiagnosticoSection />
         </section>
 
         <section data-theme="cave" data-track-id="faq" data-track-order="9">
