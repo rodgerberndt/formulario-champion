@@ -6,7 +6,7 @@ export function ClientFeedbacks() {
   const { ref, isVisible } = useReveal(0.08);
 
   return (
-    <section ref={ref} className="py-16 md:py-24 relative">
+    <section ref={ref} className="py-16 md:py-24 relative bg-slate-800">
       <div className="container mx-auto px-5 max-w-6xl">
         <div className={`text-center mb-10 md:mb-14 reveal-up ${isVisible ? "visible" : ""}`}>
           <p className="text-xs md:text-sm font-bold tracking-[0.25em] text-secondary mb-4" style={{ fontFamily: "'Montserrat', sans-serif" }}>
@@ -16,9 +16,6 @@ export function ClientFeedbacks() {
             <ShimmerText isVisible={isVisible}>CASES </ShimmerText>
             <KeywordGlow>REAIS</KeywordGlow>
           </h2>
-          <p className="text-sm md:text-base text-muted-foreground mt-3">
-            Feedbacks de clientes da Champion.
-          </p>
         </div>
 
         <motion.div
