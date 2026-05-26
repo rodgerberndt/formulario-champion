@@ -212,7 +212,7 @@ export function MetodoChampion() {
             <ShimmerText isVisible={isVisible}>
               Como traduzimos o{" "}
             </ShimmerText>
-            <KeywordGlow>&nbsp;ANDROMEDA</KeywordGlow>
+            <KeywordGlow>&nbsp;ANDRÔMEDA</KeywordGlow>
             <ShimmerText isVisible={isVisible}> em resultado.</ShimmerText>
           </h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
