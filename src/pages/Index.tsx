@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
 import { SuccessCases } from "@/components/landing/SuccessCases";
 import { PainSection } from "@/components/landing/PainSection";
@@ -27,7 +26,6 @@ import { Loader2 } from "lucide-react";
 const Index = () => {
   const navigate = useNavigate();
   const { trackStartClick } = useTracking();
-  const isMobile = useIsMobile();
   useUtmCapture();
   useSmoothScroll();
   useSectionThemes();
@@ -51,30 +49,6 @@ const Index = () => {
   const lastClickRef = useRef<number>(0);
   const DEBOUNCE_MS = 1500;
 
-  // Show mobile sticky CTA only after user scrolls past SuccessCases section
-  const [showStickyCta, setShowStickyCta] = useState(false);
-  const successCasesRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (!isMobile) return;
-    const el = successCasesRef.current;
-    if (!el) return;
-
-    const onScroll = () => {
-      const rect = el.getBoundingClientRect();
-      // Show once the bottom of the cases section has scrolled above the viewport top
-      if (rect.bottom <= 0) setShowStickyCta(true);
-      else setShowStickyCta(false);
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, [isMobile]);
 
   const handleStartClick = async (buttonId: string) => {
     const now = Date.now();
@@ -117,7 +91,7 @@ const Index = () => {
           <MetodoChampion />
         </section>
 
-        <section ref={successCasesRef} data-theme="void" data-track-id="success_cases" data-track-order="5.3">
+        <section data-theme="void" data-track-id="success_cases" data-track-order="5.3">
           <SuccessCases />
         </section>
 
@@ -169,29 +143,27 @@ const Index = () => {
 
       <Footer />
 
-      {/* Mobile sticky CTA - appears only after user scrolls past success cases */}
-      {isMobile && showStickyCta && (
-        <div className="fixed bottom-3 left-3 right-3 z-50 md:hidden animate-fade-in">
-          <Button
-            size="sm"
-            onClick={() => handleStartClick("mobile_sticky_cta")}
-            disabled={loadingBtn === "mobile_sticky_cta"}
-            className="w-full h-11 text-xs font-semibold bg-primary/95 hover:bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/20 backdrop-blur-sm transition-all active:scale-[0.98]"
-          >
-            {loadingBtn === "mobile_sticky_cta" ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-                CARREGANDO...
-              </>
-            ) : (
-              <>
-                FAZER DIAGNÓSTICO
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </>
-            )}
-          </Button>
-        </div>
-      )}
+      {/* Sticky bottom CTA - always visible across the entire page */}
+      <div className="fixed bottom-3 left-3 right-3 md:left-1/2 md:right-auto md:bottom-6 md:-translate-x-1/2 md:w-auto z-50 animate-fade-in">
+        <Button
+          size="lg"
+          onClick={() => handleStartClick("sticky_cta")}
+          disabled={loadingBtn === "sticky_cta"}
+          className="w-full md:w-auto h-12 md:h-14 px-6 md:px-10 text-sm md:text-base font-bold bg-primary/95 hover:bg-primary text-primary-foreground rounded-2xl shadow-xl shadow-primary/30 backdrop-blur-sm transition-all active:scale-[0.98]"
+        >
+          {loadingBtn === "sticky_cta" ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              CARREGANDO...
+            </>
+          ) : (
+            <>
+              FAZER DIAGNÓSTICO DE CRIATIVOS GRATUITO
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 };
