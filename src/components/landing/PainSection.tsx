@@ -108,7 +108,6 @@ export function PainSection() {
         <div className={`mt-10 md:mt-14 text-center reveal-up ${isVisible ? "visible" : ""}`}>
           <p className="text-base md:text-xl font-semibold text-foreground max-w-3xl mx-auto leading-snug whitespace-pre-line">
             {"\n"}
-            <KeywordGlow></KeywordGlow>
           </p>
         </div>
       </div>
