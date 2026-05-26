@@ -76,7 +76,7 @@ export function PainSection() {
         <div className={`text-center mb-8 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-2">
             <ShimmerText isVisible={isVisible}>
-              O ANDROMEDA TROUXE UMA SÉRIE DE PROBLEMAS PRA SUA OPERAÇÃO.
+              O &nbsp;ANDROMEDA TROUXE UMA SÉRIE DE PROBLEMAS PRA SUA OPERAÇÃO.
             </ShimmerText>{" "}
             <KeywordGlow>VOCÊ RECONHECE ALGUM DELES?</KeywordGlow>
           </h2>
