@@ -144,22 +144,21 @@ const Index = () => {
       <Footer />
 
       {/* Sticky bottom CTA - always visible across the entire page */}
-      <div className="fixed bottom-3 left-3 right-3 md:left-1/2 md:right-auto md:bottom-6 md:-translate-x-1/2 md:w-auto z-50 animate-fade-in">
+      <div className="fixed bottom-4 left-5 right-5 md:left-1/2 md:right-auto md:bottom-6 md:-translate-x-1/2 md:w-auto z-50 animate-fade-in">
         <Button
-          size="lg"
           onClick={() => handleStartClick("sticky_cta")}
           disabled={loadingBtn === "sticky_cta"}
-          className="w-full md:w-auto h-12 md:h-14 px-6 md:px-10 text-sm md:text-base font-bold bg-primary/95 hover:bg-primary text-primary-foreground rounded-2xl shadow-xl shadow-primary/30 backdrop-blur-sm transition-all active:scale-[0.98]"
+          className="w-full md:w-auto min-h-12 md:min-h-14 h-auto py-3 md:py-4 px-5 md:px-10 text-[13px] md:text-base font-bold leading-tight whitespace-normal text-center bg-primary/95 hover:bg-primary text-primary-foreground rounded-2xl shadow-xl shadow-primary/30 backdrop-blur-sm transition-all active:scale-[0.98]"
         >
           {loadingBtn === "sticky_cta" ? (
             <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              <Loader2 className="w-4 h-4 mr-2 animate-spin shrink-0" />
               CARREGANDO...
             </>
           ) : (
             <>
-              FAZER DIAGNÓSTICO DE CRIATIVOS GRATUITO
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <span className="flex-1">FAZER DIAGNÓSTICO DE CRIATIVOS GRATUITO</span>
+              <ArrowRight className="w-4 h-4 ml-2 shrink-0" />
             </>
           )}
         </Button>
