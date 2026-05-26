@@ -287,8 +287,8 @@ export function MetodoChampion() {
           </div>
         </PillarBlock>
 
-        {/* ───────── PILAR 02 · ESTRATÉGIA &nbsp;ANDROMEDA ───────── */}
-        <PillarBlock n="02" title="Estratégia &nbsp;ANDROMEDA" icon={Brain} subtitle="Mesmo corpo, múltiplas entradas: é isso que faz a Meta IA escalar.">
+        {/* ───────── PILAR 02 · ESTRATÉGIA &nbsp;ANDRÔMEDA ───────── */}
+        <PillarBlock n="02" title="Estratégia &nbsp;ANDRÔMEDA" icon={Brain} subtitle="Mesmo corpo, múltiplas entradas: é isso que faz a Meta IA escalar.">
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
               { icon: Users, title: "Personas", desc: "Cada criativo é construído para uma fatia de público diferente. Mais personas = mais portas de entrada." },
