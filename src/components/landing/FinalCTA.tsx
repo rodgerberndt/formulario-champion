@@ -50,7 +50,7 @@ export function FinalCTA() {
 
           <LineReveal isVisible={isVisible} delay={200}>
             <p className="text-sm text-muted-foreground mb-8 max-w-md mx-auto">
-              Preencha o formulário de 2 minutos e descubra como a Champion pode transformar seus resultados.
+              Em 2 minutos a gente entende sua operação e agenda sua call de diagnóstico criativo 360 — gratuita.
             </p>
           </LineReveal>
 
