@@ -17,13 +17,15 @@ import {
   PhoneCall,
 } from "lucide-react";
 
-const pillars = [
-  { label: "Onboarding / Feedback" },
-  { label: "Copy" },
-  { label: "Avatar IA / Real" },
-  { label: "Edição" },
-  { label: "Teste" },
-  { label: "Repete o Ciclo", highlight: true },
+const esteiraSteps = [
+  "Alinhamento Estratégico",
+  "Copy",
+  "Criação da Mensagem",
+  "Aprovação",
+  "Edição",
+  "Entrega",
+  "Teste",
+  "Feedback",
 ];
 
 /* ────────────────────────────────────────────────────────── */
