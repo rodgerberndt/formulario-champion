@@ -144,7 +144,7 @@ export function VturbCreatives() {
       <div className="container mx-auto px-5 max-w-6xl relative z-10">
         <div className={`text-center mb-10 md:mb-14 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-3 leading-tight">
-            <KeywordGlow>PORTFOLIO</KeywordGlow>
+            <KeywordGlow>PORTFÓLIO</KeywordGlow>
           </h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
             Alguns exemplos reais de criativos em vídeo desenvolvidos pela Champion para campanhas de performance.
