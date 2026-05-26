@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
 import { SuccessCases } from "@/components/landing/SuccessCases";
 import { PainSection } from "@/components/landing/PainSection";
@@ -27,7 +26,6 @@ import { Loader2 } from "lucide-react";
 const Index = () => {
   const navigate = useNavigate();
   const { trackStartClick } = useTracking();
-  const isMobile = useIsMobile();
   useUtmCapture();
   useSmoothScroll();
   useSectionThemes();
@@ -51,7 +49,6 @@ const Index = () => {
   const lastClickRef = useRef<number>(0);
   const DEBOUNCE_MS = 1500;
 
-  const successCasesRef = useRef<HTMLElement | null>(null);
 
   const handleStartClick = async (buttonId: string) => {
     const now = Date.now();
@@ -94,7 +91,7 @@ const Index = () => {
           <MetodoChampion />
         </section>
 
-        <section ref={successCasesRef} data-theme="void" data-track-id="success_cases" data-track-order="5.3">
+        <section data-theme="void" data-track-id="success_cases" data-track-order="5.3">
           <SuccessCases />
         </section>
 
