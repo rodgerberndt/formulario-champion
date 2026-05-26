@@ -8,16 +8,6 @@ export function ClientFeedbacks() {
   return (
     <section ref={ref} className="py-16 md:py-24 relative bg-slate-800">
       <div className="container mx-auto px-5 max-w-6xl">
-        <div className={`text-center mb-10 md:mb-14 reveal-up ${isVisible ? "visible" : ""}`}>
-          <p className="text-xs md:text-sm font-bold tracking-[0.25em] text-secondary mb-4" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-            DEPOIMENTOS
-          </p>
-          <h2 className="text-foreground">
-            <ShimmerText isVisible={isVisible}>CASES </ShimmerText>
-            <KeywordGlow>REAIS</KeywordGlow>
-          </h2>
-        </div>
-
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
