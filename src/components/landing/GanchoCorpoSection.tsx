@@ -302,20 +302,16 @@ export function GanchoCorpoSection() {
           className="mb-12 md:mb-16"
         >
           <p className="text-center text-xs font-bold tracking-[0.2em] text-secondary/60 mb-5" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-            MESMO CORPO, 4 GANCHOS
+            DEPOIMENTO REAL
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 pt-4">
-            {hookCards.map((card, i) => (
-              <motion.div
-                key={card.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-              >
-                <HookCard {...card} />
-              </motion.div>
-            ))}
+          <div className="max-w-2xl mx-auto">
+            <ProofCard
+              src="/proofs/depoimento-ganchos.webp"
+              alt="Print de WhatsApp de cliente comentando a diferença de ROAS ao mudar o gancho"
+              caption="Mesma estrutura. Só muda o GANCHO. Olha a diferença de ROAS."
+              delay={200}
+              isVisible={isVisible}
+            />
           </div>
         </motion.div>
 
