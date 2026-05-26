@@ -31,7 +31,7 @@ const pillars = [
 /* ────────────────────────────────────────────────────────── */
 const fourPillars = [
   { n: "01", title: "Plano de Ação Personalizado", icon: ClipboardList },
-  { n: "02", title: "Estratégia &nbsp;ANDRÔMEDA", icon: Brain },
+  { n: "02", title: "Estratégia ANDRÔMEDA", icon: Brain },
   { n: "03", title: "Volume: Esteira Semanal", icon: Layers },
   { n: "04", title: "Comunicação", icon: MessagesSquare },
 ];
@@ -287,8 +287,8 @@ export function MetodoChampion() {
           </div>
         </PillarBlock>
 
-        {/* ───────── PILAR 02 · ESTRATÉGIA &nbsp;ANDRÔMEDA ───────── */}
-        <PillarBlock n="02" title="Estratégia &nbsp;ANDRÔMEDA" icon={Brain} subtitle="Mesmo corpo, múltiplas entradas: é isso que faz a Meta IA escalar.">
+        {/* ───────── PILAR 02 · ESTRATÉGIA ANDRÔMEDA ───────── */}
+        <PillarBlock n="02" title="Estratégia ANDRÔMEDA" icon={Brain} subtitle="Mesmo corpo, múltiplas entradas: é isso que faz a Meta IA escalar.">
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
               { icon: Users, title: "Personas", desc: "Cada criativo é construído para uma fatia de público diferente. Mais personas = mais portas de entrada." },
