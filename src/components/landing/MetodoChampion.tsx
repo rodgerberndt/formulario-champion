@@ -31,7 +31,7 @@ const pillars = [
 /* ────────────────────────────────────────────────────────── */
 const fourPillars = [
   { n: "01", title: "Plano de Ação Personalizado", icon: ClipboardList },
-  { n: "02", title: "Estratégia &nbsp;ANDROMEDA", icon: Brain },
+  { n: "02", title: "Estratégia &nbsp;ANDRÔMEDA", icon: Brain },
   { n: "03", title: "Volume: Esteira Semanal", icon: Layers },
   { n: "04", title: "Comunicação", icon: MessagesSquare },
 ];
@@ -212,7 +212,7 @@ export function MetodoChampion() {
             <ShimmerText isVisible={isVisible}>
               Como traduzimos o{" "}
             </ShimmerText>
-            <KeywordGlow>&nbsp;ANDROMEDA</KeywordGlow>
+            <KeywordGlow>&nbsp;ANDRÔMEDA</KeywordGlow>
             <ShimmerText isVisible={isVisible}> em resultado.</ShimmerText>
           </h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
@@ -226,7 +226,7 @@ export function MetodoChampion() {
           <div className="rounded-2xl p-6 md:p-7 border border-primary/40 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent text-center flex flex-col items-center justify-center min-h-[220px]">
             <Sparkles className="w-8 h-8 text-secondary mb-3" />
             <p className="text-[10px] font-bold tracking-[0.2em] text-secondary/80 mb-1">META IA</p>
-            <p className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: "'Oswald', sans-serif" }}>&nbsp;ANDROMEDA</p>
+            <p className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: "'Oswald', sans-serif" }}>&nbsp;ANDRÔMEDA</p>
             <p className="text-xs text-muted-foreground">pede variedade em escala</p>
           </div>
 
@@ -287,8 +287,8 @@ export function MetodoChampion() {
           </div>
         </PillarBlock>
 
-        {/* ───────── PILAR 02 · ESTRATÉGIA &nbsp;ANDROMEDA ───────── */}
-        <PillarBlock n="02" title="Estratégia &nbsp;ANDROMEDA" icon={Brain} subtitle="Mesmo corpo, múltiplas entradas: é isso que faz a Meta IA escalar.">
+        {/* ───────── PILAR 02 · ESTRATÉGIA &nbsp;ANDRÔMEDA ───────── */}
+        <PillarBlock n="02" title="Estratégia &nbsp;ANDRÔMEDA" icon={Brain} subtitle="Mesmo corpo, múltiplas entradas: é isso que faz a Meta IA escalar.">
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
               { icon: Users, title: "Personas", desc: "Cada criativo é construído para uma fatia de público diferente. Mais personas = mais portas de entrada." },
