@@ -7,6 +7,9 @@ import {
   Ban,
   LineChart,
   GraduationCap,
+  Hourglass,
+  Flame,
+  AlertTriangle,
 } from "lucide-react";
 import { useReveal } from "@/hooks/useReveal";
 import { ShimmerText, KeywordGlow } from "./TextEffects";
@@ -47,6 +50,21 @@ const pains = [
     title: "Falta repertório técnico",
     desc: "Você aprendeu copiando guru. Falta método, falta estrutura, e isso te custa caro todo mês.",
   },
+  {
+    icon: Hourglass,
+    title: "Preso no operacional",
+    desc: "Você gasta o dia editando, briefando e revisando criativo. Sobra zero tempo pro que realmente faz o negócio crescer: estratégia.",
+  },
+  {
+    icon: Flame,
+    title: "CPA alto engolindo a margem",
+    desc: "O criativo até roda, mas o custo por venda sobe e come o lucro. Você fatura mais e ganha menos no fim do mês.",
+  },
+  {
+    icon: AlertTriangle,
+    title: "Refém de um único criativo",
+    desc: "Sua escala inteira está apoiada em um vencedor só. No dia que ele fadigar, a operação inteira despenca junto.",
+  },
 ];
 
 export function PainSection() {
@@ -86,6 +104,13 @@ export function PainSection() {
               <p className="text-sm text-muted-foreground leading-relaxed">{pain.desc}</p>
             </motion.div>
           ))}
+        </div>
+
+        <div className={`mt-10 md:mt-14 text-center reveal-up ${isVisible ? "visible" : ""}`}>
+          <p className="text-base md:text-xl font-semibold text-foreground max-w-3xl mx-auto leading-snug">
+            Aí sim, se você não resolver esse problema em dias ou no máximo semanas,{" "}
+            <KeywordGlow>aí sim você vai ter um problema de oferta.</KeywordGlow>
+          </p>
         </div>
       </div>
     </section>
