@@ -44,13 +44,13 @@ export function FinalCTA() {
       <div className="container mx-auto px-5 max-w-2xl relative z-10">
         <div className={`text-center reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-3">
-            <ShimmerText isVisible={isVisible}>SEUS CRIATIVOS PODEM</ShimmerText>{" "}
-            <KeywordGlow>CONVERTER AGORA!!!!!</KeywordGlow>
+            <ShimmerText isVisible={isVisible}>FAÇA SEU DIAGNÓSTICO DE</ShimmerText>{" "}
+            <KeywordGlow>CRIATIVOS 360 AGORA!!!!!</KeywordGlow>
           </h2>
 
           <LineReveal isVisible={isVisible} delay={200}>
             <p className="text-sm text-muted-foreground mb-8 max-w-md mx-auto">
-              Preencha o formulário de 2 minutos e descubra como a Champion pode transformar seus resultados.
+              Em 2 minutos a gente entende sua operação e agenda sua call de diagnóstico criativo 360 — gratuita.
             </p>
           </LineReveal>
 
