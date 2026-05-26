@@ -110,20 +110,20 @@ const Index = () => {
           <SocialProofCarousel />
         </section>
 
-        <section ref={successCasesRef} data-theme="void" data-track-id="success_cases" data-track-order="2.5">
-          <SuccessCases />
-        </section>
-
         <section data-theme="ember" data-track-id="dor" data-track-order="3">
           <PainSection />
         </section>
 
-        <section data-theme="blue-temple" data-track-id="criativos" data-track-order="4">
-          <VturbCreatives />
-        </section>
-
         <section data-theme="cave" data-track-id="metodo" data-track-order="5">
           <MetodoChampion />
+        </section>
+
+        <section ref={successCasesRef} data-theme="void" data-track-id="success_cases" data-track-order="5.3">
+          <SuccessCases />
+        </section>
+
+        <section data-theme="blue-temple" data-track-id="criativos" data-track-order="5.6">
+          <VturbCreatives />
         </section>
 
         <section data-theme="cave" data-track-id="cta_intermediario" data-track-order="6" className="py-10 md:py-16">
