@@ -226,7 +226,7 @@ export function MetodoChampion() {
           <div className="rounded-2xl p-6 md:p-7 border border-primary/40 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent text-center flex flex-col items-center justify-center min-h-[220px]">
             <Sparkles className="w-8 h-8 text-secondary mb-3" />
             <p className="text-[10px] font-bold tracking-[0.2em] text-secondary/80 mb-1">META IA</p>
-            <p className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: "'Oswald', sans-serif" }}>Andromeda</p>
+            <p className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: "'Oswald', sans-serif" }}>&nbsp;ANDROMEDA</p>
             <p className="text-xs text-muted-foreground">pede variedade em escala</p>
           </div>
 
