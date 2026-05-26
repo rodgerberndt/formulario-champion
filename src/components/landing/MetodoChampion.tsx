@@ -199,16 +199,125 @@ export function MetodoChampion() {
 
   return (
     <section id="metodo" className="py-16 md:py-28 relative" ref={ref}>
-      <div className="container mx-auto px-5 max-w-5xl">
-        <div className={`text-center mb-12 reveal-up ${isVisible ? "visible" : ""}`}>
+      <div className="container mx-auto px-5 max-w-6xl">
+        {/* ───────── OVERVIEW · MÉTODO CHAMPION · 4 PILARES ───────── */}
+        <div className={`text-center mb-10 reveal-up ${isVisible ? "visible" : ""}`}>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-secondary/40 bg-secondary/[0.06] mb-5">
+            <Sparkles className="w-3.5 h-3.5 text-secondary" />
+            <span className="text-[11px] md:text-xs font-bold tracking-[0.2em] text-secondary uppercase">
+              Método Champion · 4 Pilares
+            </span>
+          </div>
           <h2 className="text-foreground mb-3 max-w-3xl mx-auto">
             <ShimmerText isVisible={isVisible}>
-              EXISTE UM MÉTODO COMPROVADO PARA FAZER SUA OFERTA ESCALAR INFINITAMENTE COM{" "}
+              Como traduzimos o{" "}
             </ShimmerText>
-            <KeywordGlow>OXIGENAÇÃO DE CRIATIVOS.</KeywordGlow>
+            <KeywordGlow>Andromeda</KeywordGlow>
+            <ShimmerText isVisible={isVisible}> em resultado.</ShimmerText>
           </h2>
+          <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
+            O novo motor de IA do Meta exige <span className="text-foreground font-semibold">mais formatos, ângulos e personas</span>. Nossa operação foi desenhada para alimentar exatamente isso.
+          </p>
         </div>
 
+        {/* Overview layout: Andromeda → 4 pillars → ROI */}
+        <div className={`grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-4 md:gap-6 items-stretch mb-20 md:mb-28 reveal-up ${isVisible ? "visible" : ""}`} style={{ transitionDelay: "150ms" }}>
+          {/* Input: Meta IA Andromeda */}
+          <div className="rounded-2xl p-6 md:p-7 border border-primary/40 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent text-center flex flex-col items-center justify-center min-h-[220px]">
+            <Sparkles className="w-8 h-8 text-secondary mb-3" />
+            <p className="text-[10px] font-bold tracking-[0.2em] text-secondary/80 mb-1">META IA</p>
+            <p className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: "'Oswald', sans-serif" }}>Andromeda</p>
+            <p className="text-xs text-muted-foreground">pede variedade em escala</p>
+          </div>
+
+          {/* 4 pillars list */}
+          <div className="flex flex-col gap-3">
+            {fourPillars.map((p, i) => (
+              <motion.a
+                href={`#pilar-${p.n}`}
+                key={p.n}
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ delay: i * 0.08, duration: 0.4 }}
+                className="flex items-center gap-4 rounded-xl px-4 py-3 border border-secondary/20 bg-secondary/[0.04] hover:border-secondary/50 hover:bg-secondary/[0.08] transition-all"
+              >
+                <div className="w-10 h-10 rounded-lg bg-secondary/15 border border-secondary/30 flex items-center justify-center shrink-0">
+                  <p.icon className="w-5 h-5 text-secondary" />
+                </div>
+                <div className="text-left">
+                  <p className="text-[10px] font-bold tracking-[0.2em] text-secondary/70">PILAR {p.n}</p>
+                  <p className="text-sm md:text-base font-bold text-foreground">{p.title}</p>
+                </div>
+              </motion.a>
+            ))}
+          </div>
+
+          {/* Output: ROI */}
+          <div className="rounded-2xl p-6 md:p-7 border border-secondary/40 bg-gradient-to-br from-secondary/15 via-secondary/5 to-transparent text-center flex flex-col items-center justify-center min-h-[220px]">
+            <p className="text-[10px] font-bold tracking-[0.2em] text-secondary/80 mb-2">OUTPUT</p>
+            <p className="text-4xl font-black text-secondary mb-2" style={{ fontFamily: "'Oswald', sans-serif" }}>ROI</p>
+            <p className="text-xs text-muted-foreground">escala previsível e<br />CPA controlado</p>
+          </div>
+        </div>
+
+        {/* ───────── PILAR 01 · PLANO DE AÇÃO PERSONALIZADO ───────── */}
+        <PillarBlock n="01" title="Plano de Ação Personalizado" icon={ClipboardList} subtitle="O mapa completo da sua operação antes de qualquer criativo sair">
+          <div className="grid md:grid-cols-2 gap-5">
+            <div className="gold-card">
+              <Target className="w-5 h-5 text-secondary mb-2" />
+              <h4 className="text-base font-bold text-foreground mb-1.5">Mapa da oferta, produto e operação</h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Metas de faturamento, faturamento atual, personas, dores, desejos, para quem você vende e <span className="text-foreground font-semibold">como</span> vende. Sem isso, criativo é tiro no escuro.
+              </p>
+            </div>
+            <div className="gold-card">
+              <Film className="w-5 h-5 text-secondary mb-2" />
+              <h4 className="text-base font-bold text-foreground mb-1.5">Briefing cirúrgico de criativos</h4>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                Classificamos cada criativo seu em 4 categorias antes de produzir um único frame novo:
+              </p>
+              <ul className="space-y-1.5 text-xs text-foreground/80">
+                <li className="flex gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-green-500 mt-0.5 shrink-0" /> Validados que estão escalando</li>
+                <li className="flex gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-secondary mt-0.5 shrink-0" /> Saturados (precisam ser substituídos)</li>
+                <li className="flex gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-secondary mt-0.5 shrink-0" /> Venderam, mas não escalaram</li>
+                <li className="flex gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-destructive/80 mt-0.5 shrink-0" /> Não performaram (e por quê)</li>
+              </ul>
+            </div>
+          </div>
+        </PillarBlock>
+
+        {/* ───────── PILAR 02 · ESTRATÉGIA ANDROMEDA ───────── */}
+        <PillarBlock n="02" title="Estratégia Andromeda" icon={Brain} subtitle="Mesmo corpo, múltiplas entradas: é isso que faz a Meta IA escalar.">
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
+            {[
+              { icon: Users, title: "Personas", desc: "Cada criativo é construído para uma fatia de público diferente. Mais personas = mais portas de entrada." },
+              { icon: Film, title: "Formatos", desc: "A mesma mensagem embalada de várias formas: UGC, VSL curta, depoimento, demonstração, captura." },
+              { icon: Target, title: "Ângulos", desc: "Formas diferentes de contar a mesma história para impactar públicos distintos no mesmo público." },
+            ].map((b) => (
+              <div key={b.title} className="gold-card">
+                <b.icon className="w-5 h-5 text-secondary mb-2" />
+                <h4 className="text-base font-bold text-foreground mb-1.5">{b.title}</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">{b.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-center text-xs font-bold tracking-[0.2em] text-secondary/70 mb-4">
+            MESMO CORPO · 4 GANCHOS · 4 RESULTADOS
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 pt-4">
+            {hookCards.map((c) => (
+              <HookCard key={c.id} {...c} />
+            ))}
+          </div>
+          <p className="text-center text-sm md:text-base text-foreground/85 mt-6 max-w-2xl mx-auto">
+            Não é sobre fazer <span className="line-through opacity-60">mais</span> criativos. É sobre falar com mais <KeywordGlow>personas</KeywordGlow>, do jeito certo.
+          </p>
+        </PillarBlock>
+
+        {/* ───────── PILAR 03 · VOLUME · ESTEIRA SEMANAL ───────── */}
+        <PillarBlock n="03" title="Volume: Esteira Semanal" icon={Layers} subtitle="Um ciclo completo, toda semana. É assim que a oxigenação acontece.">
         <div className={`reveal-up ${isVisible ? "visible" : ""}`} style={{ transitionDelay: "200ms" }}>
 
           {/* Desktop */}
@@ -376,12 +485,75 @@ export function MetodoChampion() {
           </div>
         </div>
 
-        <div className="text-center mt-10 md:mt-16 transition-all duration-500 opacity-100 translate-y-0">
-          <button type="button" className="text-secondary/70 text-sm font-semibold underline underline-offset-4 transition-colors min-h-[44px] cursor-default">
-            Quero o diagnóstico →
-          </button>
+          {/* Esteira stacked infographic */}
+          <div className="mt-10 md:mt-14 rounded-2xl overflow-hidden border border-secondary/20 bg-primary/[0.04]">
+            <img
+              src="/esteira-semanal.png"
+              alt="Empilhamento da esteira semanal — 4 esteiras por mês com calls de checkpoint"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-auto block"
+            />
+          </div>
+        </PillarBlock>
+
+        {/* ───────── PILAR 04 · COMUNICAÇÃO ───────── */}
+        <PillarBlock n="04" title="Comunicação" icon={MessagesSquare} subtitle="Você nunca fica no escuro. A operação inteira é transparente." last>
+          <div className="grid md:grid-cols-2 gap-5">
+            <div className="gold-card">
+              <PhoneCall className="w-5 h-5 text-secondary mb-2" />
+              <h4 className="text-base font-bold text-foreground mb-1.5">Calls de checkpoint a cada 2 semanas</h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Onboarding na 1ª semana e checkpoint nas semanas 3, 5 e 7. Cada ciclo: mais aprendizado, mais refinamento, mais assertividade.
+              </p>
+            </div>
+            <div className="gold-card">
+              <MessagesSquare className="w-5 h-5 text-secondary mb-2" />
+              <h4 className="text-base font-bold text-foreground mb-1.5">Acompanhamento direto na operação</h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Canal direto com a equipe responsável. Você sabe o que está acontecendo, o porquê, e o próximo passo — sempre.
+              </p>
+            </div>
+          </div>
+        </PillarBlock>
+      </div>
+    </section>
+  );
+}
+
+/* ────────────────────────────────────────────────────────── */
+/*  PillarBlock — wrapper for each detailed pillar section    */
+/* ────────────────────────────────────────────────────────── */
+function PillarBlock({
+  n,
+  title,
+  subtitle,
+  icon: Icon,
+  children,
+  last,
+}: {
+  n: string;
+  title: string;
+  subtitle: string;
+  icon: React.ComponentType<{ className?: string }>;
+  children: React.ReactNode;
+  last?: boolean;
+}) {
+  return (
+    <section id={`pilar-${n}`} className={`scroll-mt-24 ${last ? "mb-0" : "mb-20 md:mb-28"}`}>
+      <div className="flex items-center gap-4 mb-6">
+        <div className="w-12 h-12 rounded-xl bg-secondary/15 border border-secondary/40 flex items-center justify-center shrink-0">
+          <Icon className="w-6 h-6 text-secondary" />
+        </div>
+        <div>
+          <p className="text-[10px] md:text-xs font-bold tracking-[0.25em] text-secondary/80">PILAR {n}</p>
+          <h3 className="text-xl md:text-2xl font-bold text-foreground leading-tight" style={{ fontFamily: "'Oswald', sans-serif" }}>
+            {title}
+          </h3>
         </div>
       </div>
+      <p className="text-sm md:text-base text-muted-foreground mb-6 max-w-3xl">{subtitle}</p>
+      {children}
     </section>
   );
 }
