@@ -1,5 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { QuizResultDara } from "@/components/landing/QuizResultDara";
 
 // Declare fbq for TypeScript
 declare global {
@@ -10,38 +14,82 @@ declare global {
 
 const RESULT_STORAGE_KEY = "champion_quiz_result";
 
+function PageBackground() {
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(145deg, hsl(235 50% 4%) 0%, hsl(238 65% 10%) 35%, hsl(250 55% 12%) 60%, hsl(235 50% 5%) 100%)`,
+        }}
+      />
+      <div
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `linear-gradient(to right, hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(to bottom, hsl(0 0% 100%) 1px, transparent 1px)`,
+          backgroundSize: '60px 60px',
+        }}
+      />
+    </div>
+  );
+}
+
 export default function Obrigado() {
   const navigate = useNavigate();
+  const [nome, setNome] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(RESULT_STORAGE_KEY);
-    if (saved) {
-      try {
-        // Fire CompleteRegistration pixel before redirect
-        if (typeof window.fbq === 'function') {
-          let eventID: string | undefined;
-          try {
-            const stored = localStorage.getItem('champion_event_ids');
-            if (stored) {
-              const parsedIds = JSON.parse(stored);
-              eventID = parsedIds.event_ids?.CompleteRegistration;
-            }
-          } catch { /* ignore */ }
+    if (!saved) {
+      navigate("/quiz");
+      return;
+    }
+    try {
+      const parsed = JSON.parse(saved);
+      setNome(parsed?.nome_completo ?? "");
 
-          window.fbq('track', 'CompleteRegistration', {}, { eventID });
-          console.log('Facebook Pixel: CompleteRegistration event fired with eventID:', eventID);
-        }
+      if (typeof window.fbq === 'function') {
+        let eventID: string | undefined;
+        try {
+          const stored = localStorage.getItem('champion_event_ids');
+          if (stored) {
+            const parsedIds = JSON.parse(stored);
+            eventID = parsedIds.event_ids?.CompleteRegistration;
+          }
+        } catch { /* ignore */ }
 
-        // Immediate redirect — no page rendered
-        window.location.replace("https://education.championadstudio.com");
-      } catch {
-        navigate("/quiz");
+        window.fbq('track', 'PageView');
+        window.fbq('track', 'CompleteRegistration', {}, { eventID });
+        console.log('Facebook Pixel: CompleteRegistration fired on /obrigado with eventID:', eventID);
       }
-    } else {
+    } catch {
       navigate("/quiz");
     }
   }, [navigate]);
 
-  // Never renders the thank-you page content
-  return null;
+  if (nome === null) return null;
+
+  return (
+    <div className="min-h-[100svh] relative w-full max-w-full overflow-x-hidden">
+      <PageBackground />
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/50">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-xl">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/")}
+            className="gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Voltar
+          </Button>
+        </div>
+      </header>
+      <main className="pt-20 pb-12 px-4 min-h-[100svh]" style={{ paddingBottom: 'calc(48px + env(safe-area-inset-bottom))' }}>
+        <div className="container mx-auto max-w-lg">
+          <QuizResultDara nome={nome} />
+        </div>
+      </main>
+    </div>
+  );
 }

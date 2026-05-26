@@ -188,6 +188,7 @@ export default function ObrigadoMql() {
             nome={formData.nome_completo}
             estagio_negocio={formData.estagio_negocio}
             investimento_faixa={formData.investimento_faixa}
+            forceSdr
             casesSlot={
               <div className="-mx-4 space-y-2 obrigadomql-cases">
                 <SuccessCasesCompact />
