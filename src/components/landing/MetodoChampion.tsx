@@ -31,7 +31,7 @@ const pillars = [
 /* ────────────────────────────────────────────────────────── */
 const fourPillars = [
   { n: "01", title: "Plano de Ação Personalizado", icon: ClipboardList },
-  { n: "02", title: "Estratégia Andromeda", icon: Brain },
+  { n: "02", title: "Estratégia &nbsp;ANDROMEDA", icon: Brain },
   { n: "03", title: "Volume: Esteira Semanal", icon: Layers },
   { n: "04", title: "Comunicação", icon: MessagesSquare },
 ];
