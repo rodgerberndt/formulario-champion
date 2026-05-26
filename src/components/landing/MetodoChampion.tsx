@@ -20,7 +20,7 @@ import {
 const esteiraSteps = [
   "Alinhamento Estratégico",
   "Copy",
-  "Criação da Mensagem",
+  "CRIAÇÃO DA COPY",
   "Aprovação",
   "Edição",
   "Entrega",
