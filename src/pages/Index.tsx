@@ -10,7 +10,6 @@ import { PortfolioSection } from "@/components/landing/PortfolioSection";
 import { VturbCreatives } from "@/components/landing/VturbCreatives";
 import { MetodoChampion } from "@/components/landing/MetodoChampion";
 import { HowItWorks } from "@/components/landing/HowItWorks";
-import { GanchoCorpoSection } from "@/components/landing/GanchoCorpoSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { DiagnosticoSection } from "@/components/landing/DiagnosticoSection";
 
@@ -153,10 +152,6 @@ const Index = () => {
               )}
             </Button>
           </div>
-        </section>
-
-        <section data-theme="blue-temple" data-track-id="gancho_corpo" data-track-order="7">
-          <GanchoCorpoSection />
         </section>
 
         <section data-theme="blue-temple" data-track-id="como_funciona" data-track-order="8">
