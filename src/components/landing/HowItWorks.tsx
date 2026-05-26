@@ -1,4 +1,4 @@
-import { ClipboardCheck, Zap, TrendingUp } from "lucide-react";
+import { ClipboardCheck, MessageCircle, Video } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
 import { ShimmerText, KeywordGlow, LineReveal } from "./TextEffects";
@@ -6,32 +6,32 @@ import { ShimmerText, KeywordGlow, LineReveal } from "./TextEffects";
 const steps = [
   {
     icon: ClipboardCheck,
-    title: "Diagnóstico",
-    subtitle: "Diagnóstico + entendimento",
+    title: "Preencha a Aplicação",
+    subtitle: "Diagnóstico rápido de 2 minutos",
     bullets: [
-      "Faça o diagnóstico de 2 minutos",
-      "Nosso time analisa seu cenário, mercado e estrutura atual",
-      "Você recebe um plano personalizado com os próximos passos",
+      "Clique no botão e responda a aplicação",
+      "Conte sobre sua operação, faturamento e objetivos",
+      "Suas respostas vão direto pro nosso time de especialistas",
     ],
   },
   {
-    icon: Zap,
-    title: "Produção + Esteira Semanal",
-    subtitle: "Criativos toda semana",
+    icon: MessageCircle,
+    title: "Conversa no WhatsApp",
+    subtitle: "Qualificação + agendamento",
     bullets: [
-      "Novos criativos semanais baseados em dados e ângulos validados",
-      "Testes estruturados (A/B/C) com otimização contínua",
-      "Cada peça é desenhada pra performar, não pra enfeitar",
+      "Um especialista entra em contato no seu WhatsApp",
+      "Faz algumas perguntas pra entender seu cenário a fundo",
+      "Agenda sua Call de Diagnóstico Criativo Gratuito",
     ],
   },
   {
-    icon: TrendingUp,
-    title: "Escala e Otimização",
-    subtitle: "Resultados previsíveis",
+    icon: Video,
+    title: "Call de Diagnóstico Gratuito",
+    subtitle: "Diagnóstico criativo · sem custo",
     bullets: [
-      "Identificamos o criativo vencedor e escalamos com segurança",
-      "Otimização por métricas reais: CPA, ROAS, CTR, frequência",
-      "Rotina de testes que mantém a escala saudável e previsível",
+      "Analisamos sua operação, criativos e oportunidades reais",
+      "Você sai com clareza dos próximos passos pra escalar",
+      "Só depois disso conversamos sobre um possível próximo passo juntos",
     ],
   },
 ];
