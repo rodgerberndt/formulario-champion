@@ -9,7 +9,7 @@ import { PainSection } from "@/components/landing/PainSection";
 import { PortfolioSection } from "@/components/landing/PortfolioSection";
 import { VturbCreatives } from "@/components/landing/VturbCreatives";
 import { MetodoChampion } from "@/components/landing/MetodoChampion";
-import { GanchoCorpoSection } from "@/components/landing/GanchoCorpoSection";
+import { ClientFeedbacks } from "@/components/landing/ClientFeedbacks";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { FinalCTA } from "@/components/landing/FinalCTA";
@@ -121,8 +121,8 @@ const Index = () => {
           <SuccessCases />
         </section>
 
-        <section data-theme="cave" data-track-id="feedbacks_prints" data-track-order="5.4">
-          <GanchoCorpoSection />
+        <section data-theme="cave" data-track-id="feedbacks_clientes" data-track-order="5.4">
+          <ClientFeedbacks />
         </section>
 
         <section data-theme="blue-temple" data-track-id="criativos" data-track-order="5.6">
