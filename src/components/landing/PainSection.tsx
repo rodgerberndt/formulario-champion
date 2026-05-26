@@ -37,7 +37,7 @@ const pains = [
   },
   {
     icon: Ban,
-    title: "Criativo reprovado toda hora",
+    title: "CRIATIVO REPROVANDO TODA HORA",
     desc: "Você produz, sobe, e a Meta derruba. Conta restrita, BM travada, anúncio em loop de revisão.",
   },
   {
