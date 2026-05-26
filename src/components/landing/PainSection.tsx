@@ -76,13 +76,12 @@ export function PainSection() {
         <div className={`text-center mb-8 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-2">
             <ShimmerText isVisible={isVisible}>
-              VOCÊ NÃO TEM UM PROBLEMA DE OFERTA.
+              O ANDROMEDA TROUXE UMA SÉRIE DE PROBLEMAS PRA SUA OPERAÇÃO.
             </ShimmerText>{" "}
-            <KeywordGlow>VOCÊ TEM UM PROBLEMA DE CRIATIVO.</KeywordGlow>
+            <KeywordGlow>VOCÊ RECONHECE ALGUM DELES?</KeywordGlow>
           </h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-            Toda semana ouvimos as mesmas dores de quem já fatura, mas trava na hora de escalar.
-            Reconhece alguma delas?
+            O novo motor de IA do Meta mudou as regras do jogo. Quem não se adaptou, está sentindo na pele toda semana.
           </p>
         </div>
 
