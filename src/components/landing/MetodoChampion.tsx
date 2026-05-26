@@ -320,182 +320,78 @@ export function MetodoChampion() {
 
         {/* ───────── PILAR 03 · VOLUME · ESTEIRA SEMANAL ───────── */}
         <PillarBlock n="03" title="Volume: Esteira Semanal" icon={Layers} subtitle="Um ciclo completo, toda semana. É assim que a oxigenação acontece.">
-        <div className={`reveal-up ${isVisible ? "visible" : ""}`} style={{ transitionDelay: "200ms" }}>
-
-          {/* Desktop */}
-          <div className="hidden md:flex items-center justify-center relative" style={{ minHeight: 420 }}>
-            {/* SVG arrows layer */}
-            <svg
-              width={svgSize}
-              height={svgSize}
-              className="absolute pointer-events-none"
-              style={{ left: `calc(50% - ${svgCenter}px)`, top: `calc(50% - ${svgCenter}px)` }}
-              viewBox={`${-svgCenter} ${-svgCenter} ${svgSize} ${svgSize}`}
-            >
-              {pillars.map((_, i) => {
-                const a1 = (i * 360) / pillars.length - 90 + 25;
-                const a2 = (((i + 1) % pillars.length) * 360) / pillars.length - 90 - 25;
-                const a2Adj = a2 < a1 ? a2 + 360 : a2;
-                return (
-                  <CurvedArrow
-                    key={`arrow-${i}`}
-                    angle1={a1}
-                    angle2={a2 < a1 ? a2 + 360 : a2}
-                    radius={arrowRadius}
-                    isActive={i < activePillars}
-                  />
-                );
-              })}
-            </svg>
-
-            {/* Center emblem */}
-            <div className="relative w-56 h-56 flex items-center justify-center z-10">
-              <div
-                className={`absolute inset-0 rounded-full transition-all duration-700 ${activePillars >= 6 ? "opacity-100" : "opacity-30"}`}
-                style={{ background: "radial-gradient(circle, hsl(42 90% 58% / 0.15) 0%, transparent 70%)", filter: "blur(25px)" }}
-              />
-              <div
-                className={`absolute inset-4 rounded-full transition-all duration-500 ${
-                  activePillars >= 6 ? "border-2 border-secondary/60 shadow-[0_0_30px_-5px_hsl(42_90%_58%/0.3)]" : "border border-border/30"
-                }`}
-                style={{ background: "linear-gradient(135deg, hsl(235 60% 7%), hsl(235 60% 5%))" }}
-              />
-              <img src="/champion-logo.webp" alt="Champion" width={80} height={80} loading="lazy" decoding="async" className={`relative z-10 w-20 h-20 object-contain transition-all duration-500 ${activePillars >= 6 ? "drop-shadow-[0_0_12px_hsl(42_90%_58%/0.4)]" : ""}`} />
-              <span className="absolute bottom-7 z-10 text-[10px] font-bold uppercase tracking-wider text-secondary/80">Esteira semanal</span>
-            </div>
-
-            {/* Pillars */}
-            {pillars.map((pillar, i) => {
-              const angle = (i * 360) / pillars.length - 90;
-              const rad = (angle * Math.PI) / 180;
-              const x = Math.cos(rad) * desktopRadius;
-              const y = Math.sin(rad) * desktopRadius;
-              const isActive = i < activePillars;
-              const isHighlight = (pillar as any).highlight;
-              return (
-                <motion.div
-                  key={pillar.label}
-                  className="absolute z-20"
-                  style={{ left: `calc(50% + ${x}px - 65px)`, top: `calc(50% + ${y}px - 18px)`, width: 130 }}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={isVisible ? { opacity: 1, scale: isHighlight && isActive ? [1, 1.08, 1] : 1 } : {}}
-                  transition={isHighlight && isActive
-                    ? { delay: 0.3 + i * 0.08, duration: 0.6, scale: { repeat: 1, duration: 0.5 } }
-                    : { delay: 0.3 + i * 0.08, duration: 0.4 }
-                  }
-                >
-                  <div className={`text-center px-3 py-2.5 rounded-xl border transition-all duration-500 ${
-                    isHighlight && isActive
-                      ? "border-secondary/70 bg-[hsl(42_90%_58%/0.15)] shadow-[0_0_20px_-3px_hsl(42_90%_58%/0.35)]"
-                      : isActive
-                        ? "border-secondary/40 bg-[hsl(42_90%_58%/0.08)] shadow-[0_0_15px_-5px_hsl(42_90%_58%/0.2)]"
-                        : "border-border/20 bg-muted/10"
-                  }`}>
-                    <span className={`text-[11px] font-bold uppercase tracking-wider transition-colors duration-500 ${
-                      isHighlight && isActive ? "text-secondary drop-shadow-[0_0_6px_hsl(42_90%_58%/0.5)]" : isActive ? "text-secondary" : "text-muted-foreground/50"
-                    }`}>
-                      {isHighlight ? "↻ " : ""}{pillar.label}
-                    </span>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* Mobile */}
-          <div ref={mobileRef} className="md:hidden flex flex-col items-center gap-0">
-            {/* Trophy — bigger, no ring, strong glow */}
-            <motion.div
-              className="relative flex items-center justify-center mb-8 py-4"
-              initial={{ opacity: 0, scale: 0.85 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            >
-              {/* Radial glow behind trophy */}
-              <div
-                className={`absolute w-48 h-48 rounded-full transition-all duration-700 ${
-                  trophyPulse ? "opacity-100 scale-110" : "opacity-30 scale-100"
-                }`}
-                style={{
-                  background: "radial-gradient(circle, hsl(42 90% 58% / 0.25) 0%, hsl(42 90% 58% / 0.08) 40%, transparent 70%)",
-                  filter: "blur(20px)",
-                }}
-              />
-              <img
-                src="/champion-logo.webp"
-                alt="Champion"
-                width={100}
-                height={100}
-                loading="lazy"
-                decoding="async"
-                className={`relative z-10 w-24 h-24 max-w-[30vw] object-contain transition-all duration-700 ${
-                  trophyPulse
-                    ? "drop-shadow-[0_0_25px_hsl(42_90%_58%/0.6)] trophy-shine"
-                    : "drop-shadow-[0_0_8px_hsl(42_90%_58%/0.2)]"
-                }`}
-              />
-              <span className="absolute -bottom-1 z-10 text-[10px] font-bold uppercase tracking-wider text-secondary/80">
-                Esteira semanal
-              </span>
-            </motion.div>
-
-            {pillars.map((pillar, i) => {
-              const isHighlight = (pillar as any).highlight;
-              const isLit = litIndex >= i || litIndex === 6;
-              return (
-                <div key={pillar.label} className="flex flex-col items-center">
-                  <div
-                    className={`text-center px-5 py-2.5 rounded-xl border transition-all duration-500 ${
-                      isLit
-                        ? isHighlight
-                          ? "border-secondary/70 bg-[hsl(42_90%_58%/0.15)] shadow-[0_0_20px_-3px_hsl(42_90%_58%/0.35)]"
-                          : "border-secondary/50 bg-[hsl(42_90%_58%/0.08)] shadow-[0_0_12px_-3px_hsl(42_90%_58%/0.2)]"
-                        : "border-border/20 bg-muted/10"
-                    }`}
+          <div className={`reveal-up ${isVisible ? "visible" : ""}`} style={{ transitionDelay: "200ms" }}>
+            {/* Flow of steps */}
+            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
+              {esteiraSteps.map((step, i) => (
+                <div key={step} className="flex items-center gap-2 md:gap-3">
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.4 }}
+                    transition={{ delay: i * 0.06, duration: 0.4 }}
+                    className="relative flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl border border-secondary/40 bg-[hsl(42_90%_58%/0.08)] shadow-[0_0_15px_-5px_hsl(42_90%_58%/0.25)]"
                   >
-                    <span
-                      className={`text-[11px] font-bold uppercase tracking-wider transition-all duration-500 ${
-                        isLit
-                          ? "text-secondary drop-shadow-[0_0_6px_hsl(42_90%_58%/0.4)]"
-                          : "text-muted-foreground/50"
-                      }`}
-                    >
-                      {isHighlight ? "↻ " : ""}
-                      {pillar.label}
+                    <span className="text-[10px] md:text-xs font-black text-secondary/70" style={{ fontFamily: "'Oswald', sans-serif" }}>
+                      {String(i + 1).padStart(2, "0")}
                     </span>
-                  </div>
-                  {/* Arrow down */}
-                  {!isHighlight && (
-                    <svg width="16" height="28" viewBox="0 0 16 28" className="my-2" fill="none">
-                      <path
-                        d="M8 0 L8 20"
-                        stroke={isLit ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"}
-                        strokeWidth="1.5"
-                        className="transition-all duration-500"
-                      />
-                      <polygon
-                        points="8,27 4,20 12,20"
-                        fill={isLit ? "hsl(42 90% 58%)" : "hsl(0 0% 40% / 0.25)"}
-                        className="transition-all duration-500"
-                      />
-                    </svg>
+                    <span className="text-[11px] md:text-sm font-bold uppercase tracking-wider text-secondary">
+                      {step}
+                    </span>
+                  </motion.div>
+                  {i < esteiraSteps.length - 1 && (
+                    <span className="text-secondary/50 text-base md:text-lg select-none">→</span>
                   )}
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              ))}
+            </div>
 
-          {/* Esteira stacked infographic */}
-          <div className="mt-10 md:mt-14 rounded-2xl overflow-hidden border border-secondary/20 bg-primary/[0.04]">
-            <img
-              src="/esteira-semanal.png"
-              alt="Empilhamento da esteira semanal — 4 esteiras por mês com calls de checkpoint"
-              loading="lazy"
-              decoding="async"
-              className="w-full h-auto block"
-            />
+            {/* Repete o ciclo */}
+            <div className="flex justify-center mt-6 md:mt-8">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-secondary/60 bg-[hsl(42_90%_58%/0.15)] shadow-[0_0_25px_-5px_hsl(42_90%_58%/0.4)]"
+              >
+                <span className="text-secondary text-lg">↻</span>
+                <span className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-secondary drop-shadow-[0_0_6px_hsl(42_90%_58%/0.5)]">
+                  Repete o ciclo
+                </span>
+              </motion.div>
+            </div>
+
+            {/* Stacking cycles → assertividade */}
+            <div className="mt-10 md:mt-14 rounded-2xl border border-secondary/20 bg-primary/[0.04] p-5 md:p-8">
+              <p className="text-center text-[10px] md:text-xs font-bold tracking-[0.25em] text-secondary/70 mb-5 md:mb-6">
+                EMPILHANDO CICLOS · CADA SEMANA + ASSERTIVIDADE
+              </p>
+              <div className="flex items-end justify-center gap-3 md:gap-5 mb-4">
+                {[1, 2, 3, 4].map((week, i) => {
+                  const height = 50 + i * 28;
+                  return (
+                    <motion.div
+                      key={week}
+                      initial={{ opacity: 0, scaleY: 0.3 }}
+                      whileInView={{ opacity: 1, scaleY: 1 }}
+                      viewport={{ once: true, amount: 0.4 }}
+                      transition={{ delay: i * 0.12, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ height, transformOrigin: "bottom" }}
+                      className="relative flex-1 max-w-[80px] rounded-t-lg border border-secondary/40 bg-gradient-to-t from-secondary/30 to-secondary/10 shadow-[0_0_20px_-5px_hsl(42_90%_58%/0.3)]"
+                    >
+                      <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] md:text-xs font-bold text-secondary whitespace-nowrap">
+                        Esteira {week}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+              <p className="text-center text-sm md:text-base text-foreground/85 max-w-2xl mx-auto mt-6">
+                A cada ciclo, mais aprendizado, mais dados e mais{" "}
+                <KeywordGlow>assertividade</KeywordGlow> nos criativos seguintes.
+              </p>
+            </div>
           </div>
         </PillarBlock>
 
