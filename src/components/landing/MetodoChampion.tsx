@@ -3,6 +3,19 @@ import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
 import { ShimmerText, KeywordGlow } from "./TextEffects";
 import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Sparkles,
+  ClipboardList,
+  Brain,
+  Layers,
+  MessagesSquare,
+  Trophy,
+  Target,
+  Film,
+  Users,
+  CheckCircle2,
+  PhoneCall,
+} from "lucide-react";
 
 const pillars = [
   { label: "Onboarding / Feedback" },
@@ -12,6 +25,54 @@ const pillars = [
   { label: "Teste" },
   { label: "Repete o Ciclo", highlight: true },
 ];
+
+/* ────────────────────────────────────────────────────────── */
+/*  4-Pilares overview data                                   */
+/* ────────────────────────────────────────────────────────── */
+const fourPillars = [
+  { n: "01", title: "Plano de Ação Personalizado", icon: ClipboardList },
+  { n: "02", title: "Estratégia Andromeda", icon: Brain },
+  { n: "03", title: "Volume: Esteira Semanal", icon: Layers },
+  { n: "04", title: "Comunicação", icon: MessagesSquare },
+];
+
+/* Hook cards (Pilar 2 – Andromeda) */
+const hookCards = [
+  { id: 1, roas: "0.31", winner: false },
+  { id: 2, roas: "3.30", winner: true },
+  { id: 3, roas: "0", winner: false },
+  { id: 4, roas: "0.49", winner: false },
+];
+
+function HookCard({ id, roas, winner }: { id: number; roas: string; winner: boolean }) {
+  return (
+    <div
+      className={`relative rounded-2xl p-4 md:p-5 border transition-all duration-300 ${
+        winner
+          ? "border-green-500/50 bg-green-500/[0.07] shadow-[0_0_30px_-5px_rgba(34,197,94,0.2)]"
+          : "border-secondary/20 bg-secondary/[0.04]"
+      }`}
+    >
+      {winner && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/20 border border-green-500/40 text-[10px] font-bold text-green-400 uppercase tracking-wider whitespace-nowrap">
+          <Trophy className="w-3 h-3" />
+          Pré-escala
+        </div>
+      )}
+      <p className="text-xs font-bold text-secondary tracking-wider mb-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+        GANCHO {id}
+      </p>
+      <p className="text-[10px] text-muted-foreground mb-2">Persona diferente</p>
+      <p
+        className={`text-3xl md:text-4xl font-black ${winner ? "text-green-400" : "text-foreground/70"}`}
+        style={{ fontFamily: "'Oswald', sans-serif" }}
+      >
+        {roas}
+      </p>
+      <p className="text-[10px] text-muted-foreground mt-1">ROAS</p>
+    </div>
+  );
+}
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
