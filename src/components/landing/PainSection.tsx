@@ -106,9 +106,8 @@ export function PainSection() {
         </div>
 
         <div className={`mt-10 md:mt-14 text-center reveal-up ${isVisible ? "visible" : ""}`}>
-          <p className="text-base md:text-xl font-semibold text-foreground max-w-3xl mx-auto leading-snug">
-            Aí sim, se você não resolver esse problema em dias ou no máximo semanas,{" "}
-            <KeywordGlow>aí sim você vai ter um problema de oferta.</KeywordGlow>
+          <p className="text-base md:text-xl font-semibold text-foreground max-w-3xl mx-auto leading-snug whitespace-pre-line">
+            {"\n"}
           </p>
         </div>
       </div>
