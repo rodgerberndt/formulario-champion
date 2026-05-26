@@ -6,7 +6,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
 import { SuccessCases } from "@/components/landing/SuccessCases";
 import { PainSection } from "@/components/landing/PainSection";
-import { PortfolioSection } from "@/components/landing/PortfolioSection";
+
 import { VturbCreatives } from "@/components/landing/VturbCreatives";
 import { MetodoChampion } from "@/components/landing/MetodoChampion";
 
