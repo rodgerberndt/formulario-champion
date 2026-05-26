@@ -14,6 +14,7 @@ interface QuizResultProps {
   estagio_negocio?: string;
   investimento_faixa?: string;
   casesSlot?: React.ReactNode;
+  forceSdr?: boolean;
 }
 function useCountdown() {
   const [remaining, setRemaining] = useState<string | null>(null);
@@ -109,9 +110,10 @@ export function QuizResult({
   nome,
   estagio_negocio,
   investimento_faixa,
-  casesSlot
+  casesSlot,
+  forceSdr = false
 }: QuizResultProps) {
-  const isDaraLead = !investimento_faixa || !SDR_MIN_FATURAMENTO.includes(investimento_faixa);
+  const isDaraLead = !forceSdr && (!investimento_faixa || !SDR_MIN_FATURAMENTO.includes(investimento_faixa));
   const firstName = nome.split(" ")[0];
   const countdown = useCountdown();
   const [progressAnimated, setProgressAnimated] = useState(0);
