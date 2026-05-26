@@ -9,6 +9,7 @@ import { PainSection } from "@/components/landing/PainSection";
 import { PortfolioSection } from "@/components/landing/PortfolioSection";
 import { VturbCreatives } from "@/components/landing/VturbCreatives";
 import { MetodoChampion } from "@/components/landing/MetodoChampion";
+import { GanchoCorpoSection } from "@/components/landing/GanchoCorpoSection";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { DiagnosticoSection } from "@/components/landing/DiagnosticoSection";
@@ -120,6 +121,10 @@ const Index = () => {
 
         <section ref={successCasesRef} data-theme="void" data-track-id="success_cases" data-track-order="5.3">
           <SuccessCases />
+        </section>
+
+        <section data-theme="cave" data-track-id="feedbacks_prints" data-track-order="5.4">
+          <GanchoCorpoSection />
         </section>
 
         <section data-theme="blue-temple" data-track-id="criativos" data-track-order="5.6">
