@@ -15,7 +15,7 @@ const VIDEOS: { id: string; niche: Niche }[] = [
   { id: "6a17367fcd0fb28b25f6d2aa", niche: "Info" },
   { id: "6a1736114e90c02561faa1fd", niche: "Lowticket" },
   { id: "6a1735e8be176651058cdfed", niche: "Nutra" },
-  { id: "6a1735b292e602d534b94243", niche: "Hot" },
+  { id: "6a1735b292e602d534b94243", niche: "Info" },
 ];
 
 const NICHE_STYLES: Record<Niche, string> = {
@@ -82,7 +82,8 @@ function VturbPlayer({ id, index, niche }: { id: string; index: number; niche: N
             // @ts-expect-error custom element
             <vturb-smartplayer
               id={`vid-${id}`}
-              style={{ display: "block", width: "100%", height: "100%" }}
+              class="absolute inset-0 w-full h-full"
+              style={{ display: "block" }}
             />
           )}
           {!scriptLoaded && (
