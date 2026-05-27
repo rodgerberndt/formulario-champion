@@ -12,6 +12,10 @@ const VIDEOS: { id: string; niche: Niche }[] = [
   { id: "69f7bc48429b5d0eef53891b", niche: "Lowticket" },
   { id: "69f7bc42858bd31866f50afd", niche: "Nutra" },
   { id: "69f7bc31c234cac35bc5b20a", niche: "Hot" },
+  { id: "6a17367fcd0fb28b25f6d2aa", niche: "Info" },
+  { id: "6a1736114e90c02561faa1fd", niche: "Lowticket" },
+  { id: "6a1735e8be176651058cdfed", niche: "Nutra" },
+  { id: "6a1735b292e602d534b94243", niche: "Hot" },
 ];
 
 const NICHE_STYLES: Record<Niche, string> = {
