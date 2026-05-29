@@ -1377,7 +1377,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                                   size="sm"
                                   onClick={() => {
                                     setEditingMeeting(meeting);
-                                    setEditMeetingForm({ notes: meeting.notes || "", attended: !!meeting.attended });
+                                    setEditMeetingForm({ notes: meeting.notes || "", attended: !!meeting.attended, closer: meeting.closer || "Caio" });
                                   }}
                                 >
                                   <Pencil className="w-4 h-4" />
