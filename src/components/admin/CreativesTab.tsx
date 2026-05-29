@@ -426,7 +426,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Manual sales form
   const [showAddSale, setShowAddSale] = useState(false);
-  const [saleForm, setSaleForm] = useState({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint" as "sprint" | "assessoria" });
+  const [saleForm, setSaleForm] = useState({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint" as "sprint" | "assessoria", closer: "Caio" });
   const [savingSale, setSavingSale] = useState(false);
 
   // Ad spend form
@@ -453,7 +453,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Edit states
   const [editingSale, setEditingSale] = useState<ManualSale | null>(null);
-  const [editSaleForm, setEditSaleForm] = useState({ revenue: "", sale_type: "sprint" as "sprint" | "assessoria", notes: "" });
+  const [editSaleForm, setEditSaleForm] = useState({ revenue: "", sale_type: "sprint" as "sprint" | "assessoria", notes: "", closer: "Caio" });
   const [savingEditSale, setSavingEditSale] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
   const [editMeetingForm, setEditMeetingForm] = useState({ notes: "", attended: false, closer: "Caio" });
