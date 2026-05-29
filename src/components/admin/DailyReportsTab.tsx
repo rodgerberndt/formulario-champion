@@ -608,7 +608,7 @@ export default function DailyReportsTab() {
                   </div>
                   <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                     <div className="w-2 h-2 rounded-full bg-pink-400" />
-                    Dara
+                    Miguel
                   </div>
                 </div>
               </CardContent>
