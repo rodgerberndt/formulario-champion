@@ -2259,6 +2259,20 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <SelectItem value="Rodger">Rodger</SelectItem>
                 </SelectContent>
               </Select>
+              {meetingForm.closer && (
+                CLOSER_CALENDARS[meetingForm.closer] ? (
+                  <a
+                    href={CLOSER_CALENDARS[meetingForm.closer]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    <Calendar className="w-3 h-3" /> Abrir agenda do {meetingForm.closer}
+                  </a>
+                ) : (
+                  <p className="mt-2 text-xs text-muted-foreground">Link da agenda do {meetingForm.closer} a definir.</p>
+                )
+              )}
             </div>
             <Button onClick={handleAddMeeting} disabled={savingMeeting || !meetingSelectedLeadId} className="w-full">
               {savingMeeting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
