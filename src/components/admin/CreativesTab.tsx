@@ -684,10 +684,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       await fetchAdmin(`${supabaseUrl}/functions/v1/admin-data/meetings/${editingMeeting.id}`, {
         method: "PUT",
         headers: { "x-admin-token": getAdminToken() || "", "Content-Type": "application/json" },
-        body: JSON.stringify({ notes: editMeetingForm.notes, attended: editMeetingForm.attended }),
+        body: JSON.stringify({ notes: editMeetingForm.notes, attended: editMeetingForm.attended, closer: editMeetingForm.closer }),
       });
       toast({ title: "Reunião atualizada!" });
-      setMeetingsList(prev => prev.map(m => m.id === editingMeeting.id ? { ...m, notes: editMeetingForm.notes, attended: editMeetingForm.attended } : m));
+      setMeetingsList(prev => prev.map(m => m.id === editingMeeting.id ? { ...m, notes: editMeetingForm.notes, attended: editMeetingForm.attended, closer: editMeetingForm.closer } : m));
       setEditingMeeting(null);
       loadData();
     } catch {
