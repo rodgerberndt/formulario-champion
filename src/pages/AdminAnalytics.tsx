@@ -2165,11 +2165,11 @@ export default function AdminAnalytics() {
                                       onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
                                     >Caio</Badge>
                                   );
-                                  if (sdr === "Dara") return (
+                                  if (sdr === "Miguel") return (
                                     <Badge 
                                       className="bg-pink-500/20 text-pink-400 border-pink-500/30 cursor-pointer hover:bg-pink-500/30 transition-colors"
                                       onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
-                                    >Dara</Badge>
+                                    >Miguel</Badge>
                                   );
                                   return <span className="text-muted-foreground">-</span>;
                                 })()}
