@@ -812,6 +812,7 @@ export type Database = {
       }
       manual_sales: {
         Row: {
+          closer: string | null
           created_at: string
           creative_key: string | null
           id: string
@@ -823,6 +824,7 @@ export type Database = {
           utm_content: string | null
         }
         Insert: {
+          closer?: string | null
           created_at?: string
           creative_key?: string | null
           id?: string
@@ -834,6 +836,7 @@ export type Database = {
           utm_content?: string | null
         }
         Update: {
+          closer?: string | null
           created_at?: string
           creative_key?: string | null
           id?: string
