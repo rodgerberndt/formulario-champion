@@ -1336,6 +1336,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         <TableRow>
                           <TableHead>Data</TableHead>
                           <TableHead>Criativo</TableHead>
+                          <TableHead>Closer</TableHead>
                           <TableHead>Observação</TableHead>
                           <TableHead>Realizada</TableHead>
                           <TableHead className="w-20"></TableHead>
@@ -1348,6 +1349,13 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                             <TableCell>
                               {meeting.utm_content || meeting.creative_key ? (
                                 <Badge variant="outline" className="text-xs">{meeting.utm_content || meeting.creative_key}</Badge>
+                              ) : (
+                                <span className="text-muted-foreground text-xs">—</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {meeting.closer ? (
+                                <Badge variant="outline" className="text-xs">{meeting.closer}</Badge>
                               ) : (
                                 <span className="text-muted-foreground text-xs">—</span>
                               )}
