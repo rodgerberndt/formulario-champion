@@ -2102,6 +2102,7 @@ Deno.serve(async (req: Request) => {
         utm_content: params.utm_content || null,
         notes: params.notes || null,
         lead_id: leadId,
+        closer: params.closer || null,
       }]).select().maybeSingle();
 
       if (error) throw error;
@@ -2163,6 +2164,7 @@ Deno.serve(async (req: Request) => {
       const updates: Record<string, unknown> = {};
       if (body.notes !== undefined) updates.notes = body.notes || null;
       if (body.attended !== undefined) updates.attended = !!body.attended;
+      if (body.closer !== undefined) updates.closer = body.closer || null;
       const { data, error } = await supabase.from("meetings").update(updates).eq("id", meetingId).select().maybeSingle();
       if (error) throw error;
       return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
