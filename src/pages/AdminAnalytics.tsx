@@ -423,16 +423,20 @@ export default function AdminAnalytics() {
     "Acima de R$ 10 milhões",
   ];
   const getLeadSdr = (lead: Lead): string => {
-    if (lead.sdr_override && lead.sdr_override !== "Rodger") return lead.sdr_override;
-    if (lead.sdr_override === "Rodger") return "Caio"; // migrate existing Rodger overrides
+    if (lead.sdr_override) {
+      // Migrate legacy overrides
+      if (lead.sdr_override === "Rodger") return "Caio";
+      if (lead.sdr_override === "Dara") return "Miguel";
+      return lead.sdr_override;
+    }
     if (lead.investimento_faixa && SDR_CAIO_FAT.includes(lead.investimento_faixa)) return "Caio";
-    return "Dara";
+    return "Miguel";
   };
 
-  // Cycle SDR between Caio and Dara
+  // Cycle SDR between Caio and Miguel
   const toggleSdr = async (lead: Lead) => {
     const currentSdr = getLeadSdr(lead);
-    const sdrCycle = ["Caio", "Dara"];
+    const sdrCycle = ["Caio", "Miguel"];
     const idx = sdrCycle.indexOf(currentSdr);
     const newSdr = sdrCycle[(idx + 1) % sdrCycle.length];
     
@@ -862,7 +866,7 @@ export default function AdminAnalytics() {
     if (leadsSdrFilter !== "all") {
       const sdr = getLeadSdr(lead);
       if (leadsSdrFilter === "caio" && sdr !== "Caio") return false;
-      if (leadsSdrFilter === "dara" && sdr !== "Dara") return false;
+      if (leadsSdrFilter === "miguel" && sdr !== "Miguel") return false;
     }
     
     // Adset (conjunto de anúncio / criativo) filter
@@ -1871,7 +1875,7 @@ export default function AdminAnalytics() {
                     <SelectContent>
                     <SelectItem value="all">Todos SDRs</SelectItem>
                     <SelectItem value="caio">Caio</SelectItem>
-                    <SelectItem value="dara">Dara</SelectItem>
+                    <SelectItem value="miguel">Miguel</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select value={leadsAdsetFilter} onValueChange={setLeadsAdsetFilter}>
@@ -2161,11 +2165,11 @@ export default function AdminAnalytics() {
                                       onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
                                     >Caio</Badge>
                                   );
-                                  if (sdr === "Dara") return (
+                                  if (sdr === "Miguel") return (
                                     <Badge 
                                       className="bg-pink-500/20 text-pink-400 border-pink-500/30 cursor-pointer hover:bg-pink-500/30 transition-colors"
                                       onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
-                                    >Dara</Badge>
+                                    >Miguel</Badge>
                                   );
                                   return <span className="text-muted-foreground">-</span>;
                                 })()}

@@ -73,7 +73,7 @@ interface DailyReport {
   notas?: string | null;
 }
 
-const SDR_OPTIONS = ["Caio", "Dara"];
+const SDR_OPTIONS = ["Caio", "Miguel"];
 
 const ENERGIA_OPTIONS = [
   { value: "Muito baixa", color: "border-red-500/50 bg-red-500/10 text-red-400 hover:bg-red-500/20", activeColor: "border-red-500 bg-red-500/30 text-red-300 ring-2 ring-red-500/40" },
@@ -608,7 +608,7 @@ export default function DailyReportsTab() {
                   </div>
                   <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                     <div className="w-2 h-2 rounded-full bg-pink-400" />
-                    Dara
+                    Miguel
                   </div>
                 </div>
               </CardContent>

@@ -857,6 +857,7 @@ export type Database = {
       meetings: {
         Row: {
           attended: boolean
+          closer: string | null
           created_at: string
           creative_key: string | null
           id: string
@@ -866,6 +867,7 @@ export type Database = {
         }
         Insert: {
           attended?: boolean
+          closer?: string | null
           created_at?: string
           creative_key?: string | null
           id?: string
@@ -875,6 +877,7 @@ export type Database = {
         }
         Update: {
           attended?: boolean
+          closer?: string | null
           created_at?: string
           creative_key?: string | null
           id?: string

@@ -36,7 +36,7 @@ const MQL_FAIXAS = new Set([
 ]);
 
 const isLeadMql = (l: any) =>
-  l?.faturamento_faixa && MQL_FAIXAS.has(l.faturamento_faixa) && l.sdr_override !== "Dara";
+  l?.faturamento_faixa && MQL_FAIXAS.has(l.faturamento_faixa) && l.sdr_override !== "Dara" && l.sdr_override !== "Miguel";
 
 const normalizeOrigem = (l: any): string => {
   const src = (l.utm_source || "").trim().toLowerCase();

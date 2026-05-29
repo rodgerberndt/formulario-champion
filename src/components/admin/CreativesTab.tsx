@@ -176,6 +176,7 @@ interface Meeting {
   notes: string | null;
   created_at: string;
   attended: boolean;
+  closer: string | null;
 }
 
 interface LeadOption {
@@ -312,7 +313,7 @@ function LeadSearchPicker({ leads, loading, selectedId, onSelect, label = "Lead 
 }
 
 function isLeadMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
-  if (sdrOverride === "Dara") return false;
+  if (sdrOverride === "Dara" || sdrOverride === "Miguel") return false;
   const faturaEnough = investimento ? MQL_FAT_MIN_FAIXAS.includes(investimento) : false;
   return faturaEnough;
 }
@@ -442,7 +443,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Meeting state
   const [showAddMeeting, setShowAddMeeting] = useState(false);
-  const [meetingForm, setMeetingForm] = useState({ creative_key: "", notes: "" });
+  const [meetingForm, setMeetingForm] = useState({ creative_key: "", notes: "", closer: "Caio" });
   const [savingMeeting, setSavingMeeting] = useState(false);
   const [meetingsList, setMeetingsList] = useState<Meeting[]>([]);
   const [meetingsLoading, setMeetingsLoading] = useState(false);
@@ -454,7 +455,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [editSaleForm, setEditSaleForm] = useState({ revenue: "", sale_type: "sprint" as "sprint" | "assessoria", notes: "" });
   const [savingEditSale, setSavingEditSale] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
-  const [editMeetingForm, setEditMeetingForm] = useState({ notes: "", attended: false });
+  const [editMeetingForm, setEditMeetingForm] = useState({ notes: "", attended: false, closer: "Caio" });
   const [savingEditMeeting, setSavingEditMeeting] = useState(false);
   const [togglingAttendedId, setTogglingAttendedId] = useState<string | null>(null);
 
@@ -621,9 +622,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         utm_content: lead.utm_content || "",
         notes: `${lead.nome_completo}${meetingForm.notes ? ` — ${meetingForm.notes}` : ""}`,
         lead_id: meetingSelectedLeadId,
+        closer: meetingForm.closer,
       });
       toast({ title: "Reunião registrada!" });
-      setMeetingForm({ creative_key: "", notes: "" });
+      setMeetingForm({ creative_key: "", notes: "", closer: "Caio" });
       setMeetingSelectedLeadId(null);
       setShowAddMeeting(false);
       loadData();
@@ -682,10 +684,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       await fetchAdmin(`${supabaseUrl}/functions/v1/admin-data/meetings/${editingMeeting.id}`, {
         method: "PUT",
         headers: { "x-admin-token": getAdminToken() || "", "Content-Type": "application/json" },
-        body: JSON.stringify({ notes: editMeetingForm.notes, attended: editMeetingForm.attended }),
+        body: JSON.stringify({ notes: editMeetingForm.notes, attended: editMeetingForm.attended, closer: editMeetingForm.closer }),
       });
       toast({ title: "Reunião atualizada!" });
-      setMeetingsList(prev => prev.map(m => m.id === editingMeeting.id ? { ...m, notes: editMeetingForm.notes, attended: editMeetingForm.attended } : m));
+      setMeetingsList(prev => prev.map(m => m.id === editingMeeting.id ? { ...m, notes: editMeetingForm.notes, attended: editMeetingForm.attended, closer: editMeetingForm.closer } : m));
       setEditingMeeting(null);
       loadData();
     } catch {
@@ -1334,6 +1336,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         <TableRow>
                           <TableHead>Data</TableHead>
                           <TableHead>Criativo</TableHead>
+                          <TableHead>Closer</TableHead>
                           <TableHead>Observação</TableHead>
                           <TableHead>Realizada</TableHead>
                           <TableHead className="w-20"></TableHead>
@@ -1346,6 +1349,13 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                             <TableCell>
                               {meeting.utm_content || meeting.creative_key ? (
                                 <Badge variant="outline" className="text-xs">{meeting.utm_content || meeting.creative_key}</Badge>
+                              ) : (
+                                <span className="text-muted-foreground text-xs">—</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {meeting.closer ? (
+                                <Badge variant="outline" className="text-xs">{meeting.closer}</Badge>
                               ) : (
                                 <span className="text-muted-foreground text-xs">—</span>
                               )}
@@ -1375,7 +1385,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                                   size="sm"
                                   onClick={() => {
                                     setEditingMeeting(meeting);
-                                    setEditMeetingForm({ notes: meeting.notes || "", attended: !!meeting.attended });
+                                    setEditMeetingForm({ notes: meeting.notes || "", attended: !!meeting.attended, closer: meeting.closer || "Caio" });
                                   }}
                                 >
                                   <Pencil className="w-4 h-4" />
@@ -2217,6 +2227,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <label className="text-sm text-muted-foreground">Observação</label>
               <Input placeholder="Notas adicionais" value={meetingForm.notes} onChange={e => setMeetingForm(p => ({ ...p, notes: e.target.value }))} />
             </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Closer *</label>
+              <Select value={meetingForm.closer} onValueChange={(v) => setMeetingForm(p => ({ ...p, closer: v }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o closer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Caio">Caio</SelectItem>
+                  <SelectItem value="Rodger">Rodger</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Button onClick={handleAddMeeting} disabled={savingMeeting || !meetingSelectedLeadId} className="w-full">
               {savingMeeting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Registrar Reunião
@@ -2271,6 +2293,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <div>
               <label className="text-sm text-muted-foreground">Observação</label>
               <Input value={editMeetingForm.notes} onChange={e => setEditMeetingForm(p => ({ ...p, notes: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Closer</label>
+              <Select value={editMeetingForm.closer} onValueChange={(v) => setEditMeetingForm(p => ({ ...p, closer: v }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o closer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Caio">Caio</SelectItem>
+                  <SelectItem value="Rodger">Rodger</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex items-center gap-3">
               <label className="text-sm text-muted-foreground">Realizada</label>

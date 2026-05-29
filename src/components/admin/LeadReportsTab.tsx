@@ -155,7 +155,7 @@ const MQL_FATURAMENTO = [
 ];
 
 function isMql(lead: Lead): boolean {
-  if (lead.sdr_override === "Dara") return false;
+  if (lead.sdr_override === "Dara" || lead.sdr_override === "Miguel") return false;
   return MQL_FATURAMENTO.includes(lead.investimento_faixa || "");
 }
 

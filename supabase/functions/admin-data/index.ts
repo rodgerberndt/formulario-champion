@@ -178,9 +178,12 @@ Deno.serve(async (req: Request) => {
           "De R$ 5 milhões a R$ 10 milhões", "Acima de R$ 10 milhões",
         ];
         const leadInvest = data.investimento_faixa || "";
-        let sdrName = "Dara";
-        if (data.sdr_override && data.sdr_override !== "Rodger") sdrName = data.sdr_override;
-        else if (data.sdr_override === "Rodger") sdrName = "Caio";
+        let sdrName = "Miguel";
+        if (data.sdr_override) {
+          if (data.sdr_override === "Rodger") sdrName = "Caio";
+          else if (data.sdr_override === "Dara") sdrName = "Miguel";
+          else sdrName = data.sdr_override;
+        }
         else if (SDR_CAIO_FAT.includes(leadInvest)) sdrName = "Caio";
 
         const isMql = mqlFaixas.includes(leadInvest);
@@ -1458,7 +1461,7 @@ Deno.serve(async (req: Request) => {
         "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k",
       ];
       function isMql(_estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
-        if (sdrOverride === "Dara") return false;
+        if (sdrOverride === "Dara" || sdrOverride === "Miguel") return false;
         return investimento ? MQL_FAIXAS.includes(investimento) : false;
       }
 
@@ -2102,6 +2105,7 @@ Deno.serve(async (req: Request) => {
         utm_content: params.utm_content || null,
         notes: params.notes || null,
         lead_id: leadId,
+        closer: params.closer || null,
       }]).select().maybeSingle();
 
       if (error) throw error;
@@ -2163,6 +2167,7 @@ Deno.serve(async (req: Request) => {
       const updates: Record<string, unknown> = {};
       if (body.notes !== undefined) updates.notes = body.notes || null;
       if (body.attended !== undefined) updates.attended = !!body.attended;
+      if (body.closer !== undefined) updates.closer = body.closer || null;
       const { data, error } = await supabase.from("meetings").update(updates).eq("id", meetingId).select().maybeSingle();
       if (error) throw error;
       return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
