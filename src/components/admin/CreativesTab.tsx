@@ -170,6 +170,13 @@ interface ManualSale {
   closer?: string | null;
 }
 
+// Links das agendas dos closers (exibidos nos diálogos de reunião).
+// Caio: a definir posteriormente.
+const CLOSER_CALENDARS: Record<string, string> = {
+  Rodger: "https://calendar.app.google/GVHDaqd6VDsJWjHi9",
+  Caio: "",
+};
+
 interface Meeting {
   id: string;
   creative_key: string | null;
