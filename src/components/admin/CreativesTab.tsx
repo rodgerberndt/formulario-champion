@@ -176,6 +176,7 @@ interface Meeting {
   notes: string | null;
   created_at: string;
   attended: boolean;
+  closer: string | null;
 }
 
 interface LeadOption {
