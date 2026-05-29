@@ -2352,6 +2352,20 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <SelectItem value="Rodger">Rodger</SelectItem>
                 </SelectContent>
               </Select>
+              {editMeetingForm.closer && (
+                CLOSER_CALENDARS[editMeetingForm.closer] ? (
+                  <a
+                    href={CLOSER_CALENDARS[editMeetingForm.closer]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    <Calendar className="w-3 h-3" /> Abrir agenda do {editMeetingForm.closer}
+                  </a>
+                ) : (
+                  <p className="mt-2 text-xs text-muted-foreground">Link da agenda do {editMeetingForm.closer} a definir.</p>
+                )
+              )}
             </div>
             <div className="flex items-center gap-3">
               <label className="text-sm text-muted-foreground">Realizada</label>
