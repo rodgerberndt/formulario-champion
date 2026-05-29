@@ -167,6 +167,7 @@ interface ManualSale {
   notes: string | null;
   sale_type: string;
   lead_created_at?: string | null;
+  closer?: string | null;
 }
 
 interface Meeting {
