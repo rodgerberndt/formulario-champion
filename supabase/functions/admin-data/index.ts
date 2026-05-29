@@ -2012,6 +2012,7 @@ Deno.serve(async (req: Request) => {
       if (body.revenue !== undefined) updates.revenue = parseFloat(body.revenue);
       if (body.sale_type !== undefined) updates.sale_type = body.sale_type;
       if (body.notes !== undefined) updates.notes = body.notes || null;
+      if (body.closer !== undefined) updates.closer = body.closer || null;
       const { data, error } = await supabase.from("manual_sales").update(updates).eq("id", saleId).select().maybeSingle();
       if (error) throw error;
       return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -2030,6 +2031,7 @@ Deno.serve(async (req: Request) => {
         utm_content: params.utm_content || null,
         notes: params.notes || null,
         sale_type: params.sale_type || "sprint",
+        closer: params.closer || null,
       }]).select().maybeSingle();
 
       if (error) throw error;
