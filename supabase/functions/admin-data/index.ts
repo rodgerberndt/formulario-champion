@@ -178,9 +178,12 @@ Deno.serve(async (req: Request) => {
           "De R$ 5 milhões a R$ 10 milhões", "Acima de R$ 10 milhões",
         ];
         const leadInvest = data.investimento_faixa || "";
-        let sdrName = "Dara";
-        if (data.sdr_override && data.sdr_override !== "Rodger") sdrName = data.sdr_override;
-        else if (data.sdr_override === "Rodger") sdrName = "Caio";
+        let sdrName = "Miguel";
+        if (data.sdr_override) {
+          if (data.sdr_override === "Rodger") sdrName = "Caio";
+          else if (data.sdr_override === "Dara") sdrName = "Miguel";
+          else sdrName = data.sdr_override;
+        }
         else if (SDR_CAIO_FAT.includes(leadInvest)) sdrName = "Caio";
 
         const isMql = mqlFaixas.includes(leadInvest);
