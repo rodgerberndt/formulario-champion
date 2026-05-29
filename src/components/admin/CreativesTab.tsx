@@ -2286,6 +2286,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <label className="text-sm text-muted-foreground">Observação</label>
               <Input value={editMeetingForm.notes} onChange={e => setEditMeetingForm(p => ({ ...p, notes: e.target.value }))} />
             </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Closer</label>
+              <Select value={editMeetingForm.closer} onValueChange={(v) => setEditMeetingForm(p => ({ ...p, closer: v }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o closer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Caio">Caio</SelectItem>
+                  <SelectItem value="Rodger">Rodger</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div className="flex items-center gap-3">
               <label className="text-sm text-muted-foreground">Realizada</label>
               <Switch checked={editMeetingForm.attended} onCheckedChange={(v) => setEditMeetingForm(p => ({ ...p, attended: v }))} />
