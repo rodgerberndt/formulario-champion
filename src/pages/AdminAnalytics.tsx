@@ -1875,7 +1875,7 @@ export default function AdminAnalytics() {
                     <SelectContent>
                     <SelectItem value="all">Todos SDRs</SelectItem>
                     <SelectItem value="caio">Caio</SelectItem>
-                    <SelectItem value="dara">Dara</SelectItem>
+                    <SelectItem value="miguel">Miguel</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select value={leadsAdsetFilter} onValueChange={setLeadsAdsetFilter}>
