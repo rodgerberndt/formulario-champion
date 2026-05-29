@@ -2289,6 +2289,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <label className="text-sm text-muted-foreground">Observação</label>
               <Input value={editSaleForm.notes} onChange={e => setEditSaleForm(p => ({ ...p, notes: e.target.value }))} />
             </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Closer *</label>
+              <Select value={editSaleForm.closer} onValueChange={(v) => setEditSaleForm(p => ({ ...p, closer: v }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o closer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Caio">Caio</SelectItem>
+                  <SelectItem value="Rodger">Rodger</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Button onClick={handleEditSale} disabled={savingEditSale} className="w-full">
               {savingEditSale ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Salvar Alterações
