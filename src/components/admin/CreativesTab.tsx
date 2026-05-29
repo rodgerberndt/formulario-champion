@@ -312,7 +312,7 @@ function LeadSearchPicker({ leads, loading, selectedId, onSelect, label = "Lead 
 }
 
 function isLeadMql(estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
-  if (sdrOverride === "Dara") return false;
+  if (sdrOverride === "Dara" || sdrOverride === "Miguel") return false;
   const faturaEnough = investimento ? MQL_FAT_MIN_FAIXAS.includes(investimento) : false;
   return faturaEnough;
 }
