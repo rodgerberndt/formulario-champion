@@ -167,7 +167,15 @@ interface ManualSale {
   notes: string | null;
   sale_type: string;
   lead_created_at?: string | null;
+  closer?: string | null;
 }
+
+// Links das agendas dos closers (exibidos nos diálogos de reunião).
+// Caio: a definir posteriormente.
+const CLOSER_CALENDARS: Record<string, string> = {
+  Rodger: "https://calendar.app.google/GVHDaqd6VDsJWjHi9",
+  Caio: "",
+};
 
 interface Meeting {
   id: string;
@@ -425,7 +433,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Manual sales form
   const [showAddSale, setShowAddSale] = useState(false);
-  const [saleForm, setSaleForm] = useState({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint" as "sprint" | "assessoria" });
+  const [saleForm, setSaleForm] = useState({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint" as "sprint" | "assessoria", closer: "Caio" });
   const [savingSale, setSavingSale] = useState(false);
 
   // Ad spend form
@@ -452,7 +460,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Edit states
   const [editingSale, setEditingSale] = useState<ManualSale | null>(null);
-  const [editSaleForm, setEditSaleForm] = useState({ revenue: "", sale_type: "sprint" as "sprint" | "assessoria", notes: "" });
+  const [editSaleForm, setEditSaleForm] = useState({ revenue: "", sale_type: "sprint" as "sprint" | "assessoria", notes: "", closer: "Caio" });
   const [savingEditSale, setSavingEditSale] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
   const [editMeetingForm, setEditMeetingForm] = useState({ notes: "", attended: false, closer: "Caio" });
@@ -594,9 +602,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         notes: lead ? `${lead.nome_completo}${saleForm.notes ? ` — ${saleForm.notes}` : ""}` : (saleForm.notes || "Venda sem lead"),
         lead_id: lead?.id || "",
         sale_type: saleForm.sale_type,
+        closer: saleForm.closer,
       });
       toast({ title: "Venda registrada!" });
-      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint" });
+      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint", closer: "Caio" });
       setSelectedLeadId(null);
       setShowAddSale(false);
       loadData();
@@ -663,10 +672,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       await fetchAdmin(`${supabaseUrl}/functions/v1/admin-data/manual-sales/${editingSale.id}`, {
         method: "PUT",
         headers: { "x-admin-token": getAdminToken() || "", "Content-Type": "application/json" },
-        body: JSON.stringify({ revenue: editSaleForm.revenue, sale_type: editSaleForm.sale_type, notes: editSaleForm.notes }),
+        body: JSON.stringify({ revenue: editSaleForm.revenue, sale_type: editSaleForm.sale_type, notes: editSaleForm.notes, closer: editSaleForm.closer }),
       });
       toast({ title: "Venda atualizada!" });
-      setSalesList(prev => prev.map(s => s.id === editingSale.id ? { ...s, revenue: parseFloat(editSaleForm.revenue), sale_type: editSaleForm.sale_type, notes: editSaleForm.notes } : s));
+      setSalesList(prev => prev.map(s => s.id === editingSale.id ? { ...s, revenue: parseFloat(editSaleForm.revenue), sale_type: editSaleForm.sale_type, notes: editSaleForm.notes, closer: editSaleForm.closer } : s));
       setEditingSale(null);
       loadData();
     } catch {
@@ -1551,7 +1560,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                                 size="sm"
                                 onClick={() => {
                                   setEditingSale(sale);
-                                  setEditSaleForm({ revenue: String(sale.revenue), sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria", notes: sale.notes || "" });
+                                  setEditSaleForm({ revenue: String(sale.revenue), sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria", notes: sale.notes || "", closer: sale.closer || "Caio" });
                                 }}
                               >
                                 <Pencil className="w-4 h-4" />
@@ -2139,6 +2148,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <label className="text-sm text-muted-foreground">Observação</label>
               <Input placeholder="Notas adicionais" value={saleForm.notes} onChange={e => setSaleForm(p => ({ ...p, notes: e.target.value }))} />
             </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Closer *</label>
+              <Select value={saleForm.closer} onValueChange={(v) => setSaleForm(p => ({ ...p, closer: v }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o closer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Caio">Caio</SelectItem>
+                  <SelectItem value="Rodger">Rodger</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Button onClick={handleAddSale} disabled={savingSale || !saleForm.revenue} className="w-full">
               {savingSale ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Registrar Venda
@@ -2238,6 +2259,20 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <SelectItem value="Rodger">Rodger</SelectItem>
                 </SelectContent>
               </Select>
+              {meetingForm.closer && (
+                CLOSER_CALENDARS[meetingForm.closer] ? (
+                  <a
+                    href={CLOSER_CALENDARS[meetingForm.closer]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    <Calendar className="w-3 h-3" /> Abrir agenda do {meetingForm.closer}
+                  </a>
+                ) : (
+                  <p className="mt-2 text-xs text-muted-foreground">Link da agenda do {meetingForm.closer} a definir.</p>
+                )
+              )}
             </div>
             <Button onClick={handleAddMeeting} disabled={savingMeeting || !meetingSelectedLeadId} className="w-full">
               {savingMeeting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
@@ -2275,6 +2310,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <label className="text-sm text-muted-foreground">Observação</label>
               <Input value={editSaleForm.notes} onChange={e => setEditSaleForm(p => ({ ...p, notes: e.target.value }))} />
             </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Closer *</label>
+              <Select value={editSaleForm.closer} onValueChange={(v) => setEditSaleForm(p => ({ ...p, closer: v }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o closer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Caio">Caio</SelectItem>
+                  <SelectItem value="Rodger">Rodger</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Button onClick={handleEditSale} disabled={savingEditSale} className="w-full">
               {savingEditSale ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Salvar Alterações
@@ -2305,6 +2352,20 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <SelectItem value="Rodger">Rodger</SelectItem>
                 </SelectContent>
               </Select>
+              {editMeetingForm.closer && (
+                CLOSER_CALENDARS[editMeetingForm.closer] ? (
+                  <a
+                    href={CLOSER_CALENDARS[editMeetingForm.closer]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    <Calendar className="w-3 h-3" /> Abrir agenda do {editMeetingForm.closer}
+                  </a>
+                ) : (
+                  <p className="mt-2 text-xs text-muted-foreground">Link da agenda do {editMeetingForm.closer} a definir.</p>
+                )
+              )}
             </div>
             <div className="flex items-center gap-3">
               <label className="text-sm text-muted-foreground">Realizada</label>

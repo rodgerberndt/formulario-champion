@@ -1,0 +1,1 @@
+ALTER TABLE public.manual_sales ADD COLUMN IF NOT EXISTS closer text;
