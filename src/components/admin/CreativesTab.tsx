@@ -443,7 +443,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Meeting state
   const [showAddMeeting, setShowAddMeeting] = useState(false);
-  const [meetingForm, setMeetingForm] = useState({ creative_key: "", notes: "" });
+  const [meetingForm, setMeetingForm] = useState({ creative_key: "", notes: "", closer: "Caio" });
   const [savingMeeting, setSavingMeeting] = useState(false);
   const [meetingsList, setMeetingsList] = useState<Meeting[]>([]);
   const [meetingsLoading, setMeetingsLoading] = useState(false);
@@ -455,7 +455,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   const [editSaleForm, setEditSaleForm] = useState({ revenue: "", sale_type: "sprint" as "sprint" | "assessoria", notes: "" });
   const [savingEditSale, setSavingEditSale] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
-  const [editMeetingForm, setEditMeetingForm] = useState({ notes: "", attended: false });
+  const [editMeetingForm, setEditMeetingForm] = useState({ notes: "", attended: false, closer: "Caio" });
   const [savingEditMeeting, setSavingEditMeeting] = useState(false);
   const [togglingAttendedId, setTogglingAttendedId] = useState<string | null>(null);
 
