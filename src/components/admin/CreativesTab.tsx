@@ -622,9 +622,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         utm_content: lead.utm_content || "",
         notes: `${lead.nome_completo}${meetingForm.notes ? ` — ${meetingForm.notes}` : ""}`,
         lead_id: meetingSelectedLeadId,
+        closer: meetingForm.closer,
       });
       toast({ title: "Reunião registrada!" });
-      setMeetingForm({ creative_key: "", notes: "" });
+      setMeetingForm({ creative_key: "", notes: "", closer: "Caio" });
       setMeetingSelectedLeadId(null);
       setShowAddMeeting(false);
       loadData();
