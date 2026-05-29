@@ -595,9 +595,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         notes: lead ? `${lead.nome_completo}${saleForm.notes ? ` — ${saleForm.notes}` : ""}` : (saleForm.notes || "Venda sem lead"),
         lead_id: lead?.id || "",
         sale_type: saleForm.sale_type,
+        closer: saleForm.closer,
       });
       toast({ title: "Venda registrada!" });
-      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint" });
+      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint", closer: "Caio" });
       setSelectedLeadId(null);
       setShowAddSale(false);
       loadData();
