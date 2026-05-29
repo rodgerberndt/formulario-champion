@@ -1553,7 +1553,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                                 size="sm"
                                 onClick={() => {
                                   setEditingSale(sale);
-                                  setEditSaleForm({ revenue: String(sale.revenue), sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria", notes: sale.notes || "" });
+                                  setEditSaleForm({ revenue: String(sale.revenue), sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria", notes: sale.notes || "", closer: sale.closer || "Caio" });
                                 }}
                               >
                                 <Pencil className="w-4 h-4" />
