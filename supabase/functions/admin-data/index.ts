@@ -1461,7 +1461,7 @@ Deno.serve(async (req: Request) => {
         "R$ 8k – 20k", "R$ 20k – 50k", "R$ 50k – 100k",
       ];
       function isMql(_estagio: string, investimento: string | null, sdrOverride?: string | null): boolean {
-        if (sdrOverride === "Dara") return false;
+        if (sdrOverride === "Dara" || sdrOverride === "Miguel") return false;
         return investimento ? MQL_FAIXAS.includes(investimento) : false;
       }
 
