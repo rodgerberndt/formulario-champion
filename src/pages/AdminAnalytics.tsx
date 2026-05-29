@@ -866,7 +866,7 @@ export default function AdminAnalytics() {
     if (leadsSdrFilter !== "all") {
       const sdr = getLeadSdr(lead);
       if (leadsSdrFilter === "caio" && sdr !== "Caio") return false;
-      if (leadsSdrFilter === "dara" && sdr !== "Dara") return false;
+      if (leadsSdrFilter === "miguel" && sdr !== "Miguel") return false;
     }
     
     // Adset (conjunto de anúncio / criativo) filter
