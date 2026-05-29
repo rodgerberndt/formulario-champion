@@ -2219,6 +2219,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <label className="text-sm text-muted-foreground">Observação</label>
               <Input placeholder="Notas adicionais" value={meetingForm.notes} onChange={e => setMeetingForm(p => ({ ...p, notes: e.target.value }))} />
             </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Closer *</label>
+              <Select value={meetingForm.closer} onValueChange={(v) => setMeetingForm(p => ({ ...p, closer: v }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o closer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Caio">Caio</SelectItem>
+                  <SelectItem value="Rodger">Rodger</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Button onClick={handleAddMeeting} disabled={savingMeeting || !meetingSelectedLeadId} className="w-full">
               {savingMeeting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Registrar Reunião
