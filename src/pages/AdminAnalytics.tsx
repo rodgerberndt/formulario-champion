@@ -423,16 +423,20 @@ export default function AdminAnalytics() {
     "Acima de R$ 10 milhões",
   ];
   const getLeadSdr = (lead: Lead): string => {
-    if (lead.sdr_override && lead.sdr_override !== "Rodger") return lead.sdr_override;
-    if (lead.sdr_override === "Rodger") return "Caio"; // migrate existing Rodger overrides
+    if (lead.sdr_override) {
+      // Migrate legacy overrides
+      if (lead.sdr_override === "Rodger") return "Caio";
+      if (lead.sdr_override === "Dara") return "Miguel";
+      return lead.sdr_override;
+    }
     if (lead.investimento_faixa && SDR_CAIO_FAT.includes(lead.investimento_faixa)) return "Caio";
-    return "Dara";
+    return "Miguel";
   };
 
-  // Cycle SDR between Caio and Dara
+  // Cycle SDR between Caio and Miguel
   const toggleSdr = async (lead: Lead) => {
     const currentSdr = getLeadSdr(lead);
-    const sdrCycle = ["Caio", "Dara"];
+    const sdrCycle = ["Caio", "Miguel"];
     const idx = sdrCycle.indexOf(currentSdr);
     const newSdr = sdrCycle[(idx + 1) % sdrCycle.length];
     
