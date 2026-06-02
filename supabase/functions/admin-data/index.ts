@@ -1786,6 +1786,9 @@ Deno.serve(async (req: Request) => {
         if (saleType === "assessoria") {
           agg.sales_assessoria_count++;
           agg.revenue_assessoria += saleRevenue;
+          const received = Number(sale.amount_received) || 0;
+          agg.revenue_assessoria_received += received;
+          agg.revenue_assessoria_to_receive += Math.max(0, saleRevenue - received);
         } else {
           agg.sales_sprint_count++;
           agg.revenue_sprint += saleRevenue;
