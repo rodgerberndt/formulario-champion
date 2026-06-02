@@ -1592,7 +1592,16 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                                 size="sm"
                                 onClick={() => {
                                   setEditingSale(sale);
-                                  setEditSaleForm({ revenue: String(sale.revenue), sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria", notes: sale.notes || "", closer: sale.closer || "Caio" });
+                                  setEditSaleForm({
+                                    revenue: String(sale.revenue),
+                                    sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria",
+                                    notes: sale.notes || "",
+                                    closer: sale.closer || "Caio",
+                                    payment_type: ((sale.payment_type as "tcv_total" | "pix_parcelado" | "recorrencia") || "tcv_total"),
+                                    installments_count: sale.installments_count != null ? String(sale.installments_count) : "",
+                                    installment_value: sale.installment_value != null ? String(sale.installment_value) : "",
+                                    amount_received: sale.amount_received != null ? String(sale.amount_received) : "",
+                                  });
                                 }}
                               >
                                 <Pencil className="w-4 h-4" />
