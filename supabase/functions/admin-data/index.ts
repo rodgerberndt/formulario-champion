@@ -1887,6 +1887,8 @@ Deno.serve(async (req: Request) => {
       const totalRevenue = creatives.reduce((s, c) => s + c.revenue, 0);
       const totalRevenueSprint = creatives.reduce((s, c) => s + c.revenue_sprint, 0);
       const totalRevenueAssessoria = creatives.reduce((s, c) => s + c.revenue_assessoria, 0);
+      const totalRevenueAssessoriaReceived = creatives.reduce((s, c) => s + (c.revenue_assessoria_received || 0), 0);
+      const totalRevenueAssessoriaToReceive = creatives.reduce((s, c) => s + (c.revenue_assessoria_to_receive || 0), 0);
       const totalLandingPageViews = creatives.reduce((s, c) => s + c.landing_page_views, 0);
       const totalQualified = creatives.reduce((s, c) => s + c.leads_5_10k_count, 0);
       const totalClicks = creatives.reduce((s, c) => s + (c.clicks || 0), 0);
@@ -1917,6 +1919,8 @@ Deno.serve(async (req: Request) => {
             revenue: totalRevenue,
             revenue_sprint: totalRevenueSprint,
             revenue_assessoria: totalRevenueAssessoria,
+            revenue_assessoria_received: totalRevenueAssessoriaReceived,
+            revenue_assessoria_to_receive: totalRevenueAssessoriaToReceive,
             meetings: totalMeetingsCount,
             meetings_attended: totalMeetingsAttendedCount,
             cpl: totalLeads > 0 ? totalSpend / totalLeads : null,
