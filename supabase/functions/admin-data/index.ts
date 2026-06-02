@@ -1544,6 +1544,8 @@ Deno.serve(async (req: Request) => {
         revenue: number;
         revenue_sprint: number;
         revenue_assessoria: number;
+        revenue_assessoria_received: number;
+        revenue_assessoria_to_receive: number;
         meetings_count: number;
         meetings_attended_count: number;
         landing_page_views: number;
@@ -1577,6 +1579,8 @@ Deno.serve(async (req: Request) => {
             revenue: 0,
             revenue_sprint: 0,
             revenue_assessoria: 0,
+            revenue_assessoria_received: 0,
+            revenue_assessoria_to_receive: 0,
             meetings_count: 0,
             meetings_attended_count: 0,
             landing_page_views: 0,
@@ -1782,6 +1786,9 @@ Deno.serve(async (req: Request) => {
         if (saleType === "assessoria") {
           agg.sales_assessoria_count++;
           agg.revenue_assessoria += saleRevenue;
+          const received = Number(sale.amount_received) || 0;
+          agg.revenue_assessoria_received += received;
+          agg.revenue_assessoria_to_receive += Math.max(0, saleRevenue - received);
         } else {
           agg.sales_sprint_count++;
           agg.revenue_sprint += saleRevenue;
@@ -1880,6 +1887,8 @@ Deno.serve(async (req: Request) => {
       const totalRevenue = creatives.reduce((s, c) => s + c.revenue, 0);
       const totalRevenueSprint = creatives.reduce((s, c) => s + c.revenue_sprint, 0);
       const totalRevenueAssessoria = creatives.reduce((s, c) => s + c.revenue_assessoria, 0);
+      const totalRevenueAssessoriaReceived = creatives.reduce((s, c) => s + (c.revenue_assessoria_received || 0), 0);
+      const totalRevenueAssessoriaToReceive = creatives.reduce((s, c) => s + (c.revenue_assessoria_to_receive || 0), 0);
       const totalLandingPageViews = creatives.reduce((s, c) => s + c.landing_page_views, 0);
       const totalQualified = creatives.reduce((s, c) => s + c.leads_5_10k_count, 0);
       const totalClicks = creatives.reduce((s, c) => s + (c.clicks || 0), 0);
@@ -1910,6 +1919,8 @@ Deno.serve(async (req: Request) => {
             revenue: totalRevenue,
             revenue_sprint: totalRevenueSprint,
             revenue_assessoria: totalRevenueAssessoria,
+            revenue_assessoria_received: totalRevenueAssessoriaReceived,
+            revenue_assessoria_to_receive: totalRevenueAssessoriaToReceive,
             meetings: totalMeetingsCount,
             meetings_attended: totalMeetingsAttendedCount,
             cpl: totalLeads > 0 ? totalSpend / totalLeads : null,
@@ -2013,6 +2024,10 @@ Deno.serve(async (req: Request) => {
       if (body.sale_type !== undefined) updates.sale_type = body.sale_type;
       if (body.notes !== undefined) updates.notes = body.notes || null;
       if (body.closer !== undefined) updates.closer = body.closer || null;
+      if (body.payment_type !== undefined) updates.payment_type = body.payment_type;
+      if (body.installments_count !== undefined) updates.installments_count = body.installments_count === null || body.installments_count === "" ? null : parseInt(body.installments_count);
+      if (body.installment_value !== undefined) updates.installment_value = body.installment_value === null || body.installment_value === "" ? null : parseFloat(body.installment_value);
+      if (body.amount_received !== undefined) updates.amount_received = parseFloat(body.amount_received) || 0;
       const { data, error } = await supabase.from("manual_sales").update(updates).eq("id", saleId).select().maybeSingle();
       if (error) throw error;
       return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -2023,6 +2038,12 @@ Deno.serve(async (req: Request) => {
       const params = Object.fromEntries(url.searchParams);
       const leadId = params.lead_id || null;
       const revenue = parseFloat(params.revenue);
+      const paymentType = params.payment_type || "tcv_total";
+      const installmentsCount = params.installments_count ? parseInt(params.installments_count) : null;
+      const installmentValue = params.installment_value ? parseFloat(params.installment_value) : null;
+      const amountReceived = params.amount_received !== undefined && params.amount_received !== ""
+        ? parseFloat(params.amount_received)
+        : (paymentType === "tcv_total" ? revenue : 0);
       const { data, error } = await supabase.from("manual_sales").insert([{
         sale_date: params.sale_date,
         revenue,
@@ -2032,6 +2053,10 @@ Deno.serve(async (req: Request) => {
         notes: params.notes || null,
         sale_type: params.sale_type || "sprint",
         closer: params.closer || null,
+        payment_type: paymentType,
+        installments_count: installmentsCount,
+        installment_value: installmentValue,
+        amount_received: isNaN(amountReceived) ? 0 : amountReceived,
       }]).select().maybeSingle();
 
       if (error) throw error;

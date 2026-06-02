@@ -100,6 +100,8 @@ interface CreativeData {
   revenue: number;
   revenue_sprint: number;
   revenue_assessoria: number;
+  revenue_assessoria_received?: number;
+  revenue_assessoria_to_receive?: number;
   roas: number | null;
   last_activity: string | null;
   leads_by_stage: Record<string, number>;
@@ -132,6 +134,8 @@ interface CreativesResponse {
     revenue: number;
     revenue_sprint: number;
     revenue_assessoria: number;
+    revenue_assessoria_received?: number;
+    revenue_assessoria_to_receive?: number;
     meetings: number;
     meetings_attended: number;
     landing_page_views: number;
@@ -168,6 +172,10 @@ interface ManualSale {
   sale_type: string;
   lead_created_at?: string | null;
   closer?: string | null;
+  payment_type?: string | null;
+  installments_count?: number | null;
+  installment_value?: number | null;
+  amount_received?: number | null;
 }
 
 // Links das agendas dos closers (exibidos nos diálogos de reunião).
@@ -433,7 +441,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Manual sales form
   const [showAddSale, setShowAddSale] = useState(false);
-  const [saleForm, setSaleForm] = useState({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint" as "sprint" | "assessoria", closer: "Caio" });
+  const [saleForm, setSaleForm] = useState({
+    sale_date: "",
+    revenue: "",
+    creative_key: "",
+    notes: "",
+    sale_type: "sprint" as "sprint" | "assessoria",
+    closer: "Caio",
+    payment_type: "tcv_total" as "tcv_total" | "pix_parcelado" | "recorrencia",
+    installments_count: "",
+    installment_value: "",
+    amount_received: "",
+  });
   const [savingSale, setSavingSale] = useState(false);
 
   // Ad spend form
@@ -460,7 +479,16 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Edit states
   const [editingSale, setEditingSale] = useState<ManualSale | null>(null);
-  const [editSaleForm, setEditSaleForm] = useState({ revenue: "", sale_type: "sprint" as "sprint" | "assessoria", notes: "", closer: "Caio" });
+  const [editSaleForm, setEditSaleForm] = useState({
+    revenue: "",
+    sale_type: "sprint" as "sprint" | "assessoria",
+    notes: "",
+    closer: "Caio",
+    payment_type: "tcv_total" as "tcv_total" | "pix_parcelado" | "recorrencia",
+    installments_count: "",
+    installment_value: "",
+    amount_received: "",
+  });
   const [savingEditSale, setSavingEditSale] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
   const [editMeetingForm, setEditMeetingForm] = useState({ notes: "", attended: false, closer: "Caio" });
@@ -603,9 +631,13 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         lead_id: lead?.id || "",
         sale_type: saleForm.sale_type,
         closer: saleForm.closer,
+        payment_type: saleForm.payment_type,
+        installments_count: saleForm.installments_count,
+        installment_value: saleForm.installment_value,
+        amount_received: saleForm.amount_received,
       });
       toast({ title: "Venda registrada!" });
-      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint", closer: "Caio" });
+      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint", closer: "Caio", payment_type: "tcv_total", installments_count: "", installment_value: "", amount_received: "" });
       setSelectedLeadId(null);
       setShowAddSale(false);
       loadData();
@@ -672,10 +704,29 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       await fetchAdmin(`${supabaseUrl}/functions/v1/admin-data/manual-sales/${editingSale.id}`, {
         method: "PUT",
         headers: { "x-admin-token": getAdminToken() || "", "Content-Type": "application/json" },
-        body: JSON.stringify({ revenue: editSaleForm.revenue, sale_type: editSaleForm.sale_type, notes: editSaleForm.notes, closer: editSaleForm.closer }),
+        body: JSON.stringify({
+          revenue: editSaleForm.revenue,
+          sale_type: editSaleForm.sale_type,
+          notes: editSaleForm.notes,
+          closer: editSaleForm.closer,
+          payment_type: editSaleForm.payment_type,
+          installments_count: editSaleForm.installments_count,
+          installment_value: editSaleForm.installment_value,
+          amount_received: editSaleForm.amount_received,
+        }),
       });
       toast({ title: "Venda atualizada!" });
-      setSalesList(prev => prev.map(s => s.id === editingSale.id ? { ...s, revenue: parseFloat(editSaleForm.revenue), sale_type: editSaleForm.sale_type, notes: editSaleForm.notes, closer: editSaleForm.closer } : s));
+      setSalesList(prev => prev.map(s => s.id === editingSale.id ? {
+        ...s,
+        revenue: parseFloat(editSaleForm.revenue),
+        sale_type: editSaleForm.sale_type,
+        notes: editSaleForm.notes,
+        closer: editSaleForm.closer,
+        payment_type: editSaleForm.payment_type,
+        installments_count: editSaleForm.installments_count ? parseInt(editSaleForm.installments_count) : null,
+        installment_value: editSaleForm.installment_value ? parseFloat(editSaleForm.installment_value) : null,
+        amount_received: editSaleForm.amount_received ? parseFloat(editSaleForm.amount_received) : 0,
+      } : s));
       setEditingSale(null);
       loadData();
     } catch {
@@ -1424,7 +1475,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </Card>
 
           {/* Row 4: Vendas */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             {/* Sprint */}
             <Card className="border-violet-500/20">
               <CardContent className="pt-4">
@@ -1449,10 +1500,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 </div>
               </CardContent>
             </Card>
-            {/* Assessoria */}
+            {/* Assessoria — TCV (contrato) */}
             <Card className="border-teal-500/20">
               <CardContent className="pt-4">
-                <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-3 border-b border-teal-500/20 pb-2">Assessoria</p>
+                <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-3 border-b border-teal-500/20 pb-2">Assessoria · TCV</p>
                 <div className="grid grid-cols-2 gap-4">
                   <MetricItem
                     label="Vendas"
@@ -1470,6 +1521,37 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   />
                   <MetricItem label="CAC" value={cacAssessoria !== null ? formatCurrency(cacAssessoria) || "—" : "—"} color="text-teal-300" sub="Spend ÷ Vendas Assessoria" />
                   <MetricItem label="ROAS" value={roasAssessoria !== null ? `${roasAssessoria.toFixed(2)}x` : "—"} color="text-teal-300" sub="Receita Assessoria ÷ Spend" />
+                </div>
+              </CardContent>
+            </Card>
+            {/* Assessoria — Recebido (caixa) */}
+            <Card className="border-teal-500/20">
+              <CardContent className="pt-4">
+                <p className="text-xs font-semibold text-teal-300 uppercase tracking-wider mb-3 border-b border-teal-500/20 pb-2">Assessoria · Recebido</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <MetricItem
+                    label="Recebido"
+                    value={formatCurrency(totals.revenue_assessoria_received || 0) || "—"}
+                    color="text-teal-400"
+                    sub={`${(totals.revenue_assessoria || 0) > 0 ? (((totals.revenue_assessoria_received || 0) / (totals.revenue_assessoria || 1)) * 100).toFixed(1) : "0.0"}% do TCV`}
+                  />
+                  <MetricItem
+                    label="A Receber"
+                    value={formatCurrency(totals.revenue_assessoria_to_receive || 0) || "—"}
+                    color="text-amber-300"
+                    sub={`Restante do contrato`}
+                  />
+                  <MetricItem
+                    label="Ticket Recebido"
+                    value={(totals.sales_assessoria || 0) > 0 ? formatCurrency((totals.revenue_assessoria_received || 0) / (totals.sales_assessoria || 1)) || "—" : "—"}
+                    color="text-teal-300"
+                  />
+                  <MetricItem
+                    label="ROAS Caixa"
+                    value={totals.spend > 0 ? `${(((totals.revenue_assessoria_received || 0)) / totals.spend).toFixed(2)}x` : "—"}
+                    color="text-teal-300"
+                    sub="Recebido Assessoria ÷ Spend"
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -1529,7 +1611,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       <TableRow>
                         <TableHead>Data</TableHead>
                         <TableHead>Tipo</TableHead>
-                        <TableHead className="text-right">Receita</TableHead>
+                        <TableHead className="text-right">TCV</TableHead>
+                        <TableHead>Pagamento</TableHead>
+                        <TableHead className="text-right">Recebido</TableHead>
                         <TableHead>Criativo</TableHead>
                         <TableHead>Notas</TableHead>
                         <TableHead className="w-20"></TableHead>
@@ -1546,6 +1630,31 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                           </TableCell>
                           <TableCell className="text-right font-semibold">{formatCurrency(sale.revenue)}</TableCell>
                           <TableCell>
+                            {(() => {
+                              const pt = sale.payment_type || "tcv_total";
+                              const label = pt === "pix_parcelado" ? "Pix Parcelado" : pt === "recorrencia" ? "Recorrência" : "À Vista";
+                              const detail = pt === "pix_parcelado" && sale.installments_count && sale.installment_value
+                                ? `${sale.installments_count}x ${formatCurrency(Number(sale.installment_value))}`
+                                : pt === "recorrencia" && sale.installment_value
+                                ? `${formatCurrency(Number(sale.installment_value))}/mês`
+                                : null;
+                              return (
+                                <div className="flex flex-col gap-0.5">
+                                  <Badge variant="outline" className="text-[10px] w-fit">{label}</Badge>
+                                  {detail && <span className="text-[10px] text-muted-foreground">{detail}</span>}
+                                </div>
+                              );
+                            })()}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex flex-col items-end">
+                              <span className="text-emerald-400 font-semibold text-sm">{formatCurrency(Number(sale.amount_received || 0))}</span>
+                              {(Number(sale.revenue) - Number(sale.amount_received || 0)) > 0.01 && (
+                                <span className="text-[10px] text-amber-400">+{formatCurrency(Number(sale.revenue) - Number(sale.amount_received || 0))} a receber</span>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
                             {sale.utm_content || sale.creative_key ? (
                               <Badge variant="outline" className="text-xs">{sale.utm_content || sale.creative_key}</Badge>
                             ) : (
@@ -1560,7 +1669,16 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                                 size="sm"
                                 onClick={() => {
                                   setEditingSale(sale);
-                                  setEditSaleForm({ revenue: String(sale.revenue), sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria", notes: sale.notes || "", closer: sale.closer || "Caio" });
+                                  setEditSaleForm({
+                                    revenue: String(sale.revenue),
+                                    sale_type: (sale.sale_type || "sprint") as "sprint" | "assessoria",
+                                    notes: sale.notes || "",
+                                    closer: sale.closer || "Caio",
+                                    payment_type: ((sale.payment_type as "tcv_total" | "pix_parcelado" | "recorrencia") || "tcv_total"),
+                                    installments_count: sale.installments_count != null ? String(sale.installments_count) : "",
+                                    installment_value: sale.installment_value != null ? String(sale.installment_value) : "",
+                                    amount_received: sale.amount_received != null ? String(sale.amount_received) : "",
+                                  });
                                 }}
                               >
                                 <Pencil className="w-4 h-4" />
@@ -2143,6 +2261,97 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <div>
               <label className="text-sm text-muted-foreground">Receita (R$) *</label>
               <Input type="number" step="0.01" placeholder="5000.00" value={saleForm.revenue} onChange={e => setSaleForm(p => ({ ...p, revenue: e.target.value }))} />
+              <p className="text-[10px] text-muted-foreground mt-1">Valor total do contrato (TCV).</p>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Forma de pagamento *</label>
+              <Select
+                value={saleForm.payment_type}
+                onValueChange={(v) => {
+                  const pt = v as "tcv_total" | "pix_parcelado" | "recorrencia";
+                  setSaleForm(p => ({
+                    ...p,
+                    payment_type: pt,
+                    amount_received: pt === "tcv_total" ? p.revenue : p.amount_received,
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tcv_total">TCV à vista (total)</SelectItem>
+                  <SelectItem value="pix_parcelado">Pix parcelado</SelectItem>
+                  <SelectItem value="recorrencia">Recorrência (mensal)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {saleForm.payment_type === "pix_parcelado" && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm text-muted-foreground">Nº de parcelas</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    placeholder="12"
+                    value={saleForm.installments_count}
+                    onChange={e => {
+                      const count = e.target.value;
+                      setSaleForm(p => {
+                        const c = parseInt(count);
+                        const v = parseFloat(p.installment_value);
+                        const revenue = !isNaN(c) && !isNaN(v) ? String(+(c * v).toFixed(2)) : p.revenue;
+                        return { ...p, installments_count: count, revenue };
+                      });
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">Valor da parcela (R$)</label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="500.00"
+                    value={saleForm.installment_value}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setSaleForm(p => {
+                        const c = parseInt(p.installments_count);
+                        const v = parseFloat(val);
+                        const revenue = !isNaN(c) && !isNaN(v) ? String(+(c * v).toFixed(2)) : p.revenue;
+                        return { ...p, installment_value: val, revenue };
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+            {saleForm.payment_type === "recorrencia" && (
+              <div>
+                <label className="text-sm text-muted-foreground">Valor mensal (R$)</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="2000.00"
+                  value={saleForm.installment_value}
+                  onChange={e => {
+                    const val = e.target.value;
+                    setSaleForm(p => ({ ...p, installment_value: val, revenue: val || p.revenue }));
+                  }}
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">TCV considera apenas o valor mensal.</p>
+              </div>
+            )}
+            <div>
+              <label className="text-sm text-muted-foreground">Já recebido (R$)</label>
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={saleForm.amount_received}
+                onChange={e => setSaleForm(p => ({ ...p, amount_received: e.target.value }))}
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Quanto já entrou na conta. O restante fica como "a receber".</p>
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Observação</label>
@@ -2305,6 +2514,84 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <div>
               <label className="text-sm text-muted-foreground">Receita (R$) *</label>
               <Input type="number" step="0.01" value={editSaleForm.revenue} onChange={e => setEditSaleForm(p => ({ ...p, revenue: e.target.value }))} />
+              <p className="text-[10px] text-muted-foreground mt-1">Valor total do contrato (TCV).</p>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Forma de pagamento *</label>
+              <Select
+                value={editSaleForm.payment_type}
+                onValueChange={(v) => setEditSaleForm(p => ({ ...p, payment_type: v as "tcv_total" | "pix_parcelado" | "recorrencia" }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tcv_total">TCV à vista (total)</SelectItem>
+                  <SelectItem value="pix_parcelado">Pix parcelado</SelectItem>
+                  <SelectItem value="recorrencia">Recorrência (mensal)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {editSaleForm.payment_type === "pix_parcelado" && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm text-muted-foreground">Nº de parcelas</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={editSaleForm.installments_count}
+                    onChange={e => {
+                      const count = e.target.value;
+                      setEditSaleForm(p => {
+                        const c = parseInt(count);
+                        const v = parseFloat(p.installment_value);
+                        const revenue = !isNaN(c) && !isNaN(v) ? String(+(c * v).toFixed(2)) : p.revenue;
+                        return { ...p, installments_count: count, revenue };
+                      });
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">Valor da parcela (R$)</label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={editSaleForm.installment_value}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setEditSaleForm(p => {
+                        const c = parseInt(p.installments_count);
+                        const v = parseFloat(val);
+                        const revenue = !isNaN(c) && !isNaN(v) ? String(+(c * v).toFixed(2)) : p.revenue;
+                        return { ...p, installment_value: val, revenue };
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+            {editSaleForm.payment_type === "recorrencia" && (
+              <div>
+                <label className="text-sm text-muted-foreground">Valor mensal (R$)</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={editSaleForm.installment_value}
+                  onChange={e => {
+                    const val = e.target.value;
+                    setEditSaleForm(p => ({ ...p, installment_value: val, revenue: val || p.revenue }));
+                  }}
+                />
+              </div>
+            )}
+            <div>
+              <label className="text-sm text-muted-foreground">Já recebido (R$)</label>
+              <Input
+                type="number"
+                step="0.01"
+                value={editSaleForm.amount_received}
+                onChange={e => setEditSaleForm(p => ({ ...p, amount_received: e.target.value }))}
+              />
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Observação</label>

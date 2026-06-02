@@ -812,36 +812,48 @@ export type Database = {
       }
       manual_sales: {
         Row: {
+          amount_received: number
           closer: string | null
           created_at: string
           creative_key: string | null
           id: string
+          installment_value: number | null
+          installments_count: number | null
           lead_id: string | null
           notes: string | null
+          payment_type: string
           revenue: number
           sale_date: string
           sale_type: string
           utm_content: string | null
         }
         Insert: {
+          amount_received?: number
           closer?: string | null
           created_at?: string
           creative_key?: string | null
           id?: string
+          installment_value?: number | null
+          installments_count?: number | null
           lead_id?: string | null
           notes?: string | null
+          payment_type?: string
           revenue?: number
           sale_date: string
           sale_type?: string
           utm_content?: string | null
         }
         Update: {
+          amount_received?: number
           closer?: string | null
           created_at?: string
           creative_key?: string | null
           id?: string
+          installment_value?: number | null
+          installments_count?: number | null
           lead_id?: string | null
           notes?: string | null
+          payment_type?: string
           revenue?: number
           sale_date?: string
           sale_type?: string
