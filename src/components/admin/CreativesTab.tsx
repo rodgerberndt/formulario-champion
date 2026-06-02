@@ -2203,6 +2203,97 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <div>
               <label className="text-sm text-muted-foreground">Receita (R$) *</label>
               <Input type="number" step="0.01" placeholder="5000.00" value={saleForm.revenue} onChange={e => setSaleForm(p => ({ ...p, revenue: e.target.value }))} />
+              <p className="text-[10px] text-muted-foreground mt-1">Valor total do contrato (TCV).</p>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Forma de pagamento *</label>
+              <Select
+                value={saleForm.payment_type}
+                onValueChange={(v) => {
+                  const pt = v as "tcv_total" | "pix_parcelado" | "recorrencia";
+                  setSaleForm(p => ({
+                    ...p,
+                    payment_type: pt,
+                    amount_received: pt === "tcv_total" ? p.revenue : p.amount_received,
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tcv_total">TCV à vista (total)</SelectItem>
+                  <SelectItem value="pix_parcelado">Pix parcelado</SelectItem>
+                  <SelectItem value="recorrencia">Recorrência (mensal)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {saleForm.payment_type === "pix_parcelado" && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm text-muted-foreground">Nº de parcelas</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    placeholder="12"
+                    value={saleForm.installments_count}
+                    onChange={e => {
+                      const count = e.target.value;
+                      setSaleForm(p => {
+                        const c = parseInt(count);
+                        const v = parseFloat(p.installment_value);
+                        const revenue = !isNaN(c) && !isNaN(v) ? String(+(c * v).toFixed(2)) : p.revenue;
+                        return { ...p, installments_count: count, revenue };
+                      });
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">Valor da parcela (R$)</label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="500.00"
+                    value={saleForm.installment_value}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setSaleForm(p => {
+                        const c = parseInt(p.installments_count);
+                        const v = parseFloat(val);
+                        const revenue = !isNaN(c) && !isNaN(v) ? String(+(c * v).toFixed(2)) : p.revenue;
+                        return { ...p, installment_value: val, revenue };
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+            {saleForm.payment_type === "recorrencia" && (
+              <div>
+                <label className="text-sm text-muted-foreground">Valor mensal (R$)</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="2000.00"
+                  value={saleForm.installment_value}
+                  onChange={e => {
+                    const val = e.target.value;
+                    setSaleForm(p => ({ ...p, installment_value: val, revenue: val || p.revenue }));
+                  }}
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">TCV considera apenas o valor mensal.</p>
+              </div>
+            )}
+            <div>
+              <label className="text-sm text-muted-foreground">Já recebido (R$)</label>
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={saleForm.amount_received}
+                onChange={e => setSaleForm(p => ({ ...p, amount_received: e.target.value }))}
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Quanto já entrou na conta. O restante fica como "a receber".</p>
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Observação</label>
