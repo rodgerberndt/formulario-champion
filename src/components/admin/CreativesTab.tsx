@@ -1611,7 +1611,9 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                       <TableRow>
                         <TableHead>Data</TableHead>
                         <TableHead>Tipo</TableHead>
-                        <TableHead className="text-right">Receita</TableHead>
+                        <TableHead className="text-right">TCV</TableHead>
+                        <TableHead>Pagamento</TableHead>
+                        <TableHead className="text-right">Recebido</TableHead>
                         <TableHead>Criativo</TableHead>
                         <TableHead>Notas</TableHead>
                         <TableHead className="w-20"></TableHead>
@@ -1627,6 +1629,31 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right font-semibold">{formatCurrency(sale.revenue)}</TableCell>
+                          <TableCell>
+                            {(() => {
+                              const pt = sale.payment_type || "tcv_total";
+                              const label = pt === "pix_parcelado" ? "Pix Parcelado" : pt === "recorrencia" ? "Recorrência" : "À Vista";
+                              const detail = pt === "pix_parcelado" && sale.installments_count && sale.installment_value
+                                ? `${sale.installments_count}x ${formatCurrency(Number(sale.installment_value))}`
+                                : pt === "recorrencia" && sale.installment_value
+                                ? `${formatCurrency(Number(sale.installment_value))}/mês`
+                                : null;
+                              return (
+                                <div className="flex flex-col gap-0.5">
+                                  <Badge variant="outline" className="text-[10px] w-fit">{label}</Badge>
+                                  {detail && <span className="text-[10px] text-muted-foreground">{detail}</span>}
+                                </div>
+                              );
+                            })()}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex flex-col items-end">
+                              <span className="text-emerald-400 font-semibold text-sm">{formatCurrency(Number(sale.amount_received || 0))}</span>
+                              {(Number(sale.revenue) - Number(sale.amount_received || 0)) > 0.01 && (
+                                <span className="text-[10px] text-amber-400">+{formatCurrency(Number(sale.revenue) - Number(sale.amount_received || 0))} a receber</span>
+                              )}
+                            </div>
+                          </TableCell>
                           <TableCell>
                             {sale.utm_content || sale.creative_key ? (
                               <Badge variant="outline" className="text-xs">{sale.utm_content || sale.creative_key}</Badge>
