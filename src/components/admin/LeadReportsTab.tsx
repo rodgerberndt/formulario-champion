@@ -1177,6 +1177,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                         Tier {sortCol === "tier" && (sortDir === "asc" ? "↑" : "↓")}
                       </TableHead>
                       <TableHead className="text-xs">MQL</TableHead>
+                      <TableHead className="text-xs" title="Aceita call de diagnóstico (pergunta final do quiz)">Call Diag.</TableHead>
                       <TableHead className="text-xs">Origem</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -1203,11 +1204,19 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                             <span className="text-muted-foreground text-xs">Não</span>
                           )}
                         </TableCell>
+                        <TableCell>
+                          {(() => {
+                            const v = getAceitaCall(lead);
+                            if (v === "Sim") return <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-[10px]">Sim</Badge>;
+                            if (v === "Não") return <Badge variant="outline" className="text-[10px] border-red-500/40 text-red-400">Não</Badge>;
+                            return <span className="text-muted-foreground text-xs">—</span>;
+                          })()}
+                        </TableCell>
                         <TableCell className="text-xs">{lead.utm_source || "—"}</TableCell>
                       </TableRow>
                     ))}
                     {pagedLeads.length === 0 && (
-                      <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-12">Nenhum lead encontrado</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={10} className="text-center text-muted-foreground py-12">Nenhum lead encontrado</TableCell></TableRow>
                     )}
                   </TableBody>
                 </Table>
