@@ -1475,7 +1475,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </Card>
 
           {/* Row 4: Vendas */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             {/* Sprint */}
             <Card className="border-violet-500/20">
               <CardContent className="pt-4">
@@ -1500,10 +1500,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 </div>
               </CardContent>
             </Card>
-            {/* Assessoria */}
+            {/* Assessoria — TCV (contrato) */}
             <Card className="border-teal-500/20">
               <CardContent className="pt-4">
-                <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-3 border-b border-teal-500/20 pb-2">Assessoria</p>
+                <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-3 border-b border-teal-500/20 pb-2">Assessoria · TCV</p>
                 <div className="grid grid-cols-2 gap-4">
                   <MetricItem
                     label="Vendas"
@@ -1521,6 +1521,37 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   />
                   <MetricItem label="CAC" value={cacAssessoria !== null ? formatCurrency(cacAssessoria) || "—" : "—"} color="text-teal-300" sub="Spend ÷ Vendas Assessoria" />
                   <MetricItem label="ROAS" value={roasAssessoria !== null ? `${roasAssessoria.toFixed(2)}x` : "—"} color="text-teal-300" sub="Receita Assessoria ÷ Spend" />
+                </div>
+              </CardContent>
+            </Card>
+            {/* Assessoria — Recebido (caixa) */}
+            <Card className="border-teal-500/20">
+              <CardContent className="pt-4">
+                <p className="text-xs font-semibold text-teal-300 uppercase tracking-wider mb-3 border-b border-teal-500/20 pb-2">Assessoria · Recebido</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <MetricItem
+                    label="Recebido"
+                    value={formatCurrency(totals.revenue_assessoria_received || 0) || "—"}
+                    color="text-teal-400"
+                    sub={`${(totals.revenue_assessoria || 0) > 0 ? (((totals.revenue_assessoria_received || 0) / (totals.revenue_assessoria || 1)) * 100).toFixed(1) : "0.0"}% do TCV`}
+                  />
+                  <MetricItem
+                    label="A Receber"
+                    value={formatCurrency(totals.revenue_assessoria_to_receive || 0) || "—"}
+                    color="text-amber-300"
+                    sub={`Restante do contrato`}
+                  />
+                  <MetricItem
+                    label="Ticket Recebido"
+                    value={(totals.sales_assessoria || 0) > 0 ? formatCurrency((totals.revenue_assessoria_received || 0) / (totals.sales_assessoria || 1)) || "—" : "—"}
+                    color="text-teal-300"
+                  />
+                  <MetricItem
+                    label="ROAS Caixa"
+                    value={totals.spend > 0 ? `${(((totals.revenue_assessoria_received || 0)) / totals.spend).toFixed(2)}x` : "—"}
+                    color="text-teal-300"
+                    sub="Recebido Assessoria ÷ Spend"
+                  />
                 </div>
               </CardContent>
             </Card>
