@@ -645,12 +645,13 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
   };
 
   const exportCSV = useCallback(() => {
-    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento", "Dor/Desejo", "Tier", "MQL", "UTM Source", "UTM Campaign", "UTM Content"];
+    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento", "Dor/Desejo", "Tier", "MQL", "Aceita Call Diagnóstico", "UTM Source", "UTM Campaign", "UTM Content"];
     const rows = tableLeads.map(l => [
       format(new Date(l.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }),
       l.nome_completo, l.whatsapp, l.instagram, l.email || "", normalizeMercado(l.mercado),
       l.estagio_negocio || "", l.investimento_faixa || "", `"${(l.dor_desejo || "").replace(/"/g, '""')}"`,
       getTierFromFaturamento(l.investimento_faixa), isMql(l) ? "Sim" : "Não",
+      getAceitaCall(l) || "—",
       l.utm_source || "", l.utm_campaign || "", l.utm_content || "",
     ]);
     const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
