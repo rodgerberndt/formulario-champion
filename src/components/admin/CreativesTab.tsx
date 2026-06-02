@@ -172,6 +172,10 @@ interface ManualSale {
   sale_type: string;
   lead_created_at?: string | null;
   closer?: string | null;
+  payment_type?: string | null;
+  installments_count?: number | null;
+  installment_value?: number | null;
+  amount_received?: number | null;
 }
 
 // Links das agendas dos closers (exibidos nos diálogos de reunião).
