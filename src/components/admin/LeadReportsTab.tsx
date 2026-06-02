@@ -139,6 +139,15 @@ const getQuizEntries = (lead: Lead): [string, unknown][] => {
   );
 };
 
+// Extracts the "aceita call de diagnóstico" answer (Sim/Não) from raw_answers_json
+const getAceitaCall = (lead: Lead): "Sim" | "Não" | null => {
+  const raw = lead.raw_answers_json && typeof lead.raw_answers_json === "object" ? lead.raw_answers_json : {};
+  const v = (raw as Record<string, unknown>).aceita_call_diagnostico;
+  if (v === "Sim" || v === true) return "Sim";
+  if (v === "Não" || v === "Nao" || v === false) return "Não";
+  return null;
+};
+
 interface LeadReportsTabProps {
   leads: Lead[];
   loading: boolean;
@@ -636,12 +645,13 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
   };
 
   const exportCSV = useCallback(() => {
-    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento", "Dor/Desejo", "Tier", "MQL", "UTM Source", "UTM Campaign", "UTM Content"];
+    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento", "Dor/Desejo", "Tier", "MQL", "Aceita Call Diagnóstico", "UTM Source", "UTM Campaign", "UTM Content"];
     const rows = tableLeads.map(l => [
       format(new Date(l.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }),
       l.nome_completo, l.whatsapp, l.instagram, l.email || "", normalizeMercado(l.mercado),
       l.estagio_negocio || "", l.investimento_faixa || "", `"${(l.dor_desejo || "").replace(/"/g, '""')}"`,
       getTierFromFaturamento(l.investimento_faixa), isMql(l) ? "Sim" : "Não",
+      getAceitaCall(l) || "—",
       l.utm_source || "", l.utm_campaign || "", l.utm_content || "",
     ]);
     const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
@@ -1167,6 +1177,7 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                         Tier {sortCol === "tier" && (sortDir === "asc" ? "↑" : "↓")}
                       </TableHead>
                       <TableHead className="text-xs">MQL</TableHead>
+                      <TableHead className="text-xs" title="Aceita call de diagnóstico (pergunta final do quiz)">Call Diag.</TableHead>
                       <TableHead className="text-xs">Origem</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -1193,11 +1204,19 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                             <span className="text-muted-foreground text-xs">Não</span>
                           )}
                         </TableCell>
+                        <TableCell>
+                          {(() => {
+                            const v = getAceitaCall(lead);
+                            if (v === "Sim") return <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-[10px]">Sim</Badge>;
+                            if (v === "Não") return <Badge variant="outline" className="text-[10px] border-red-500/40 text-red-400">Não</Badge>;
+                            return <span className="text-muted-foreground text-xs">—</span>;
+                          })()}
+                        </TableCell>
                         <TableCell className="text-xs">{lead.utm_source || "—"}</TableCell>
                       </TableRow>
                     ))}
                     {pagedLeads.length === 0 && (
-                      <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-12">Nenhum lead encontrado</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={10} className="text-center text-muted-foreground py-12">Nenhum lead encontrado</TableCell></TableRow>
                     )}
                   </TableBody>
                 </Table>
