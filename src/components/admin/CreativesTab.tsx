@@ -631,9 +631,13 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         lead_id: lead?.id || "",
         sale_type: saleForm.sale_type,
         closer: saleForm.closer,
+        payment_type: saleForm.payment_type,
+        installments_count: saleForm.installments_count,
+        installment_value: saleForm.installment_value,
+        amount_received: saleForm.amount_received,
       });
       toast({ title: "Venda registrada!" });
-      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint", closer: "Caio" });
+      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint", closer: "Caio", payment_type: "tcv_total", installments_count: "", installment_value: "", amount_received: "" });
       setSelectedLeadId(null);
       setShowAddSale(false);
       loadData();
