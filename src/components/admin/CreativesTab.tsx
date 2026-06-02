@@ -100,6 +100,8 @@ interface CreativeData {
   revenue: number;
   revenue_sprint: number;
   revenue_assessoria: number;
+  revenue_assessoria_received?: number;
+  revenue_assessoria_to_receive?: number;
   roas: number | null;
   last_activity: string | null;
   leads_by_stage: Record<string, number>;
@@ -132,6 +134,8 @@ interface CreativesResponse {
     revenue: number;
     revenue_sprint: number;
     revenue_assessoria: number;
+    revenue_assessoria_received?: number;
+    revenue_assessoria_to_receive?: number;
     meetings: number;
     meetings_attended: number;
     landing_page_views: number;
