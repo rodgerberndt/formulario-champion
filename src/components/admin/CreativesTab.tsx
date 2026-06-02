@@ -479,7 +479,16 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Edit states
   const [editingSale, setEditingSale] = useState<ManualSale | null>(null);
-  const [editSaleForm, setEditSaleForm] = useState({ revenue: "", sale_type: "sprint" as "sprint" | "assessoria", notes: "", closer: "Caio" });
+  const [editSaleForm, setEditSaleForm] = useState({
+    revenue: "",
+    sale_type: "sprint" as "sprint" | "assessoria",
+    notes: "",
+    closer: "Caio",
+    payment_type: "tcv_total" as "tcv_total" | "pix_parcelado" | "recorrencia",
+    installments_count: "",
+    installment_value: "",
+    amount_received: "",
+  });
   const [savingEditSale, setSavingEditSale] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
   const [editMeetingForm, setEditMeetingForm] = useState({ notes: "", attended: false, closer: "Caio" });
