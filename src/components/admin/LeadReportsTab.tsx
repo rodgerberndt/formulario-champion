@@ -139,6 +139,15 @@ const getQuizEntries = (lead: Lead): [string, unknown][] => {
   );
 };
 
+// Extracts the "aceita call de diagnóstico" answer (Sim/Não) from raw_answers_json
+const getAceitaCall = (lead: Lead): "Sim" | "Não" | null => {
+  const raw = lead.raw_answers_json && typeof lead.raw_answers_json === "object" ? lead.raw_answers_json : {};
+  const v = (raw as Record<string, unknown>).aceita_call_diagnostico;
+  if (v === "Sim" || v === true) return "Sim";
+  if (v === "Não" || v === "Nao" || v === false) return "Não";
+  return null;
+};
+
 interface LeadReportsTabProps {
   leads: Lead[];
   loading: boolean;
