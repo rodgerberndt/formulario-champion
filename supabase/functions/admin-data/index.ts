@@ -1579,6 +1579,8 @@ Deno.serve(async (req: Request) => {
             revenue: 0,
             revenue_sprint: 0,
             revenue_assessoria: 0,
+            revenue_assessoria_received: 0,
+            revenue_assessoria_to_receive: 0,
             meetings_count: 0,
             meetings_attended_count: 0,
             landing_page_views: 0,
