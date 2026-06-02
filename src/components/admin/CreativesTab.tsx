@@ -441,7 +441,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Manual sales form
   const [showAddSale, setShowAddSale] = useState(false);
-  const [saleForm, setSaleForm] = useState({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint" as "sprint" | "assessoria", closer: "Caio" });
+  const [saleForm, setSaleForm] = useState({
+    sale_date: "",
+    revenue: "",
+    creative_key: "",
+    notes: "",
+    sale_type: "sprint" as "sprint" | "assessoria",
+    closer: "Caio",
+    payment_type: "tcv_total" as "tcv_total" | "pix_parcelado" | "recorrencia",
+    installments_count: "",
+    installment_value: "",
+    amount_received: "",
+  });
   const [savingSale, setSavingSale] = useState(false);
 
   // Ad spend form
