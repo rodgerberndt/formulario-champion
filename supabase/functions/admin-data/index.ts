@@ -1,4 +1,5 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
+// redeploy: include revenue_assessoria_received/to_receive in totals
 import { verify } from "https://deno.land/x/djwt@v2.9.1/mod.ts";
 
 // build: qualified_count v2 (≥R$5k)
