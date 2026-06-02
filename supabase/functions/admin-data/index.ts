@@ -2027,6 +2027,12 @@ Deno.serve(async (req: Request) => {
       const params = Object.fromEntries(url.searchParams);
       const leadId = params.lead_id || null;
       const revenue = parseFloat(params.revenue);
+      const paymentType = params.payment_type || "tcv_total";
+      const installmentsCount = params.installments_count ? parseInt(params.installments_count) : null;
+      const installmentValue = params.installment_value ? parseFloat(params.installment_value) : null;
+      const amountReceived = params.amount_received !== undefined && params.amount_received !== ""
+        ? parseFloat(params.amount_received)
+        : (paymentType === "tcv_total" ? revenue : 0);
       const { data, error } = await supabase.from("manual_sales").insert([{
         sale_date: params.sale_date,
         revenue,
@@ -2036,6 +2042,10 @@ Deno.serve(async (req: Request) => {
         notes: params.notes || null,
         sale_type: params.sale_type || "sprint",
         closer: params.closer || null,
+        payment_type: paymentType,
+        installments_count: installmentsCount,
+        installment_value: installmentValue,
+        amount_received: isNaN(amountReceived) ? 0 : amountReceived,
       }]).select().maybeSingle();
 
       if (error) throw error;
