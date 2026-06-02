@@ -2456,6 +2456,84 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <div>
               <label className="text-sm text-muted-foreground">Receita (R$) *</label>
               <Input type="number" step="0.01" value={editSaleForm.revenue} onChange={e => setEditSaleForm(p => ({ ...p, revenue: e.target.value }))} />
+              <p className="text-[10px] text-muted-foreground mt-1">Valor total do contrato (TCV).</p>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Forma de pagamento *</label>
+              <Select
+                value={editSaleForm.payment_type}
+                onValueChange={(v) => setEditSaleForm(p => ({ ...p, payment_type: v as "tcv_total" | "pix_parcelado" | "recorrencia" }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tcv_total">TCV à vista (total)</SelectItem>
+                  <SelectItem value="pix_parcelado">Pix parcelado</SelectItem>
+                  <SelectItem value="recorrencia">Recorrência (mensal)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {editSaleForm.payment_type === "pix_parcelado" && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm text-muted-foreground">Nº de parcelas</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={editSaleForm.installments_count}
+                    onChange={e => {
+                      const count = e.target.value;
+                      setEditSaleForm(p => {
+                        const c = parseInt(count);
+                        const v = parseFloat(p.installment_value);
+                        const revenue = !isNaN(c) && !isNaN(v) ? String(+(c * v).toFixed(2)) : p.revenue;
+                        return { ...p, installments_count: count, revenue };
+                      });
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">Valor da parcela (R$)</label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={editSaleForm.installment_value}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setEditSaleForm(p => {
+                        const c = parseInt(p.installments_count);
+                        const v = parseFloat(val);
+                        const revenue = !isNaN(c) && !isNaN(v) ? String(+(c * v).toFixed(2)) : p.revenue;
+                        return { ...p, installment_value: val, revenue };
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+            {editSaleForm.payment_type === "recorrencia" && (
+              <div>
+                <label className="text-sm text-muted-foreground">Valor mensal (R$)</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={editSaleForm.installment_value}
+                  onChange={e => {
+                    const val = e.target.value;
+                    setEditSaleForm(p => ({ ...p, installment_value: val, revenue: val || p.revenue }));
+                  }}
+                />
+              </div>
+            )}
+            <div>
+              <label className="text-sm text-muted-foreground">Já recebido (R$)</label>
+              <Input
+                type="number"
+                step="0.01"
+                value={editSaleForm.amount_received}
+                onChange={e => setEditSaleForm(p => ({ ...p, amount_received: e.target.value }))}
+              />
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Observação</label>
