@@ -704,10 +704,29 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       await fetchAdmin(`${supabaseUrl}/functions/v1/admin-data/manual-sales/${editingSale.id}`, {
         method: "PUT",
         headers: { "x-admin-token": getAdminToken() || "", "Content-Type": "application/json" },
-        body: JSON.stringify({ revenue: editSaleForm.revenue, sale_type: editSaleForm.sale_type, notes: editSaleForm.notes, closer: editSaleForm.closer }),
+        body: JSON.stringify({
+          revenue: editSaleForm.revenue,
+          sale_type: editSaleForm.sale_type,
+          notes: editSaleForm.notes,
+          closer: editSaleForm.closer,
+          payment_type: editSaleForm.payment_type,
+          installments_count: editSaleForm.installments_count,
+          installment_value: editSaleForm.installment_value,
+          amount_received: editSaleForm.amount_received,
+        }),
       });
       toast({ title: "Venda atualizada!" });
-      setSalesList(prev => prev.map(s => s.id === editingSale.id ? { ...s, revenue: parseFloat(editSaleForm.revenue), sale_type: editSaleForm.sale_type, notes: editSaleForm.notes, closer: editSaleForm.closer } : s));
+      setSalesList(prev => prev.map(s => s.id === editingSale.id ? {
+        ...s,
+        revenue: parseFloat(editSaleForm.revenue),
+        sale_type: editSaleForm.sale_type,
+        notes: editSaleForm.notes,
+        closer: editSaleForm.closer,
+        payment_type: editSaleForm.payment_type,
+        installments_count: editSaleForm.installments_count ? parseInt(editSaleForm.installments_count) : null,
+        installment_value: editSaleForm.installment_value ? parseFloat(editSaleForm.installment_value) : null,
+        amount_received: editSaleForm.amount_received ? parseFloat(editSaleForm.amount_received) : 0,
+      } : s));
       setEditingSale(null);
       loadData();
     } catch {
