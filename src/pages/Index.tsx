@@ -143,8 +143,8 @@ const Index = () => {
 
       <Footer />
 
-      {/* Sticky bottom CTA - always visible across the entire page */}
-      <div className="fixed bottom-4 left-5 right-5 md:left-1/2 md:right-auto md:bottom-6 md:-translate-x-1/2 md:w-auto z-50 animate-fade-in">
+      {/* Sticky bottom CTA - mobile only */}
+      <div className="fixed bottom-4 left-5 right-5 z-50 animate-fade-in md:hidden">
         <Button
           onClick={() => handleStartClick("sticky_cta")}
           disabled={loadingBtn === "sticky_cta"}
