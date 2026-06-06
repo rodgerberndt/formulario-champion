@@ -1622,6 +1622,79 @@ Deno.serve(async (req: Request) => {
         return FATURAMENTO_TIER[lead.investimento_faixa || ""] || (lead.tier || "Desqualificado");
       }
 
+      // ─── Lead Score 0–100 (mirrors src/lib/leadScoring.ts) ──────────────────
+      const SCORE_FAT: Record<string, number> = {
+        "Não vendo ainda (R$0/mês)": 0,
+        "Até R$ 5 mil": 5,
+        "De R$ 5 mil a R$ 10 mil": 15,
+        "De R$ 10 mil a R$ 20 mil": 22,
+        "De R$ 20 mil a R$ 30 mil": 27,
+        "De R$ 30 mil a R$ 50 mil": 30,
+        "De R$ 50 mil a R$ 75 mil": 32,
+        "De R$ 75 mil a R$ 100 mil": 33,
+        "De R$ 100 mil a R$ 150 mil": 35,
+        "De R$ 150 mil a R$ 200 mil": 35,
+        "De R$ 200 mil a R$ 300 mil": 35,
+        "De R$ 300 mil a R$ 500 mil": 35,
+        "De R$ 500 mil a R$ 750 mil": 35,
+        "De R$ 750 mil a R$ 1 milhão": 35,
+        "De R$ 1 milhão a R$ 2 milhões": 35,
+        "De R$ 2 milhões a R$ 3 milhões": 35,
+        "De R$ 3 milhões a R$ 5 milhões": 35,
+        "De R$ 5 milhões a R$ 10 milhões": 35,
+        "Acima de R$ 10 milhões": 35,
+      };
+      const SCORE_ESTAGIO: Record<string, number> = {
+        "Iniciando do zero": 2,
+        "Validação (primeiras vendas)": 6,
+        "Pré-escala (vendas constantes)": 10,
+        "Escala (buscando otimização)": 12,
+      };
+      const SCORE_MERCADO_ALTO = new Set([
+        "Infoproduto", "E-commerce", "SaaS / Software",
+        "Serviços / Consultoria", "Agência", "Nutra / Encapsulado Produtor",
+      ]);
+      const SCORE_MERCADO_MEDIO = new Set([
+        "Dropshipping", "Afiliado BR", "Afiliado Nutra Gringa", "Lowticket",
+      ]);
+      const asBool = (v: any): boolean => v === true || (typeof v === "string" && v.trim().toLowerCase() === "sim");
+      function computeScore(lead: any): number {
+        const raw = (lead.raw_answers_json && typeof lead.raw_answers_json === "object") ? lead.raw_answers_json : {};
+        const pick = (top: any, key: string) => (top !== null && top !== undefined && top !== "") ? top : raw[key];
+        const fat = pick(lead.investimento_faixa, "investimento_faixa") as string | undefined;
+        const est = pick(lead.estagio_negocio, "estagio_negocio") as string | undefined;
+        const mer = pick(lead.mercado, "mercado") as string | undefined;
+        const ops = pick(lead.operacoes_ativas, "operacoes_ativas");
+        const quer = pick(undefined, "quer_vender_mais");
+        const comp = pick(undefined, "compromisso_whatsapp");
+        const aceita = pick(undefined, "aceita_call_diagnostico");
+        const dor = (pick(lead.dor_desejo, "dor_desejo") as string | undefined) || "";
+        const nps = pick(lead.nps_score, "nps_score");
+        const lgpd = pick(undefined, "lgpd");
+        let pMercado = 0;
+        if (mer) {
+          if (SCORE_MERCADO_ALTO.has(mer)) pMercado = 8;
+          else if (SCORE_MERCADO_MEDIO.has(mer)) pMercado = 5;
+          else pMercado = 3;
+        }
+        let pOps = 0;
+        if (typeof ops === "number") {
+          pOps = ops <= 0 ? 1 : ops === 1 ? 4 : ops === 2 ? 5 : 6;
+        }
+        const len = dor.trim().length;
+        const pDor = len < 10 ? 0 : len < 30 ? 2 : len < 80 ? 4 : 5;
+        const pNps = typeof nps === "number" ? Math.round(Math.max(0, Math.min(10, nps)) * 0.4 * 10) / 10 : 0;
+        const total =
+          (SCORE_FAT[fat || ""] ?? 0) +
+          (SCORE_ESTAGIO[est || ""] ?? 0) +
+          pMercado + pOps + pDor + pNps +
+          (asBool(quer) ? 5 : 0) +
+          (asBool(comp) ? 10 : 0) +
+          (asBool(aceita) ? 12 : 0) +
+          (asBool(lgpd) ? 3 : 0);
+        return Math.max(0, Math.min(100, Math.round(total)));
+      }
+
       let leadsWithCreative = 0;
       let leadsWithoutUtms = 0;
       const UNATTRIBUTED_KEY = "direct-link-in-bio";
