@@ -1926,6 +1926,7 @@ Deno.serve(async (req: Request) => {
         const lead_per_view = c.landing_page_views > 0 ? c.leads_count / c.landing_page_views : null;
         const ctl = c.clicks > 0 ? (c.leads_count / c.clicks) * 100 : null;
         const is_active = recentSpendKeys.has(c.creative_key);
+        const avg_lead_score = c.lead_score_n > 0 ? Math.round((c.lead_score_sum / c.lead_score_n) * 10) / 10 : null;
         return {
           ...c,
           mql_rate,
@@ -1947,6 +1948,7 @@ Deno.serve(async (req: Request) => {
           meetings_count: c.meetings_count,
           meetings_attended_count: c.meetings_attended_count,
           is_active,
+          avg_lead_score,
           campaigns: Array.from(c.campaigns),
         };
       });
