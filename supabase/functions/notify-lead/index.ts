@@ -21,6 +21,8 @@ const WHATSAPP_PHONE_NUMBER_ID = Deno.env.get('WHATSAPP_PHONE_NUMBER_ID');
 const RODGER_WHATSAPP_E164 = Deno.env.get('RODGER_WHATSAPP_E164');
 const DARA_WHATSAPP_E164 = Deno.env.get('DARA_WHATSAPP_E164');
 const CAIO_WHATSAPP_E164 = Deno.env.get('CAIO_WHATSAPP_E164');
+const MIGUEL_WHATSAPP_E164 = Deno.env.get('MIGUEL_WHATSAPP_E164');
+const GUSTAVO_WHATSAPP_E164 = Deno.env.get('GUSTAVO_WHATSAPP_E164');
 const WHATSAPP_TEMPLATE_NAME = Deno.env.get('WHATSAPP_TEMPLATE_NAME');
 const WHATSAPP_TEMPLATE_LANG = Deno.env.get('WHATSAPP_TEMPLATE_LANG') || 'pt_BR';
 
@@ -29,9 +31,13 @@ const WAHA_API_URL = Deno.env.get('WAHA_API_URL');
 const WAHA_API_KEY = Deno.env.get('WAHA_API_KEY');
 const WAHA_PHONE_NUMBER_ID = Deno.env.get('WAHA_PHONE_NUMBER_ID') || 'default';
 
-// SDR routing: All >= 5k → Caio, rest → Dara (Rodger removido)
-const SDR_CAIO_FATURAMENTO = [
-  "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
+// SDR routing:
+//  - MQL (>= R$ 10 mil) → Miguel
+//  - R$ 5 mil a R$ 10 mil → Gustavo
+//  - < R$ 5 mil → sem SDR (não notifica)
+// Caio virou closer — não recebe mais leads novos.
+const MIGUEL_MQL_FAIXAS = [
+  "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
   "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
   "De R$ 100 mil a R$ 150 mil",
   "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
@@ -39,12 +45,16 @@ const SDR_CAIO_FATURAMENTO = [
   "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
   "Acima de R$ 10 milhões",
 ];
+const GUSTAVO_FAIXA = "De R$ 5 mil a R$ 10 mil";
 
-function getSdrForLead(investimentoFaixa?: string | null): { name: string; phone: string } {
-  if (investimentoFaixa && SDR_CAIO_FATURAMENTO.includes(investimentoFaixa)) {
-    return { name: "Caio", phone: CAIO_WHATSAPP_E164 || "" };
+function getSdrForLead(investimentoFaixa?: string | null): { name: string; phone: string } | null {
+  if (investimentoFaixa && MIGUEL_MQL_FAIXAS.includes(investimentoFaixa)) {
+    return { name: "Miguel", phone: MIGUEL_WHATSAPP_E164 || "" };
   }
-  return { name: "Dara", phone: DARA_WHATSAPP_E164 || "" };
+  if (investimentoFaixa === GUSTAVO_FAIXA) {
+    return { name: "Gustavo", phone: GUSTAVO_WHATSAPP_E164 || "" };
+  }
+  return null;
 }
 
 // URLs
@@ -418,26 +428,30 @@ Deno.serve(async (req: Request) => {
 
     const leadTier = leadTierFromDb || session.lead_stage || 'N/A';
     const sdr = getSdrForLead(leadInvestimentoFaixa);
-    console.log(`SDR assigned: ${sdr.name} (faturamento: ${leadInvestimentoFaixa || 'N/A'}, tier: ${leadTier})`);
+    console.log(`SDR assigned: ${sdr?.name || 'none'} (faturamento: ${leadInvestimentoFaixa || 'N/A'}, tier: ${leadTier})`);
 
     // Kommo sync is now handled by DB trigger on leads table INSERT
     // (notify_kommo_on_lead_insert → kommo-webhook)
     const kommoSuccess = true; // Skip, handled elsewhere
 
-    // 2. Send WhatsApp to assigned SDR
+    // 2. Send WhatsApp to assigned SDR (skip if no SDR — lead < R$ 5 mil)
     let whatsappSuccess = false;
     let messageId: string | undefined;
-    try {
-      const waResult = await withRetry(() => sendWhatsAppToSdr(session, targetId, sdr));
-      whatsappSuccess = waResult.success;
-      messageId = waResult.messageId;
-      if (!whatsappSuccess && waResult.error) {
-        errors.push(`WhatsApp: ${waResult.error}`);
+    if (sdr) {
+      try {
+        const waResult = await withRetry(() => sendWhatsAppToSdr(session, targetId, sdr));
+        whatsappSuccess = waResult.success;
+        messageId = waResult.messageId;
+        if (!whatsappSuccess && waResult.error) {
+          errors.push(`WhatsApp: ${waResult.error}`);
+        }
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error);
+        errors.push(`WhatsApp: ${msg}`);
+        console.error('WhatsApp send failed:', msg);
       }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error);
-      errors.push(`WhatsApp: ${msg}`);
-      console.error('WhatsApp send failed:', msg);
+    } else {
+      console.log('No SDR assigned (faturamento < R$ 5 mil) — skipping WhatsApp notification');
     }
 
     // 3. Send auto-message to MQL lead via WAHA (MQL = faturamento >= 10k, now handled by Caio)
@@ -461,7 +475,7 @@ Deno.serve(async (req: Request) => {
       'Acima de R$ 10 milhões',
     ].includes(leadInvestimentoFaixa || '');
 
-    if (sdr.name === 'Caio' && isPixelMqlEligible && session.lead_whatsapp && session.lead_name) {
+    if (sdr?.name === 'Miguel' && isPixelMqlEligible && session.lead_whatsapp && session.lead_name) {
       try {
         const wahaResult = await withRetry(() =>
           sendWahaAutoMessage(session.lead_whatsapp, session.lead_name)
@@ -511,7 +525,7 @@ Deno.serve(async (req: Request) => {
     try {
       const pushPayload = {
         title: pushTitle,
-        body: `Tier: ${leadTier} | SDR: ${sdr.name}`,
+        body: `Tier: ${leadTier} | SDR: ${sdr?.name || 'Nenhum'}`,
         url: `/${ADMIN_ROUTE_SLUG}?highlight=${targetId}`,
       };
 
@@ -551,7 +565,7 @@ Deno.serve(async (req: Request) => {
             app_id: '2ba7eef1-4bc9-47dd-83fc-745bb1548799',
             included_segments: ['All'],
             headings: { en: pushHeading },
-            contents: { en: `Nome: ${leadName} - Tier: ${leadTier} SDR: ${sdr.name}` },
+            contents: { en: `Nome: ${leadName} - Tier: ${leadTier} SDR: ${sdr?.name || 'Nenhum'}` },
             url: `/${ADMIN_ROUTE_SLUG}?highlight=${targetId}`,
           }),
         });
