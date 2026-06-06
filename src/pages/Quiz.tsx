@@ -648,8 +648,13 @@ export default function Quiz() {
         "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
         "Acima de R$ 10 milhões",
       ];
-      const isMql = SDR_MIN_FATURAMENTO.includes(currentData.investimento_faixa);
-      navigate(isMql ? "/obrigadomql" : "/obrigado");
+      const hasSdr = SDR_MIN_FATURAMENTO.includes(currentData.investimento_faixa);
+      if (hasSdr) {
+        navigate("/obrigadomql");
+      } else {
+        // Leads < R$ 5 mil → redirecionar para Sprint (sem SDR)
+        window.location.href = "https://sprint.championadstudio.com";
+      }
     } catch (error) {
       console.error("Error submitting lead:", error);
       clearTimeout(safetyTimer);
