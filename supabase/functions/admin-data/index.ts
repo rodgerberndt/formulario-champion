@@ -1976,6 +1976,9 @@ Deno.serve(async (req: Request) => {
       const totalQualified = creatives.reduce((s, c) => s + c.leads_5_10k_count, 0);
       const totalClicks = creatives.reduce((s, c) => s + (c.clicks || 0), 0);
       const totalImpressions = creatives.reduce((s, c) => s + (c.impressions || 0), 0);
+      const totalLeadScoreSum = creatives.reduce((s, c) => s + c.lead_score_sum, 0);
+      const totalLeadScoreN = creatives.reduce((s, c) => s + c.lead_score_n, 0);
+      const avgLeadScore = totalLeadScoreN > 0 ? Math.round((totalLeadScoreSum / totalLeadScoreN) * 10) / 10 : null;
 
       return new Response(
         JSON.stringify({
@@ -2018,6 +2021,7 @@ Deno.serve(async (req: Request) => {
             cac_assessoria: totalSalesAssessoria > 0 ? totalSpend / totalSalesAssessoria : null,
             roas: totalSpend > 0 ? totalRevenue / totalSpend : null,
             cp_meeting: totalMeetingsCount > 0 ? totalSpend / totalMeetingsCount : null,
+            avg_lead_score: avgLeadScore,
           },
           data_quality: {
             leads_with_creative: leadsWithCreative,
