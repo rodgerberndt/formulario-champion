@@ -5,8 +5,9 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
-// Rodger removido — todos os leads vão para Caio
-const CAIO_WHATSAPP_NUMBER = "5581983990148";
+// SDR routing: MQL (>=10k) → Miguel | 5k-10k → Gustavo | <5k → sem SDR (redireciona externo)
+const MIGUEL_WHATSAPP_NUMBER = "5511932748979";
+const GUSTAVO_WHATSAPP_NUMBER = "554899161567";
 const SUPPORT_WHATSAPP_NUMBER = "5548996560104";
 const SUBMISSION_TS_KEY = "champion_submit_ts";
 interface QuizResultProps {
@@ -98,12 +99,22 @@ const SDR_MIN_FATURAMENTO = [
   "Acima de R$ 10 milhões",
 ];
 
-const DARA_SKIP_LINK = "https://wa.me/554896560104?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
-const CAIO_SKIP_LINK = "https://wa.me/558183990148?text=Falaa%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
+const MIGUEL_MQL_FAIXAS = [
+  "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+  "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
+  "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
+  "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
+  "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
+  "Acima de R$ 10 milhões",
+];
+const GUSTAVO_FAIXA = "De R$ 5 mil a R$ 10 mil";
 
-function getSdrSkipLink(_estagio?: string, investimento?: string): string {
-  if (!investimento || !SDR_MIN_FATURAMENTO.includes(investimento)) return DARA_SKIP_LINK;
-  return CAIO_SKIP_LINK;
+function getAssignedSdr(investimento?: string): { name: string; phone: string } {
+  if (investimento && MIGUEL_MQL_FAIXAS.includes(investimento)) {
+    return { name: "Miguel", phone: MIGUEL_WHATSAPP_NUMBER };
+  }
+  // Gustavo é o fallback para qualquer lead que chegue nesse fluxo (5k-10k).
+  return { name: "Gustavo", phone: GUSTAVO_WHATSAPP_NUMBER };
 }
 
 export function QuizResult({
