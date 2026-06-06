@@ -17,6 +17,8 @@ import { toast } from "@/hooks/use-toast";
 import { ChevronRight, ChevronLeft, Check, Loader2, ArrowLeft, Target, MessageCircle, AlertTriangle } from "lucide-react";
 import {
   calculateLeadScore,
+  computeLeadScore100,
+  getTierFromFaturamento,
   MERCADO_OPTIONS,
   INVESTIMENTO_OPTIONS } from
 "@/lib/leadScoring";
@@ -461,11 +463,19 @@ export default function Quiz() {
     }, 25000);
 
     try {
-      const result = calculateLeadScore({
-        mercado: currentData.mercado,
+      // Lead Score 0–100 using ALL quiz answers.
+      const scoreResult = computeLeadScore100({
         investimento_faixa: currentData.investimento_faixa,
-        dor_desejo: currentData.dor_desejo
+        mercado: currentData.mercado,
+        operacoes_ativas: currentData.operacoes_ativas,
+        quer_vender_mais: currentData.quer_vender_mais,
+        compromisso_whatsapp: currentData.compromisso_whatsapp,
+        aceita_call_diagnostico: currentData.aceita_call_diagnostico,
+        dor_desejo: currentData.dor_desejo,
+        nps_score: currentData.nps_score,
+        lgpd: currentData.lgpd,
       });
+      const tier = getTierFromFaturamento(currentData.investimento_faixa);
 
       // Fire IP capture in parallel (non-blocking)
       const clientIpPromise = supabase.functions
@@ -490,8 +500,8 @@ export default function Quiz() {
         operacoes_ativas: currentData.operacoes_ativas,
         investimento_faixa: currentData.investimento_faixa,
         dor_desejo: currentData.dor_desejo,
-        score: result.score,
-        tier: result.tier,
+        score: scoreResult.score,
+        tier,
         nps_score: currentData.nps_score,
         raw_answers_json: JSON.parse(JSON.stringify(currentData)),
         attribution_source: getAttributionSource(),

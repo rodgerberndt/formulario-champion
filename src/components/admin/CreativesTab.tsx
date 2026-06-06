@@ -112,6 +112,7 @@ interface CreativeData {
   landing_page_views: number;
   lead_per_view: number | null;
   is_active: boolean;
+  avg_lead_score: number | null;
 }
 
 interface CreativesResponse {
@@ -150,6 +151,7 @@ interface CreativesResponse {
     cac: number | null;
     roas: number | null;
     cp_meeting: number | null;
+    avg_lead_score: number | null;
   };
   data_quality: {
     leads_with_creative: number;
@@ -390,7 +392,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   // Drag & drop column ordering (persisted)
   const DEFAULT_COLUMN_ORDER = [
     "creative", "spend", "lpv", "leads", "ctl", "mql_cpmql",
-    "qualified_5_10k", "meetings", "booking_rate", "call_conv", "sales_cac",
+    "qualified_5_10k", "score", "meetings", "booking_rate", "call_conv", "sales_cac",
     "cac_sprint", "cac_assessoria", "win_rate", "revenue", "roas",
   ] as const;
   type ColumnId = (typeof DEFAULT_COLUMN_ORDER)[number];
@@ -1340,6 +1342,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <MetricItem label="Leads ≥5k" value={formatNumber(qualifiedLeads)} color="text-cyan-300" sub={`⏱ Resp: ${avgResponse5k}`} />
                   <MetricItem label="CPMQL" value={formatCurrency(totals.cpmql) || "—"} />
                   <MetricItem label="CPL ≥5k" value={qualifiedLeads > 0 ? formatCurrency(totals.spend / qualifiedLeads) || "—" : "—"} color="text-cyan-400" />
+                  <MetricItem
+                    label="Lead Score"
+                    value={totals.avg_lead_score !== null && totals.avg_lead_score !== undefined ? `${totals.avg_lead_score}/100` : "—"}
+                    color={
+                      totals.avg_lead_score == null ? undefined :
+                      totals.avg_lead_score >= 75 ? "text-emerald-400" :
+                      totals.avg_lead_score >= 50 ? "text-amber-400" :
+                      totals.avg_lead_score >= 25 ? "text-blue-400" :
+                      "text-muted-foreground"
+                    }
+                    sub="Média (todas as perguntas do quiz)"
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -1840,6 +1854,25 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     </span>
                   ),
                 },
+                score: {
+                  id: "score", label: "Score", width: "6%", sortField: "avg_lead_score",
+                  title: "Lead Score médio (0–100) — pondera todas as perguntas do quiz",
+                  renderCell: (c) => {
+                    const s = c.avg_lead_score;
+                    if (s === null || s === undefined) return <span className="text-muted-foreground">—</span>;
+                    const cls =
+                      s >= 75 ? "text-emerald-400" :
+                      s >= 50 ? "text-amber-400" :
+                      s >= 25 ? "text-blue-400" :
+                      "text-muted-foreground";
+                    return (
+                      <div className={`font-semibold ${cls}`}>
+                        {s}
+                        <div className="text-[9px] text-muted-foreground font-normal">/ 100</div>
+                      </div>
+                    );
+                  },
+                },
                 meetings: {
                   id: "meetings", label: "Reun.", width: "5%", sortField: "meetings_count",
                   renderCell: (c) => (
@@ -2115,6 +2148,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <div className="p-3 bg-muted/30 rounded-lg text-center">
                     <p className="text-xs text-muted-foreground">%MQL</p>
                     <p className="text-lg font-bold">{formatPercent(drillCreative.mql_rate)}</p>
+                  </div>
+                  <div className="p-3 bg-muted/30 rounded-lg text-center">
+                    <p className="text-xs text-muted-foreground">Lead Score</p>
+                    <p className={`text-lg font-bold ${
+                      drillCreative.avg_lead_score == null ? "" :
+                      drillCreative.avg_lead_score >= 75 ? "text-emerald-400" :
+                      drillCreative.avg_lead_score >= 50 ? "text-amber-400" :
+                      drillCreative.avg_lead_score >= 25 ? "text-blue-400" :
+                      "text-muted-foreground"
+                    }`}>
+                      {drillCreative.avg_lead_score ?? "—"}<span className="text-xs text-muted-foreground">/100</span>
+                    </p>
                   </div>
                   <div className="p-3 bg-muted/30 rounded-lg text-center">
                     <p className="text-xs text-muted-foreground">Spend</p>

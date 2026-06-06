@@ -57,7 +57,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { getTierFromFaturamento } from "@/lib/leadScoring";
+import { getTierFromFaturamento, computeLeadScore100, bandColorClass } from "@/lib/leadScoring";
 
 interface Lead {
   id: string;
@@ -1262,7 +1262,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                     { label: "Faturamento", value: selectedLead.investimento_faixa },
                     { label: "Tier", value: getTierFromFaturamento(selectedLead.investimento_faixa) },
                     { label: "Data", value: format(new Date(selectedLead.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }) },
-                    { label: "Score", value: selectedLead.score?.toString() },
                   ].map(({ label, value }) => value ? (
                     <div key={label} className="p-2 bg-muted/30 rounded">
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</p>
@@ -1270,6 +1269,51 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                     </div>
                   ) : null)}
                 </div>
+
+                {(() => {
+                  const sr = computeLeadScore100({
+                    investimento_faixa: selectedLead.investimento_faixa,
+                    mercado: selectedLead.mercado,
+                    operacoes_ativas: selectedLead.operacoes_ativas,
+                    nps_score: selectedLead.nps_score,
+                    dor_desejo: selectedLead.dor_desejo,
+                    raw_answers_json: selectedLead.raw_answers_json,
+                  });
+                  return (
+                    <div className="p-3 bg-muted/20 border border-border/50 rounded-lg space-y-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Lead Score</p>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-sm font-bold ${bandColorClass(sr.band)}`}>{sr.score}/100</span>
+                          <Badge variant="outline" className={`text-[10px] ${bandColorClass(sr.band)}`}>{sr.band}</Badge>
+                        </div>
+                      </div>
+                      <div className="h-2 bg-muted/40 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${
+                            sr.band === "Hot" ? "bg-emerald-500" :
+                            sr.band === "Quente" ? "bg-amber-500" :
+                            sr.band === "Morno" ? "bg-blue-500" :
+                            "bg-muted-foreground/40"
+                          }`}
+                          style={{ width: `${sr.score}%` }}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-muted-foreground pt-1">
+                        <span>Faturamento: {sr.breakdown.faturamento}/35</span>
+                        <span>Aceita call: {sr.breakdown.aceita_call}/12</span>
+                        <span>Estágio: {sr.breakdown.estagio}/12</span>
+                        <span>Compromisso WA: {sr.breakdown.compromisso_whatsapp}/10</span>
+                        <span>Mercado: {sr.breakdown.mercado}/8</span>
+                        <span>Operações: {sr.breakdown.operacoes}/6</span>
+                        <span>Quer vender mais: {sr.breakdown.quer_vender_mais}/5</span>
+                        <span>Dor/desejo: {sr.breakdown.dor_desejo}/5</span>
+                        <span>NPS: {sr.breakdown.nps}/4</span>
+                        <span>LGPD: {sr.breakdown.lgpd}/3</span>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {selectedLead.dor_desejo && (
                   <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-lg">

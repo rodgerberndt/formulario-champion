@@ -1472,7 +1472,7 @@ Deno.serve(async (req: Request) => {
       let offset = 0;
       let hasMore = true;
       while (hasMore) {
-        let q = supabase.from("leads").select("id, created_at, utm_content, utm_campaign, utm_source, estagio_negocio, investimento_faixa, sdr_override, tier, ip_address").range(offset, offset + PAGE_SIZE - 1);
+        let q = supabase.from("leads").select("id, created_at, utm_content, utm_campaign, utm_source, estagio_negocio, investimento_faixa, sdr_override, tier, ip_address, mercado, operacoes_ativas, nps_score, dor_desejo, raw_answers_json").range(offset, offset + PAGE_SIZE - 1);
         if (from) q = q.gte("created_at", from);
         if (toEnd) q = q.lte("created_at", toEnd);
         const { data, error } = await q;
@@ -1536,6 +1536,8 @@ Deno.serve(async (req: Request) => {
         tier_enterprise_count: number;
         tier_enterprise_plus_count: number;
         leads_5_10k_count: number;
+        lead_score_sum: number;
+        lead_score_n: number;
         spend: number;
         clicks: number;
         impressions: number;
@@ -1571,6 +1573,8 @@ Deno.serve(async (req: Request) => {
             tier_enterprise_count: 0,
             tier_enterprise_plus_count: 0,
             leads_5_10k_count: 0,
+            lead_score_sum: 0,
+            lead_score_n: 0,
             spend: 0,
             clicks: 0,
             impressions: 0,
@@ -1616,6 +1620,79 @@ Deno.serve(async (req: Request) => {
 
       function getLeadTier(lead: any): string {
         return FATURAMENTO_TIER[lead.investimento_faixa || ""] || (lead.tier || "Desqualificado");
+      }
+
+      // ─── Lead Score 0–100 (mirrors src/lib/leadScoring.ts) ──────────────────
+      const SCORE_FAT: Record<string, number> = {
+        "Não vendo ainda (R$0/mês)": 0,
+        "Até R$ 5 mil": 5,
+        "De R$ 5 mil a R$ 10 mil": 15,
+        "De R$ 10 mil a R$ 20 mil": 22,
+        "De R$ 20 mil a R$ 30 mil": 27,
+        "De R$ 30 mil a R$ 50 mil": 30,
+        "De R$ 50 mil a R$ 75 mil": 32,
+        "De R$ 75 mil a R$ 100 mil": 33,
+        "De R$ 100 mil a R$ 150 mil": 35,
+        "De R$ 150 mil a R$ 200 mil": 35,
+        "De R$ 200 mil a R$ 300 mil": 35,
+        "De R$ 300 mil a R$ 500 mil": 35,
+        "De R$ 500 mil a R$ 750 mil": 35,
+        "De R$ 750 mil a R$ 1 milhão": 35,
+        "De R$ 1 milhão a R$ 2 milhões": 35,
+        "De R$ 2 milhões a R$ 3 milhões": 35,
+        "De R$ 3 milhões a R$ 5 milhões": 35,
+        "De R$ 5 milhões a R$ 10 milhões": 35,
+        "Acima de R$ 10 milhões": 35,
+      };
+      const SCORE_ESTAGIO: Record<string, number> = {
+        "Iniciando do zero": 2,
+        "Validação (primeiras vendas)": 6,
+        "Pré-escala (vendas constantes)": 10,
+        "Escala (buscando otimização)": 12,
+      };
+      const SCORE_MERCADO_ALTO = new Set([
+        "Infoproduto", "E-commerce", "SaaS / Software",
+        "Serviços / Consultoria", "Agência", "Nutra / Encapsulado Produtor",
+      ]);
+      const SCORE_MERCADO_MEDIO = new Set([
+        "Dropshipping", "Afiliado BR", "Afiliado Nutra Gringa", "Lowticket",
+      ]);
+      const asBool = (v: any): boolean => v === true || (typeof v === "string" && v.trim().toLowerCase() === "sim");
+      function computeScore(lead: any): number {
+        const raw = (lead.raw_answers_json && typeof lead.raw_answers_json === "object") ? lead.raw_answers_json : {};
+        const pick = (top: any, key: string) => (top !== null && top !== undefined && top !== "") ? top : raw[key];
+        const fat = pick(lead.investimento_faixa, "investimento_faixa") as string | undefined;
+        const est = pick(lead.estagio_negocio, "estagio_negocio") as string | undefined;
+        const mer = pick(lead.mercado, "mercado") as string | undefined;
+        const ops = pick(lead.operacoes_ativas, "operacoes_ativas");
+        const quer = pick(undefined, "quer_vender_mais");
+        const comp = pick(undefined, "compromisso_whatsapp");
+        const aceita = pick(undefined, "aceita_call_diagnostico");
+        const dor = (pick(lead.dor_desejo, "dor_desejo") as string | undefined) || "";
+        const nps = pick(lead.nps_score, "nps_score");
+        const lgpd = pick(undefined, "lgpd");
+        let pMercado = 0;
+        if (mer) {
+          if (SCORE_MERCADO_ALTO.has(mer)) pMercado = 8;
+          else if (SCORE_MERCADO_MEDIO.has(mer)) pMercado = 5;
+          else pMercado = 3;
+        }
+        let pOps = 0;
+        if (typeof ops === "number") {
+          pOps = ops <= 0 ? 1 : ops === 1 ? 4 : ops === 2 ? 5 : 6;
+        }
+        const len = dor.trim().length;
+        const pDor = len < 10 ? 0 : len < 30 ? 2 : len < 80 ? 4 : 5;
+        const pNps = typeof nps === "number" ? Math.round(Math.max(0, Math.min(10, nps)) * 0.4 * 10) / 10 : 0;
+        const total =
+          (SCORE_FAT[fat || ""] ?? 0) +
+          (SCORE_ESTAGIO[est || ""] ?? 0) +
+          pMercado + pOps + pDor + pNps +
+          (asBool(quer) ? 5 : 0) +
+          (asBool(comp) ? 10 : 0) +
+          (asBool(aceita) ? 12 : 0) +
+          (asBool(lgpd) ? 3 : 0);
+        return Math.max(0, Math.min(100, Math.round(total)));
       }
 
       let leadsWithCreative = 0;
@@ -1704,6 +1781,9 @@ Deno.serve(async (req: Request) => {
         if ((lead.investimento_faixa || "") === "De R$ 5 mil a R$ 10 mil") {
           agg.leads_5_10k_count++;
         }
+        const _score = computeScore(lead);
+        agg.lead_score_sum += _score;
+        agg.lead_score_n += 1;
         agg.leads_by_stage[lead.estagio_negocio] = (agg.leads_by_stage[lead.estagio_negocio] || 0) + 1;
         if (lead.utm_campaign) agg.campaigns.add(lead.utm_campaign);
         if (!agg.last_activity || lead.created_at > agg.last_activity) {
@@ -1846,6 +1926,7 @@ Deno.serve(async (req: Request) => {
         const lead_per_view = c.landing_page_views > 0 ? c.leads_count / c.landing_page_views : null;
         const ctl = c.clicks > 0 ? (c.leads_count / c.clicks) * 100 : null;
         const is_active = recentSpendKeys.has(c.creative_key);
+        const avg_lead_score = c.lead_score_n > 0 ? Math.round((c.lead_score_sum / c.lead_score_n) * 10) / 10 : null;
         return {
           ...c,
           mql_rate,
@@ -1867,6 +1948,7 @@ Deno.serve(async (req: Request) => {
           meetings_count: c.meetings_count,
           meetings_attended_count: c.meetings_attended_count,
           is_active,
+          avg_lead_score,
           campaigns: Array.from(c.campaigns),
         };
       });
@@ -1894,6 +1976,9 @@ Deno.serve(async (req: Request) => {
       const totalQualified = creatives.reduce((s, c) => s + c.leads_5_10k_count, 0);
       const totalClicks = creatives.reduce((s, c) => s + (c.clicks || 0), 0);
       const totalImpressions = creatives.reduce((s, c) => s + (c.impressions || 0), 0);
+      const totalLeadScoreSum = creatives.reduce((s, c) => s + c.lead_score_sum, 0);
+      const totalLeadScoreN = creatives.reduce((s, c) => s + c.lead_score_n, 0);
+      const avgLeadScore = totalLeadScoreN > 0 ? Math.round((totalLeadScoreSum / totalLeadScoreN) * 10) / 10 : null;
 
       return new Response(
         JSON.stringify({
@@ -1936,6 +2021,7 @@ Deno.serve(async (req: Request) => {
             cac_assessoria: totalSalesAssessoria > 0 ? totalSpend / totalSalesAssessoria : null,
             roas: totalSpend > 0 ? totalRevenue / totalSpend : null,
             cp_meeting: totalMeetingsCount > 0 ? totalSpend / totalMeetingsCount : null,
+            avg_lead_score: avgLeadScore,
           },
           data_quality: {
             leads_with_creative: leadsWithCreative,
