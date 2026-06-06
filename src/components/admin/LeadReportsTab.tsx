@@ -1333,7 +1333,10 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Respostas do Quiz</p>
                       <div className="grid grid-cols-2 gap-2">
                         {entries.map(([k, v]) => (
-                          <div key={k} className="p-2 bg-muted/20 rounded text-xs">
+                          <div
+                            key={k}
+                            className={`p-2 bg-muted/20 rounded text-xs ${k === "lgpd" ? "col-span-2" : ""}`}
+                          >
                             <span className="text-muted-foreground">{QUIZ_LABELS[k] || k}: </span>
                             <span className="font-medium">{formatQuizValue(v)}</span>
                           </div>
