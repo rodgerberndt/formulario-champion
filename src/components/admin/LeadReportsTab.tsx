@@ -109,7 +109,7 @@ const QUIZ_LABELS: Record<string, string> = {
   nps_score: "NPS (0-10)",
   compromisso_whatsapp: "Compromisso WhatsApp",
   aceita_call_diagnostico: "Aceita call de diagnóstico",
-  lgpd: "Aceitou LGPD",
+  lgpd: "Concordo em receber contato sobre a call de diagnóstico (antes R$ 2.000, agora gratuita), e responder o mais rápido possível.",
 };
 
 const HIDE_QUIZ_KEYS = new Set([
@@ -1333,7 +1333,10 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Respostas do Quiz</p>
                       <div className="grid grid-cols-2 gap-2">
                         {entries.map(([k, v]) => (
-                          <div key={k} className="p-2 bg-muted/20 rounded text-xs">
+                          <div
+                            key={k}
+                            className={`p-2 bg-muted/20 rounded text-xs ${k === "lgpd" ? "col-span-2" : ""}`}
+                          >
                             <span className="text-muted-foreground">{QUIZ_LABELS[k] || k}: </span>
                             <span className="font-medium">{formatQuizValue(v)}</span>
                           </div>
