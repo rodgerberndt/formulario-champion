@@ -138,9 +138,10 @@ export function QuizResult({
     return <QuizResultDara nome={nome} />;
   }
 
-  const sdrNumber = CAIO_WHATSAPP_NUMBER;
+  const assignedSdr = getAssignedSdr(investimento_faixa);
+  const sdrNumber = assignedSdr.phone;
   const waLink = `https://wa.me/${sdrNumber}?text=${encodeURIComponent("Oi! Acabei de concluir meu cadastro. ✅")}`;
-  const skipLink = getSdrSkipLink(estagio_negocio, investimento_faixa);
+  const skipLink = `https://wa.me/${sdrNumber}?text=${encodeURIComponent("Falaa, furei a fila pra falar com você, como funciona?")}`;
   const supportLink = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Já se passaram 6 horas e não recebi contato.")}`;
   return <div className="max-w-lg mx-auto animate-fade-in space-y-6">
       {/* ── HERO ── */}
