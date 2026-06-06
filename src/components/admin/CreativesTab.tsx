@@ -1854,6 +1854,25 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     </span>
                   ),
                 },
+                score: {
+                  id: "score", label: "Score", width: "6%", sortField: "avg_lead_score",
+                  title: "Lead Score médio (0–100) — pondera todas as perguntas do quiz",
+                  renderCell: (c) => {
+                    const s = c.avg_lead_score;
+                    if (s === null || s === undefined) return <span className="text-muted-foreground">—</span>;
+                    const cls =
+                      s >= 75 ? "text-emerald-400" :
+                      s >= 50 ? "text-amber-400" :
+                      s >= 25 ? "text-blue-400" :
+                      "text-muted-foreground";
+                    return (
+                      <div className={`font-semibold ${cls}`}>
+                        {s}
+                        <div className="text-[9px] text-muted-foreground font-normal">/ 100</div>
+                      </div>
+                    );
+                  },
+                },
                 meetings: {
                   id: "meetings", label: "Reun.", width: "5%", sortField: "meetings_count",
                   renderCell: (c) => (
