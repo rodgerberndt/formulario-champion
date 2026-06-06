@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AlertTriangle, X } from "lucide-react";
 import { fetchAdmin } from "@/lib/adminAuth";
 
-const SDRS_TO_CHECK = ["Caio", "Miguel"] as const;
+const SDRS_TO_CHECK = ["Miguel", "Gustavo"] as const;
 const ALERT_START_HOUR = 21; // 21h
 const POLL_MS = 60_000; // re-check every minute
 const BEEP_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
