@@ -392,7 +392,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   // Drag & drop column ordering (persisted)
   const DEFAULT_COLUMN_ORDER = [
     "creative", "spend", "lpv", "leads", "ctl", "mql_cpmql",
-    "qualified_5_10k", "meetings", "booking_rate", "call_conv", "sales_cac",
+    "qualified_5_10k", "score", "meetings", "booking_rate", "call_conv", "sales_cac",
     "cac_sprint", "cac_assessoria", "win_rate", "revenue", "roas",
   ] as const;
   type ColumnId = (typeof DEFAULT_COLUMN_ORDER)[number];
