@@ -2150,6 +2150,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     <p className="text-lg font-bold">{formatPercent(drillCreative.mql_rate)}</p>
                   </div>
                   <div className="p-3 bg-muted/30 rounded-lg text-center">
+                    <p className="text-xs text-muted-foreground">Lead Score</p>
+                    <p className={`text-lg font-bold ${
+                      drillCreative.avg_lead_score == null ? "" :
+                      drillCreative.avg_lead_score >= 75 ? "text-emerald-400" :
+                      drillCreative.avg_lead_score >= 50 ? "text-amber-400" :
+                      drillCreative.avg_lead_score >= 25 ? "text-blue-400" :
+                      "text-muted-foreground"
+                    }`}>
+                      {drillCreative.avg_lead_score ?? "—"}<span className="text-xs text-muted-foreground">/100</span>
+                    </p>
+                  </div>
+                  <div className="p-3 bg-muted/30 rounded-lg text-center">
                     <p className="text-xs text-muted-foreground">Spend</p>
                     <p className="text-lg font-bold">{formatCurrency(drillCreative.spend)}</p>
                   </div>
