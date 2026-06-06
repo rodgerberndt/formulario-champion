@@ -109,7 +109,7 @@ const QUIZ_LABELS: Record<string, string> = {
   nps_score: "NPS (0-10)",
   compromisso_whatsapp: "Compromisso WhatsApp",
   aceita_call_diagnostico: "Aceita call de diagnóstico",
-  lgpd: "Aceitou LGPD",
+  lgpd: "Concordo em receber contato sobre a call de diagnóstico (antes R$ 2.000, agora gratuita), e responder o mais rápido possível.",
 };
 
 const HIDE_QUIZ_KEYS = new Set([
