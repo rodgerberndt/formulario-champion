@@ -112,6 +112,7 @@ interface CreativeData {
   landing_page_views: number;
   lead_per_view: number | null;
   is_active: boolean;
+  avg_lead_score: number | null;
 }
 
 interface CreativesResponse {
@@ -150,6 +151,7 @@ interface CreativesResponse {
     cac: number | null;
     roas: number | null;
     cp_meeting: number | null;
+    avg_lead_score: number | null;
   };
   data_quality: {
     leads_with_creative: number;
