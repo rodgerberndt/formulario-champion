@@ -186,7 +186,12 @@ export function QuizResult({
       {/* ── STEPPER ── */}
       <div className="bg-card/70 backdrop-blur-xl border border-border/50 rounded-2xl p-5 md:p-6 space-y-0">
         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-5">O que acontece agora</h2>
-        {steps.map((step, i) => {
+        {steps.map((rawStep, i) => {
+        const step = { ...rawStep };
+        if (step.num === 2) {
+          step.title = `${assignedSdr.name} te chama no WhatsApp (até 6 horas)`;
+          step.text = `Estamos estudando suas informações para que o ${assignedSdr.name} te chame. Ele vai te fazer algumas perguntas rápidas para entender sua operação e confirmar se realmente conseguimos te ajudar.`;
+        }
         const colors = statusColors[step.status];
         const Icon = step.icon;
         const isLast = i === steps.length - 1;
