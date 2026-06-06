@@ -1342,6 +1342,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   <MetricItem label="Leads ≥5k" value={formatNumber(qualifiedLeads)} color="text-cyan-300" sub={`⏱ Resp: ${avgResponse5k}`} />
                   <MetricItem label="CPMQL" value={formatCurrency(totals.cpmql) || "—"} />
                   <MetricItem label="CPL ≥5k" value={qualifiedLeads > 0 ? formatCurrency(totals.spend / qualifiedLeads) || "—" : "—"} color="text-cyan-400" />
+                  <MetricItem
+                    label="Lead Score"
+                    value={totals.avg_lead_score !== null && totals.avg_lead_score !== undefined ? `${totals.avg_lead_score}/100` : "—"}
+                    color={
+                      totals.avg_lead_score == null ? undefined :
+                      totals.avg_lead_score >= 75 ? "text-emerald-400" :
+                      totals.avg_lead_score >= 50 ? "text-amber-400" :
+                      totals.avg_lead_score >= 25 ? "text-blue-400" :
+                      "text-muted-foreground"
+                    }
+                    sub="Média (todas as perguntas do quiz)"
+                  />
                 </div>
               </CardContent>
             </Card>
