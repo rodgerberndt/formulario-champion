@@ -1472,7 +1472,7 @@ Deno.serve(async (req: Request) => {
       let offset = 0;
       let hasMore = true;
       while (hasMore) {
-        let q = supabase.from("leads").select("id, created_at, utm_content, utm_campaign, utm_source, estagio_negocio, investimento_faixa, sdr_override, tier, ip_address").range(offset, offset + PAGE_SIZE - 1);
+        let q = supabase.from("leads").select("id, created_at, utm_content, utm_campaign, utm_source, estagio_negocio, investimento_faixa, sdr_override, tier, ip_address, mercado, operacoes_ativas, nps_score, dor_desejo, raw_answers_json").range(offset, offset + PAGE_SIZE - 1);
         if (from) q = q.gte("created_at", from);
         if (toEnd) q = q.lte("created_at", toEnd);
         const { data, error } = await q;
