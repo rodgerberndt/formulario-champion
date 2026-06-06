@@ -466,7 +466,6 @@ export default function Quiz() {
       // Lead Score 0–100 using ALL quiz answers.
       const scoreResult = computeLeadScore100({
         investimento_faixa: currentData.investimento_faixa,
-        estagio_negocio: currentData.estagio_negocio,
         mercado: currentData.mercado,
         operacoes_ativas: currentData.operacoes_ativas,
         quer_vender_mais: currentData.quer_vender_mais,
