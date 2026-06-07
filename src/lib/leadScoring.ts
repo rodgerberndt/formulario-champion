@@ -129,38 +129,38 @@ export function getTierFromFaturamento(faturamento: string | null | undefined): 
 // ─────────────────────────────────────────────────────────────────────────────
 // Lead Score 0–100 (uses ALL quiz questions)
 // Weights (total = 100):
-//   Faturamento (investimento_faixa): 35
-//   Aceita call de diagnóstico:       12
-//   Estágio do negócio:               12
+//   Faturamento (investimento_faixa): 25
+//   Entendimento do site (NPS 0–10):  30
+//   Aceita call de diagnóstico:        8
 //   Compromisso WhatsApp:             10
 //   Mercado (fit):                     8
 //   Operações ativas:                  6
 //   Quer vender mais:                  5
 //   Dor/desejo (qualidade do texto):   5
-//   NPS Champion (0–10):               4
 //   LGPD aceito:                       3
+//   Estágio do negócio:                0 (desativado)
 // ─────────────────────────────────────────────────────────────────────────────
 
 const FATURAMENTO_POINTS: Record<string, number> = {
   "Não vendo ainda (R$0/mês)": 0,
-  "Até R$ 5 mil": 5,
-  "De R$ 5 mil a R$ 10 mil": 15,
-  "De R$ 10 mil a R$ 20 mil": 22,
-  "De R$ 20 mil a R$ 30 mil": 27,
-  "De R$ 30 mil a R$ 50 mil": 30,
-  "De R$ 50 mil a R$ 75 mil": 32,
-  "De R$ 75 mil a R$ 100 mil": 33,
-  "De R$ 100 mil a R$ 150 mil": 35,
-  "De R$ 150 mil a R$ 200 mil": 35,
-  "De R$ 200 mil a R$ 300 mil": 35,
-  "De R$ 300 mil a R$ 500 mil": 35,
-  "De R$ 500 mil a R$ 750 mil": 35,
-  "De R$ 750 mil a R$ 1 milhão": 35,
-  "De R$ 1 milhão a R$ 2 milhões": 35,
-  "De R$ 2 milhões a R$ 3 milhões": 35,
-  "De R$ 3 milhões a R$ 5 milhões": 35,
-  "De R$ 5 milhões a R$ 10 milhões": 35,
-  "Acima de R$ 10 milhões": 35,
+  "Até R$ 5 mil": 4,
+  "De R$ 5 mil a R$ 10 mil": 11,
+  "De R$ 10 mil a R$ 20 mil": 16,
+  "De R$ 20 mil a R$ 30 mil": 19,
+  "De R$ 30 mil a R$ 50 mil": 21,
+  "De R$ 50 mil a R$ 75 mil": 23,
+  "De R$ 75 mil a R$ 100 mil": 24,
+  "De R$ 100 mil a R$ 150 mil": 25,
+  "De R$ 150 mil a R$ 200 mil": 25,
+  "De R$ 200 mil a R$ 300 mil": 25,
+  "De R$ 300 mil a R$ 500 mil": 25,
+  "De R$ 500 mil a R$ 750 mil": 25,
+  "De R$ 750 mil a R$ 1 milhão": 25,
+  "De R$ 1 milhão a R$ 2 milhões": 25,
+  "De R$ 2 milhões a R$ 3 milhões": 25,
+  "De R$ 3 milhões a R$ 5 milhões": 25,
+  "De R$ 5 milhões a R$ 10 milhões": 25,
+  "Acima de R$ 10 milhões": 25,
 };
 
 const ESTAGIO_POINTS: Record<string, number> = {
@@ -203,7 +203,8 @@ function pointsDor(text?: string | null): number {
 
 function pointsNps(n?: number | null): number {
   if (n == null || isNaN(n)) return 0;
-  return Math.round(Math.max(0, Math.min(10, n)) * 0.4 * 10) / 10;
+  // 0 = não leu, 10 = leu e entendeu → vale até 30 pontos
+  return Math.round(Math.max(0, Math.min(10, n)) * 3);
 }
 
 function asBool(v: unknown): boolean {
@@ -282,12 +283,12 @@ export function computeLeadScore100(input: LeadScoreInput): LeadScore100Result {
 
   const breakdown: LeadScoreBreakdown = {
     faturamento: FATURAMENTO_POINTS[faturamento || ""] ?? 0,
-    estagio: ESTAGIO_POINTS[estagio || ""] ?? 0,
+    estagio: 0,
     mercado: pointsMercado(mercado),
     operacoes: pointsOperacoes(typeof operacoes === "number" ? operacoes : null),
     quer_vender_mais: asBool(quer) ? 5 : 0,
     compromisso_whatsapp: asBool(compromisso) ? 10 : 0,
-    aceita_call: asBool(aceitaCall) ? 12 : 0,
+    aceita_call: asBool(aceitaCall) ? 8 : 0,
     dor_desejo: pointsDor(dor),
     nps: pointsNps(typeof nps === "number" ? nps : null),
     lgpd: asBool(lgpd) ? 3 : 0,
