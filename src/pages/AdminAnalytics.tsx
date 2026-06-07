@@ -412,31 +412,45 @@ export default function AdminAnalytics() {
   };
 
   // SDR assignment helper - uses override if set, otherwise based on faturamento
-  // Rodger removido — todos os leads >= 5k vão para Caio
-  const SDR_CAIO_FAT = [
-    "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
-    "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
-    "De R$ 100 mil a R$ 150 mil",
+  // Regras de negócio:
+  //  - < R$ 5 mil (ou sem faturamento) → Direct (sem SDR, redireciona p/ Sprint)
+  //  - R$ 5 mil a R$ 10 mil → Gustavo
+  //  - ≥ R$ 10 mil → Miguel
+  const GUSTAVO_FAIXA = "De R$ 5 mil a R$ 10 mil";
+  const MIGUEL_FAIXAS = [
+    "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+    "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
     "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
     "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
     "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
     "Acima de R$ 10 milhões",
   ];
+  // Faixas que disparam SDR (Gustavo ou Miguel). Leads "Direct" não geram alerta.
+  const SDR_CAIO_FAT = [GUSTAVO_FAIXA, ...MIGUEL_FAIXAS];
   const getLeadSdr = (lead: Lead): string => {
     if (lead.sdr_override) {
       // Migrate legacy overrides
-      if (lead.sdr_override === "Rodger") return "Caio";
+      if (lead.sdr_override === "Rodger" || lead.sdr_override === "Caio") {
+        // Caio virou closer — recalcula com base no faturamento
+        const faixa = lead.investimento_faixa || "";
+        if (MIGUEL_FAIXAS.includes(faixa)) return "Miguel";
+        if (faixa === GUSTAVO_FAIXA) return "Gustavo";
+        return "Direct";
+      }
       if (lead.sdr_override === "Dara") return "Miguel";
       return lead.sdr_override;
     }
-    if (lead.investimento_faixa && SDR_CAIO_FAT.includes(lead.investimento_faixa)) return "Caio";
-    return "Miguel";
+    const faixa = lead.investimento_faixa || "";
+    if (MIGUEL_FAIXAS.includes(faixa)) return "Miguel";
+    if (faixa === GUSTAVO_FAIXA) return "Gustavo";
+    return "Direct";
   };
 
-  // Cycle SDR between Caio and Miguel
+  // Cycle SDR between Gustavo and Miguel (Direct é determinado pelo faturamento, não pelo override)
   const toggleSdr = async (lead: Lead) => {
     const currentSdr = getLeadSdr(lead);
-    const sdrCycle = ["Caio", "Miguel"];
+    if (currentSdr === "Direct") return; // Leads <5k não têm SDR atribuível
+    const sdrCycle = ["Gustavo", "Miguel"];
     const idx = sdrCycle.indexOf(currentSdr);
     const newSdr = sdrCycle[(idx + 1) % sdrCycle.length];
     
