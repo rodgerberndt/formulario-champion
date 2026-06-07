@@ -97,7 +97,7 @@ const MQL_PIXEL_FAIXAS = [
   "R$ 50k – 100k",
 ];
 
-export default function ObrigadoMql() {
+export default function Obrigado5k() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<QuizFormData | null>(null);
   const conversionEventFired = useRef(false);
@@ -106,7 +106,7 @@ export default function ObrigadoMql() {
   useEffect(() => {
     if (typeof window.fbq === 'function') {
       window.fbq('track', 'PageView');
-      console.log('Facebook Pixel: PageView fired on /obrigadomql');
+      console.log('Facebook Pixel: PageView fired on /obrigado5k');
     }
   }, []);
 
