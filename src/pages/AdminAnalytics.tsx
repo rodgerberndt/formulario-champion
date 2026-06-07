@@ -412,31 +412,45 @@ export default function AdminAnalytics() {
   };
 
   // SDR assignment helper - uses override if set, otherwise based on faturamento
-  // Rodger removido — todos os leads >= 5k vão para Caio
-  const SDR_CAIO_FAT = [
-    "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
-    "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
-    "De R$ 100 mil a R$ 150 mil",
+  // Regras de negócio:
+  //  - < R$ 5 mil (ou sem faturamento) → Direct (sem SDR, redireciona p/ Sprint)
+  //  - R$ 5 mil a R$ 10 mil → Gustavo
+  //  - ≥ R$ 10 mil → Miguel
+  const GUSTAVO_FAIXA = "De R$ 5 mil a R$ 10 mil";
+  const MIGUEL_FAIXAS = [
+    "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
+    "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
     "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
     "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
     "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
     "Acima de R$ 10 milhões",
   ];
+  // Faixas que disparam SDR (Gustavo ou Miguel). Leads "Direct" não geram alerta.
+  const SDR_CAIO_FAT = [GUSTAVO_FAIXA, ...MIGUEL_FAIXAS];
   const getLeadSdr = (lead: Lead): string => {
     if (lead.sdr_override) {
       // Migrate legacy overrides
-      if (lead.sdr_override === "Rodger") return "Caio";
+      if (lead.sdr_override === "Rodger" || lead.sdr_override === "Caio") {
+        // Caio virou closer — recalcula com base no faturamento
+        const faixa = lead.investimento_faixa || "";
+        if (MIGUEL_FAIXAS.includes(faixa)) return "Miguel";
+        if (faixa === GUSTAVO_FAIXA) return "Gustavo";
+        return "Direct";
+      }
       if (lead.sdr_override === "Dara") return "Miguel";
       return lead.sdr_override;
     }
-    if (lead.investimento_faixa && SDR_CAIO_FAT.includes(lead.investimento_faixa)) return "Caio";
-    return "Miguel";
+    const faixa = lead.investimento_faixa || "";
+    if (MIGUEL_FAIXAS.includes(faixa)) return "Miguel";
+    if (faixa === GUSTAVO_FAIXA) return "Gustavo";
+    return "Direct";
   };
 
-  // Cycle SDR between Caio and Miguel
+  // Cycle SDR between Gustavo and Miguel (Direct é determinado pelo faturamento, não pelo override)
   const toggleSdr = async (lead: Lead) => {
     const currentSdr = getLeadSdr(lead);
-    const sdrCycle = ["Caio", "Miguel"];
+    if (currentSdr === "Direct") return; // Leads <5k não têm SDR atribuível
+    const sdrCycle = ["Gustavo", "Miguel"];
     const idx = sdrCycle.indexOf(currentSdr);
     const newSdr = sdrCycle[(idx + 1) % sdrCycle.length];
     
@@ -865,8 +879,11 @@ export default function AdminAnalytics() {
     // SDR filter
     if (leadsSdrFilter !== "all") {
       const sdr = getLeadSdr(lead);
-      if (leadsSdrFilter === "caio" && sdr !== "Caio") return false;
+      if (leadsSdrFilter === "direct" && sdr !== "Direct") return false;
+      if (leadsSdrFilter === "gustavo" && sdr !== "Gustavo") return false;
       if (leadsSdrFilter === "miguel" && sdr !== "Miguel") return false;
+      // legacy "caio" filter still supported for back-compat
+      if (leadsSdrFilter === "caio" && sdr !== "Gustavo" && sdr !== "Miguel") return false;
     }
     
     // Adset (conjunto de anúncio / criativo) filter
@@ -1862,7 +1879,8 @@ export default function AdminAnalytics() {
                   </SelectTrigger>
                     <SelectContent>
                     <SelectItem value="all">Todos SDRs</SelectItem>
-                    <SelectItem value="caio">Caio</SelectItem>
+                    <SelectItem value="direct">Direct (&lt;5k)</SelectItem>
+                    <SelectItem value="gustavo">Gustavo</SelectItem>
                     <SelectItem value="miguel">Miguel</SelectItem>
                   </SelectContent>
                 </Select>
@@ -2147,17 +2165,20 @@ export default function AdminAnalytics() {
                               <td className="p-2">
                                 {(() => {
                                   const sdr = getLeadSdr(lead);
-                                  if (sdr === "Caio") return (
+                                  if (sdr === "Gustavo") return (
                                     <Badge 
-                                      className="bg-green-500/20 text-green-400 border-green-500/30 cursor-pointer hover:bg-green-500/30 transition-colors"
+                                      className="bg-blue-500/20 text-blue-400 border-blue-500/30 cursor-pointer hover:bg-blue-500/30 transition-colors"
                                       onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
-                                    >Caio</Badge>
+                                    >Gustavo</Badge>
                                   );
                                   if (sdr === "Miguel") return (
                                     <Badge 
                                       className="bg-pink-500/20 text-pink-400 border-pink-500/30 cursor-pointer hover:bg-pink-500/30 transition-colors"
                                       onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
                                     >Miguel</Badge>
+                                  );
+                                  if (sdr === "Direct") return (
+                                    <Badge className="bg-muted/40 text-muted-foreground border-border">Direct</Badge>
                                   );
                                   return <span className="text-muted-foreground">-</span>;
                                 })()}
@@ -2264,8 +2285,8 @@ export default function AdminAnalytics() {
                                     {tierShortLabel(tier)}
                                   </Badge>
                                   <Badge 
-                                    className={`text-[10px] cursor-pointer ${sdr === "Rodger" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : sdr === "Caio" ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-pink-500/20 text-pink-400 border-pink-500/30"}`}
-                                    onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
+                                    className={`text-[10px] ${sdr === "Direct" ? "bg-muted/40 text-muted-foreground border-border" : "cursor-pointer"} ${sdr === "Gustavo" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : sdr === "Miguel" ? "bg-pink-500/20 text-pink-400 border-pink-500/30" : ""}`}
+                                    onClick={(e) => { e.stopPropagation(); if (sdr !== "Direct") toggleSdr(lead); }}
                                   >
                                     {sdr}
                                   </Badge>
