@@ -48,6 +48,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { PwaInstallButton } from "@/components/PwaInstallButton";
 import { useLeadNotifications } from "@/hooks/useLeadNotifications";
+import { computeLeadScore100, bandColorClass } from "@/lib/leadScoring";
 import { NotificationsPopover } from "@/components/admin/NotificationsPopover";
 import { DailyReportReminder } from "@/components/admin/DailyReportReminder";
 import { ResponseTimer } from "@/components/admin/ResponseTimer";
