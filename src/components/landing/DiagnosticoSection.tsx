@@ -19,7 +19,7 @@ const pillars = [
   {
     icon: CalendarCheck,
     title: "Agenda em minutos",
-    desc: "Você responde 8 perguntas rápidas e nosso time agenda uma call de diagnóstico no horário que funciona pra você.",
+    desc: "Você preenche uma aplicação rápida e nosso time agenda uma call de diagnóstico no horário que funciona pra você.",
   },
   {
     icon: Search,
@@ -79,16 +79,16 @@ export function DiagnosticoSection() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/12 border border-secondary/25 mb-5">
             <Gift className="w-3.5 h-3.5 text-secondary" />
             <span className="text-xs text-secondary font-medium">
-              Diagnóstico 100% gratuito
+              Aplicação 100% gratuita
             </span>
           </div>
           <h2 className="text-foreground mb-4 leading-tight">
-            <ShimmerText isVisible={isVisible}>O QUE É O</ShimmerText>{" "}
-            <KeywordGlow>DIAGNÓSTICO CHAMPION</KeywordGlow>
+            <ShimmerText isVisible={isVisible}>O QUE É A</ShimmerText>{" "}
+            <KeywordGlow>APLICAÇÃO CHAMPION</KeywordGlow>
           </h2>
           <LineReveal isVisible={isVisible} delay={150}>
             <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-              Mais do que um formulário: é uma análise real da sua operação feita por quem
+              Mais do que uma aplicação comum: é uma análise real da sua operação feita por quem
               já escalou contas em 6, 7 e 8 dígitos. Você sai com clareza do que está
               segurando seu crescimento — sem precisar contratar nada.
             </p>
@@ -142,7 +142,7 @@ export function DiagnosticoSection() {
                 </>
               ) : (
                 <>
-                  FAZER DIAGNÓSTICO GRATUITO
+                  PREENCHER APLICAÇÃO GRATUITA
                   <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </>
               )}

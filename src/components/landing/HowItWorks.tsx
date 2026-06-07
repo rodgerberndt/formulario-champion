@@ -7,7 +7,7 @@ const steps = [
   {
     icon: ClipboardCheck,
     title: "Preencha a Aplicação",
-    subtitle: "Diagnóstico rápido de 2 minutos",
+    subtitle: "Aplicação rápida de 2 minutos",
     bullets: [
       "Clique no botão e responda a aplicação",
       "Conte sobre sua operação, faturamento e objetivos",

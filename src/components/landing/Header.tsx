@@ -25,7 +25,7 @@ export function Header() {
             onClick={() => navigate("/quiz")}
             className="text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/25 transition-all duration-200"
           >
-            FAZER DIAGNÓSTICO
+            PREENCHER APLICAÇÃO
           </Button>
         </div>
       </div>

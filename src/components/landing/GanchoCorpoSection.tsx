@@ -332,7 +332,7 @@ export function GanchoCorpoSection() {
             onClick={handleCTA}
             className="group h-12 md:h-14 px-6 md:px-10 text-xs md:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]"
           >
-            QUERO FAZER MEU DIAGNÓSTICO
+            QUERO PREENCHER MINHA APLICAÇÃO
             <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </motion.div>

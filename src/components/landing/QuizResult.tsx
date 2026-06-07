@@ -46,7 +46,7 @@ function useCountdown() {
 }
 const steps = [{
   num: 1,
-  title: "Formulário respondido",
+  title: "Aplicação preenchida",
   status: "done" as const,
   icon: Check,
   text: "Você já completou a primeira etapa."
@@ -61,7 +61,7 @@ const steps = [{
   title: "Call de diagnóstico gratuita (antes R$ 2.000)",
   status: "locked" as const,
   icon: Trophy,
-  text: "Uma call pra entender o cenário da sua operação hoje. Você sai dela com insights práticos do que pode melhorar, várias dicas aplicáveis no dia a dia e um plano de ação claro dos próximos passos pra crescer. Essa call era vendida por R$ 2.000 e agora está gratuita pra quem preenche o formulário.",
+  text: "Uma call pra entender o cenário da sua operação hoje. Você sai dela com insights práticos do que pode melhorar, várias dicas aplicáveis no dia a dia e um plano de ação claro dos próximos passos pra crescer. Essa call era vendida por R$ 2.000 e agora está gratuita pra quem preenche a aplicação.",
   premium: true
 }];
 const statusColors = {

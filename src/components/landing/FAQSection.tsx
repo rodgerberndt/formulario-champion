@@ -39,8 +39,8 @@ const faqs = [
     a: "A Sprint é uma imersão pontual de criativos para resolver um gargalo específico (ex: lançamento, escala de uma oferta). A Assessoria é a parceria contínua, com produção semanal de criativos, leitura de performance e ajuste de rota, pra quem quer estabilidade de escala mês após mês. No diagnóstico a gente recomenda o formato certo pro seu momento.",
   },
   {
-    q: "Por que eu tenho que responder um quiz antes de falar com vocês?",
-    a: "Porque a gente não atende todo mundo. O diagnóstico filtra quem realmente tem fit com a Champion (faturamento, mercado, momento) e prepara a call para ser objetiva, sem perder seu tempo nem o nosso. Se você não tem fit, a gente fala na hora e indica o caminho certo.",
+    q: "Por que eu tenho que preencher uma aplicação antes de falar com vocês?",
+    a: "Porque a gente não atende todo mundo. A aplicação filtra quem realmente tem fit com a Champion (faturamento, mercado, momento) e prepara a call para ser objetiva, sem perder seu tempo nem o nosso. Se você não tem fit, a gente fala na hora e indica o caminho certo.",
   },
   {
     q: "E se eu não gostar dos criativos?",
@@ -64,7 +64,7 @@ export function FAQSection() {
             FAQ
           </p>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
-            As dúvidas que mais aparecem antes de marcar o diagnóstico. Respondidas sem rodeio.
+            As dúvidas que mais aparecem antes de preencher a aplicação. Respondidas sem rodeio.
           </p>
         </div>
 
