@@ -23,7 +23,7 @@ function AppInitializer() {
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Obrigado = lazy(() => import("./pages/Obrigado"));
 const ObrigadoMql = lazy(() => import("./pages/ObrigadoMql"));
-const Obrigado5k = lazy(() => import("./pages/Obrigado5k"));
+const ObrigadoSprint = lazy(() => import("./pages/ObrigadoSprint"));
 const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
 
 const queryClient = new QueryClient();
@@ -119,10 +119,19 @@ const App = () => (
               } 
             />
             <Route 
+              path="/obrigadosprint" 
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ObrigadoSprint />
+                </Suspense>
+              } 
+            />
+            {/* Backward compat: old slug ainda aponta pra mesma página */}
+            <Route 
               path="/obrigado5k" 
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <Obrigado5k />
+                  <ObrigadoSprint />
                 </Suspense>
               } 
             />
