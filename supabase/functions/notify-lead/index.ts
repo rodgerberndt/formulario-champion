@@ -45,13 +45,13 @@ const MIGUEL_MQL_FAIXAS = [
   "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
   "Acima de R$ 10 milhões",
 ];
-const GUSTAVO_FAIXA = "De R$ 5 mil a R$ 10 mil";
+const GUSTAVO_FAIXAS = ["Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
 
 function getSdrForLead(investimentoFaixa?: string | null): { name: string; phone: string } | null {
   if (investimentoFaixa && MIGUEL_MQL_FAIXAS.includes(investimentoFaixa)) {
     return { name: "Miguel", phone: MIGUEL_WHATSAPP_E164 || "" };
   }
-  if (investimentoFaixa === GUSTAVO_FAIXA) {
+  if (investimentoFaixa && GUSTAVO_FAIXAS.includes(investimentoFaixa)) {
     return { name: "Gustavo", phone: GUSTAVO_WHATSAPP_E164 || "" };
   }
   return null;
