@@ -2285,7 +2285,7 @@ export default function AdminAnalytics() {
                                     {tierShortLabel(tier)}
                                   </Badge>
                                   <Badge 
-                                    className={`text-[10px] ${sdr === "Direct" ? "bg-muted/40 text-muted-foreground border-border" : "cursor-pointer"} ${sdr === "Gustavo" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : sdr === "Miguel" ? "bg-purple-500/20 text-purple-300 border-purple-500/30" : ""}`}
+                                    className={`text-[10px] ${sdr === "Direct" ? "bg-muted/40 text-muted-foreground border-border" : "cursor-pointer"} ${sdr === "Gustavo" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : sdr === "Miguel" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : ""}`}
                                     onClick={(e) => { e.stopPropagation(); if (sdr !== "Direct") toggleSdr(lead); }}
                                   >
                                     {sdr}
