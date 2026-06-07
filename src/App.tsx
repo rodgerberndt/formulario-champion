@@ -23,6 +23,7 @@ function AppInitializer() {
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Obrigado = lazy(() => import("./pages/Obrigado"));
 const ObrigadoMql = lazy(() => import("./pages/ObrigadoMql"));
+const Obrigado5k = lazy(() => import("./pages/Obrigado5k"));
 const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
 
 const queryClient = new QueryClient();
@@ -114,6 +115,14 @@ const App = () => (
               element={
                 <Suspense fallback={<PageLoader />}>
                   <ObrigadoMql />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path="/obrigado5k" 
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <Obrigado5k />
                 </Suspense>
               } 
             />

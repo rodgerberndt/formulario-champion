@@ -654,8 +654,8 @@ export default function Quiz() {
       //  - "Até R$ 5 mil"    → /obrigado (página normal — Gustavo)
       //  - ≥ R$ 5 mil        → /obrigadomql (Gustavo 5-10k / Miguel ≥10k)
       const faixa = currentData.investimento_faixa;
-      const MQL_FAIXAS = [
-        "De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
+      const MIGUEL_FAIXAS = [
+        "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
         "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
         "De R$ 100 mil a R$ 150 mil", "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil",
         "De R$ 300 mil a R$ 500 mil", "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão",
@@ -663,10 +663,13 @@ export default function Quiz() {
         "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
         "Acima de R$ 10 milhões",
       ];
-      if (MQL_FAIXAS.includes(faixa)) {
+      const GUSTAVO_FAIXAS = ["Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
+      if (MIGUEL_FAIXAS.includes(faixa)) {
+        // ≥ R$ 10 mil → Miguel
         navigate("/obrigadomql");
-      } else if (faixa === "Até R$ 5 mil") {
-        navigate("/obrigado");
+      } else if (GUSTAVO_FAIXAS.includes(faixa)) {
+        // Até R$ 5 mil ou R$ 5-10 mil → Gustavo
+        navigate("/obrigado5k");
       } else {
         // "Não vendo ainda" → Sprint (Direct)
         window.location.href = "https://sprint.championadstudio.com";
