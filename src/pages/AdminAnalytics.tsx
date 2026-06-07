@@ -2173,7 +2173,7 @@ export default function AdminAnalytics() {
                                   );
                                   if (sdr === "Miguel") return (
                                     <Badge 
-                                      className="bg-pink-500/20 text-pink-400 border-pink-500/30 cursor-pointer hover:bg-pink-500/30 transition-colors"
+                                      className="bg-purple-500/20 text-purple-300 border-purple-500/30 cursor-pointer hover:bg-purple-500/30 transition-colors"
                                       onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
                                     >Miguel</Badge>
                                   );
@@ -2285,7 +2285,7 @@ export default function AdminAnalytics() {
                                     {tierShortLabel(tier)}
                                   </Badge>
                                   <Badge 
-                                    className={`text-[10px] ${sdr === "Direct" ? "bg-muted/40 text-muted-foreground border-border" : "cursor-pointer"} ${sdr === "Gustavo" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : sdr === "Miguel" ? "bg-pink-500/20 text-pink-400 border-pink-500/30" : ""}`}
+                                    className={`text-[10px] ${sdr === "Direct" ? "bg-muted/40 text-muted-foreground border-border" : "cursor-pointer"} ${sdr === "Gustavo" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : sdr === "Miguel" ? "bg-purple-500/20 text-purple-300 border-purple-500/30" : ""}`}
                                     onClick={(e) => { e.stopPropagation(); if (sdr !== "Direct") toggleSdr(lead); }}
                                   >
                                     {sdr}
