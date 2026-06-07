@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { QuizResultDara } from "@/components/landing/QuizResultDara";
+import { QuizResult } from "@/components/landing/QuizResult";
+import { SuccessCasesCompact } from "@/components/landing/SuccessCasesCompact";
+import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
 
 // Declare fbq for TypeScript
 declare global {
@@ -37,6 +39,8 @@ function PageBackground() {
 export default function Obrigado() {
   const navigate = useNavigate();
   const [nome, setNome] = useState<string | null>(null);
+  const [investimentoFaixa, setInvestimentoFaixa] = useState<string>("");
+  const [estagioNegocio, setEstagioNegocio] = useState<string>("");
 
   useEffect(() => {
     const saved = localStorage.getItem(RESULT_STORAGE_KEY);
@@ -47,6 +51,8 @@ export default function Obrigado() {
     try {
       const parsed = JSON.parse(saved);
       setNome(parsed?.nome_completo ?? "");
+      setInvestimentoFaixa(parsed?.investimento_faixa ?? "");
+      setEstagioNegocio(parsed?.estagio_negocio ?? "");
 
       if (typeof window.fbq === 'function') {
         let eventID: string | undefined;
@@ -87,7 +93,18 @@ export default function Obrigado() {
       </header>
       <main className="pt-20 pb-12 px-4 min-h-[100svh]" style={{ paddingBottom: 'calc(48px + env(safe-area-inset-bottom))' }}>
         <div className="container mx-auto max-w-lg">
-          <QuizResultDara nome={nome} />
+          <QuizResult
+            nome={nome}
+            estagio_negocio={estagioNegocio}
+            investimento_faixa={investimentoFaixa}
+            forceSdr
+            casesSlot={
+              <div className="-mx-4 space-y-2 obrigadomql-cases">
+                <SuccessCasesCompact />
+                <SocialProofCarousel />
+              </div>
+            }
+          />
         </div>
       </main>
     </div>

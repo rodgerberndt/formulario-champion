@@ -413,10 +413,10 @@ export default function AdminAnalytics() {
 
   // SDR assignment helper - uses override if set, otherwise based on faturamento
   // Regras de negócio:
-  //  - < R$ 5 mil (ou sem faturamento) → Direct (sem SDR, redireciona p/ Sprint)
-  //  - R$ 5 mil a R$ 10 mil → Gustavo
+  //  - "Não vendo ainda" (ou sem faturamento) → Direct (sem SDR, redireciona p/ Sprint)
+  //  - "Até R$ 5 mil" e "R$ 5 mil a R$ 10 mil" → Gustavo
   //  - ≥ R$ 10 mil → Miguel
-  const GUSTAVO_FAIXA = "De R$ 5 mil a R$ 10 mil";
+  const GUSTAVO_FAIXAS = ["Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
   const MIGUEL_FAIXAS = [
     "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
     "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
@@ -426,7 +426,7 @@ export default function AdminAnalytics() {
     "Acima de R$ 10 milhões",
   ];
   // Faixas que disparam SDR (Gustavo ou Miguel). Leads "Direct" não geram alerta.
-  const SDR_CAIO_FAT = [GUSTAVO_FAIXA, ...MIGUEL_FAIXAS];
+  const SDR_CAIO_FAT = [...GUSTAVO_FAIXAS, ...MIGUEL_FAIXAS];
   const getLeadSdr = (lead: Lead): string => {
     if (lead.sdr_override) {
       // Migrate legacy overrides
@@ -434,7 +434,7 @@ export default function AdminAnalytics() {
         // Caio virou closer — recalcula com base no faturamento
         const faixa = lead.investimento_faixa || "";
         if (MIGUEL_FAIXAS.includes(faixa)) return "Miguel";
-        if (faixa === GUSTAVO_FAIXA) return "Gustavo";
+        if (GUSTAVO_FAIXAS.includes(faixa)) return "Gustavo";
         return "Direct";
       }
       if (lead.sdr_override === "Dara") return "Miguel";
@@ -442,7 +442,7 @@ export default function AdminAnalytics() {
     }
     const faixa = lead.investimento_faixa || "";
     if (MIGUEL_FAIXAS.includes(faixa)) return "Miguel";
-    if (faixa === GUSTAVO_FAIXA) return "Gustavo";
+    if (GUSTAVO_FAIXAS.includes(faixa)) return "Gustavo";
     return "Direct";
   };
 
