@@ -9,7 +9,7 @@ import { generateClickId } from "@/hooks/useLandingHit";
 import { ShimmerText, KeywordGlow, LineReveal } from "./TextEffects";
 
 const steps = [
-  { icon: ClipboardCheck, text: "Preencha o formulário (1–2 min)" },
+  { icon: ClipboardCheck, text: "Preencha a aplicação (1–2 min)" },
   { icon: BarChart3, text: "Análise do seu cenário (hoje)" },
   { icon: PhoneCall, text: "Especialista te chama" },
   { icon: Rocket, text: "Plano de criativos + próximos passos" },
@@ -44,7 +44,7 @@ export function FinalCTA() {
       <div className="container mx-auto px-5 max-w-2xl relative z-10">
         <div className={`text-center reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-3">
-            <ShimmerText isVisible={isVisible}>FAÇA SEU DIAGNÓSTICO DE</ShimmerText>{" "}
+            <ShimmerText isVisible={isVisible}>PREENCHA SUA APLICAÇÃO DE</ShimmerText>{" "}
             <KeywordGlow>CRIATIVOS 360 AGORA!!!!!</KeywordGlow>
           </h2>
 
@@ -86,7 +86,7 @@ export function FinalCTA() {
                 </>
               ) : (
                 <>
-                  QUERO FAZER MEU DIAGNÓSTICO
+                  QUERO PREENCHER MINHA APLICAÇÃO
                   <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
                 </>
               )}

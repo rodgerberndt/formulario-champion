@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useTracking } from "@/hooks/useTracking";
 
 const steps = [
-  { icon: ClipboardCheck, label: "Você preenche o quiz", sub: "1–2 minutos" },
+  { icon: ClipboardCheck, label: "Você preenche a aplicação", sub: "1–2 minutos" },
   { icon: BarChart3, label: "A Champion analisa seu cenário", sub: "Ainda hoje" },
   { icon: PhoneCall, label: "Um especialista te chama", sub: "Em poucas horas" },
   { icon: Rocket, label: "Você recebe o plano de criativos", sub: "Próximos passos claros" },
@@ -60,7 +60,7 @@ export function HeroSection() {
             </h1>
 
             <p className="text-base md:text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 mb-8 font-medium">
-              Diagnóstico + plano de ação + esteira semanal de testes.
+              Aplicação + plano de ação + esteira semanal de testes.
             </p>
 
             {/* Mobile CTA */}
@@ -70,7 +70,7 @@ export function HeroSection() {
                 onClick={handleCTA}
                 className="btn-shine glow-breathe h-14 px-10 text-base font-bold bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-2xl shadow-2xl transition-all active:scale-[0.98]"
               >
-                QUERO PREENCHER O QUIZ
+                QUERO PREENCHER A APLICAÇÃO
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
@@ -94,7 +94,7 @@ export function HeroSection() {
                     onClick={handleCTA}
                     className="btn-shine glow-breathe w-full h-14 text-base font-bold bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-2xl shadow-2xl transition-all active:scale-[0.98]"
                   >
-                    QUERO PREENCHER O QUIZ
+                    QUERO PREENCHER A APLICAÇÃO
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </div>

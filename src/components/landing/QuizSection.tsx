@@ -225,7 +225,7 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
       setSubmitted(true);
       
       toast({
-        title: "Diagnóstico enviado!",
+        title: "Aplicação enviada!",
         description: "Em breve entraremos em contato.",
       });
     } catch (error) {
@@ -299,7 +299,7 @@ export const QuizSection = forwardRef<QuizSectionHandle>((_, ref) => {
   // Generate WhatsApp message
   const generateWhatsAppLink = () => {
     const message = `Oi, aqui é o ${formData.nome_completo}.
-Acabei de preencher o Diagnóstico Champion.
+Acabei de preencher a Aplicação Champion.
 
 Instagram: ${formData.instagram}
 Mercado: ${formData.mercado}
@@ -365,7 +365,7 @@ Fico no aguardo.`;
                 className="border-secondary/50 data-[state=checked]:bg-secondary data-[state=checked]:border-secondary h-5 w-5"
               />
               <label htmlFor="lgpd" className="text-xs text-muted-foreground cursor-pointer leading-relaxed">
-                Concordo em receber contato sobre o diagnóstico. Seus dados estão seguros.
+                Concordo em receber contato sobre a aplicação. Seus dados estão seguros.
               </label>
             </div>
           </div>
@@ -491,10 +491,10 @@ Fico no aguardo.`;
 
   return (
     <section id="quiz-section" className="py-6 md:py-10">
-      {/* Headline acima do quiz */}
+      {/* Headline acima da aplicação */}
       <div className="container mx-auto px-4 mb-6 md:mb-8">
         <p className="text-center text-base md:text-lg text-muted-foreground max-w-md mx-auto">
-          Responda o formulário rápido para que o próximo feedback seja você!
+          Preencha a aplicação rápida para que o próximo feedback seja você!
         </p>
       </div>
       

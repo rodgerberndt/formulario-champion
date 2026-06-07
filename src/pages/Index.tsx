@@ -103,7 +103,7 @@ const Index = () => {
         <section data-theme="cave" data-track-id="cta_intermediario" data-track-order="6" className="py-10 md:py-16">
           <div className="container mx-auto px-5 text-center max-w-md">
             <p className="text-sm md:text-base text-muted-foreground mb-6">
-              Faça o diagnóstico rápido para que o próximo feedback seja você!
+              Preencha a aplicação rápida para que o próximo feedback seja você!
             </p>
             <Button
               size="lg"
@@ -120,7 +120,7 @@ const Index = () => {
                 </>
               ) : (
                 <>
-                  FAZER DIAGNÓSTICO (2 MIN)
+                  PREENCHER APLICAÇÃO (2 MIN)
                   <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
@@ -157,7 +157,7 @@ const Index = () => {
             </>
           ) : (
             <>
-              <span className="flex-1">FAZER DIAGNÓSTICO DE CRIATIVOS GRATUITO</span>
+              <span className="flex-1">PREENCHER APLICAÇÃO GRATUITA</span>
               <ArrowRight className="w-4 h-4 ml-2 shrink-0" />
             </>
           )}

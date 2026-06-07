@@ -269,7 +269,7 @@ function LoadingCommitStep({
               <Check className="w-6 h-6 sm:w-7 sm:h-7 text-background" strokeWidth={3} />
             </div>
             <span className="text-[10px] sm:text-xs text-white/80 font-medium leading-tight text-center max-w-[64px] sm:max-w-[72px]">
-              Preencher formulário
+              Preencher aplicação
             </span>
           </div>
 
@@ -643,7 +643,7 @@ export default function Quiz() {
       }));
 
       toast({
-        title: "Formulário enviado!",
+        title: "Aplicação enviada!",
         description: "Em breve entraremos em contato."
       });
 
@@ -1041,7 +1041,7 @@ export default function Quiz() {
                 Você estaria disposto a fazer uma call de diagnóstico com o nosso time para analisarmos a sua operação e te passarmos o que pode melhorar?
               </label>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                Essa call é vendida por <span className="text-secondary font-semibold">R$ 2.000</span>, mas somente para quem preenche o formulário, recebe ela gratuitamente.
+                Essa call é vendida por <span className="text-secondary font-semibold">R$ 2.000</span>, mas somente para quem preenche a aplicação, recebe ela gratuitamente.
               </p>
             </div>
 
@@ -1092,10 +1092,10 @@ export default function Quiz() {
                 Atenção antes de continuar
               </h2>
               <p className="text-base sm:text-lg text-white/95 leading-relaxed font-medium">
-                Ao preencher este formulário, você concorda que{" "}
+                Ao preencher esta aplicação, você concorda que{" "}
                 <span className="text-secondary font-bold">trabalha com o digital</span>.
                 {" "}Se você não trabalha com o digital, e não quer vender mais,{" "}
-                <span className="text-secondary font-bold">saia deste formulário imediatamente</span>.
+                <span className="text-secondary font-bold">saia desta aplicação imediatamente</span>.
               </p>
             </div>
             <div className="h-1.5 w-full bg-white/15 rounded-full overflow-hidden">
@@ -1142,7 +1142,7 @@ export default function Quiz() {
 
             <div className="mb-4 sm:mb-6">
               <p className="text-center text-muted-foreground text-xs sm:text-sm leading-relaxed opacity-80">
-                Preencha o formulário rápido para falarmos com você!
+                Preencha a aplicação rápida para falarmos com você!
               </p>
             </div>
 
