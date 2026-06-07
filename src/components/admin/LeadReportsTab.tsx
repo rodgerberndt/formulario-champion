@@ -1302,7 +1302,6 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                       <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-muted-foreground pt-1">
                         <span>Faturamento: {sr.breakdown.faturamento}/35</span>
                         <span>Aceita call: {sr.breakdown.aceita_call}/12</span>
-                        <span>Estágio: {sr.breakdown.estagio}/12</span>
                         <span>Compromisso WA: {sr.breakdown.compromisso_whatsapp}/10</span>
                         <span>Mercado: {sr.breakdown.mercado}/8</span>
                         <span>Operações: {sr.breakdown.operacoes}/6</span>
