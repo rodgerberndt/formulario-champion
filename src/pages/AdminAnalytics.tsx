@@ -2165,17 +2165,20 @@ export default function AdminAnalytics() {
                               <td className="p-2">
                                 {(() => {
                                   const sdr = getLeadSdr(lead);
-                                  if (sdr === "Caio") return (
+                                  if (sdr === "Gustavo") return (
                                     <Badge 
-                                      className="bg-green-500/20 text-green-400 border-green-500/30 cursor-pointer hover:bg-green-500/30 transition-colors"
+                                      className="bg-blue-500/20 text-blue-400 border-blue-500/30 cursor-pointer hover:bg-blue-500/30 transition-colors"
                                       onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
-                                    >Caio</Badge>
+                                    >Gustavo</Badge>
                                   );
                                   if (sdr === "Miguel") return (
                                     <Badge 
                                       className="bg-pink-500/20 text-pink-400 border-pink-500/30 cursor-pointer hover:bg-pink-500/30 transition-colors"
                                       onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
                                     >Miguel</Badge>
+                                  );
+                                  if (sdr === "Direct") return (
+                                    <Badge className="bg-muted/40 text-muted-foreground border-border">Direct</Badge>
                                   );
                                   return <span className="text-muted-foreground">-</span>;
                                 })()}
