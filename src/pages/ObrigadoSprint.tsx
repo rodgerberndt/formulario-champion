@@ -127,7 +127,7 @@ const MQL_PIXEL_FAIXAS = [
   "R$ 50k – 100k",
 ];
 
-export default function Obrigado5k() {
+export default function ObrigadoSprint() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<QuizFormData | null>(null);
   const conversionEventFired = useRef(false);
