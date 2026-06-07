@@ -1876,7 +1876,8 @@ export default function AdminAnalytics() {
                   </SelectTrigger>
                     <SelectContent>
                     <SelectItem value="all">Todos SDRs</SelectItem>
-                    <SelectItem value="caio">Caio</SelectItem>
+                    <SelectItem value="direct">Direct (&lt;5k)</SelectItem>
+                    <SelectItem value="gustavo">Gustavo</SelectItem>
                     <SelectItem value="miguel">Miguel</SelectItem>
                   </SelectContent>
                 </Select>
