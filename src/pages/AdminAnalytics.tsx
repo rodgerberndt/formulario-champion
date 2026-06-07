@@ -879,8 +879,11 @@ export default function AdminAnalytics() {
     // SDR filter
     if (leadsSdrFilter !== "all") {
       const sdr = getLeadSdr(lead);
-      if (leadsSdrFilter === "caio" && sdr !== "Caio") return false;
+      if (leadsSdrFilter === "direct" && sdr !== "Direct") return false;
+      if (leadsSdrFilter === "gustavo" && sdr !== "Gustavo") return false;
       if (leadsSdrFilter === "miguel" && sdr !== "Miguel") return false;
+      // legacy "caio" filter still supported for back-compat
+      if (leadsSdrFilter === "caio" && sdr !== "Gustavo" && sdr !== "Miguel") return false;
     }
     
     // Adset (conjunto de anúncio / criativo) filter
