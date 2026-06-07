@@ -200,7 +200,7 @@ interface Lead {
 const QUIZ_LABELS: Record<string, string> = {
   quer_vender_mais: "Quer vender mais?",
   operacoes_ativas: "Operações ativas",
-  nps_score: "NPS (0-10)",
+  nps_score: "Entendimento do site (0 = não leu · 5 = leu e não entendeu · 10 = leu e entendeu)",
   compromisso_whatsapp: "Compromisso WhatsApp",
   aceita_call_diagnostico: "Aceita call de diagnóstico",
   lgpd: "Aceitou Lei Geral de Proteção de Dados",
