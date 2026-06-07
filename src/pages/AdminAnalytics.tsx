@@ -2571,26 +2571,60 @@ export default function AdminAnalytics() {
                         );
                       })()}
 
-                      {/* Score & Tier (internal) */}
+                      {/* Tier + Lead Score 0–100 (mesmo cálculo usado em Performance por Criativo) */}
                       {selectedLead && (
                         (() => {
-                          const { score: calcScore, tier: calcTier } = recalcLeadScore(selectedLead);
+                          const { tier: calcTier } = recalcLeadScore(selectedLead);
+                          const sr = computeLeadScore100({
+                            investimento_faixa: selectedLead.investimento_faixa,
+                            mercado: selectedLead.mercado,
+                            operacoes_ativas: selectedLead.operacoes_ativas,
+                            nps_score: selectedLead.nps_score,
+                            dor_desejo: selectedLead.dor_desejo,
+                            raw_answers_json: selectedLead.raw_answers_json,
+                          });
                           return (
-                            <div className="flex gap-4 pt-2 border-t">
-                              <Badge 
-                                variant="outline"
-                                className={
-                                  calcTier === "Enterprise+" ? "border-pink-500 text-pink-500 bg-pink-500/10" :
-                                  calcTier === "Enterprise" ? "border-purple-500 text-purple-500 bg-purple-500/10" :
-                                  calcTier === "Large" ? "border-green-500 text-green-500 bg-green-500/10" :
-                                  calcTier === "Medium" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
-                                  calcTier === "Desqualificado" ? "border-gray-400 text-gray-400 bg-gray-400/10" :
-                                  "border-red-500 text-red-500 bg-red-500/10"
-                                }
-                              >
-                                {calcTier}
-                              </Badge>
-                              <span className="text-sm text-muted-foreground">Score: {calcScore}</span>
+                            <div className="pt-2 border-t space-y-3">
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  variant="outline"
+                                  className={
+                                    calcTier === "Enterprise+" ? "border-pink-500 text-pink-500 bg-pink-500/10" :
+                                    calcTier === "Enterprise" ? "border-purple-500 text-purple-500 bg-purple-500/10" :
+                                    calcTier === "Large" ? "border-green-500 text-green-500 bg-green-500/10" :
+                                    calcTier === "Medium" ? "border-yellow-500 text-yellow-500 bg-yellow-500/10" :
+                                    calcTier === "Desqualificado" ? "border-gray-400 text-gray-400 bg-gray-400/10" :
+                                    "border-red-500 text-red-500 bg-red-500/10"
+                                  }
+                                >
+                                  {calcTier}
+                                </Badge>
+                                <Badge variant="outline" className={`text-[10px] ${bandColorClass(sr.band)}`}>{sr.band}</Badge>
+                                <span className={`text-sm font-bold ml-auto ${bandColorClass(sr.band)}`}>{sr.score}/100</span>
+                              </div>
+                              <div className="h-2 bg-muted/40 rounded-full overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full ${
+                                    sr.band === "Hot" ? "bg-emerald-500" :
+                                    sr.band === "Quente" ? "bg-amber-500" :
+                                    sr.band === "Morno" ? "bg-blue-500" :
+                                    "bg-muted-foreground/40"
+                                  }`}
+                                  style={{ width: `${sr.score}%` }}
+                                />
+                              </div>
+                              <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-muted-foreground">
+                                <span>Faturamento: {sr.breakdown.faturamento}/35</span>
+                                <span>Aceita call: {sr.breakdown.aceita_call}/12</span>
+                                <span>Estágio: {sr.breakdown.estagio}/12</span>
+                                <span>Compromisso WA: {sr.breakdown.compromisso_whatsapp}/10</span>
+                                <span>Mercado: {sr.breakdown.mercado}/8</span>
+                                <span>Operações: {sr.breakdown.operacoes}/6</span>
+                                <span>Quer vender mais: {sr.breakdown.quer_vender_mais}/5</span>
+                                <span>Dor/desejo: {sr.breakdown.dor_desejo}/5</span>
+                                <span>NPS: {sr.breakdown.nps}/4</span>
+                                <span>LGPD: {sr.breakdown.lgpd}/3</span>
+                              </div>
                             </div>
                           );
                         })()
