@@ -2173,7 +2173,7 @@ export default function AdminAnalytics() {
                                   );
                                   if (sdr === "Miguel") return (
                                     <Badge 
-                                      className="bg-purple-500/20 text-purple-300 border-purple-500/30 cursor-pointer hover:bg-purple-500/30 transition-colors"
+                                      className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 cursor-pointer hover:bg-emerald-500/30 transition-colors"
                                       onClick={(e) => { e.stopPropagation(); toggleSdr(lead); }}
                                     >Miguel</Badge>
                                   );
