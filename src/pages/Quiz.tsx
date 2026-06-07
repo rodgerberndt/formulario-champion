@@ -668,8 +668,8 @@ export default function Quiz() {
         // ≥ R$ 10 mil → Miguel
         navigate("/obrigadomql");
       } else if (GUSTAVO_FAIXAS.includes(faixa)) {
-        // Até R$ 5 mil ou R$ 5-10 mil → Gustavo
-        navigate("/obrigado5k");
+        // Até R$ 5 mil ou R$ 5-10 mil → Gustavo (Sprint)
+        navigate("/obrigadosprint");
       } else {
         // "Não vendo ainda" → Sprint (Direct)
         window.location.href = "https://sprint.championadstudio.com";
