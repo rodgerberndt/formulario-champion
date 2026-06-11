@@ -67,6 +67,13 @@ export default function Obrigado() {
         window.fbq('track', 'PageView');
         window.fbq('track', 'CompleteRegistration', {}, { eventID });
         console.log('Facebook Pixel: CompleteRegistration fired on /obrigado with eventID:', eventID);
+
+        // Slug-specific custom event: Lead
+        window.fbq('trackCustom', 'Lead', {
+          content_name: 'Lead',
+          investimento_faixa: parsed?.investimento_faixa || 'unknown',
+        });
+        console.log('Facebook Pixel: Lead (custom) fired on /obrigado');
       }
     } catch {
       navigate("/quiz");
