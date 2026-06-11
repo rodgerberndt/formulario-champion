@@ -165,6 +165,13 @@ export default function ObrigadoSprint() {
         window.fbq('track', 'CompleteRegistration', {}, { eventID: crEventID });
         console.log('Facebook Pixel: CompleteRegistration fired with eventID:', crEventID);
 
+        // Slug-specific custom event: Sprint
+        window.fbq('trackCustom', 'Sprint', {
+          content_name: 'Sprint Application',
+          investimento_faixa: formData.investimento_faixa || 'unknown',
+        });
+        console.log('Facebook Pixel: Sprint (custom) fired on /obrigadosprint');
+
         // Only fire MQL for leads with faturamento >= R$ 10k
         const isMqlEligible = formData.investimento_faixa && MQL_PIXEL_FAIXAS.includes(formData.investimento_faixa);
         if (isMqlEligible) {
