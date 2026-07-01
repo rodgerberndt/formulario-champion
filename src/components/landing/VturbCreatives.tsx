@@ -6,11 +6,16 @@ import { KeywordGlow } from "./TextEffects";
 
 type Niche = "Info" | "Lowticket" | "Nutra" | "Hot";
 const VIDEOS: { id: string; niche: Niche }[] = [
-  { id: "6a431c06bee4e20d5947d5bf", niche: "Info" },
-  { id: "6a431bd2ed09eab775126690", niche: "Lowticket" },
-  { id: "6a431bb6dd52e2a674d4aeb0", niche: "Nutra" },
-  { id: "6a431b9dbee4e20d5947d580", niche: "Hot" },
-  { id: "6a431b8ad77f3406e43dc65b", niche: "Info" },
+  { id: "69f7bc652c68b8e06e0b5d3d", niche: "Info" },
+  { id: "69f7bc5c2cdb6c72eb25d070", niche: "Lowticket" },
+  { id: "69f7bc54ac9b67e415cfb9c4", niche: "Info" },
+  { id: "69f7bc48429b5d0eef53891b", niche: "Lowticket" },
+  { id: "69f7bc42858bd31866f50afd", niche: "Nutra" },
+  { id: "69f7bc31c234cac35bc5b20a", niche: "Hot" },
+  { id: "6a17367fcd0fb28b25f6d2aa", niche: "Info" },
+  { id: "6a1736114e90c02561faa1fd", niche: "Lowticket" },
+  { id: "6a1735e8be176651058cdfed", niche: "Nutra" },
+  { id: "6a1735b292e602d534b94243", niche: "Info" },
 ];
 
 const NICHE_STYLES: Record<Niche, string> = {
@@ -20,7 +25,7 @@ const NICHE_STYLES: Record<Niche, string> = {
   Hot: "bg-rose-500/15 text-rose-300 border-rose-500/40",
 };
 
-const ACCOUNT_ID = "b682829f-dae9-4421-b364-eeb9a0a15f55";
+const ACCOUNT_ID = "3b4a85ca-8939-45e7-ae40-d0be1d6af49b";
 
 function VturbPlayer({ id, index, niche }: { id: string; index: number; niche: Niche }) {
   const containerRef = useRef<HTMLDivElement>(null);
