@@ -6,6 +6,16 @@ const NOTIFY_PREF_KEY = "champion_notify_enabled";
 const POLL_INTERVAL_MS = 15_000; // Poll every 15 seconds
 const TRANSIENT_STATUS_CODES = new Set([502, 503, 504]);
 
+/** Converts a VAPID public key (base64url) into the Uint8Array format required by pushManager.subscribe(). */
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; i++) outputArray[i] = rawData.charCodeAt(i);
+  return outputArray;
+}
+
 async function safeFetchAdminList<T>(url: string, headers: Record<string, string>, label: string): Promise<T[]> {
   try {
     const response = await fetchAdmin(url, { headers });
@@ -183,6 +193,8 @@ export function useLeadNotifications(
   const [permissionState, setPermissionState] = useState<NotificationPermission>(
     typeof Notification !== "undefined" ? Notification.permission : "default"
   );
+  const [pushSubscribed, setPushSubscribed] = useState(false);
+  const [subscriberCount, setSubscriberCount] = useState<number | null>(null);
 
   const knownLeadIdsRef = useRef<Set<string>>(new Set());
   const knownSaleIdsRef = useRef<Set<string>>(new Set());
@@ -406,7 +418,90 @@ export function useLeadNotifications(
     };
   }, [isAuthenticated, pollAll]);
 
-  // Toggle notifications
+  // Fetch how many devices are actively subscribed to background push
+  const fetchSubscriberCount = useCallback(async () => {
+    try {
+      const pushUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/web-push/subscriptions`;
+      const res = await fetchAdmin(pushUrl);
+      if (res.ok) {
+        const data = await res.json();
+        setSubscriberCount(typeof data.count === "number" ? data.count : null);
+      }
+    } catch (err) {
+      console.warn("[Push] Failed to fetch subscriber count:", err);
+    }
+  }, []);
+
+  // Subscribes this browser to real background push (delivers even with the tab/app closed)
+  const subscribeToPush = useCallback(async (): Promise<boolean> => {
+    const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+    if (!("serviceWorker" in navigator) || !("PushManager" in window) || !vapidKey) {
+      console.warn("[Push] Push API or VAPID key unavailable in this browser/build.");
+      return false;
+    }
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      let subscription = await registration.pushManager.getSubscription();
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidKey),
+        });
+      }
+      const json = subscription.toJSON();
+      const pushUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/web-push/subscribe`;
+      const res = await fetchAdmin(pushUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          endpoint: json.endpoint,
+          keys: json.keys,
+          label: navigator.userAgent.slice(0, 80),
+        }),
+      });
+      setPushSubscribed(res.ok);
+      return res.ok;
+    } catch (err) {
+      console.error("[Push] Subscribe failed:", err);
+      return false;
+    }
+  }, []);
+
+  // Unsubscribes this browser from background push
+  const unsubscribeFromPush = useCallback(async (): Promise<void> => {
+    try {
+      if (!("serviceWorker" in navigator)) return;
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      if (subscription) {
+        const { endpoint } = subscription;
+        await subscription.unsubscribe();
+        const pushUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/web-push/unsubscribe`;
+        await fetchAdmin(pushUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ endpoint }),
+        });
+      }
+    } catch (err) {
+      console.error("[Push] Unsubscribe failed:", err);
+    } finally {
+      setPushSubscribed(false);
+    }
+  }, []);
+
+  // Check existing subscription state on mount / when auth becomes available
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    fetchSubscriberCount();
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.ready
+      .then((reg) => reg.pushManager.getSubscription())
+      .then((sub) => setPushSubscribed(!!sub))
+      .catch(() => {});
+  }, [isAuthenticated, fetchSubscriberCount]);
+
+  // Toggle notifications: local permission + real background push subscription
   const toggleNotifications = useCallback(async () => {
     if (!notificationsEnabled) {
       if (typeof Notification !== "undefined") {
@@ -415,10 +510,14 @@ export function useLeadNotifications(
         if (permission === "granted") {
           setNotificationsEnabled(true);
           localStorage.setItem(NOTIFY_PREF_KEY, "true");
+          const subscribed = await subscribeToPush();
           toast({
             title: "Notificações ativadas! 🔔",
-            description: "Você receberá alertas de leads, vendas e reuniões.",
+            description: subscribed
+              ? "Você vai receber alertas de leads, vendas e reuniões — mesmo com o app fechado."
+              : "Alertas ativos nesta aba. Não foi possível habilitar o push em segundo plano.",
           });
+          fetchSubscriberCount();
         } else {
           toast({
             title: "Permissão negada",
@@ -430,23 +529,21 @@ export function useLeadNotifications(
     } else {
       setNotificationsEnabled(false);
       localStorage.setItem(NOTIFY_PREF_KEY, "false");
+      await unsubscribeFromPush();
       toast({
         title: "Notificações desativadas",
         description: "Você não receberá mais alertas.",
       });
+      fetchSubscriberCount();
     }
-  }, [notificationsEnabled]);
+  }, [notificationsEnabled, subscribeToPush, unsubscribeFromPush, fetchSubscriberCount]);
 
-  // Test function: fires notifications for existing sales/meetings without creating anything
   const sendWebPush = useCallback(async (title: string, body: string, sound?: string) => {
     try {
       const pushUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/web-push/send`;
-      await fetch(pushUrl, {
+      await fetchAdmin(pushUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, body, sound }),
       });
     } catch (err) {
@@ -454,60 +551,30 @@ export function useLeadNotifications(
     }
   }, []);
 
+  // Deterministic test: fires one real local notification + one real push, no dependency on historical data
   const testNotifications = useCallback(async () => {
-    const token = getToken();
-    if (!token) return;
-
-    const baseUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data`;
-    const headers = {
-      "x-admin-token": token,
-      "Content-Type": "application/json",
-      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-    };
-
-    try {
-      const [salesRes, meetingsRes] = await Promise.all([
-        fetchAdmin(`${baseUrl}/manual-sales?from=2026-04-01&to=2026-04-13`, { headers }),
-        fetchAdmin(`${baseUrl}/meetings?from=2026-04-01T00:00:00Z&to=2026-04-13T23:59:59Z`, { headers }),
-      ]);
-
-      const sales: SaleRecord[] = salesRes.ok ? await salesRes.json() : [];
-      const meetings: MeetingRecord[] = meetingsRes.ok ? await meetingsRes.json() : [];
-
-      // Fire in-app notifications (sounds + toasts)
-      if (sales.length > 0) notifyNewSales(sales.slice(0, 3));
-      if (meetings.length > 0) {
-        setTimeout(() => notifyNewMeetings(meetings.slice(0, 2)), 3000);
-      }
-
-      // Fire real web push notifications
-      if (sales.length > 0) {
-        const sale = sales[0];
-        const typeLabel = sale.sale_type === "assessoria" ? "Assessoria" : "Sprint";
-        await sendWebPush(
-          `💰 Nova venda ${typeLabel}!`,
-          `Ticket: ${formatCurrency(sale.revenue)}${sale.notes ? ` — ${sale.notes}` : ""}`
-        );
-      }
-      if (meetings.length > 0) {
-        await sendWebPush(
-          "📅 Reunião agendada!",
-          meetings[0].notes || "Nova reunião registrada"
-        );
-      }
-
-      toast({
-        title: "🧪 Teste disparado",
-        description: `${sales.length} vendas e ${meetings.length} reuniões encontradas. Push enviado!`,
-      });
-    } catch (err) {
-      console.error("Test notification error:", err);
-    }
-  }, [getToken, notifyNewSales, notifyNewMeetings, sendWebPush]);
+    playLeadSound();
+    toast({
+      title: "🧪 Notificação de teste disparada",
+      description: "Se você ouviu o som e recebeu o alerta, está tudo funcionando.",
+    });
+    sendNativeNotification(
+      "🧪 Teste — Champion Hub",
+      "Esta é uma notificação de teste local.",
+      "champion-test"
+    );
+    await sendWebPush(
+      "🧪 Notificação de teste",
+      "Se você recebeu esta notificação em segundo plano, o push está funcionando corretamente.",
+      "newlead"
+    );
+  }, [sendNativeNotification, sendWebPush]);
 
   return {
     notificationsEnabled,
     permissionState,
+    pushSubscribed,
+    subscriberCount,
     toggleNotifications,
     testNotifications,
     sendWebPush,

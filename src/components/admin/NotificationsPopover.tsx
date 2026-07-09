@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bell } from "lucide-react";
+import { Bell, BellOff, FlaskConical, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,8 @@ import { toast } from "@/hooks/use-toast";
 
 interface Props {
   notificationsEnabled: boolean;
+  pushSubscribed: boolean;
+  subscriberCount: number | null;
   toggleNotifications: () => void | Promise<void>;
   testNotifications: () => void | Promise<void>;
   sendWebPush: (title: string, body: string, sound?: string) => Promise<void>;
@@ -38,6 +40,8 @@ function playPreview(file: string) {
 
 export function NotificationsPopover({
   notificationsEnabled,
+  pushSubscribed,
+  subscriberCount,
   toggleNotifications,
   testNotifications,
   sendWebPush,
@@ -47,6 +51,7 @@ export function NotificationsPopover({
   const [body, setBody] = useState("");
   const [sound, setSound] = useState("newlead");
   const [sending, setSending] = useState(false);
+  const [testing, setTesting] = useState(false);
 
   const handleSendCustom = async () => {
     if (!title.trim() || !body.trim()) {
@@ -69,13 +74,13 @@ export function NotificationsPopover({
     }
   };
 
-  const handleUpdate = () => {
-    sendWebPush(
-      "🔄 Atualização Nova",
-      "Reinstale o app e recarregue a página no Safari para novas funcionalidades!",
-      "newlead"
-    );
-    toast({ title: "📢 Notificação de atualização enviada" });
+  const handleTest = async () => {
+    setTesting(true);
+    try {
+      await testNotifications();
+    } finally {
+      setTesting(false);
+    }
   };
 
   return (
@@ -109,6 +114,18 @@ export function NotificationsPopover({
           </p>
         </div>
 
+        {/* Status */}
+        <div className="rounded-lg border border-border bg-muted/40 px-3 py-2 flex items-center gap-2 text-xs">
+          <Radio className={`w-3.5 h-3.5 shrink-0 ${pushSubscribed ? "text-primary" : "text-muted-foreground"}`} />
+          <span className="text-muted-foreground">
+            {pushSubscribed ? "Push ativo neste dispositivo" : "Push não ativo neste dispositivo"}
+            {" · "}
+            {subscriberCount === null
+              ? "carregando…"
+              : `${subscriberCount} dispositivo${subscriberCount === 1 ? "" : "s"} recebendo`}
+          </span>
+        </div>
+
         {/* Quick actions */}
         <div className="grid grid-cols-1 gap-2">
           <Button
@@ -117,24 +134,22 @@ export function NotificationsPopover({
             onClick={toggleNotifications}
             className="justify-start text-xs"
           >
-            <Bell className="w-4 h-4 mr-2" />
+            {notificationsEnabled ? (
+              <Bell className="w-4 h-4 mr-2" />
+            ) : (
+              <BellOff className="w-4 h-4 mr-2" />
+            )}
             {notificationsEnabled ? "Notificações ativadas" : "Ativar notificações"}
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={handleUpdate}
+            onClick={handleTest}
+            disabled={testing}
             className="justify-start text-xs"
           >
-            📢 <span className="ml-2">Avisar atualização</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={testNotifications}
-            className="justify-start text-xs"
-          >
-            🧪 <span className="ml-2">Testar notificações</span>
+            <FlaskConical className="w-4 h-4 mr-2" />
+            {testing ? "Testando..." : "Testar notificações"}
           </Button>
         </div>
 

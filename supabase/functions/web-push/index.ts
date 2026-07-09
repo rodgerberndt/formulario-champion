@@ -1,11 +1,31 @@
-import { createClient } from "@supabase/supabase-js";
-import { sendPushNotification, deserializeVapidKeys } from "web-push-browser";
+import { createClient } from "npm:@supabase/supabase-js@2.49.1";
+import { sendPushNotification, deserializeVapidKeys } from "npm:web-push-browser@1.4.2";
+import { verify } from "https://deno.land/x/djwt@v2.9.1/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-webhook-secret, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+    "authorization, x-client-info, apikey, content-type, x-webhook-secret, x-admin-token, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+async function verifyAdminToken(token: string | null): Promise<boolean> {
+  if (!token) return false;
+  try {
+    const jwtSecret = Deno.env.get("ADMIN_JWT_SECRET");
+    if (!jwtSecret) return false;
+    const key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(jwtSecret),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign", "verify"]
+    );
+    const payload = await verify(token, key);
+    return payload.role === "admin";
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Convert a PKCS8 base64url private key to raw 32-byte base64url format
@@ -49,10 +69,48 @@ Deno.serve(async (req) => {
     const url = new URL(req.url);
     const pathname = url.pathname.replace(/^\/web-push/, "");
 
+    const isAdmin = await verifyAdminToken(req.headers.get("x-admin-token"));
+    if (!isAdmin) {
+      return new Response(JSON.stringify({ error: "Não autorizado" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
+
+    // ── List active subscriptions ──
+    if (pathname === "/subscriptions" && req.method === "GET") {
+      const { data, error } = await supabase
+        .from("push_subscriptions")
+        .select("endpoint, user_label, last_used_at, created_at")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        return new Response(JSON.stringify({ error: "Failed to list subscriptions" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(
+        JSON.stringify({
+          count: data?.length || 0,
+          subscriptions: (data || []).map((s) => ({
+            label: s.user_label,
+            last_used_at: s.last_used_at,
+            created_at: s.created_at,
+            endpoint_host: (() => {
+              try { return new URL(s.endpoint).hostname; } catch { return null; }
+            })(),
+          })),
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     if (req.method === "POST") {
       const body = await req.json();

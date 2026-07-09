@@ -190,8 +190,13 @@ Deno.serve(async (req: Request) => {
       const batch = insights.slice(i, i + batchSize);
       const rows = batch.map(row => {
         // Try to extract utm_content from ad_name patterns like "utm_content=XXX" or use ad_name itself
-        const utmContentMatch = row.ad_name?.match(/utm_content[=:]([^\s|,]+)/i);
-        const utmContent = utmContentMatch ? utmContentMatch[1] : row.ad_name;
+        // Nome do criativo: tenta extrair um utm_content= explícito do nome do anúncio ou
+        // do conjunto; se não achar, prioriza o nome do CONJUNTO (onde a nova estrutura de
+        // campanhas coloca o nome do criativo), caindo para o nome do anúncio como último recurso.
+        const utmContentMatch =
+          row.ad_name?.match(/utm_content[=:]([^\s|,]+)/i) ||
+          row.adset_name?.match(/utm_content[=:]([^\s|,]+)/i);
+        const utmContent = utmContentMatch ? utmContentMatch[1] : (row.adset_name || row.ad_name);
         const creativeKey = utmContent ? normalizeCreativeKey(utmContent) : null;
         const landingPageViews = getPageViewsFromActions(row.actions);
 

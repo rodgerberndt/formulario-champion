@@ -41,7 +41,6 @@ import {
   Trash2,
   Pencil,
   Star,
-  RefreshCw,
   Calendar,
   Circle,
   Search,
@@ -457,17 +456,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
   });
   const [savingSale, setSavingSale] = useState(false);
 
-  // Ad spend form
-  const [showAddSpend, setShowAddSpend] = useState(false);
-  const [spendForm, setSpendForm] = useState({ date: "", spend: "", impressions: "0", clicks: "0", utm_content: "", campaign_name: "" });
-  const [savingSpend, setSavingSpend] = useState(false);
-  
   // Sales listing
   const [salesList, setSalesList] = useState<ManualSale[]>([]);
   const [salesLoading, setSalesLoading] = useState(false);
   const [showSalesList, setShowSalesList] = useState(false);
   const [deletingSaleId, setDeletingSaleId] = useState<string | null>(null);
-  const [syncing, setSyncing] = useState(false);
 
 
   // Meeting state
@@ -777,61 +770,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     }
   };
 
-  const handleAddSpend = async () => {
-    if (!spendForm.date || !spendForm.spend) {
-      toast({ title: "Preencha data e gasto", variant: "destructive" });
-      return;
-    }
-    setSavingSpend(true);
-    try {
-      const ck = spendForm.utm_content ? normalizeCreativeKey(spendForm.utm_content) : null;
-      await fetchAdminData("/ad-spend", {
-        _method: "POST",
-        date: spendForm.date,
-        spend: spendForm.spend,
-        impressions: spendForm.impressions,
-        clicks: spendForm.clicks,
-        utm_content: spendForm.utm_content || "",
-        creative_key: ck || "",
-        campaign_name: spendForm.campaign_name || "",
-      });
-      toast({ title: "Gasto registrado!" });
-      setSpendForm({ date: "", spend: "", impressions: "0", clicks: "0", utm_content: "", campaign_name: "" });
-      setShowAddSpend(false);
-      loadData();
-    } catch {
-      toast({ title: "Erro ao salvar gasto", variant: "destructive" });
-    } finally {
-      setSavingSpend(false);
-    }
-  };
-
-  const handleMetaSync = async () => {
-    setSyncing(true);
-    try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const res = await fetchAdmin(`${supabaseUrl}/functions/v1/meta-ads-sync`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-token": getAdminToken() || "",
-        },
-        body: JSON.stringify({ date_from: startDateOnly, date_to: endDateOnly }),
-      });
-      const result = await res.json();
-      if (result.error) {
-        toast({ title: "Erro ao sincronizar", description: result.error, variant: "destructive" });
-      } else {
-        toast({ title: "Meta Ads sincronizado!", description: `${result.inserted} registros importados (${result.date_from} a ${result.date_to})` });
-        loadData();
-      }
-    } catch (err) {
-      toast({ title: "Erro ao sincronizar Meta Ads", variant: "destructive" });
-    } finally {
-      setSyncing(false);
-    }
-  };
-
   const [sendingCapiRetro, setSendingCapiRetro] = useState<string | null>(null);
 
   const handleCapiRetroactive = async (type: "meetings" | "tiers" | "purchases" | "mqls") => {
@@ -978,40 +916,77 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     );
   }
 
+  const advancedFiltersActive =
+    filterOnlyActive || filterOnlyWithSpend || filterOnlyWithLeads || filterOnlyWithMql || filterOnlyWithSales;
+  const advancedFiltersActiveCount = [
+    filterOnlyActive, filterOnlyWithSpend, filterOnlyWithLeads, filterOnlyWithMql, filterOnlyWithSales,
+  ].filter(Boolean).length;
+  const anyFilterActive =
+    advancedFiltersActive || selectedCampaigns.length > 0 || selectedCreatives.length > 0 ||
+    campaignTypeFilter !== "all" || attribution !== "first";
+  const clearAllFilters = () => {
+    setAttribution("first");
+    setCampaignTypeFilter("all");
+    setFilterOnlyActive(false);
+    setFilterOnlyWithSpend(false);
+    setFilterOnlyWithLeads(false);
+    setFilterOnlyWithMql(false);
+    setFilterOnlyWithSales(false);
+    setSelectedCampaigns([]);
+    setSelectedCreatives([]);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header with filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <Select value={attribution} onValueChange={(v) => setAttribution(v as "first" | "last")}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="first">Atribuição: First Touch</SelectItem>
-            <SelectItem value="last">Atribuição: Last Touch</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        {/* Grupo 1: como agrupar/atribuir os dados */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Select value={attribution} onValueChange={(v) => setAttribution(v as "first" | "last")}>
+            <SelectTrigger className="w-[188px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="first">Atribuição: First Touch</SelectItem>
+              <SelectItem value="last">Atribuição: Last Touch</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Select value={campaignTypeFilter} onValueChange={(v) => setCampaignTypeFilter(v as "all" | "conversao" | "mql")}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Campanha: Todas</SelectItem>
-            <SelectItem value="conversao">Campanha: Conversão</SelectItem>
-            <SelectItem value="mql">Campanha: MQL</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={campaignTypeFilter} onValueChange={(v) => setCampaignTypeFilter(v as "all" | "conversao" | "mql")}>
+            <SelectTrigger className="w-[178px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Campanha: Todas</SelectItem>
+              <SelectItem value="conversao">Campanha: Conversão</SelectItem>
+              <SelectItem value="mql">Campanha: MQL</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        <Button variant="outline" size="sm" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
-          Filtros {showAdvancedFilters ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
-        </Button>
+        <div className="hidden sm:block w-px h-6 bg-border" />
+
+        {/* Grupo 2: recorte de quais criativos/campanhas entram na lista */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant={advancedFiltersActive ? "default" : "outline"}
+            size="sm"
+            className="relative"
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+          >
+            Filtros{advancedFiltersActiveCount > 0 ? ` (${advancedFiltersActiveCount})` : ""}
+            {showAdvancedFilters ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
+          </Button>
 
         {/* Campaign name filter */}
         {allCampaignNames.length > 0 && (
           <Popover open={campaignFilterOpen} onOpenChange={setCampaignFilterOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-[160px] justify-between font-normal">
+              <Button
+                variant={selectedCampaigns.length > 0 ? "default" : "outline"}
+                size="sm"
+                className="min-w-[170px] justify-between font-normal"
+              >
                 {selectedCampaigns.length > 0 ? (
                   <span className="truncate">{selectedCampaigns.length} campanha{selectedCampaigns.length > 1 ? "s" : ""}</span>
                 ) : (
@@ -1050,7 +1025,11 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         {allCreativeKeys.length > 0 && (
           <Popover open={creativeFilterOpen} onOpenChange={setCreativeFilterOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-[160px] justify-between font-normal">
+              <Button
+                variant={selectedCreatives.length > 0 ? "default" : "outline"}
+                size="sm"
+                className="min-w-[170px] justify-between font-normal"
+              >
                 {selectedCreatives.length > 0 ? (
                   <span className="truncate">{selectedCreatives.length} criativo{selectedCreatives.length > 1 ? "s" : ""}</span>
                 ) : (
@@ -1084,6 +1063,13 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             </PopoverContent>
           </Popover>
         )}
+        </div>
+
+        {anyFilterActive && (
+          <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={clearAllFilters}>
+            <X className="w-3 h-3 mr-1" /> Limpar todos os filtros
+          </Button>
+        )}
 
         {/* Ações foram movidas para o header global (#admin-header-actions-slot) via portal abaixo. */}
       </div>
@@ -1092,13 +1078,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       {headerSlot &&
         createPortal(
           <>
-            <Button variant="default" size="sm" onClick={handleMetaSync} disabled={syncing}>
-              {syncing ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <RefreshCw className="w-4 h-4 mr-1" />}
-              {syncing ? "Sincronizando..." : "Sync Meta Ads"}
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowAddSpend(true)}>
-              <Plus className="w-4 h-4 mr-1" /> Gasto
-            </Button>
             <Button variant="outline" size="sm" onClick={() => setShowAddMeeting(true)}>
               <Calendar className="w-4 h-4 mr-1" /> Reunião
             </Button>
@@ -1114,7 +1093,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
       {/* Advanced filters */}
       {showAdvancedFilters && (
-        <Card>
+        <Card className="border-primary/30">
           <CardContent className="pt-4 flex flex-wrap gap-6">
             <label className="flex items-center gap-2 text-sm">
               <Switch checked={filterOnlyActive} onCheckedChange={setFilterOnlyActive} />
@@ -2417,47 +2396,6 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Button onClick={handleAddSale} disabled={savingSale || !saleForm.revenue} className="w-full">
               {savingSale ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Registrar Venda
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Spend Dialog */}
-      <Dialog open={showAddSpend} onOpenChange={setShowAddSpend}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Registrar Gasto de Anúncio</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm text-muted-foreground">Data *</label>
-              <Input type="date" value={spendForm.date} onChange={e => setSpendForm(p => ({ ...p, date: e.target.value }))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground">Gasto (R$) *</label>
-              <Input type="number" step="0.01" placeholder="500.00" value={spendForm.spend} onChange={e => setSpendForm(p => ({ ...p, spend: e.target.value }))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground">Criativo (utm_content)</label>
-              <Input placeholder="Ex: T01 - C3 - CL" value={spendForm.utm_content} onChange={e => setSpendForm(p => ({ ...p, utm_content: e.target.value }))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground">Campanha</label>
-              <Input placeholder="Nome da campanha" value={spendForm.campaign_name} onChange={e => setSpendForm(p => ({ ...p, campaign_name: e.target.value }))} />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-sm text-muted-foreground">Impressões</label>
-                <Input type="number" value={spendForm.impressions} onChange={e => setSpendForm(p => ({ ...p, impressions: e.target.value }))} />
-              </div>
-              <div>
-                <label className="text-sm text-muted-foreground">Cliques</label>
-                <Input type="number" value={spendForm.clicks} onChange={e => setSpendForm(p => ({ ...p, clicks: e.target.value }))} />
-              </div>
-            </div>
-            <Button onClick={handleAddSpend} disabled={savingSpend} className="w-full">
-              {savingSpend ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              Salvar Gasto
             </Button>
           </div>
         </DialogContent>
