@@ -186,8 +186,6 @@
     <meta name="author" content="Champion" />
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" type="image/webp" href="/champion-logo.webp" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="apple-touch-icon" href="/icons/icon-180.png" />
 
     <meta property="og:title" content="Champion Criativos | Diagnóstico Gratuito" />
     <meta property="og:description" content="Descubra se seus criativos estão deixando dinheiro na mesa. Diagnóstico gratuito de 2 minutos." />
@@ -257,23 +255,6 @@
           sessionStorage.setItem('champion_landing_hit_fired', '1');
         } catch(e) {}
       })();
-    </script>
-    <script>
-      // Eagerly unregister service workers to prevent stale React runtime
-      try {
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(function(regs) {
-            regs.forEach(function(r) { r.unregister(); });
-          }).catch(function(){});
-        }
-      } catch(e) {}
-      try {
-        if (typeof caches !== 'undefined') {
-          caches.keys().then(function(keys) {
-            keys.forEach(function(k) { caches.delete(k); });
-          }).catch(function(){});
-        }
-      } catch(e) {}
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

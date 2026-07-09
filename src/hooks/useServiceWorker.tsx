@@ -1,5 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
-import { toast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 function isPreviewEnvironment() {
   if (typeof window === "undefined") return false;
@@ -16,73 +15,27 @@ function isPreviewEnvironment() {
 
 async function unregisterServiceWorkers() {
   if (!("serviceWorker" in navigator)) return;
-
   const registrations = await navigator.serviceWorker.getRegistrations();
   await Promise.all(registrations.map((registration) => registration.unregister()));
-
-  if ("caches" in window) {
-    const cacheKeys = await caches.keys();
-    await Promise.all(cacheKeys.map((key) => caches.delete(key)));
-  }
 }
 
+/**
+ * Registers the minimal push-only service worker (see public/sw.js) in production.
+ * Skipped in local/preview environments so it doesn't interfere with Vite HMR.
+ */
 export function useServiceWorker() {
-  const [updateAvailable, setUpdateAvailable] = useState(false);
-  const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
-
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
 
-    const previewMode = isPreviewEnvironment();
-
-    if (previewMode) {
+    if (isPreviewEnvironment()) {
       unregisterServiceWorkers().catch((error) => {
         console.warn("Service worker cleanup failed:", error);
       });
       return;
     }
 
-    const registerSW = async () => {
-      try {
-        const reg = await navigator.serviceWorker.register("/sw.js", {
-          scope: "/",
-        });
-        setRegistration(reg);
-
-        reg.addEventListener("updatefound", () => {
-          const newWorker = reg.installing;
-          if (!newWorker) return;
-
-          newWorker.addEventListener("statechange", () => {
-            if (
-              newWorker.state === "installed" &&
-              navigator.serviceWorker.controller
-            ) {
-              // Silently apply update without showing a toast to users
-              setUpdateAvailable(true);
-              newWorker.postMessage({ type: "SKIP_WAITING" });
-            }
-          });
-        });
-
-        // Removed auto-reload on controllerchange to prevent infinite refresh loops
-      } catch (error) {
-        console.error("Service Worker registration failed:", error);
-      }
-    };
-
-    registerSW();
+    navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch((error) => {
+      console.error("Service Worker registration failed:", error);
+    });
   }, []);
-
-  const applyUpdate = useCallback(() => {
-    if (registration?.waiting) {
-      registration.waiting.postMessage({ type: "SKIP_WAITING" });
-    }
-  }, [registration]);
-
-  return {
-    updateAvailable,
-    applyUpdate,
-    registration,
-  };
 }

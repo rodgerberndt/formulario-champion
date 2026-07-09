@@ -46,7 +46,6 @@ import {
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { PwaInstallButton } from "@/components/PwaInstallButton";
 import { useLeadNotifications } from "@/hooks/useLeadNotifications";
 import { computeLeadScore100, bandColorClass } from "@/lib/leadScoring";
 import { NotificationsPopover } from "@/components/admin/NotificationsPopover";
@@ -1640,7 +1639,6 @@ export default function AdminAnalytics() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
             <h1 className="text-xl sm:text-2xl font-bold">Analytics do Funil</h1>
             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-              <PwaInstallButton />
               <NotificationsPopover
                 notificationsEnabled={notificationsEnabled}
                 pushSubscribed={pushSubscribed}
