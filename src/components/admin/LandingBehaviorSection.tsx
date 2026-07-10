@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useDateRange } from "@/context/DateRangeContext";
 import { Loader2, TrendingDown, TrendingUp, MousePointerClick, ArrowDown, Activity, Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import ScrollAttentionHeatmap from "./ScrollAttentionHeatmap";
 
 /**
  * BumpNumber: mostra o valor numérico e, quando ele muda, exibe um overlay
@@ -81,14 +82,20 @@ interface FunnelStep {
 interface ScrollDepth { milestone: number; users: number; pct: number; }
 interface TopClick { id: string; label: string; section: string | null; type: string; count: number; uniqueUsers: number; }
 interface ButtonClick { id: string; label: string; type: string; count: number; uniqueUsers: number; }
+interface AttentionBin { bin: number; range_pct: [number, number]; total_time_ms: number; avg_time_ms: number; users: number; pct_of_visitors: number; }
+interface SectionBoundary { section_id: string; pos_pct: number; }
+interface ClickCell { col: number; row: number; count: number; }
 
 interface PeriodData {
   totalVisitors: number;
   funnel: FunnelStep[];
   scrollDepth: ScrollDepth[];
+  scrollAttention?: AttentionBin[];
+  sectionBoundaries?: SectionBoundary[];
   clicksByType: Record<string, number>;
   clicksBySection: Record<string, number>;
   clicksByButton?: Record<string, ButtonClick[]>;
+  clickHeatmap?: Record<string, ClickCell[]>;
   topClicks: TopClick[];
   totalClicks: number;
 }
@@ -141,6 +148,40 @@ function fmtTime(ms: number) {
   const min = Math.floor(totalSec / 60);
   const sec = Math.round(totalSec % 60);
   return `${min}m ${sec}s`;
+}
+
+const GRID_COLS = 12;
+const GRID_ROWS = 8;
+
+// Grid 12x8 sobreposto a uma miniatura da seção, colorido pela densidade de
+// clique/toque em cada célula — o "onde o dedo tocou" dentro da seção.
+function ClickPositionGrid({ cells }: { cells: ClickCell[] }) {
+  const maxCount = Math.max(...cells.map((c) => c.count), 1);
+  const cellMap = new Map(cells.map((c) => [`${c.col},${c.row}`, c.count]));
+
+  return (
+    <div className="rounded-md border border-border/40 overflow-hidden bg-muted/10" style={{ aspectRatio: `${GRID_COLS} / ${GRID_ROWS}` }}>
+      <div className="grid h-full w-full" style={{ gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)`, gridTemplateRows: `repeat(${GRID_ROWS}, 1fr)` }}>
+        {Array.from({ length: GRID_ROWS }, (_, row) =>
+          Array.from({ length: GRID_COLS }, (_, col) => {
+            const count = cellMap.get(`${col},${row}`) || 0;
+            const intensity = count / maxCount;
+            return (
+              <div
+                key={`${col}-${row}`}
+                className="border border-background/10"
+                style={{
+                  background: count > 0 ? `hsl(${(1 - intensity) * 55 + 0}, 90%, ${55 - intensity * 15}%)` : "transparent",
+                  opacity: count > 0 ? 0.35 + intensity * 0.5 : 0,
+                }}
+                title={count > 0 ? `${count} cliques nesta região` : undefined}
+              />
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function LandingBehaviorSection({ fetchAdminData }: Props) {
@@ -258,7 +299,10 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
               const isOpen = expanded.has(f.section_id);
               // Sub-detalhamento por botão SÓ no FAQ (outras seções têm muitos
               // rótulos diferentes para o mesmo CTA, gerando ruído visual).
-              const canExpand = f.section_id === "faq" && buttons.length > 0;
+              const showButtons = f.section_id === "faq" && buttons.length > 0;
+              const clickCells = cur.clickHeatmap?.[f.section_id] || [];
+              const showClickGrid = clickCells.length > 0;
+              const canExpand = showButtons || showClickGrid;
 
               return (
                 <div key={f.section_id} className="rounded-md border border-border/40 overflow-hidden">
@@ -276,7 +320,10 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
                         <span className="text-xs font-semibold truncate">{label}</span>
                         {canExpand && (
                           <span className="text-[9px] text-muted-foreground/60 flex-shrink-0">
-                            {isOpen ? "▾" : "▸"} {buttons.length} {buttons.length === 1 ? "botão" : "botões"}
+                            {isOpen ? "▾" : "▸"}{" "}
+                            {showButtons && `${buttons.length} ${buttons.length === 1 ? "botão" : "botões"}`}
+                            {showButtons && showClickGrid && " · "}
+                            {showClickGrid && "mapa de cliques"}
                           </span>
                         )}
                       </div>
@@ -311,25 +358,37 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
                     </div>
                   </div>
                   {isOpen && canExpand && (
-                    <div className="border-t border-border/40 bg-muted/10 px-3 py-2 space-y-1">
-                      <p className="text-[9px] uppercase tracking-wider text-muted-foreground/70 mb-1">
-                        Cliques nos botões/itens desta seção
-                      </p>
-                      {buttons.map((b) => {
-                        const friendly = FAQ_QUESTION_LABELS[b.id] || b.label || b.id;
-                        return (
-                          <div key={b.id} className="flex items-center justify-between gap-2 text-[10px] py-1 border-b border-border/20 last:border-0">
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate font-medium text-foreground">{friendly}</p>
-                              <p className="text-muted-foreground/60 text-[9px] font-mono">{b.id} · {b.type}</p>
-                            </div>
-                            <div className="flex items-center gap-3 flex-shrink-0">
-                              <span className="text-amber-300 font-bold">{b.count} cliques</span>
-                              <span className="text-cyan-300/80">{b.uniqueUsers} únicos</span>
-                            </div>
-                          </div>
-                        );
-                      })}
+                    <div className="border-t border-border/40 bg-muted/10 px-3 py-2 space-y-3">
+                      {showButtons && (
+                        <div className="space-y-1">
+                          <p className="text-[9px] uppercase tracking-wider text-muted-foreground/70 mb-1">
+                            Cliques nos botões/itens desta seção
+                          </p>
+                          {buttons.map((b) => {
+                            const friendly = FAQ_QUESTION_LABELS[b.id] || b.label || b.id;
+                            return (
+                              <div key={b.id} className="flex items-center justify-between gap-2 text-[10px] py-1 border-b border-border/20 last:border-0">
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate font-medium text-foreground">{friendly}</p>
+                                  <p className="text-muted-foreground/60 text-[9px] font-mono">{b.id} · {b.type}</p>
+                                </div>
+                                <div className="flex items-center gap-3 flex-shrink-0">
+                                  <span className="text-amber-300 font-bold">{b.count} cliques</span>
+                                  <span className="text-cyan-300/80">{b.uniqueUsers} únicos</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                      {showClickGrid && (
+                        <div>
+                          <p className="text-[9px] uppercase tracking-wider text-muted-foreground/70 mb-1.5">
+                            Onde tocaram/clicaram dentro desta seção
+                          </p>
+                          <ClickPositionGrid cells={clickCells} />
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -337,6 +396,15 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
             })}
           </div>
         </div>
+
+        {cur.scrollAttention && cur.sectionBoundaries && (
+          <ScrollAttentionHeatmap
+            scrollAttention={cur.scrollAttention}
+            sectionBoundaries={cur.sectionBoundaries}
+            sectionLabels={SECTION_LABELS}
+            totalVisitors={cur.totalVisitors}
+          />
+        )}
 
         {prev && (
           <div className="text-[10px] text-muted-foreground/70 text-center pt-2 border-t border-border/30">

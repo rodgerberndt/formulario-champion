@@ -484,10 +484,6 @@ export default function AdminAnalytics() {
     return tier;
   };
 
-  // Funnel drop-off detail state
-  const [expandedStep, setExpandedStep] = useState<string | null>(null);
-  const [dropoffSessions, setDropoffSessions] = useState<Session[]>([]);
-  const [dropoffLoading, setDropoffLoading] = useState(false);
 
   // Persistent tab state
   const [activeTab, setActiveTab] = useState<string>(() => {
@@ -823,26 +819,6 @@ export default function AdminAnalytics() {
       setSelectedLeadIds(new Set());
     } else {
       setSelectedLeadIds(new Set(filteredLeads.map((l) => l.id)));
-    }
-  };
-
-  // Load drop-off sessions for a specific step
-  const loadDropoffSessions = async (stepId: string) => {
-    if (expandedStep === stepId) {
-      setExpandedStep(null);
-      return;
-    }
-    
-    setDropoffLoading(true);
-    setExpandedStep(stepId);
-    try {
-      const data = await fetchAdminData(`/dropoff/${stepId}`);
-      setDropoffSessions(data || []);
-    } catch (error) {
-      console.error("Error loading dropoff sessions:", error);
-      setDropoffSessions([]);
-    } finally {
-      setDropoffLoading(false);
     }
   };
 

@@ -816,29 +816,41 @@ Deno.serve(async (req: Request) => {
 
       // ====== QUIZ v2 ONLY ======
       // Critério de detecção: step_id ∈ V2_STEP_IDS abaixo. Qualquer outro step
-      // (q1_nome, q2_whats, q3_insta, q4_mercado, q5_estagio, q6_investimento, q7_dor)
-      // é considerado v1 e IGNORADO no funil. Se o período não tiver dados v2,
-      // step_funnel volta vazio e o front mostra "Sem dados do quiz novo...".
+      // (q1_nome, q2_whats, q3_insta, q4_mercado, q5_estagio, q6_investimento, q7_dor —
+      // steps do quiz v1, descontinuado) é considerado v1 e IGNORADO no funil. Se o
+      // período não tiver dados v2, step_funnel volta vazio e o front mostra "Sem dados
+      // do quiz novo...".
+      // IMPORTANTE: esta lista precisa bater 1:1 com STEP_IDS em src/pages/Quiz.tsx —
+      // se alguém adicionar/remover uma etapa do quiz, atualizar aqui também (e em
+      // STEP_LABELS_LOCAL em src/components/admin/FunnelMetricsTab.tsx). q12_loading é
+      // deliberadamente excluído (tela de transição, não uma decisão do usuário) via
+      // isLoadingStep() abaixo, não precisa estar na lista.
       const V2_STEP_IDS = [
         "q1_quer_vender",
         "q2_mercado",
-        "q3_faturamento",
-        "q4_nome",
-        "q5_whats",
-        "q6_insta",
-        "q7_email",
-        "q8_dor",
+        "q3_operacoes",
+        "q4_faturamento",
+        "q5_nome",
+        "q6_whats",
+        "q7_insta",
+        "q8_email",
+        "q9_dor",
+        "q10_nps",
+        "q11_aceita_call",
       ];
       const V2_STEP_SET = new Set(V2_STEP_IDS);
       const V2_LABELS: Record<string, string> = {
         q1_quer_vender: "Quer vender mais?",
         q2_mercado: "Mercado",
-        q3_faturamento: "Faturamento mensal",
-        q4_nome: "Nome completo",
-        q5_whats: "WhatsApp",
-        q6_insta: "Instagram",
-        q7_email: "E-mail",
-        q8_dor: "Dor / Desejo",
+        q3_operacoes: "Operações ativas",
+        q4_faturamento: "Faturamento atual",
+        q5_nome: "Nome completo",
+        q6_whats: "WhatsApp",
+        q7_insta: "Instagram",
+        q8_email: "E-mail",
+        q9_dor: "Dor / Desejo",
+        q10_nps: "Nota NPS",
+        q11_aceita_call: "Aceita call de diagnóstico",
       };
 
       const stepCounts: Record<string, Set<string>> = {};
@@ -942,112 +954,6 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // GET /dropoff/:stepId - Get sessions that dropped off at a specific step
-    const dropoffMatch = path.match(/^\/dropoff\/([a-z0-9_]+)$/);
-    if (dropoffMatch && req.method === "GET") {
-      const stepId = dropoffMatch[1];
-      const stepOrder = ["q1_nome", "q2_whats", "q3_insta", "q4_mercado", "q5_estagio", "q6_investimento", "q7_dor"];
-
-      // Get all events including metadata for field values
-      const { data: allEvents, error: eventsError } = await supabase
-        .from("lead_events")
-        .select("event_name, step_id, session_id, metadata");
-      if (eventsError) throw eventsError;
-
-      // Find sessions with submit
-      const sessionsWithSubmit = new Set(
-        allEvents?.filter(e => e.event_name === "submit").map(e => e.session_id) || []
-      );
-
-      // Track which steps each session viewed and which they advanced from (step_next)
-      const sessionViewedSteps: Record<string, Set<string>> = {};
-      const sessionAdvancedFrom: Record<string, Set<string>> = {};
-      const sessionFieldData: Record<string, Record<string, string>> = {};
-      
-      allEvents?.forEach(event => {
-        if (event.event_name === "step_view" && event.step_id) {
-          if (!sessionViewedSteps[event.session_id]) {
-            sessionViewedSteps[event.session_id] = new Set();
-          }
-          sessionViewedSteps[event.session_id].add(event.step_id);
-        }
-        
-        // Track which steps the user advanced FROM and collect field data
-        if (event.event_name === "step_next" && event.metadata) {
-          const metadata = event.metadata as Record<string, unknown>;
-          const fromStep = metadata.from_step as string | undefined;
-          if (fromStep) {
-            if (!sessionAdvancedFrom[event.session_id]) {
-              sessionAdvancedFrom[event.session_id] = new Set();
-            }
-            sessionAdvancedFrom[event.session_id].add(fromStep);
-          }
-          
-          // Collect field values
-          const fieldValue = metadata.field_value as Record<string, string> | undefined;
-          if (fieldValue) {
-            if (!sessionFieldData[event.session_id]) {
-              sessionFieldData[event.session_id] = {};
-            }
-            Object.assign(sessionFieldData[event.session_id], fieldValue);
-          }
-        }
-      });
-
-      // Find sessions that dropped off at this specific step
-      // Drop-off = viewed the step but didn't advance from it
-      const droppedSessionIds: string[] = [];
-      Object.entries(sessionViewedSteps).forEach(([sessionId, viewedSteps]) => {
-        if (!sessionsWithSubmit.has(sessionId)) {
-          const advancedFrom = sessionAdvancedFrom[sessionId] || new Set();
-          
-          // They dropped off at this step if they viewed it but didn't advance from it
-          if (viewedSteps.has(stepId) && !advancedFrom.has(stepId)) {
-            // Also check it's their furthest un-advanced step
-            let isFurthestDropoff = true;
-            viewedSteps.forEach(step => {
-              const stepIndex = stepOrder.indexOf(step);
-              const targetIndex = stepOrder.indexOf(stepId);
-              // If there's a later step they viewed but didn't advance from, this isn't their drop-off
-              if (stepIndex > targetIndex && !advancedFrom.has(step)) {
-                isFurthestDropoff = false;
-              }
-            });
-            
-            if (isFurthestDropoff) {
-              droppedSessionIds.push(sessionId);
-            }
-          }
-        }
-      });
-
-      // Get session details with their data
-      const { data: droppedSessions, error: sessionsError } = await supabase
-        .from("lead_sessions")
-        .select("*")
-        .in("id", droppedSessionIds.length > 0 ? droppedSessionIds : ["00000000-0000-0000-0000-000000000000"]);
-      if (sessionsError) throw sessionsError;
-
-      // Enrich sessions with collected field data
-      const enrichedSessions = (droppedSessions || []).map(session => {
-        const fieldData = sessionFieldData[session.id] || {};
-        return {
-          ...session,
-          // Use collected data if session data is null
-          lead_name: session.lead_name || fieldData.nome || null,
-          lead_whatsapp: session.lead_whatsapp || fieldData.whatsapp || null,
-          lead_instagram: session.lead_instagram || fieldData.instagram || null,
-          lead_market: session.lead_market || fieldData.mercado || null,
-          lead_stage: session.lead_stage || fieldData.estagio || null,
-          collected_data: fieldData, // Include all collected data
-        };
-      });
-
-      return new Response(
-        JSON.stringify(enrichedSessions),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
 
     // DELETE /leads - Delete multiple leads
     if (path === "/leads" && req.method === "DELETE") {
@@ -2562,16 +2468,25 @@ Deno.serve(async (req: Request) => {
         prevToEnd = new Date(fromMs - 1).toISOString();
       }
 
-      async function pagedFetch(table: string, select: string, fromIso: string | null, toIso: string | null) {
+      async function pagedFetch(
+        table: string,
+        select: string,
+        fromIso: string | null,
+        toIso: string | null,
+        dateColumn = "created_at",
+        maxRows = 8000,
+      ) {
         const PAGE = 1000;
-        const MAX_ROWS = 8000;
         let all: any[] = [];
         let offset = 0;
         let more = true;
-        while (more && all.length < MAX_ROWS) {
-          let q = supabase.from(table).select(select).range(offset, offset + PAGE - 1);
-          if (fromIso) q = q.gte("created_at", fromIso);
-          if (toIso) q = q.lte("created_at", toIso);
+        while (more && all.length < maxRows) {
+          // order() é essencial aqui: sem ele, o corte em maxRows não é determinístico
+          // (a ordem de retorno do Postgres/PostgREST não é garantida), então períodos
+          // com muito volume podiam truncar em pontos diferentes a cada chamada.
+          let q = supabase.from(table).select(select).order(dateColumn, { ascending: true }).range(offset, offset + PAGE - 1);
+          if (fromIso) q = q.gte(dateColumn, fromIso);
+          if (toIso) q = q.lte(dateColumn, toIso);
           const { data, error } = await q;
           if (error) throw error;
           if (data) all = all.concat(data);
@@ -2600,10 +2515,14 @@ Deno.serve(async (req: Request) => {
         const totalVisitors = validSessions.size;
 
         // section_views
-        let sv = supabase.from("section_views").select("session_id, section_id, section_order, time_spent_ms").limit(8000);
-        if (fromIso) sv = sv.gte("created_at", fromIso);
-        if (toIso) sv = sv.lte("created_at", toIso);
-        const { data: sectionRows } = await sv;
+        const sectionRows = await pagedFetch(
+          "section_views",
+          "session_id, section_id, section_order, time_spent_ms",
+          fromIso,
+          toIso,
+          "created_at",
+          20000,
+        );
         const sections = (sectionRows || []).filter((r: any) => validSessions.has(r.session_id));
 
         // Group sections — usa o MAIOR section_order encontrado (ordem mais recente
@@ -2625,10 +2544,14 @@ Deno.serve(async (req: Request) => {
         const sortedSections = Array.from(sectionMap.values()).sort((a, b) => a.order - b.order);
 
         // click events (need them BEFORE funnel to count clicks per section)
-        let ce = supabase.from("click_events").select("session_id, click_type, click_id, section_id, label, href").limit(8000);
-        if (fromIso) ce = ce.gte("created_at", fromIso);
-        if (toIso) ce = ce.lte("created_at", toIso);
-        const { data: clickRows } = await ce;
+        const clickRows = await pagedFetch(
+          "click_events",
+          "session_id, click_type, click_id, section_id, label, href, pos_x_pct, pos_y_pct",
+          fromIso,
+          toIso,
+          "created_at",
+          20000,
+        );
         const clicks = (clickRows || []).filter((r: any) => validSessions.has(r.session_id));
 
         // Map: section_id -> Set of session_ids that clicked something in that section
@@ -2641,10 +2564,14 @@ Deno.serve(async (req: Request) => {
         });
 
         // scroll milestones (precisamos ANTES do funil para usar como base)
-        let sm = supabase.from("scroll_milestones").select("session_id, milestone").limit(8000);
-        if (fromIso) sm = sm.gte("reached_at", fromIso);
-        if (toIso) sm = sm.lte("reached_at", toIso);
-        const { data: scrollRows } = await sm;
+        const scrollRows = await pagedFetch(
+          "scroll_milestones",
+          "session_id, milestone",
+          fromIso,
+          toIso,
+          "reached_at",
+          20000,
+        );
         const scrolls = (scrollRows || []).filter((r: any) => validSessions.has(r.session_id));
 
         // maxScrollBySession: maior milestone atingido por cada sessão
@@ -2759,13 +2686,77 @@ Deno.serve(async (req: Request) => {
             .sort((a, b) => b.count - a.count);
         });
 
+        // Heatmap de clique/toque por posição: grid 12x8 por seção, só considera
+        // cliques com posição capturada (pos_x_pct/pos_y_pct — cliques antigos, de
+        // antes dessa coluna existir, ou fora de qualquer seção, ficam de fora).
+        const clickGridAgg: Record<string, Record<string, number>> = {};
+        const GRID_COLS = 12;
+        const GRID_ROWS = 8;
+        clicks.forEach((c: any) => {
+          if (!c.section_id || c.pos_x_pct == null || c.pos_y_pct == null) return;
+          const col = Math.min(GRID_COLS - 1, Math.max(0, Math.floor((c.pos_x_pct / 100) * GRID_COLS)));
+          const row = Math.min(GRID_ROWS - 1, Math.max(0, Math.floor((c.pos_y_pct / 100) * GRID_ROWS)));
+          const cellKey = `${col},${row}`;
+          if (!clickGridAgg[c.section_id]) clickGridAgg[c.section_id] = {};
+          clickGridAgg[c.section_id][cellKey] = (clickGridAgg[c.section_id][cellKey] || 0) + 1;
+        });
+        const clickHeatmap: Record<string, Array<{ col: number; row: number; count: number }>> = {};
+        Object.keys(clickGridAgg).forEach((sid) => {
+          clickHeatmap[sid] = Object.entries(clickGridAgg[sid]).map(([cell, count]) => {
+            const [col, row] = cell.split(",").map(Number);
+            return { col, row, count };
+          });
+        });
+
+        // Heatmap de atenção por scroll: tempo acumulado (ms) em cada faixa de 5% da
+        // página (20 bins), mais confiável que os 4 milestones pra achar "onde pararam
+        // de ler" — funciona igual pra mouse e toque, já que é baseado em scroll.
+        const attentionRows = await pagedFetch(
+          "scroll_attention_bins",
+          "session_id, bin, time_ms",
+          fromIso,
+          toIso,
+          "created_at",
+          20000,
+        );
+        const attentionValid = (attentionRows || []).filter((r: any) => validSessions.has(r.session_id));
+        const binAgg: Record<number, { totalMs: number; sessions: Set<string> }> = {};
+        for (let b = 0; b < 20; b++) binAgg[b] = { totalMs: 0, sessions: new Set() };
+        attentionValid.forEach((r: any) => {
+          if (r.bin < 0 || r.bin > 19) return;
+          binAgg[r.bin].totalMs += r.time_ms || 0;
+          if ((r.time_ms || 0) > 0) binAgg[r.bin].sessions.add(r.session_id);
+        });
+        const scrollAttention = Array.from({ length: 20 }, (_, bin) => {
+          const agg = binAgg[bin];
+          const users = agg.sessions.size;
+          return {
+            bin,
+            range_pct: [bin * 5, bin * 5 + 5],
+            total_time_ms: agg.totalMs,
+            avg_time_ms: users > 0 ? Math.round(agg.totalMs / users) : 0,
+            users,
+            pct_of_visitors: totalVisitors > 0 ? (users / totalVisitors) * 100 : 0,
+          };
+        });
+
+        // Posição (% da altura da página) de cada seção, pra alinhar visualmente a
+        // faixa de scroll-attention com o nome da seção no admin.
+        const sectionBoundaries = sortedSections.map((s, idx) => ({
+          section_id: s.id,
+          pos_pct: sectionScrollPos[idx],
+        }));
+
         return {
           totalVisitors,
           funnel,
           scrollDepth,
+          scrollAttention,
+          sectionBoundaries,
           clicksByType,
           clicksBySection,
           clicksByButton,
+          clickHeatmap,
           topClicks: topClicksArr,
           totalClicks: clicks.length,
         };

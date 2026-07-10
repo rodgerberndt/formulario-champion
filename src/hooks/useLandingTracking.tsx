@@ -18,6 +18,13 @@ export function useLandingTracking(page = "/") {
   const beforeUnloadHandlerRef = useRef<(() => void) | null>(null);
   const clickHandlerRef = useRef<((e: MouseEvent) => void) | null>(null);
   const isFlushingRef = useRef(false);
+  // Scroll attention: faixa (0-19, 5% cada) onde o viewport está centrado agora,
+  // e quanto tempo (ms) já se acumulou em cada faixa desde o último flush.
+  const currentBinRef = useRef<{ bin: number; since: number } | null>(null);
+  const pendingBinMsRef = useRef<Map<number, number>>(new Map());
+  const scrollHandlerRef = useRef<(() => void) | null>(null);
+  const scrollTickingRef = useRef(false);
+  const isFlushingBinsRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -26,6 +33,7 @@ export function useLandingTracking(page = "/") {
     const cleanup = () => {
       if (retryTimer) window.clearTimeout(retryTimer);
       flushAllSectionTimes();
+      void flushScrollBins(sessionIdRef.current);
       if (intervalRef.current) {
         window.clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -50,9 +58,15 @@ export function useLandingTracking(page = "/") {
         document.removeEventListener("click", clickHandlerRef.current, { capture: true } as EventListenerOptions);
         clickHandlerRef.current = null;
       }
+      if (scrollHandlerRef.current) {
+        window.removeEventListener("scroll", scrollHandlerRef.current);
+        scrollHandlerRef.current = null;
+      }
       sectionStartRef.current.clear();
       sectionOrderRef.current.clear();
       sectionLoggedRef.current.clear();
+      currentBinRef.current = null;
+      pendingBinMsRef.current.clear();
     };
 
     const init = () => {
@@ -65,6 +79,7 @@ export function useLandingTracking(page = "/") {
       sessionIdRef.current = sid;
       setupSectionTracking(sid);
       setupClickTracking(sid);
+      setupScrollAttention();
       setupTimeFlush(sid);
     };
 
@@ -181,15 +196,78 @@ export function useLandingTracking(page = "/") {
     await Promise.all(visibleIds.map((sectionId) => flushSectionTime(sid, sectionId, false)));
   }
 
+  // Calcula em qual faixa de 5% da altura da página (0-19) o viewport está
+  // centrado agora — base do heatmap de atenção por scroll.
+  function computeCurrentBin(): number {
+    const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const viewportCenter = window.scrollY + window.innerHeight / 2;
+    const pct = scrollableHeight > 0 ? (viewportCenter / (scrollableHeight + window.innerHeight)) * 100 : 0;
+    const clamped = Math.min(100, Math.max(0, pct));
+    return Math.min(19, Math.max(0, Math.floor(clamped / 5)));
+  }
+
+  // Fecha a contagem da faixa atual, somando o tempo decorrido desde a última
+  // amostra no acumulador em memória (pendingBinMsRef), sem gravar no banco ainda.
+  function closeCurrentBin() {
+    const cur = currentBinRef.current;
+    if (!cur) return;
+    const now = Date.now();
+    const elapsed = Math.min(Math.max(0, now - cur.since), MAX_SINGLE_FLUSH_MS);
+    if (elapsed > 0) {
+      pendingBinMsRef.current.set(cur.bin, (pendingBinMsRef.current.get(cur.bin) || 0) + elapsed);
+    }
+    cur.since = now;
+  }
+
+  function setupScrollAttention() {
+    currentBinRef.current = { bin: computeCurrentBin(), since: Date.now() };
+
+    scrollHandlerRef.current = () => {
+      if (scrollTickingRef.current) return;
+      scrollTickingRef.current = true;
+      requestAnimationFrame(() => {
+        scrollTickingRef.current = false;
+        const newBin = computeCurrentBin();
+        if (currentBinRef.current && newBin !== currentBinRef.current.bin) {
+          closeCurrentBin();
+          currentBinRef.current.bin = newBin;
+        }
+      });
+    };
+    window.addEventListener("scroll", scrollHandlerRef.current, { passive: true });
+  }
+
+  async function flushScrollBins(sessionId: string | null) {
+    if (!sessionId || isFlushingBinsRef.current) return;
+    closeCurrentBin();
+    const entries = Array.from(pendingBinMsRef.current.entries()).filter(([, ms]) => ms > 0);
+    if (entries.length === 0) return;
+    pendingBinMsRef.current.clear();
+    isFlushingBinsRef.current = true;
+    await Promise.all(
+      entries.map(([bin, ms]) =>
+        supabase.rpc("increment_scroll_bin_time", {
+          p_session_id: sessionId,
+          p_page: page,
+          p_bin: bin,
+          p_add_ms: Math.round(ms),
+        })
+      )
+    );
+    isFlushingBinsRef.current = false;
+  }
+
   function setupTimeFlush(sessionId: string) {
     intervalRef.current = window.setInterval(() => {
       void flushAllSectionTimes();
+      void flushScrollBins(sessionId);
     }, FLUSH_INTERVAL_MS);
 
     // PERF: removido flush precoce de 1.2s e handlers duplicados.
     // Mantemos apenas pagehide (mais confiável que beforeunload + visibilitychange juntos)
     pageHideHandlerRef.current = () => {
       void flushAllSectionTimes();
+      void flushScrollBins(sessionId);
     };
     window.addEventListener("pagehide", pageHideHandlerRef.current);
   }
@@ -225,6 +303,18 @@ export function useLandingTracking(page = "/") {
       const section = sectionStart.closest<HTMLElement>("section[data-track-id], [data-track-id]:not([data-track-click])");
       const sectionId = section?.dataset.trackId || null;
 
+      // Posição relativa (%) do clique dentro da seção — base do heatmap de
+      // clique/toque. Null quando não há seção rastreada por perto (ex: header fixo).
+      let posXPct: number | null = null;
+      let posYPct: number | null = null;
+      if (section) {
+        const rect = section.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          posXPct = Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100));
+          posYPct = Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100));
+        }
+      }
+
       void supabase.from("click_events").insert({
         session_id: sessionId,
         page,
@@ -234,6 +324,8 @@ export function useLandingTracking(page = "/") {
         href,
         label: text || null,
         metadata: { tag },
+        pos_x_pct: posXPct,
+        pos_y_pct: posYPct,
       });
     };
 

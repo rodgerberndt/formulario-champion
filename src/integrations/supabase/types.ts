@@ -242,6 +242,8 @@ export type Database = {
           label: string | null
           metadata: Json | null
           page: string
+          pos_x_pct: number | null
+          pos_y_pct: number | null
           section_id: string | null
           session_id: string
         }
@@ -254,6 +256,8 @@ export type Database = {
           label?: string | null
           metadata?: Json | null
           page?: string
+          pos_x_pct?: number | null
+          pos_y_pct?: number | null
           section_id?: string | null
           session_id: string
         }
@@ -266,6 +270,8 @@ export type Database = {
           label?: string | null
           metadata?: Json | null
           page?: string
+          pos_x_pct?: number | null
+          pos_y_pct?: number | null
           section_id?: string | null
           session_id?: string
         }
@@ -1021,6 +1027,36 @@ export type Database = {
         }
         Relationships: []
       }
+      scroll_attention_bins: {
+        Row: {
+          bin: number
+          created_at: string
+          id: string
+          last_seen_at: string
+          page: string
+          session_id: string
+          time_ms: number
+        }
+        Insert: {
+          bin: number
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          page?: string
+          session_id: string
+          time_ms?: number
+        }
+        Update: {
+          bin?: number
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          page?: string
+          session_id?: string
+          time_ms?: number
+        }
+        Relationships: []
+      }
       scroll_milestones: {
         Row: {
           id: string
@@ -1113,6 +1149,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_scroll_bin_time: {
+        Args: {
+          p_add_ms: number
+          p_bin: number
+          p_page: string
+          p_session_id: string
+        }
+        Returns: undefined
       }
       increment_section_time: {
         Args: {
