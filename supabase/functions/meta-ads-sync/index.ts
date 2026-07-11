@@ -34,7 +34,16 @@ const BASE_CURRENCY = "BRL";
 // A conta de anúncios fatura em USD — o Marketing API retorna `spend` na moeda
 // da conta, não em BRL. Sem isso, todo o funil (CPL, CPMQL, ROAS) tratava
 // dólares como se fossem reais.
+//
+// META_AD_ACCOUNT_CURRENCY tem prioridade: a detecção via Graph API
+// (`act_.../?fields=currency`) vinha falhando silenciosamente em produção
+// (causa não confirmada — possivelmente escopo/permissão distinto do usado
+// pelo endpoint de insights) e caindo pro fallback BRL, zerando a conversão
+// sempre que o cron rodava. Setar a env var evita depender dessa chamada.
 async function getAdAccountCurrency(): Promise<string> {
+  const override = Deno.env.get("META_AD_ACCOUNT_CURRENCY");
+  if (override) return override.toUpperCase();
+
   const url = `https://graph.facebook.com/${META_API_VERSION}/${META_AD_ACCOUNT_ID}?fields=currency&access_token=${META_ACCESS_TOKEN}`;
   const res = await fetch(url);
   if (!res.ok) {
