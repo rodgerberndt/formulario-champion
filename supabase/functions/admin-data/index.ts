@@ -100,6 +100,35 @@ Deno.serve(async (req: Request) => {
 
       if (error) throw error;
 
+      // Resolve campaign_id/ad_id -> nome real. O UTM de várias campanhas vem
+      // com os IDs numéricos do Meta (utm_campaign={{campaign.id}}, etc.) em
+      // vez do nome legível, e não havia nenhuma resolução pra isso — o admin
+      // só exibia o número cru. `ad_spend` já sincroniza nome/id de toda
+      // campanha/anúncio via cron, então reaproveita essa fonte em vez de
+      // depender de uma chamada extra à Graph API.
+      const leadsWithAttribution = (data || []).filter((l: any) => l.campaign_id || l.ad_id);
+      if (leadsWithAttribution.length > 0) {
+        const campaignIds = [...new Set(leadsWithAttribution.map((l: any) => l.campaign_id).filter(Boolean))];
+        const adIds = [...new Set(leadsWithAttribution.map((l: any) => l.ad_id).filter(Boolean))];
+        const [{ data: campaignRows }, { data: adRows }] = await Promise.all([
+          campaignIds.length > 0
+            ? supabase.from("ad_spend").select("campaign_id, campaign_name").in("campaign_id", campaignIds).not("campaign_name", "is", null)
+            : Promise.resolve({ data: [] as any[] }),
+          adIds.length > 0
+            ? supabase.from("ad_spend").select("ad_id, ad_name").in("ad_id", adIds).not("ad_name", "is", null)
+            : Promise.resolve({ data: [] as any[] }),
+        ]);
+        const campaignNameById = new Map<string, string>();
+        (campaignRows || []).forEach((r: any) => { if (!campaignNameById.has(r.campaign_id)) campaignNameById.set(r.campaign_id, r.campaign_name); });
+        const adNameById = new Map<string, string>();
+        (adRows || []).forEach((r: any) => { if (!adNameById.has(r.ad_id)) adNameById.set(r.ad_id, r.ad_name); });
+
+        (data || []).forEach((l: any) => {
+          if (l.campaign_id && campaignNameById.has(l.campaign_id)) l.campaign_name_resolved = campaignNameById.get(l.campaign_id);
+          if (l.ad_id && adNameById.has(l.ad_id)) l.ad_name_resolved = adNameById.get(l.ad_id);
+        });
+      }
+
       return new Response(
         JSON.stringify(data),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }

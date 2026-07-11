@@ -182,6 +182,8 @@ interface Lead {
   campaign_id: string | null;
   adset_id: string | null;
   ad_id: string | null;
+  campaign_name_resolved?: string | null;
+  ad_name_resolved?: string | null;
   placement: string | null;
   site_source_name: string | null;
   sdr_override: string | null;
@@ -2355,6 +2357,12 @@ export default function AdminAnalytics() {
                               {(() => {
                                 const raw = selectedLead.utm_campaign;
                                 const isPlaceholder = raw && /\{\{.*\}\}/.test(raw);
+                                // utm_campaign às vezes vem com o ID numérico cru do Meta
+                                // (utm_campaign={{campaign.id}}) em vez do nome — nesse caso
+                                // prioriza o nome resolvido via ad_spend (campaign_name_resolved).
+                                const isNumericId = raw && /^\d+$/.test(raw);
+                                if (!isPlaceholder && raw && !isNumericId) return raw;
+                                if (selectedLead.campaign_name_resolved) return selectedLead.campaign_name_resolved;
                                 if (!isPlaceholder && raw) return raw;
                                 return selectedLead.campaign_id
                                   ? `ID: ${selectedLead.campaign_id}`
@@ -2368,6 +2376,9 @@ export default function AdminAnalytics() {
                               {(() => {
                                 const raw = selectedLead.utm_content;
                                 const isPlaceholder = raw && /\{\{.*\}\}/.test(raw);
+                                const isNumericId = raw && /^\d+$/.test(raw);
+                                if (!isPlaceholder && raw && !isNumericId) return raw;
+                                if (selectedLead.ad_name_resolved) return selectedLead.ad_name_resolved;
                                 if (!isPlaceholder && raw) return raw;
                                 return selectedLead.ad_id
                                   ? `ID: ${selectedLead.ad_id}`
