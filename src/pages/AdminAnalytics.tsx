@@ -72,15 +72,19 @@ import {
 } from "@/components/ui/dialog";
 
 interface Metrics {
-  total_visitors: number;
-  unique_visitors: number;
+  // null = sem sinal de tracking confiável pro período (ver visitors_known/entered_quiz_known).
+  // O front NÃO deve tratar null como 0 — precisa mostrar um estado "sem dados" explícito.
+  total_visitors: number | null;
+  unique_visitors: number | null;
   has_reliable_ip_data: boolean;
   ip_coverage_percent: number;
-  entered_quiz: number;
-  started_quiz: number;
+  entered_quiz: number | null;
+  started_quiz: number | null;
   completed: number;
-  conversion_rate: string | number;
-  completion_rate: string | number;
+  conversion_rate: string | number | null;
+  completion_rate: string | number | null;
+  visitors_known: boolean;
+  entered_quiz_known: boolean;
   landing_views?: number;
   landing_hits_total?: number;
   meta_clicks?: number;
@@ -92,6 +96,8 @@ interface Metrics {
   };
   step_funnel: Array<{ step_id: string; count: number }>;
   drop_offs: Record<string, number>;
+  quiz_v2_empty?: boolean;
+  quiz_v1_present?: boolean;
 }
 
 interface Session {
@@ -3080,12 +3086,16 @@ export default function AdminAnalytics() {
                   startISO={startISO}
                   endISO={endISO}
                   funnelMetrics={metrics ? {
-                    visitors: metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors,
+                    visitors: metrics.visitors_known
+                      ? (metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors)
+                      : null,
                     sessions: metrics.total_visitors,
-                    entered_quiz: metrics.entered_quiz,
+                    entered_quiz: metrics.entered_quiz_known ? metrics.entered_quiz : null,
                     completed: metrics.completed,
-                    conversion_rate: Number(metrics.conversion_rate) || 0,
+                    conversion_rate: metrics.conversion_rate !== null ? Number(metrics.conversion_rate) : null,
                     step_funnel: metrics.step_funnel || [],
+                    quiz_v2_empty: metrics.quiz_v2_empty,
+                    quiz_v1_present: metrics.quiz_v1_present,
                   } : null}
                 />
               </Suspense>
@@ -3097,12 +3107,16 @@ export default function AdminAnalytics() {
                 <FunnelMetricsTab
                   fetchAdminData={fetchAdminData}
                   funnelMetrics={metrics ? {
-                    visitors: metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors,
+                    visitors: metrics.visitors_known
+                      ? (metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors)
+                      : null,
                     sessions: metrics.total_visitors,
-                    entered_quiz: metrics.entered_quiz,
+                    entered_quiz: metrics.entered_quiz_known ? metrics.entered_quiz : null,
                     completed: metrics.completed,
-                    conversion_rate: Number(metrics.conversion_rate) || 0,
+                    conversion_rate: metrics.conversion_rate !== null ? Number(metrics.conversion_rate) : null,
                     step_funnel: metrics.step_funnel || [],
+                    quiz_v2_empty: metrics.quiz_v2_empty,
+                    quiz_v1_present: metrics.quiz_v1_present,
                   } : null}
                 />
               </Suspense>

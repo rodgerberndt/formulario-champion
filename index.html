@@ -12,7 +12,7 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://troqylihudenqjsxsnwy.supabase.co" crossorigin />
+    <link rel="preconnect" href="https://%VITE_SUPABASE_PROJECT_ID%.supabase.co" crossorigin />
     <script>
       (function () {
         try {
@@ -218,7 +218,7 @@
       (function(){
         try {
           if (sessionStorage.getItem('champion_landing_hit_fired') === '1') return;
-          var url = 'https://troqylihudenqjsxsnwy.supabase.co/functions/v1/landing-hit';
+          var url = 'https://%VITE_SUPABASE_PROJECT_ID%.supabase.co/functions/v1/landing-hit';
           var sp = new URLSearchParams(window.location.search);
           var get = function(k){ var v = sp.get(k); return (v && v.indexOf('{{') === -1) ? v : null; };
           // Gera/recupera session_id (UUID v4) ANTES do React, para garantir unique_sessions correto

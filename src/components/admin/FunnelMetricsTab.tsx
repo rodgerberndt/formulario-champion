@@ -4,11 +4,12 @@ import LandingBehaviorSection from "./LandingBehaviorSection";
 import { AnimatedNumber } from "./AnimatedNumber";
 
 interface FunnelMetricsInput {
-  visitors: number;
-  sessions: number;
-  entered_quiz: number;
+  // null = sem sinal de tracking confiável pro período selecionado (não é 0 — é "não sabemos").
+  visitors: number | null;
+  sessions: number | null;
+  entered_quiz: number | null;
   completed: number;
-  conversion_rate: number;
+  conversion_rate: number | null;
   step_funnel?: Array<{
     step_id: string;
     count: number;
@@ -33,41 +34,61 @@ export default function FunnelMetricsTab({ fetchAdminData, funnelMetrics }: Funn
       {/* Funnel Overview (espelha topo do dashboard) */}
       {funnelMetrics && (() => {
         const { visitors, sessions, entered_quiz, completed, conversion_rate } = funnelMetrics;
-        const visitorToQuiz = visitors > 0 ? (entered_quiz / visitors) * 100 : 0;
-        const quizToCompleted = entered_quiz > 0 ? (completed / entered_quiz) * 100 : 0;
+        const visitorToQuiz = visitors !== null && entered_quiz !== null && visitors > 0 ? (entered_quiz / visitors) * 100 : null;
+        const quizToCompleted = entered_quiz !== null && entered_quiz > 0 ? (completed / entered_quiz) * 100 : null;
+        const noTrackingData = visitors === null;
         return (
           <Card className="border-primary/30">
             <CardContent className="pt-4">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border/50 pb-2">
                 Funil do Site (período selecionado)
               </p>
+              {noTrackingData && (
+                <p className="text-[11px] text-amber-300/90 mb-3 rounded-md border border-amber-500/20 bg-amber-500/5 px-3 py-2">
+                  Sem dados de visitantes/entradas rastreados para este período — o tracking de sessões
+                  foi corrigido recentemente (bug fazia essas tabelas ficarem vazias). Abaixo mostramos
+                  apenas as conclusões reais (leads), que sempre foram registradas corretamente. Números
+                  de visitantes e entrada no quiz aparecerão para os próximos acessos ao site.
+                </p>
+              )}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Visitantes únicos</p>
-                  <p className="text-xl font-bold">{visitors}</p>
-                  {sessions > visitors && (
+                  <p className="text-xl font-bold">{visitors === null ? "—" : visitors}</p>
+                  {visitors !== null && sessions !== null && sessions > visitors && (
                     <p className="text-[10px] text-muted-foreground/70">{sessions} sessões</p>
+                  )}
+                  {visitors === null && (
+                    <p className="text-[10px] text-muted-foreground/70">sem dados</p>
                   )}
                 </div>
                 <div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Entraram no quiz</p>
-                  <p className="text-xl font-bold text-blue-400">{entered_quiz}</p>
-                  <p className="text-[10px]">
-                    <span className="text-blue-400 font-semibold">{visitorToQuiz.toFixed(1)}%</span>
-                    <span className="text-muted-foreground/70"> conv. · perda {(100 - visitorToQuiz).toFixed(1)}%</span>
-                  </p>
+                  <p className="text-xl font-bold text-blue-400">{entered_quiz === null ? "—" : entered_quiz}</p>
+                  {visitorToQuiz !== null ? (
+                    <p className="text-[10px]">
+                      <span className="text-blue-400 font-semibold">{visitorToQuiz.toFixed(1)}%</span>
+                      <span className="text-muted-foreground/70"> conv. · perda {(100 - visitorToQuiz).toFixed(1)}%</span>
+                    </p>
+                  ) : (
+                    <p className="text-[10px] text-muted-foreground/70">sem dados</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Concluíram</p>
                   <p className="text-xl font-bold text-green-400">{completed}</p>
-                  <p className="text-[10px]">
-                    <span className="text-green-400 font-semibold">{quizToCompleted.toFixed(1)}%</span>
-                    <span className="text-muted-foreground/70"> conv. · perda {(100 - quizToCompleted).toFixed(1)}%</span>
-                  </p>
+                  {quizToCompleted !== null ? (
+                    <p className="text-[10px]">
+                      <span className="text-green-400 font-semibold">{quizToCompleted.toFixed(1)}%</span>
+                      <span className="text-muted-foreground/70"> conv. · perda {(100 - quizToCompleted).toFixed(1)}%</span>
+                    </p>
+                  ) : (
+                    <p className="text-[10px] text-muted-foreground/70">base: leads registrados</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Taxa de conversão</p>
-                  <p className="text-xl font-bold text-cyan-300">{conversion_rate}%</p>
+                  <p className="text-xl font-bold text-cyan-300">{conversion_rate === null ? "—" : `${conversion_rate}%`}</p>
                   <p className="text-[10px] text-muted-foreground/70">Visitantes → Concluíram</p>
                 </div>
               </div>

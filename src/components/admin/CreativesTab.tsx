@@ -337,11 +337,11 @@ function isLeadMql(estagio: string, investimento: string | null, sdrOverride?: s
 
 // ── Props ──
 interface FunnelMetricsInput {
-  visitors: number;
-  sessions: number;
-  entered_quiz: number;
+  visitors: number | null;
+  sessions: number | null;
+  entered_quiz: number | null;
   completed: number;
-  conversion_rate: number;
+  conversion_rate: number | null;
   step_funnel?: Array<{
     step_id: string;
     count: number;

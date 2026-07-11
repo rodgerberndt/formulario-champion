@@ -20,7 +20,10 @@ interface DayMetric {
   dow: number; // 0=Sun..6=Sat
   visitors: number;
   sessions: number;
-  entered_quiz: number;
+  // null = sem evento quiz_view real registrado nesse dia (tracking corrigido em 11/07/2026;
+  // dias anteriores a isso não têm — e nunca vão ter — esse dado retroativamente).
+  entered_quiz: number | null;
+  entered_quiz_known?: boolean;
   completed: number;
 }
 
@@ -82,29 +85,44 @@ function fmtDelta(v: number): string {
   return `${sign}${v.toFixed(1)}%`;
 }
 
-interface DayAggregate extends DayMetric {
-  entry_rate: number; // entered/visitors
-  completion_rate: number; // completed/entered
-  conversion_rate: number; // completed/visitors
+interface DayAggregate {
+  date: string;
+  dow: number;
+  visitors: number;
+  sessions: number;
+  entered_quiz: number | null; // null = nenhum dia deste grupo tem tracking de entrada real
+  completed: number;
+  entry_rate: number | null; // entered/visitors
+  completion_rate: number | null; // completed/entered
+  conversion_rate: number; // completed/visitors (sempre calculável — completed e visitors nunca são null)
 }
 
 function aggregateByDow(days: DayMetric[]): Record<number, DayAggregate> {
-  const out: Record<number, { visitors: number; sessions: number; entered_quiz: number; completed: number; date: string; dow: number }> = {};
-  for (let i = 0; i < 7; i++) out[i] = { visitors: 0, sessions: 0, entered_quiz: 0, completed: 0, date: "", dow: i };
+  const out: Record<number, { visitors: number; sessions: number; entered_quiz: number; enteredKnownDays: number; completed: number; date: string; dow: number }> = {};
+  for (let i = 0; i < 7; i++) out[i] = { visitors: 0, sessions: 0, entered_quiz: 0, enteredKnownDays: 0, completed: 0, date: "", dow: i };
   days.forEach((d) => {
     const b = out[d.dow];
     b.visitors += d.visitors;
     b.sessions += d.sessions;
-    b.entered_quiz += d.entered_quiz;
+    if (d.entered_quiz_known && d.entered_quiz !== null) {
+      b.entered_quiz += d.entered_quiz;
+      b.enteredKnownDays += 1;
+    }
     b.completed += d.completed;
     if (!b.date || d.date > b.date) b.date = d.date;
   });
   const result: Record<number, DayAggregate> = {};
   Object.entries(out).forEach(([k, v]) => {
+    const hasEntered = v.enteredKnownDays > 0;
     result[Number(k)] = {
-      ...v,
-      entry_rate: pct(v.entered_quiz, v.visitors),
-      completion_rate: pct(v.completed, v.entered_quiz),
+      date: v.date,
+      dow: v.dow,
+      visitors: v.visitors,
+      sessions: v.sessions,
+      completed: v.completed,
+      entered_quiz: hasEntered ? v.entered_quiz : null,
+      entry_rate: hasEntered ? pct(v.entered_quiz, v.visitors) : null,
+      completion_rate: hasEntered ? pct(v.completed, v.entered_quiz) : null,
       conversion_rate: pct(v.completed, v.visitors),
     };
   });
@@ -116,16 +134,23 @@ function totalsOf(days: DayMetric[]) {
     (acc, d) => {
       acc.visitors += d.visitors;
       acc.sessions += d.sessions;
-      acc.entered_quiz += d.entered_quiz;
+      if (d.entered_quiz_known && d.entered_quiz !== null) {
+        acc.entered_quiz += d.entered_quiz;
+        acc.enteredKnownDays += 1;
+      }
       acc.completed += d.completed;
       return acc;
     },
-    { visitors: 0, sessions: 0, entered_quiz: 0, completed: 0 }
+    { visitors: 0, sessions: 0, entered_quiz: 0, enteredKnownDays: 0, completed: 0 }
   );
+  const hasEntered = t.enteredKnownDays > 0;
   return {
-    ...t,
-    entry_rate: pct(t.entered_quiz, t.visitors),
-    completion_rate: pct(t.completed, t.entered_quiz),
+    visitors: t.visitors,
+    sessions: t.sessions,
+    completed: t.completed,
+    entered_quiz: hasEntered ? t.entered_quiz : null,
+    entry_rate: hasEntered ? pct(t.entered_quiz, t.visitors) : null,
+    completion_rate: hasEntered ? pct(t.completed, t.entered_quiz) : null,
     conversion_rate: pct(t.completed, t.visitors),
   };
 }
@@ -226,7 +251,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
 
   // Best/worst day badges (only across days that have visitors > 0)
   const activeDays = useMemo(
-    () => Object.values(byDow).filter((d) => d.visitors > 0 || d.entered_quiz > 0 || d.completed > 0),
+    () => Object.values(byDow).filter((d) => d.visitors > 0 || (d.entered_quiz ?? 0) > 0 || d.completed > 0),
     [byDow]
   );
   const bestVisitorsDow = activeDays.length ? activeDays.reduce((a, b) => (b.visitors > a.visitors ? b : a)).dow : null;
@@ -237,6 +262,9 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
     ? activeDays.reduce((a, b) => (b.conversion_rate < a.conversion_rate ? b : a)).dow
     : null;
   const maxVisitors = activeDays.length ? Math.max(...activeDays.map((d) => d.visitors)) : 0;
+  // Nenhum dia do período tem tracking real de entrada no quiz (comum para qualquer
+  // período anterior ao fix de lead_sessions/lead_events em 11/07/2026).
+  const noEnteredDataAtAll = totals.entered_quiz === null;
 
   // Insights
   const insights = useMemo(() => {
@@ -246,7 +274,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
     }
     if (bestVisitorsDow !== null) {
       const dayBest = byDow[bestVisitorsDow];
-      if (dayBest.completion_rate < (totals.completion_rate || 0)) {
+      if (dayBest.completion_rate !== null && totals.completion_rate !== null && dayBest.completion_rate < totals.completion_rate) {
         out.push(`${DOW_FULL[bestVisitorsDow]} trouxe mais visitantes (${dayBest.visitors}), mas com taxa de conclusão abaixo da média.`);
       }
     }
@@ -259,7 +287,16 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
     return out.slice(0, 3);
   }, [byDow, totals, prevTotals, bestConversionDow, bestVisitorsDow]);
 
-  const deltaCard = (label: string, cur: number, prev: number, isPct = false, ppMode = false) => {
+  const deltaCard = (label: string, cur: number | null, prev: number, isPct = false, ppMode = false) => {
+    if (cur === null) {
+      return (
+        <div className="rounded-md border border-border/40 bg-background/40 p-3">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
+          <p className="text-xl font-bold mt-1 text-muted-foreground/50">—</p>
+          <p className="text-[11px] mt-1 text-muted-foreground/60">sem dados de tracking</p>
+        </div>
+      );
+    }
     let delta = 0;
     let trendStr = "";
     if (ppMode) {
@@ -326,13 +363,22 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
           <p className="text-xs text-muted-foreground">Carregando…</p>
         )}
 
+        {noEnteredDataAtAll && !loading && (
+          <p className="text-[11px] text-amber-300/90 -mt-2 rounded-md border border-amber-500/20 bg-amber-500/5 px-3 py-2">
+            Sem dados de "entrada no quiz" rastreados para nenhum dia deste período — o tracking de
+            eventos foi corrigido recentemente. "Visitantes" e "Conclusões" abaixo usam a base real de
+            leads e sessões; "Entradas no quiz" e as taxas derivadas dela aparecerão assim que houver
+            acessos rastreados a partir de agora.
+          </p>
+        )}
+
         {/* Resumo do período */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {deltaCard("Visitantes únicos", totals.visitors, prevTotals.visitors)}
-          {deltaCard("Entradas no quiz", totals.entered_quiz, prevTotals.entered_quiz)}
+          {deltaCard("Entradas no quiz", totals.entered_quiz, prevTotals.entered_quiz ?? 0)}
           {deltaCard("Conclusões", totals.completed, prevTotals.completed)}
-          {deltaCard("Taxa de entrada", totals.entry_rate, prevTotals.entry_rate, true, true)}
-          {deltaCard("Taxa de conclusão", totals.completion_rate, prevTotals.completion_rate, true, true)}
+          {deltaCard("Taxa de entrada", totals.entry_rate, prevTotals.entry_rate ?? 0, true, true)}
+          {deltaCard("Taxa de conclusão", totals.completion_rate, prevTotals.completion_rate ?? 0, true, true)}
           {deltaCard("Conversão total", totals.conversion_rate, prevTotals.conversion_rate, true, true)}
         </div>
 
@@ -407,7 +453,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
                     </div>
                     <div>
                       <p className="text-muted-foreground">Entrou</p>
-                      <p className="font-semibold text-blue-400">{d.entered_quiz}</p>
+                      <p className="font-semibold text-blue-400">{d.entered_quiz === null ? "—" : d.entered_quiz}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Concl.</p>
@@ -418,11 +464,11 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
                   <div className="mt-1.5 pt-1.5 border-t border-border/30 grid grid-cols-3 gap-0.5 text-[9px]">
                     <div title="Entradas / Visitantes">
                       <p className="text-muted-foreground">Entr.</p>
-                      <p className="font-semibold">{d.entry_rate.toFixed(0)}%</p>
+                      <p className="font-semibold">{d.entry_rate === null ? "—" : `${d.entry_rate.toFixed(0)}%`}</p>
                     </div>
                     <div title="Conclusões / Entradas">
                       <p className="text-muted-foreground">Concl.</p>
-                      <p className="font-semibold">{d.completion_rate.toFixed(0)}%</p>
+                      <p className="font-semibold">{d.completion_rate === null ? "—" : `${d.completion_rate.toFixed(0)}%`}</p>
                     </div>
                     <div title="Conclusões / Visitantes">
                       <p className="text-muted-foreground">Conv.</p>

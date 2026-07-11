@@ -617,8 +617,16 @@ Deno.serve(async (req: Request) => {
           leadVisitors?.forEach((visitorKey) => b.visitors.add(visitorKey));
           const leadCompleted = leadCountsByDate.get(b.date) || 0;
           const completed = Math.max(b.completed, leadCompleted);
-          const enteredQuiz = Math.max(b.entered_quiz, completed);
-          const visitors = Math.max(b.visitors.size, enteredQuiz);
+          // Honestidade (mesmo padrão do /metrics, ver comentário lá): só "completamos"
+          // entered_quiz até bater com completed quando o dia tem sinal REAL de quiz_view
+          // (b.entered_quiz > 0). Sem essa checagem, todo dia anterior ao fix de
+          // lead_sessions/lead_events (11/07/2026) mostrava entered_quiz === completed,
+          // uma igualdade artificial. `visitors` continua usando o piso real de IPs
+          // (sessão + leads), que é uma garantia matemática válida (todo lead concluído
+          // também é um visitante) — não depende de entered_quiz estar disponível.
+          const enteredQuizKnown = b.entered_quiz > 0;
+          const enteredQuiz = enteredQuizKnown ? Math.max(b.entered_quiz, completed) : null;
+          const visitors = Math.max(b.visitors.size, enteredQuiz ?? completed);
           const sessions = Math.max(b.sessions, completed);
 
           return {
@@ -627,6 +635,7 @@ Deno.serve(async (req: Request) => {
             visitors,
             sessions,
             entered_quiz: enteredQuiz,
+            entered_quiz_known: enteredQuizKnown,
             completed,
             spend: Number(b.spend.toFixed(2)),
             impressions: b.impressions,
@@ -815,13 +824,42 @@ Deno.serve(async (req: Request) => {
         filteredEvents.filter((e: any) => e.event_name === "step_view").map((e: any) => e.session_id)
       );
 
-      // Funil monotônico: completed <= startedQuiz <= enteredQuiz <= uniqueVisitors
-      const uniqueVisitors = Math.max(trackedUniqueVisitors, uniqueLeadVisitors, completed);
-      const total = Math.max(trackedSessionTotal, totalLeads, uniqueVisitors);
-      const enteredQuizRaw = Math.max(sessionsWithQuizView.size, completed);
-      const startedQuizRaw = Math.max(sessionsWithStepView.size, completed);
-      const enteredQuiz = Math.min(enteredQuizRaw, uniqueVisitors);
-      const startedQuiz = Math.min(startedQuizRaw, enteredQuiz);
+      // ===== Honestidade dos números (2026-07-11) =====
+      // ANTES: uniqueVisitors/enteredQuiz eram forçados pra cima via Math.max(..., completed)
+      // pra manter um funil "monotônico" (nunca completar > visitar). Isso parecia razoável,
+      // mas lead_sessions/lead_events ficaram 100% vazias desde sempre até hoje (bug de FK/
+      // colisão de localStorage, corrigido nesta mesma data) — então trackedUniqueVisitors,
+      // sessionsWithQuizView etc. eram sempre 0, e o Math.max IGUALAVA visitantes/entradas ao
+      // número de conclusões reais (leads), produzindo "5 visitantes = 5 entraram = 5
+      // concluíram = 100% conversão" pra QUALQUER período — escondendo o drop-off real, que é
+      // o propósito desta tela. Índice separado: o beacon early-fire em index.html também
+      // apontava pro projeto Supabase ERRADO (troqylihudenqjsxsnwy, órfão da era Lovable) em
+      // vez do projeto real (VITE_SUPABASE_PROJECT_ID), então landing_hits também ficou vazia
+      // — corrigido junto nesta mesma data.
+      //
+      // AGORA: só "completamos" um número (visitantes/entradas) até bater com `completed`
+      // quando existe ALGUM sinal real de tracking pro período (landing_hits ou lead_sessions
+      // não-vazios). Esse "clamp pra cima" continua válido matematicamente (todo lead que
+      // converteu também foi um visitante/entrou no quiz, então visitors/entered >= completed
+      // sempre) — a diferença é que agora só o aplicamos quando sabemos que há alguma
+      // contagem real por trás, em vez de inventar um número igual a completed do zero.
+      // Quando NÃO há nenhum sinal de tracking no período, retornamos null e o front mostra
+      // isso explicitamente em vez de fingir 100% de conversão.
+      const hasVisitorSignal = landingHitsTotal > 0 || trackedSessionTotal > 0;
+      const hasEventSignal = allEvents.length > 0;
+
+      const uniqueVisitors: number | null = hasVisitorSignal
+        ? Math.max(landingViews, trackedUniqueVisitors, uniqueLeadVisitors, completed)
+        : null;
+      const total: number | null = hasVisitorSignal
+        ? Math.max(trackedSessionTotal, totalLeads, uniqueVisitors ?? 0)
+        : null;
+      const enteredQuiz: number | null = hasEventSignal
+        ? Math.min(Math.max(sessionsWithQuizView.size, completed), uniqueVisitors ?? Number.MAX_SAFE_INTEGER)
+        : null;
+      const startedQuiz: number | null = hasEventSignal
+        ? Math.min(Math.max(sessionsWithStepView.size, completed), enteredQuiz ?? Number.MAX_SAFE_INTEGER)
+        : null;
 
       // Button distribution
       const buttonEventCounts: Record<string, Set<string>> = {
@@ -971,8 +1009,12 @@ Deno.serve(async (req: Request) => {
           landing_hits_total: landingHitsTotal,
           meta_clicks: metaClicks,
           loss_clicks_vs_views: Math.max(0, metaClicks - landingViews),
-          conversion_rate: uniqueVisitors > 0 ? (completed / uniqueVisitors * 100).toFixed(1) : 0,
-          completion_rate: enteredQuiz > 0 ? (completed / enteredQuiz * 100).toFixed(1) : 0,
+          conversion_rate: uniqueVisitors && uniqueVisitors > 0 ? (completed / uniqueVisitors * 100).toFixed(1) : null,
+          completion_rate: enteredQuiz && enteredQuiz > 0 ? (completed / enteredQuiz * 100).toFixed(1) : null,
+          // Flags de qualidade de dado: quando false, o front NÃO deve mostrar um número
+          // (nem 0) pros campos correspondentes — deve mostrar um estado "sem dados" explícito.
+          visitors_known: hasVisitorSignal,
+          entered_quiz_known: hasEventSignal,
           button_distribution: buttonDistribution,
           step_funnel: stepFunnel,
           drop_offs: dropOffs,
