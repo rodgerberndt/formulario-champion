@@ -71,14 +71,41 @@ async function getAdAccountCurrency(token: string, accountId: string): Promise<s
   return json.currency || BASE_CURRENCY;
 }
 
-async function getExchangeRateToBRL(currency: string): Promise<number> {
+// Cacheia a cotação por dia em `fx_rates` — evita bater na AwesomeAPI a cada
+// sync (o cron roda de 5 em 5 min) e tomar rate limit (429). Só busca uma
+// cotação nova quando não há uma já salva para o dia corrente.
+async function getExchangeRateToBRL(supabase: ReturnType<typeof createClient>, currency: string): Promise<number> {
   if (currency === BASE_CURRENCY) return 1;
-  const res = await fetch(`https://economia.awesomeapi.com.br/json/last/${currency}-${BASE_CURRENCY}`);
-  if (!res.ok) throw new Error(`Failed to fetch exchange rate ${currency}-${BASE_CURRENCY}: ${res.status}`);
-  const json: any = await res.json();
-  const rate = parseFloat(json[`${currency}${BASE_CURRENCY}`]?.bid);
-  if (!rate || Number.isNaN(rate)) throw new Error(`Invalid exchange rate response for ${currency}-${BASE_CURRENCY}`);
-  return rate;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const { data: cached } = await supabase
+    .from("fx_rates")
+    .select("rate")
+    .eq("currency", currency)
+    .eq("date", today)
+    .maybeSingle();
+  if (cached?.rate) return Number(cached.rate);
+
+  try {
+    const res = await fetch(`https://economia.awesomeapi.com.br/json/last/${currency}-${BASE_CURRENCY}`);
+    if (!res.ok) throw new Error(`Failed to fetch exchange rate ${currency}-${BASE_CURRENCY}: ${res.status}`);
+    const json: any = await res.json();
+    const rate = parseFloat(json[`${currency}${BASE_CURRENCY}`]?.bid);
+    if (!rate || Number.isNaN(rate)) throw new Error(`Invalid exchange rate response for ${currency}-${BASE_CURRENCY}`);
+    await supabase.from("fx_rates").upsert({ currency, date: today, rate }, { onConflict: "currency,date" });
+    return rate;
+  } catch (e) {
+    console.error(`[fx] Fresh rate fetch failed for ${currency}, falling back to most recent cached rate:`, e);
+    const { data: lastKnown } = await supabase
+      .from("fx_rates")
+      .select("rate")
+      .eq("currency", currency)
+      .order("date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (lastKnown?.rate) return Number(lastKnown.rate);
+    throw e;
+  }
 }
 
 async function fetchMetaInsights(token: string, accountId: string, since: string, until: string): Promise<MetaInsight[]> {
@@ -129,13 +156,18 @@ Deno.serve(async (req: Request) => {
     console.log(`[meta-ads-cron] Syncing ${clampedFrom} to ${dateTo}`);
     const insights = await fetchMetaInsights(metaToken, accountId, clampedFrom, dateTo);
 
-    const accountCurrency = await getAdAccountCurrency(metaToken, accountId);
-    const exchangeRate = await getExchangeRateToBRL(accountCurrency);
-    console.log(`[meta-ads-cron] Account currency: ${accountCurrency}, rate to BRL: ${exchangeRate}`);
-
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    const accountCurrency = await getAdAccountCurrency(metaToken, accountId);
+    let exchangeRate = 1;
+    try {
+      exchangeRate = await getExchangeRateToBRL(supabase, accountCurrency);
+    } catch (e) {
+      console.error(`[meta-ads-cron] Could not resolve exchange rate for ${accountCurrency}, spend will NOT be converted this run:`, e);
+    }
+    console.log(`[meta-ads-cron] Account currency: ${accountCurrency}, rate to BRL: ${exchangeRate}`);
 
     let inserted = 0;
     let errors = 0;

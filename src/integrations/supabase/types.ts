@@ -379,6 +379,27 @@ export type Database = {
         }
         Relationships: []
       }
+      fx_rates: {
+        Row: {
+          created_at: string
+          currency: string
+          date: string
+          rate: number
+        }
+        Insert: {
+          created_at?: string
+          currency: string
+          date: string
+          rate: number
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          date?: string
+          rate?: number
+        }
+        Relationships: []
+      }
       kommo_webhook_logs: {
         Row: {
           contact_id: number | null
