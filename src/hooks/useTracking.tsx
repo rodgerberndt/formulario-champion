@@ -124,99 +124,104 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     }
 
     let sessionId = localStorage.getItem(SESSION_KEY);
-    
     if (!sessionId) {
       sessionId = generateUUID();
-      localStorage.setItem(SESSION_KEY, sessionId);
-      
-      // Create new session in database via direct REST API
-      const utmParams = getUTMParams();
-      const currentPage = window.location.pathname;
-      
-      try {
-        const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/lead_sessions`;
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=minimal',
-          },
-          body: JSON.stringify({
-            id: sessionId,
-            first_page: currentPage,
-            last_page: currentPage,
-            referrer: document.referrer || null,
-            // UTM params
-            utm_source: utmParams.utm_source,
-            utm_medium: utmParams.utm_medium,
-            utm_campaign: utmParams.utm_campaign,
-            utm_content: utmParams.utm_content,
-            utm_term: utmParams.utm_term,
-            // Click IDs
-            fbclid: utmParams.fbclid,
-            gclid: utmParams.gclid,
-            ttclid: utmParams.ttclid,
-            // Meta Ads IDs
-            campaign_id: utmParams.campaign_id,
-            adset_id: utmParams.adset_id,
-            ad_id: utmParams.ad_id,
-            creative_id: utmParams.creative_id,
-            // Device info
-            device_type: getDeviceType(),
-            user_agent: navigator.userAgent,
-            // Facebook browser params for CAPI matching
-            fbp: getCookie('_fbp') || null,
-          }),
-        });
-        
-        if (!response.ok) {
-          console.error("Error creating session:", await response.text());
-        } else {
-          // Capture IP address via edge function
-          try {
-            const ipResponse = await fetch(
-              `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-client-ip`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-                },
-                body: JSON.stringify({ session_id: sessionId, action: 'check_session' }),
-              }
-            );
-            if (ipResponse.ok) {
-              const ipData = await ipResponse.json();
-              console.log("IP captured:", ipData.ip, "New visitor:", ipData.is_new_visitor);
-            }
-          } catch (ipError) {
-            console.error("Error capturing IP:", ipError);
-          }
-
-          // Retry fbp capture after Meta Pixel has time to set the cookie
-          const retryFbp = (attempt: number) => {
-            if (attempt > 5) return;
-            setTimeout(() => {
-              const fbpVal = getCookie('_fbp');
-              if (fbpVal) {
-                console.log("fbp captured on retry", attempt, fbpVal);
-                updateSessionDirect(sessionId!, { fbp: fbpVal });
-              } else if (attempt < 5) {
-                retryFbp(attempt + 1);
-              }
-            }, attempt * 1500); // 1.5s, 3s, 4.5s, 6s, 7.5s
-          };
-          if (!getCookie('_fbp')) {
-            retryFbp(1);
-          }
-        }
-      } catch (error) {
-        console.error("Error creating session:", error);
-      }
     }
-    
+    localStorage.setItem(SESSION_KEY, sessionId);
+
+    // Garante que a linha exista em lead_sessions mesmo quando o id já veio
+    // do localStorage: o script inline de landing-hit em index.html roda
+    // ANTES do React e usa essa MESMA chave só pra correlacionar
+    // landing_hits, sem nunca inserir em lead_sessions. Sem o upsert
+    // (on_conflict=id + ignore-duplicates), essa branch nunca era
+    // alcançada de fato e lead_sessions ficava sempre vazia — o que por
+    // sua vez derrubava lead_events inteiro (tem FK pra lead_sessions.id).
+    const utmParams = getUTMParams();
+    const currentPage = window.location.pathname;
+
+    try {
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/lead_sessions?on_conflict=id`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal,resolution=ignore-duplicates',
+        },
+        body: JSON.stringify({
+          id: sessionId,
+          first_page: currentPage,
+          last_page: currentPage,
+          referrer: document.referrer || null,
+          // UTM params
+          utm_source: utmParams.utm_source,
+          utm_medium: utmParams.utm_medium,
+          utm_campaign: utmParams.utm_campaign,
+          utm_content: utmParams.utm_content,
+          utm_term: utmParams.utm_term,
+          // Click IDs
+          fbclid: utmParams.fbclid,
+          gclid: utmParams.gclid,
+          ttclid: utmParams.ttclid,
+          // Meta Ads IDs
+          campaign_id: utmParams.campaign_id,
+          adset_id: utmParams.adset_id,
+          ad_id: utmParams.ad_id,
+          creative_id: utmParams.creative_id,
+          // Device info
+          device_type: getDeviceType(),
+          user_agent: navigator.userAgent,
+          // Facebook browser params for CAPI matching
+          fbp: getCookie('_fbp') || null,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("Error creating session:", await response.text());
+      } else {
+        // Capture IP address via edge function
+        try {
+          const ipResponse = await fetch(
+            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-client-ip`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+              },
+              body: JSON.stringify({ session_id: sessionId, action: 'check_session' }),
+            }
+          );
+          if (ipResponse.ok) {
+            const ipData = await ipResponse.json();
+            console.log("IP captured:", ipData.ip, "New visitor:", ipData.is_new_visitor);
+          }
+        } catch (ipError) {
+          console.error("Error capturing IP:", ipError);
+        }
+
+        // Retry fbp capture after Meta Pixel has time to set the cookie
+        const retryFbp = (attempt: number) => {
+          if (attempt > 5) return;
+          setTimeout(() => {
+            const fbpVal = getCookie('_fbp');
+            if (fbpVal) {
+              console.log("fbp captured on retry", attempt, fbpVal);
+              updateSessionDirect(sessionId!, { fbp: fbpVal });
+            } else if (attempt < 5) {
+              retryFbp(attempt + 1);
+            }
+          }, attempt * 1500); // 1.5s, 3s, 4.5s, 6s, 7.5s
+        };
+        if (!getCookie('_fbp')) {
+          retryFbp(1);
+        }
+      }
+    } catch (error) {
+      console.error("Error creating session:", error);
+    }
+
     sessionIdRef.current = sessionId;
     return sessionId;
   }, []);
