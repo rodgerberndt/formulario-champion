@@ -37,9 +37,10 @@ if (!externalSupabaseUrl || !externalSupabaseAnonKey) {
 const supabaseExternal = createClient(externalSupabaseUrl, externalSupabaseAnonKey);
 
 // Roteamento pós-submit por faixa de investimento:
-//  - "Não vendo ainda" → Sprint (sem SDR / Direct)
-//  - "Até R$ 5 mil" ou "R$ 5-10 mil" → /obrigadosprint (Gustavo)
+//  - "Não vendo ainda" ou "Até R$ 5 mil" ou "R$ 5-10 mil" → /obrigadosprint (Gustavo)
 //  - ≥ R$ 10 mil → /obrigadomql (Miguel)
+// "Não vendo ainda" entrou pra Gustavo em 2026-07-11 — antes caía no bucket
+// Direct/sem SDR e redirecionava pra fora do site sem ninguém ligar pro lead.
 const MIGUEL_FAIXAS = [
   "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
   "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
@@ -49,7 +50,7 @@ const MIGUEL_FAIXAS = [
   "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
   "Acima de R$ 10 milhões",
 ];
-const GUSTAVO_FAIXAS = ["Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
+const GUSTAVO_FAIXAS = ["Não vendo ainda (R$0/mês)", "Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
 
 interface QuizFormData {
   nome_completo: string;
@@ -676,10 +677,10 @@ export default function Quiz() {
         // ≥ R$ 10 mil → Miguel
         navigate("/obrigadomql");
       } else if (GUSTAVO_FAIXAS.includes(faixa)) {
-        // Até R$ 5 mil ou R$ 5-10 mil → Gustavo (Sprint)
+        // "Não vendo ainda", até R$ 5 mil ou R$ 5-10 mil → Gustavo (Sprint)
         navigate("/obrigadosprint");
       } else {
-        // "Não vendo ainda" → Sprint (Direct)
+        // Faixa não reconhecida (dado legado/inesperado) — fallback de segurança
         window.location.href = "https://sprint.championadstudio.com";
       }
     } catch (error) {

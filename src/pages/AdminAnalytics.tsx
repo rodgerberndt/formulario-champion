@@ -415,10 +415,12 @@ export default function AdminAnalytics() {
 
   // SDR assignment helper - uses override if set, otherwise based on faturamento
   // Regras de negócio:
-  //  - "Não vendo ainda" (ou sem faturamento) → Direct (sem SDR, redireciona p/ Sprint)
-  //  - "Até R$ 5 mil" e "R$ 5 mil a R$ 10 mil" → Gustavo
+  //  - "Não vendo ainda", "Até R$ 5 mil" e "R$ 5 mil a R$ 10 mil" → Gustavo
   //  - ≥ R$ 10 mil → Miguel
-  const GUSTAVO_FAIXAS = ["Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
+  // "Não vendo ainda" entrou pra Gustavo em 2026-07-11 — antes caía no bucket
+  // Direct/sem SDR (ninguém ligava pro lead). "Direct" continua existindo só
+  // como fallback pra faixa legada/inesperada que não bate com nenhum bucket.
+  const GUSTAVO_FAIXAS = ["Não vendo ainda (R$0/mês)", "Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
   const MIGUEL_FAIXAS = [
     "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
     "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil", "De R$ 100 mil a R$ 150 mil",
