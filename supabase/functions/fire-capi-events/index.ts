@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { lead_db_id, event_ids } = await req.json();
+    const { lead_db_id, event_ids, event_source_url } = await req.json();
     if (!lead_db_id) {
       return new Response(JSON.stringify({ error: "lead_db_id required" }), {
         status: 400,
@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
             "x-webhook-secret": INTERNAL_WEBHOOK_SECRET,
             "Authorization": `Bearer ${serviceKey}`,
           },
-          body: JSON.stringify({ lead_id: lead_db_id, event_name: "CompleteRegistration", event_id: sharedEventIds["CompleteRegistration"] || undefined }),
+          body: JSON.stringify({ lead_id: lead_db_id, event_name: "CompleteRegistration", event_id: sharedEventIds["CompleteRegistration"] || undefined, event_source_url }),
         });
         const txt = await res.text();
         console.log(`[fire-capi-events] CompleteRegistration status=${res.status}: ${txt}`);
@@ -130,7 +130,7 @@ Deno.serve(async (req) => {
             "x-webhook-secret": INTERNAL_WEBHOOK_SECRET,
             "Authorization": `Bearer ${serviceKey}`,
           },
-          body: JSON.stringify({ lead_id: lead_db_id, event_name: tierEventName, event_id: sharedEventIds[tierEventName] || undefined }),
+          body: JSON.stringify({ lead_id: lead_db_id, event_name: tierEventName, event_id: sharedEventIds[tierEventName] || undefined, event_source_url }),
         });
         const txt = await res.text();
         console.log(`[fire-capi-events] ${tierEventName} status=${res.status}: ${txt}`);
@@ -152,7 +152,7 @@ Deno.serve(async (req) => {
             "x-webhook-secret": INTERNAL_WEBHOOK_SECRET,
             "Authorization": `Bearer ${serviceKey}`,
           },
-          body: JSON.stringify({ lead_id: lead_db_id, event_name: "MQL", event_id: sharedEventIds["MQL"] || undefined }),
+          body: JSON.stringify({ lead_id: lead_db_id, event_name: "MQL", event_id: sharedEventIds["MQL"] || undefined, event_source_url }),
         });
         const txt = await res.text();
         console.log(`[fire-capi-events] MQL status=${res.status}: ${txt}`);

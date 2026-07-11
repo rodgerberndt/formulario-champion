@@ -178,7 +178,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { lead_id, event_name, value, currency, event_id } = await req.json();
+    const { lead_id, event_name, value, currency, event_id, event_source_url } = await req.json();
 
     if (!lead_id) {
       return new Response(
@@ -251,6 +251,7 @@ Deno.serve(async (req: Request) => {
       value: value != null ? Number(value) : undefined,
       currency: currency || undefined,
       eventId: event_id || undefined,
+      eventSourceUrl: event_source_url || undefined,
     });
 
     return new Response(

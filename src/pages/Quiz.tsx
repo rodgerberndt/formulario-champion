@@ -36,6 +36,21 @@ if (!externalSupabaseUrl || !externalSupabaseAnonKey) {
 
 const supabaseExternal = createClient(externalSupabaseUrl, externalSupabaseAnonKey);
 
+// Roteamento pós-submit por faixa de investimento:
+//  - "Não vendo ainda" → Sprint (sem SDR / Direct)
+//  - "Até R$ 5 mil" ou "R$ 5-10 mil" → /obrigadosprint (Gustavo)
+//  - ≥ R$ 10 mil → /obrigadomql (Miguel)
+const MIGUEL_FAIXAS = [
+  "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
+  "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
+  "De R$ 100 mil a R$ 150 mil", "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil",
+  "De R$ 300 mil a R$ 500 mil", "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão",
+  "De R$ 1 milhão a R$ 2 milhões", "De R$ 2 milhões a R$ 3 milhões",
+  "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
+  "Acima de R$ 10 milhões",
+];
+const GUSTAVO_FAIXAS = ["Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
+
 interface QuizFormData {
   nome_completo: string;
   whatsapp: string;
@@ -531,10 +546,17 @@ export default function Quiz() {
         timestamp: eventTimestamp,
       }));
 
+      // Página de destino real do lead (usada como event_source_url no CAPI, pra bater
+      // com a URL onde o pixel client-side vai efetivamente disparar o mesmo evento —
+      // ver roteamento abaixo, MIGUEL_FAIXAS/GUSTAVO_FAIXAS).
+      const destinationPath = MIGUEL_FAIXAS.includes(currentData.investimento_faixa)
+        ? "/obrigadomql"
+        : "/obrigadosprint";
+
       // CAPI events (background)
       if (insertedLead?.id) {
         supabase.functions.invoke('fire-capi-events', {
-          body: { lead_db_id: insertedLead.id, event_ids: eventIds },
+          body: { lead_db_id: insertedLead.id, event_ids: eventIds, event_source_url: `https://championadstudio.com${destinationPath}` },
         }).then(res => {
           console.log('[CAPI] fire-capi-events response:', res.data);
         }).catch(err => {
@@ -649,21 +671,7 @@ export default function Quiz() {
 
       clearTimeout(safetyTimer);
 
-      // Routing:
-      //  - "Não vendo ainda" → Sprint (sem SDR / Direct)
-      //  - "Até R$ 5 mil"    → /obrigado (página normal — Gustavo)
-      //  - ≥ R$ 5 mil        → /obrigadomql (Gustavo 5-10k / Miguel ≥10k)
       const faixa = currentData.investimento_faixa;
-      const MIGUEL_FAIXAS = [
-        "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
-        "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
-        "De R$ 100 mil a R$ 150 mil", "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil",
-        "De R$ 300 mil a R$ 500 mil", "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão",
-        "De R$ 1 milhão a R$ 2 milhões", "De R$ 2 milhões a R$ 3 milhões",
-        "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
-        "Acima de R$ 10 milhões",
-      ];
-      const GUSTAVO_FAIXAS = ["Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
       if (MIGUEL_FAIXAS.includes(faixa)) {
         // ≥ R$ 10 mil → Miguel
         navigate("/obrigadomql");

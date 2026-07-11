@@ -178,7 +178,16 @@
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
       fbq('init', '2171667863227042');
-      fbq('track', 'PageView');
+      // Landing (`/`) força um reload completo logo após o primeiro load (ver script de
+      // scroll-lock acima), o que reexecuta este script e disparava PageView 2x por
+      // visita nova. RELOAD_KEY já vem setado '1' nesse segundo load — dispara só uma vez.
+      try {
+        if (sessionStorage.getItem('champion_post_load_reload_v1') !== '1') {
+          fbq('track', 'PageView');
+        }
+      } catch (e) {
+        fbq('track', 'PageView');
+      }
     </script>
     <!-- End Facebook Pixel Code -->
     
