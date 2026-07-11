@@ -2496,33 +2496,31 @@ Deno.serve(async (req: Request) => {
         return all;
       }
 
-      // Filter out internal sessions for accuracy
-      async function getValidSessionIds(fromIso: string | null, toIso: string | null): Promise<Set<string>> {
-        const sessions = await pagedFetch("lead_sessions", "id, referrer, first_page", fromIso, toIso);
-        const valid = new Set<string>();
-        sessions.forEach((s: any) => {
+      async function buildPeriod(fromIso: string | null, toIso: string | null) {
+        // As 5 buscas paginadas abaixo não dependem umas das outras (só a
+        // FILTRAGEM por validSessions depende, e essa roda depois que tudo já
+        // voltou) — rodar em paralelo em vez de sequencial evita somar os
+        // tempos de rede das 5 tabelas (isso ficava lento o suficiente pra
+        // parecer travado no admin em ranges maiores, já que buildPeriod ainda
+        // roda 2x — período atual e período anterior).
+        const [sessionRows, sectionRows, clickRows, scrollRows, attentionRows] = await Promise.all([
+          pagedFetch("lead_sessions", "id, referrer, first_page", fromIso, toIso),
+          pagedFetch("section_views", "session_id, section_id, section_order, time_spent_ms", fromIso, toIso, "created_at", 20000),
+          pagedFetch("click_events", "session_id, click_type, click_id, section_id, label, href, pos_x_pct, pos_y_pct", fromIso, toIso, "created_at", 20000),
+          pagedFetch("scroll_milestones", "session_id, milestone", fromIso, toIso, "reached_at", 20000),
+          pagedFetch("scroll_attention_bins", "session_id, bin, time_ms", fromIso, toIso, "created_at", 20000),
+        ]);
+
+        const validSessions = new Set<string>();
+        (sessionRows || []).forEach((s: any) => {
           const ref = (s.referrer || "").toLowerCase();
           const fp = (s.first_page || "").toLowerCase();
           if (ref.includes("lovable.dev") || ref.includes("lovableproject.com")) return;
           if (fp === "/admin") return;
-          valid.add(s.id);
+          validSessions.add(s.id);
         });
-        return valid;
-      }
-
-      async function buildPeriod(fromIso: string | null, toIso: string | null) {
-        const validSessions = await getValidSessionIds(fromIso, toIso);
         const totalVisitors = validSessions.size;
 
-        // section_views
-        const sectionRows = await pagedFetch(
-          "section_views",
-          "session_id, section_id, section_order, time_spent_ms",
-          fromIso,
-          toIso,
-          "created_at",
-          20000,
-        );
         const sections = (sectionRows || []).filter((r: any) => validSessions.has(r.session_id));
 
         // Group sections — usa o MAIOR section_order encontrado (ordem mais recente
@@ -2544,14 +2542,6 @@ Deno.serve(async (req: Request) => {
         const sortedSections = Array.from(sectionMap.values()).sort((a, b) => a.order - b.order);
 
         // click events (need them BEFORE funnel to count clicks per section)
-        const clickRows = await pagedFetch(
-          "click_events",
-          "session_id, click_type, click_id, section_id, label, href, pos_x_pct, pos_y_pct",
-          fromIso,
-          toIso,
-          "created_at",
-          20000,
-        );
         const clicks = (clickRows || []).filter((r: any) => validSessions.has(r.session_id));
 
         // Map: section_id -> Set of session_ids that clicked something in that section
@@ -2564,14 +2554,6 @@ Deno.serve(async (req: Request) => {
         });
 
         // scroll milestones (precisamos ANTES do funil para usar como base)
-        const scrollRows = await pagedFetch(
-          "scroll_milestones",
-          "session_id, milestone",
-          fromIso,
-          toIso,
-          "reached_at",
-          20000,
-        );
         const scrolls = (scrollRows || []).filter((r: any) => validSessions.has(r.session_id));
 
         // maxScrollBySession: maior milestone atingido por cada sessão
@@ -2711,14 +2693,6 @@ Deno.serve(async (req: Request) => {
         // Heatmap de atenção por scroll: tempo acumulado (ms) em cada faixa de 5% da
         // página (20 bins), mais confiável que os 4 milestones pra achar "onde pararam
         // de ler" — funciona igual pra mouse e toque, já que é baseado em scroll.
-        const attentionRows = await pagedFetch(
-          "scroll_attention_bins",
-          "session_id, bin, time_ms",
-          fromIso,
-          toIso,
-          "created_at",
-          20000,
-        );
         const attentionValid = (attentionRows || []).filter((r: any) => validSessions.has(r.session_id));
         const binAgg: Record<number, { totalMs: number; sessions: Set<string> }> = {};
         for (let b = 0; b < 20; b++) binAgg[b] = { totalMs: 0, sessions: new Set() };
@@ -2762,8 +2736,10 @@ Deno.serve(async (req: Request) => {
         };
       }
 
-      const current = await buildPeriod(from, toEnd);
-      const previous = (prevFrom && prevToEnd) ? await buildPeriod(prevFrom, prevToEnd) : null;
+      const [current, previous] = await Promise.all([
+        buildPeriod(from, toEnd),
+        (prevFrom && prevToEnd) ? buildPeriod(prevFrom, prevToEnd) : Promise.resolve(null),
+      ]);
 
       // Insights
       const insights: string[] = [];

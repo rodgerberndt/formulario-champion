@@ -26,10 +26,13 @@ export type Database = {
           created_at: string
           creative_key: string | null
           date: string
+          exchange_rate: number | null
           id: string
           impressions: number
           landing_page_views: number
           spend: number
+          spend_currency: string | null
+          spend_original: number | null
           utm_content: string | null
           utm_creative: string | null
         }
@@ -44,10 +47,13 @@ export type Database = {
           created_at?: string
           creative_key?: string | null
           date: string
+          exchange_rate?: number | null
           id?: string
           impressions?: number
           landing_page_views?: number
           spend?: number
+          spend_currency?: string | null
+          spend_original?: number | null
           utm_content?: string | null
           utm_creative?: string | null
         }
@@ -62,10 +68,13 @@ export type Database = {
           created_at?: string
           creative_key?: string | null
           date?: string
+          exchange_rate?: number | null
           id?: string
           impressions?: number
           landing_page_views?: number
           spend?: number
+          spend_currency?: string | null
+          spend_original?: number | null
           utm_content?: string | null
           utm_creative?: string | null
         }

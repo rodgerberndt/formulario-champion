@@ -29,6 +29,32 @@ function normalizeCreativeKey(raw: string): string {
   return raw.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-_]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
 }
 
+const BASE_CURRENCY = "BRL";
+
+// A conta de anúncios fatura em USD — o Marketing API retorna `spend` na moeda
+// da conta, não em BRL. Sem isso, todo o funil (CPL, CPMQL, ROAS) tratava
+// dólares como se fossem reais.
+async function getAdAccountCurrency(): Promise<string> {
+  const url = `https://graph.facebook.com/${META_API_VERSION}/${META_AD_ACCOUNT_ID}?fields=currency&access_token=${META_ACCESS_TOKEN}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    console.error("Failed to fetch ad account currency, assuming BRL:", await res.text());
+    return BASE_CURRENCY;
+  }
+  const json: any = await res.json();
+  return json.currency || BASE_CURRENCY;
+}
+
+async function getExchangeRateToBRL(currency: string): Promise<number> {
+  if (currency === BASE_CURRENCY) return 1;
+  const res = await fetch(`https://economia.awesomeapi.com.br/json/last/${currency}-${BASE_CURRENCY}`);
+  if (!res.ok) throw new Error(`Failed to fetch exchange rate ${currency}-${BASE_CURRENCY}: ${res.status}`);
+  const json: any = await res.json();
+  const rate = parseFloat(json[`${currency}${BASE_CURRENCY}`]?.bid);
+  if (!rate || Number.isNaN(rate)) throw new Error(`Invalid exchange rate response for ${currency}-${BASE_CURRENCY}`);
+  return rate;
+}
+
 interface MetaInsight {
   ad_id: string;
   ad_name: string;
@@ -176,6 +202,10 @@ Deno.serve(async (req: Request) => {
     // Fetch insights from Meta
     const insights = await fetchMetaInsights(clampedFrom, date_to);
 
+    const accountCurrency = await getAdAccountCurrency();
+    const exchangeRate = await getExchangeRateToBRL(accountCurrency);
+    console.log(`Ad account currency: ${accountCurrency}, rate to BRL: ${exchangeRate}`);
+
     // Prepare upsert rows
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -199,10 +229,14 @@ Deno.serve(async (req: Request) => {
         const utmContent = utmContentMatch ? utmContentMatch[1] : (row.adset_name || row.ad_name);
         const creativeKey = utmContent ? normalizeCreativeKey(utmContent) : null;
         const landingPageViews = getPageViewsFromActions(row.actions);
+        const spendOriginal = parseFloat(row.spend) || 0;
 
         return {
           date: row.date_start,
-          spend: parseFloat(row.spend) || 0,
+          spend: Number((spendOriginal * exchangeRate).toFixed(2)),
+          spend_original: spendOriginal,
+          spend_currency: accountCurrency,
+          exchange_rate: exchangeRate,
           impressions: parseInt(row.impressions) || 0,
           clicks: parseInt(row.clicks) || 0,
           landing_page_views: landingPageViews,
