@@ -19,6 +19,10 @@ interface DayMetric {
   date: string; // YYYY-MM-DD (local SP)
   dow: number; // 0=Sun..6=Sat
   visitors: number;
+  // false = não há sessão rastreada nesse dia — `visitors` vira só o piso derivado dos
+  // IPs dos próprios leads (sempre igual a completed), e a conversão calculada em cima
+  // disso é enganosa (sempre 100%). Ver visitors_known abaixo.
+  visitors_known?: boolean;
   sessions: number;
   // null = sem evento quiz_view real registrado nesse dia (tracking corrigido em 11/07/2026;
   // dias anteriores a isso não têm — e nunca vão ter — esse dado retroativamente).
@@ -89,20 +93,22 @@ interface DayAggregate {
   date: string;
   dow: number;
   visitors: number;
+  visitors_known: boolean; // false = `visitors` é só o piso derivado de leads, sem sessão real
   sessions: number;
   entered_quiz: number | null; // null = nenhum dia deste grupo tem tracking de entrada real
   completed: number;
   entry_rate: number | null; // entered/visitors
   completion_rate: number | null; // completed/entered
-  conversion_rate: number; // completed/visitors (sempre calculável — completed e visitors nunca são null)
+  conversion_rate: number | null; // completed/visitors — null sem sessão real (senão é sempre 100%)
 }
 
 function aggregateByDow(days: DayMetric[]): Record<number, DayAggregate> {
-  const out: Record<number, { visitors: number; sessions: number; entered_quiz: number; enteredKnownDays: number; completed: number; date: string; dow: number }> = {};
-  for (let i = 0; i < 7; i++) out[i] = { visitors: 0, sessions: 0, entered_quiz: 0, enteredKnownDays: 0, completed: 0, date: "", dow: i };
+  const out: Record<number, { visitors: number; visitorsKnownDays: number; sessions: number; entered_quiz: number; enteredKnownDays: number; completed: number; date: string; dow: number }> = {};
+  for (let i = 0; i < 7; i++) out[i] = { visitors: 0, visitorsKnownDays: 0, sessions: 0, entered_quiz: 0, enteredKnownDays: 0, completed: 0, date: "", dow: i };
   days.forEach((d) => {
     const b = out[d.dow];
     b.visitors += d.visitors;
+    if (d.visitors_known) b.visitorsKnownDays += 1;
     b.sessions += d.sessions;
     if (d.entered_quiz_known && d.entered_quiz !== null) {
       b.entered_quiz += d.entered_quiz;
@@ -114,16 +120,18 @@ function aggregateByDow(days: DayMetric[]): Record<number, DayAggregate> {
   const result: Record<number, DayAggregate> = {};
   Object.entries(out).forEach(([k, v]) => {
     const hasEntered = v.enteredKnownDays > 0;
+    const hasVisitors = v.visitorsKnownDays > 0;
     result[Number(k)] = {
       date: v.date,
       dow: v.dow,
       visitors: v.visitors,
+      visitors_known: hasVisitors,
       sessions: v.sessions,
       completed: v.completed,
       entered_quiz: hasEntered ? v.entered_quiz : null,
       entry_rate: hasEntered ? pct(v.entered_quiz, v.visitors) : null,
       completion_rate: hasEntered ? pct(v.completed, v.entered_quiz) : null,
-      conversion_rate: pct(v.completed, v.visitors),
+      conversion_rate: hasVisitors ? pct(v.completed, v.visitors) : null,
     };
   });
   return result;
@@ -133,6 +141,7 @@ function totalsOf(days: DayMetric[]) {
   const t = days.reduce(
     (acc, d) => {
       acc.visitors += d.visitors;
+      if (d.visitors_known) acc.visitorsKnownDays += 1;
       acc.sessions += d.sessions;
       if (d.entered_quiz_known && d.entered_quiz !== null) {
         acc.entered_quiz += d.entered_quiz;
@@ -141,17 +150,19 @@ function totalsOf(days: DayMetric[]) {
       acc.completed += d.completed;
       return acc;
     },
-    { visitors: 0, sessions: 0, entered_quiz: 0, enteredKnownDays: 0, completed: 0 }
+    { visitors: 0, visitorsKnownDays: 0, sessions: 0, entered_quiz: 0, enteredKnownDays: 0, completed: 0 }
   );
   const hasEntered = t.enteredKnownDays > 0;
+  const hasVisitors = t.visitorsKnownDays > 0;
   return {
     visitors: t.visitors,
+    visitors_known: hasVisitors,
     sessions: t.sessions,
     completed: t.completed,
     entered_quiz: hasEntered ? t.entered_quiz : null,
     entry_rate: hasEntered ? pct(t.entered_quiz, t.visitors) : null,
     completion_rate: hasEntered ? pct(t.completed, t.entered_quiz) : null,
-    conversion_rate: pct(t.completed, t.visitors),
+    conversion_rate: hasVisitors ? pct(t.completed, t.visitors) : null,
   };
 }
 
@@ -255,22 +266,29 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
     [byDow]
   );
   const bestVisitorsDow = activeDays.length ? activeDays.reduce((a, b) => (b.visitors > a.visitors ? b : a)).dow : null;
-  const bestConversionDow = activeDays.length
-    ? activeDays.reduce((a, b) => (b.conversion_rate > a.conversion_rate ? b : a)).dow
+  // Só compara conversão entre dias que de fato têm sessão rastreada — sem isso, todo
+  // dia sem sinal tem conversion_rate=null e "maior/menor conversão" não faz sentido.
+  const daysWithConversion = activeDays.filter((d) => d.conversion_rate !== null);
+  const bestConversionDow = daysWithConversion.length
+    ? daysWithConversion.reduce((a, b) => (b.conversion_rate! > a.conversion_rate! ? b : a)).dow
     : null;
-  const worstConversionDow = activeDays.length
-    ? activeDays.reduce((a, b) => (b.conversion_rate < a.conversion_rate ? b : a)).dow
+  const worstConversionDow = daysWithConversion.length
+    ? daysWithConversion.reduce((a, b) => (b.conversion_rate! < a.conversion_rate! ? b : a)).dow
     : null;
   const maxVisitors = activeDays.length ? Math.max(...activeDays.map((d) => d.visitors)) : 0;
   // Nenhum dia do período tem tracking real de entrada no quiz (comum para qualquer
   // período anterior ao fix de lead_sessions/lead_events em 11/07/2026).
   const noEnteredDataAtAll = totals.entered_quiz === null;
+  const noVisitorDataAtAll = !totals.visitors_known;
 
   // Insights
   const insights = useMemo(() => {
     const out: string[] = [];
-    if (bestConversionDow !== null && byDow[bestConversionDow].conversion_rate > 0) {
-      out.push(`${DOW_FULL[bestConversionDow]} teve a maior taxa de conversão (${fmtPct(byDow[bestConversionDow].conversion_rate)}).`);
+    if (bestConversionDow !== null) {
+      const rate = byDow[bestConversionDow].conversion_rate;
+      if (rate !== null && rate > 0) {
+        out.push(`${DOW_FULL[bestConversionDow]} teve a maior taxa de conversão (${fmtPct(rate)}).`);
+      }
     }
     if (bestVisitorsDow !== null) {
       const dayBest = byDow[bestVisitorsDow];
@@ -278,7 +296,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
         out.push(`${DOW_FULL[bestVisitorsDow]} trouxe mais visitantes (${dayBest.visitors}), mas com taxa de conclusão abaixo da média.`);
       }
     }
-    if (totals.visitors > 0 && prevTotals.visitors > 0) {
+    if (totals.visitors > 0 && prevTotals.visitors > 0 && totals.conversion_rate !== null && prevTotals.conversion_rate !== null) {
       const dv = pct(totals.visitors - prevTotals.visitors, prevTotals.visitors);
       const dc = totals.conversion_rate - prevTotals.conversion_rate;
       if (dv > 0 && dc < 0) out.push(`A semana atual teve mais tráfego (+${dv.toFixed(1)}%), mas pior eficiência na conversão (${dc.toFixed(2)} p.p.).`);
@@ -365,10 +383,10 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
 
         {noEnteredDataAtAll && !loading && (
           <p className="text-[11px] text-amber-300/90 -mt-2 rounded-md border border-amber-500/20 bg-amber-500/5 px-3 py-2">
-            Sem dados de "entrada no quiz" rastreados para nenhum dia deste período — o tracking de
-            eventos foi corrigido recentemente. "Visitantes" e "Conclusões" abaixo usam a base real de
-            leads e sessões; "Entradas no quiz" e as taxas derivadas dela aparecerão assim que houver
-            acessos rastreados a partir de agora.
+            Sem sessão rastreada em nenhum dia deste período — o tracking foi corrigido recentemente
+            (bug fazia essas tabelas ficarem vazias). "Conclusões" abaixo vem de leads reais, sempre
+            confiável.{noVisitorDataAtAll && " \"Visitantes\" mostrado é só o piso derivado dos leads (por isso bate exatamente com \"Conclusões\") — não representa quem visitou sem converter, então \"Conversão total\" fica sem dado (—) em vez de mostrar 100% artificial."} "Entradas
+            no quiz" e as taxas derivadas dela aparecerão assim que houver acessos rastreados a partir de agora.
           </p>
         )}
 
@@ -379,7 +397,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
           {deltaCard("Conclusões", totals.completed, prevTotals.completed)}
           {deltaCard("Taxa de entrada", totals.entry_rate, prevTotals.entry_rate ?? 0, true, true)}
           {deltaCard("Taxa de conclusão", totals.completion_rate, prevTotals.completion_rate ?? 0, true, true)}
-          {deltaCard("Conversão total", totals.conversion_rate, prevTotals.conversion_rate, true, true)}
+          {deltaCard("Conversão total", totals.conversion_rate, prevTotals.conversion_rate ?? 0, true, true)}
         </div>
 
         {/* Cards por dia da semana */}
@@ -393,7 +411,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
               const prev = prevByDow[dow];
               const visitorBarPct = maxVisitors > 0 ? (d.visitors / maxVisitors) * 100 : 0;
               const isBestVisitors = dow === bestVisitorsDow && d.visitors > 0;
-              const isBestConv = dow === bestConversionDow && d.conversion_rate > 0;
+              const isBestConv = dow === bestConversionDow && (d.conversion_rate ?? 0) > 0;
               const isWorstConv = dow === worstConversionDow && activeDays.length > 1 && d.visitors > 0;
               const dayCardClass = isBestConv
                 ? "border-emerald-500/40 bg-emerald-500/5"
@@ -473,7 +491,7 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
                     <div title="Conclusões / Visitantes">
                       <p className="text-muted-foreground">Conv.</p>
                       <p className={`font-semibold ${isBestConv ? "text-emerald-400" : isWorstConv ? "text-rose-400" : ""}`}>
-                        {d.conversion_rate.toFixed(1)}%
+                        {d.conversion_rate === null ? "—" : `${d.conversion_rate.toFixed(1)}%`}
                       </p>
                     </div>
                   </div>

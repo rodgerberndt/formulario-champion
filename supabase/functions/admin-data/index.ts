@@ -628,11 +628,18 @@ Deno.serve(async (req: Request) => {
           const enteredQuiz = enteredQuizKnown ? Math.max(b.entered_quiz, completed) : null;
           const visitors = Math.max(b.visitors.size, enteredQuiz ?? completed);
           const sessions = Math.max(b.sessions, completed);
+          // Sem sessão real registrada nesse dia, `visitors` é só o piso derivado dos IPs
+          // dos próprios leads (sempre igual a completed, já que não há sinal independente
+          // de quem visitou sem converter) — daí a "conversão total" de 100% enganosa que o
+          // usuário reportou. Com sinal real de sessão, o piso passa a refletir gente que
+          // visitou de fato (converteu ou não).
+          const visitorsKnown = b.sessions > 0;
 
           return {
             date: b.date,
             dow: b.dow,
             visitors,
+            visitors_known: visitorsKnown,
             sessions,
             entered_quiz: enteredQuiz,
             entered_quiz_known: enteredQuizKnown,
