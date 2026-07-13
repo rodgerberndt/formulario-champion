@@ -139,22 +139,29 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     // Garante que a linha exista em lead_sessions mesmo quando o id já veio
     // do localStorage: o script inline de landing-hit em index.html roda
     // ANTES do React e usa essa MESMA chave só pra correlacionar
-    // landing_hits, sem nunca inserir em lead_sessions. Sem o upsert
-    // (on_conflict=id + ignore-duplicates), essa branch nunca era
-    // alcançada de fato e lead_sessions ficava sempre vazia — o que por
-    // sua vez derrubava lead_events inteiro (tem FK pra lead_sessions.id).
+    // landing_hits, sem nunca inserir em lead_sessions.
+    //
+    // IMPORTANTE: NÃO usar on_conflict/upsert aqui. O Postgres precisa de
+    // permissão de SELECT sob RLS pra resolver "ON CONFLICT" (mesmo com
+    // DO NOTHING) — e lead_sessions não tem policy de SELECT pública
+    // (removida de propósito em 2026-05-27, leitura só via service_role
+    // no admin-data). Com upsert, TODO insert falhava com 42501
+    // silenciosamente (só no console do visitante), deixando a tabela
+    // 100% vazia mesmo depois do "fix" anterior que tentou justamente
+    // corrigir isso. Um INSERT simples funciona (confirmado); conflito de
+    // chave (sessão já existe) vira 409/23505, tratado abaixo como normal.
     const utmParams = getUTMParams();
     const currentPage = window.location.pathname;
 
     try {
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/lead_sessions?on_conflict=id`;
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/lead_sessions`;
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           'Content-Type': 'application/json',
-          'Prefer': 'return=minimal,resolution=ignore-duplicates',
+          'Prefer': 'return=minimal',
         },
         body: JSON.stringify({
           id: sessionId,
@@ -184,7 +191,9 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
         }),
       });
 
-      if (!response.ok) {
+      // 409 = sessão já existe (unique violation na PK) — normal quando o
+      // id já veio do localStorage, não é um erro real.
+      if (!response.ok && response.status !== 409) {
         console.error("Error creating session:", await response.text());
       } else {
         // Capture IP address via edge function
