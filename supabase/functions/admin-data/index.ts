@@ -106,10 +106,20 @@ Deno.serve(async (req: Request) => {
       // só exibia o número cru. `ad_spend` já sincroniza nome/id de toda
       // campanha/anúncio via cron, então reaproveita essa fonte em vez de
       // depender de uma chamada extra à Graph API.
-      const leadsWithAttribution = (data || []).filter((l: any) => l.campaign_id || l.ad_id);
+      //
+      // campaign_id/ad_id dedicados quase sempre vêm NULL na prática: o link
+      // de destino dos anúncios usa os parâmetros dinâmicos utm_campaign/
+      // utm_content (não campaign_id/ad_id), então o ID numérico cru do Meta
+      // acaba morando em utm_campaign/utm_content mesmo — resolve por ali
+      // também, senão isso nunca teria dado nenhuma linha pra resolver.
+      const isNumericId = (v: unknown): v is string => typeof v === "string" && /^\d+$/.test(v);
+      const resolveCampaignId = (l: any) => l.campaign_id || (isNumericId(l.utm_campaign) ? l.utm_campaign : null);
+      const resolveAdId = (l: any) => l.ad_id || (isNumericId(l.utm_content) ? l.utm_content : null);
+
+      const leadsWithAttribution = (data || []).filter((l: any) => resolveCampaignId(l) || resolveAdId(l));
       if (leadsWithAttribution.length > 0) {
-        const campaignIds = [...new Set(leadsWithAttribution.map((l: any) => l.campaign_id).filter(Boolean))];
-        const adIds = [...new Set(leadsWithAttribution.map((l: any) => l.ad_id).filter(Boolean))];
+        const campaignIds = [...new Set(leadsWithAttribution.map(resolveCampaignId).filter(Boolean))];
+        const adIds = [...new Set(leadsWithAttribution.map(resolveAdId).filter(Boolean))];
         const [{ data: campaignRows }, { data: adRows }] = await Promise.all([
           campaignIds.length > 0
             ? supabase.from("ad_spend").select("campaign_id, campaign_name").in("campaign_id", campaignIds).not("campaign_name", "is", null)
@@ -124,8 +134,10 @@ Deno.serve(async (req: Request) => {
         (adRows || []).forEach((r: any) => { if (!adNameById.has(r.ad_id)) adNameById.set(r.ad_id, r.ad_name); });
 
         (data || []).forEach((l: any) => {
-          if (l.campaign_id && campaignNameById.has(l.campaign_id)) l.campaign_name_resolved = campaignNameById.get(l.campaign_id);
-          if (l.ad_id && adNameById.has(l.ad_id)) l.ad_name_resolved = adNameById.get(l.ad_id);
+          const cid = resolveCampaignId(l);
+          const aid = resolveAdId(l);
+          if (cid && campaignNameById.has(cid)) l.campaign_name_resolved = campaignNameById.get(cid);
+          if (aid && adNameById.has(aid)) l.ad_name_resolved = adNameById.get(aid);
         });
       }
 

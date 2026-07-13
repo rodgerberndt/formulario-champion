@@ -56,10 +56,15 @@ function parseQueryParams(search: string): Partial<UtmData> {
   const fbclid = sanitizeParam(params.get("fbclid"));
   const gclid = sanitizeParam(params.get("gclid"));
 
-  // Meta Ads parameters (IDs are numeric, no need to sanitize)
-  const campaign_id = params.get("campaign_id");
+  // Meta Ads parameters (IDs are numeric, no need to sanitize).
+  // Vários anúncios usam os parâmetros dinâmicos utm_campaign={{campaign.id}}/
+  // utm_content={{ad.id}} em vez de campaign_id/ad_id dedicados — nesse caso
+  // o ID numérico cru do Meta cai em utm_campaign/utm_content, então usa como
+  // fallback pra não perder o dado (campaign_id/ad_id explícitos têm prioridade).
+  const isNumericId = (v: string | null) => !!v && /^\d+$/.test(v);
+  const campaign_id = params.get("campaign_id") || (isNumericId(utm_campaign) ? utm_campaign : null);
   const adset_id = params.get("adset_id");
-  const ad_id = params.get("ad_id");
+  const ad_id = params.get("ad_id") || (isNumericId(utm_content) ? utm_content : null);
   const placement = sanitizeParam(params.get("placement"));
   const site_source_name = sanitizeParam(params.get("site_source_name"));
 

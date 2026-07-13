@@ -56,6 +56,8 @@ interface SendEventParams {
   value?: number;
   currency?: string;
   eventId?: string; // For deduplication between browser/server
+  campaignId?: string | null;
+  adId?: string | null;
 }
 
 async function sendConversionEvent(params: SendEventParams): Promise<{ success: boolean; error?: string; response?: unknown }> {
@@ -130,6 +132,8 @@ async function sendConversionEvent(params: SendEventParams): Promise<{ success: 
         user_data: userData,
         custom_data: {
           lead_id: params.leadId,
+          ...(params.campaignId && { campaign_id: params.campaignId }),
+          ...(params.adId && { ad_id: params.adId }),
           ...(params.value != null && { value: params.value, currency: params.currency || "BRL" }),
         },
       },
@@ -196,7 +200,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: lead, error: leadError } = await supabase
       .from("leads")
-      .select("id, nome_completo, whatsapp, email, fbclid, ip_address, campaign_id, ad_id, adset_id, utm_content")
+      .select("id, nome_completo, whatsapp, email, fbclid, fbp, ip_address, campaign_id, ad_id, adset_id, utm_campaign, utm_content")
       .eq("id", lead_id)
       .maybeSingle();
 
@@ -235,7 +239,18 @@ Deno.serve(async (req: Request) => {
     const fbcClickTime = sessionWithFbclid?.created_at ? new Date(sessionWithFbclid.created_at).getTime() : null;
     const ipAddress = latestSession?.ip_address || lead.ip_address || null;
     const userAgent = latestSession?.user_agent || null;
-    const fbp = lastClickSession?.fbp || latestSession?.fbp || null;
+    // lead.fbp e capturado direto no submit do quiz (fonte confiavel e
+    // independente de lead_sessions, que ja ficou vazia por 2 causas raiz
+    // diferentes) — prioriza sessao recente quando existir, senao usa esse.
+    const fbp = lastClickSession?.fbp || latestSession?.fbp || lead.fbp || null;
+
+    // O link de destino de varios anuncios usa parametros dinamicos do Meta
+    // (utm_campaign={{campaign.id}}, utm_content={{ad.id}}) em vez dos campos
+    // dedicados campaign_id/ad_id, entao o ID numerico cru acaba so em
+    // utm_campaign/utm_content — usa como fallback pra nao perder o dado.
+    const isNumericId = (v: unknown): v is string => typeof v === "string" && /^\d+$/.test(v);
+    const campaignId = lead.campaign_id || (isNumericId(lead.utm_campaign) ? lead.utm_campaign : null);
+    const adId = lead.ad_id || (isNumericId(lead.utm_content) ? lead.utm_content : null);
 
     const result = await sendConversionEvent({
       eventName,
@@ -248,6 +263,8 @@ Deno.serve(async (req: Request) => {
       fbcClickTime,
       ipAddress,
       userAgent,
+      campaignId,
+      adId,
       value: value != null ? Number(value) : undefined,
       currency: currency || undefined,
       eventId: event_id || undefined,

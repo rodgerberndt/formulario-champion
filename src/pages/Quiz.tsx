@@ -507,6 +507,9 @@ export default function Quiz() {
         new Promise<null>((resolve) => setTimeout(() => resolve(null), 800)),
       ]);
 
+      const fbpMatch = document.cookie.match(/(?:^|; )_fbp=([^;]*)/);
+      const fbp = fbpMatch ? decodeURIComponent(fbpMatch[1]) : null;
+
       const dbData = {
         nome_completo: currentData.nome_completo,
         whatsapp: currentData.whatsapp,
@@ -522,6 +525,7 @@ export default function Quiz() {
         raw_answers_json: JSON.parse(JSON.stringify(currentData)),
         attribution_source: getAttributionSource(),
         ip_address: clientIp,
+        fbp,
         ...getUtmPayload()
       };
 

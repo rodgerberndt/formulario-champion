@@ -28,18 +28,25 @@ export interface AttributionData {
 
 function getQueryParams(): Record<string, string | null> {
   const params = new URLSearchParams(window.location.search);
+  const utm_campaign = params.get("utm_campaign");
+  const utm_content = params.get("utm_content");
+  // Vários anúncios usam os parâmetros dinâmicos utm_campaign={{campaign.id}}/
+  // utm_content={{ad.id}} em vez de campaign_id/ad_id dedicados — nesse caso
+  // o ID numérico cru do Meta cai em utm_campaign/utm_content, então usa como
+  // fallback pra não perder o dado (campaign_id/ad_id explícitos têm prioridade).
+  const isNumericId = (v: string | null) => !!v && /^\d+$/.test(v);
   return {
     utm_source: params.get("utm_source"),
     utm_medium: params.get("utm_medium"),
-    utm_campaign: params.get("utm_campaign"),
-    utm_content: params.get("utm_content"),
+    utm_campaign,
+    utm_content,
     utm_term: params.get("utm_term"),
     fbclid: params.get("fbclid"),
     gclid: params.get("gclid"),
     ttclid: params.get("ttclid"),
-    campaign_id: params.get("campaign_id"),
+    campaign_id: params.get("campaign_id") || (isNumericId(utm_campaign) ? utm_campaign : null),
     adset_id: params.get("adset_id"),
-    ad_id: params.get("ad_id"),
+    ad_id: params.get("ad_id") || (isNumericId(utm_content) ? utm_content : null),
     creative_id: params.get("creative_id"),
   };
 }
