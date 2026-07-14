@@ -141,6 +141,85 @@ Deno.serve(async (req: Request) => {
         });
       }
 
+      // Fallback pra quando ad_spend não cobre o anúncio (ex.: venda de um
+      // anúncio/campanha fora da janela rolante de 3 dias que o meta-ads-cron
+      // sincroniza). Antes de bater na Graph API, olha o cache em
+      // meta_ads_cache (populado por esse mesmo fallback); só resolve ao vivo
+      // o que não está lá ou está com mais de 24h, e limita quantos IDs novos
+      // resolve por request pra não estourar rate limit nem deixar o /leads
+      // lento.
+      const stillUnresolvedAdIds = [...new Set(
+        (data || [])
+          .filter((l: any) => !l.ad_name_resolved)
+          .map(resolveAdId)
+          .filter(Boolean)
+      )];
+
+      if (stillUnresolvedAdIds.length > 0) {
+        const { data: cacheRows } = await supabase
+          .from("meta_ads_cache")
+          .select("ad_id, ad_name, campaign_id, campaign_name, last_synced_at")
+          .in("ad_id", stillUnresolvedAdIds);
+
+        const cacheByAdId = new Map<string, any>();
+        (cacheRows || []).forEach((r: any) => cacheByAdId.set(r.ad_id, r));
+
+        const nowMs = Date.now();
+        const isFresh = (r: any) => !!r && (nowMs - new Date(r.last_synced_at).getTime()) < 24 * 60 * 60 * 1000;
+
+        const idsToFetchLive = stillUnresolvedAdIds
+          .filter((id) => !isFresh(cacheByAdId.get(id)))
+          .slice(0, 30);
+
+        const metaAccessToken = Deno.env.get("META_ACCESS_TOKEN");
+        if (metaAccessToken && idsToFetchLive.length > 0) {
+          const metaApiVersion = "v21.0";
+          const resolved = await Promise.all(idsToFetchLive.map(async (adId) => {
+            try {
+              const res = await fetch(
+                `https://graph.facebook.com/${metaApiVersion}/${adId}?fields=id,name,campaign{id,name}&access_token=${metaAccessToken}`
+              );
+              if (!res.ok) return null;
+              const json: any = await res.json();
+              if (!json.name && !json.campaign?.name) return null;
+              return {
+                ad_id: adId,
+                ad_name: json.name || null,
+                campaign_id: json.campaign?.id || null,
+                campaign_name: json.campaign?.name || null,
+              };
+            } catch {
+              return null;
+            }
+          }));
+
+          const freshlyResolved = resolved.filter((r: any) => r !== null);
+          if (freshlyResolved.length > 0) {
+            await supabase.from("meta_ads_cache").upsert(
+              freshlyResolved.map((r: any) => ({
+                ad_id: r.ad_id,
+                ad_name: r.ad_name,
+                campaign_id: r.campaign_id,
+                campaign_name: r.campaign_name,
+                last_synced_at: new Date().toISOString(),
+              })),
+              { onConflict: "ad_id" }
+            );
+            freshlyResolved.forEach((r: any) => cacheByAdId.set(r.ad_id, r));
+          }
+        }
+
+        (data || []).forEach((l: any) => {
+          if (l.ad_name_resolved) return;
+          const aid = resolveAdId(l);
+          const cached = aid ? cacheByAdId.get(aid) : null;
+          if (cached) {
+            if (cached.ad_name) l.ad_name_resolved = cached.ad_name;
+            if (!l.campaign_name_resolved && cached.campaign_name) l.campaign_name_resolved = cached.campaign_name;
+          }
+        });
+      }
+
       return new Response(
         JSON.stringify(data),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
