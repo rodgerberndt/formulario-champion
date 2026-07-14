@@ -190,6 +190,8 @@ interface Lead {
   ad_id: string | null;
   campaign_name_resolved?: string | null;
   ad_name_resolved?: string | null;
+  creative_name_resolved?: string | null;
+  creative_thumbnail_url_resolved?: string | null;
   placement: string | null;
   site_source_name: string | null;
   sdr_override: string | null;
@@ -2379,12 +2381,15 @@ export default function AdminAnalytics() {
                             </p>
                           </div>
                           <div className="p-3 bg-background/50 rounded-lg">
-                            <p className="text-muted-foreground text-[10px] uppercase mb-1">Anúncio</p>
+                            <p className="text-muted-foreground text-[10px] uppercase mb-1">Anúncio / Criativo</p>
                             <p className="font-semibold text-blue-400 text-lg">
                               {(() => {
                                 const raw = selectedLead.utm_content;
                                 const isPlaceholder = raw && /\{\{.*\}\}/.test(raw);
                                 const isNumericId = raw && /^\d+$/.test(raw);
+                                // creative_name identifica o criativo de verdade — ad_name
+                                // geralmente fica com o nome padrão "Ad" (não renomeado).
+                                if (selectedLead.creative_name_resolved) return selectedLead.creative_name_resolved;
                                 if (!isPlaceholder && raw && !isNumericId) return raw;
                                 if (selectedLead.ad_name_resolved) return selectedLead.ad_name_resolved;
                                 if (!isPlaceholder && raw) return raw;
@@ -2419,6 +2424,16 @@ export default function AdminAnalytics() {
                             </p>
                           </div>
                         </div>
+                        {selectedLead.creative_thumbnail_url_resolved && (
+                          <div className="mt-3 flex items-center gap-3 p-2 bg-background/30 rounded-lg">
+                            <img
+                              src={selectedLead.creative_thumbnail_url_resolved}
+                              alt="Miniatura do criativo"
+                              className="w-12 h-12 rounded object-cover border border-purple-500/30"
+                            />
+                            <p className="text-xs text-muted-foreground">Miniatura do criativo que gerou o lead</p>
+                          </div>
+                        )}
                       </div>
 
                       {/* Basic Info */}

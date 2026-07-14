@@ -141,33 +141,33 @@ Deno.serve(async (req: Request) => {
         });
       }
 
-      // Fallback pra quando ad_spend não cobre o anúncio (ex.: venda de um
-      // anúncio/campanha fora da janela rolante de 3 dias que o meta-ads-cron
-      // sincroniza). Antes de bater na Graph API, olha o cache em
-      // meta_ads_cache (populado por esse mesmo fallback); só resolve ao vivo
-      // o que não está lá ou está com mais de 24h, e limita quantos IDs novos
-      // resolve por request pra não estourar rate limit nem deixar o /leads
-      // lento.
-      const stillUnresolvedAdIds = [...new Set(
-        (data || [])
-          .filter((l: any) => !l.ad_name_resolved)
-          .map(resolveAdId)
-          .filter(Boolean)
+      // Nome do anúncio (ad_name) sozinho quase sempre não identifica o
+      // criativo de verdade: muitos anúncios ficam com o nome padrão "Ad"
+      // (não renomeado), só campanha/conjunto têm nome descritivo. Quem
+      // identifica o criativo que vendeu é o creative (Graph API). Isso
+      // também resolve campanha/anúncio pros casos que ad_spend não cobre
+      // (venda de um anúncio fora da janela rolante de 3 dias que o
+      // meta-ads-cron sincroniza). Usa cache em meta_ads_cache (24h) antes
+      // de bater na API; limita quantos IDs novos resolve por request pra
+      // não estourar rate limit nem deixar o /leads lento — o resto
+      // resolve nos próximos carregamentos.
+      const adIdsNeedingCreative = [...new Set(
+        (data || []).map(resolveAdId).filter(Boolean)
       )];
 
-      if (stillUnresolvedAdIds.length > 0) {
+      if (adIdsNeedingCreative.length > 0) {
         const { data: cacheRows } = await supabase
           .from("meta_ads_cache")
-          .select("ad_id, ad_name, campaign_id, campaign_name, last_synced_at")
-          .in("ad_id", stillUnresolvedAdIds);
+          .select("ad_id, ad_name, campaign_id, campaign_name, creative_name, creative_thumbnail_url, last_synced_at")
+          .in("ad_id", adIdsNeedingCreative);
 
         const cacheByAdId = new Map<string, any>();
         (cacheRows || []).forEach((r: any) => cacheByAdId.set(r.ad_id, r));
 
         const nowMs = Date.now();
-        const isFresh = (r: any) => !!r && (nowMs - new Date(r.last_synced_at).getTime()) < 24 * 60 * 60 * 1000;
+        const isFresh = (r: any) => !!r && !!r.creative_name && (nowMs - new Date(r.last_synced_at).getTime()) < 24 * 60 * 60 * 1000;
 
-        const idsToFetchLive = stillUnresolvedAdIds
+        const idsToFetchLive = adIdsNeedingCreative
           .filter((id) => !isFresh(cacheByAdId.get(id)))
           .slice(0, 30);
 
@@ -177,16 +177,18 @@ Deno.serve(async (req: Request) => {
           const resolved = await Promise.all(idsToFetchLive.map(async (adId) => {
             try {
               const res = await fetch(
-                `https://graph.facebook.com/${metaApiVersion}/${adId}?fields=id,name,campaign{id,name}&access_token=${metaAccessToken}`
+                `https://graph.facebook.com/${metaApiVersion}/${adId}?fields=id,name,campaign{id,name},creative{name,thumbnail_url}&access_token=${metaAccessToken}`
               );
               if (!res.ok) return null;
               const json: any = await res.json();
-              if (!json.name && !json.campaign?.name) return null;
+              if (!json.name && !json.campaign?.name && !json.creative?.name) return null;
               return {
                 ad_id: adId,
                 ad_name: json.name || null,
                 campaign_id: json.campaign?.id || null,
                 campaign_name: json.campaign?.name || null,
+                creative_name: json.creative?.name || null,
+                creative_thumbnail_url: json.creative?.thumbnail_url || null,
               };
             } catch {
               return null;
@@ -201,6 +203,8 @@ Deno.serve(async (req: Request) => {
                 ad_name: r.ad_name,
                 campaign_id: r.campaign_id,
                 campaign_name: r.campaign_name,
+                creative_name: r.creative_name,
+                creative_thumbnail_url: r.creative_thumbnail_url,
                 last_synced_at: new Date().toISOString(),
               })),
               { onConflict: "ad_id" }
@@ -210,11 +214,12 @@ Deno.serve(async (req: Request) => {
         }
 
         (data || []).forEach((l: any) => {
-          if (l.ad_name_resolved) return;
           const aid = resolveAdId(l);
           const cached = aid ? cacheByAdId.get(aid) : null;
           if (cached) {
-            if (cached.ad_name) l.ad_name_resolved = cached.ad_name;
+            if (cached.creative_name) l.creative_name_resolved = cached.creative_name;
+            if (cached.creative_thumbnail_url) l.creative_thumbnail_url_resolved = cached.creative_thumbnail_url;
+            if (!l.ad_name_resolved && cached.ad_name) l.ad_name_resolved = cached.ad_name;
             if (!l.campaign_name_resolved && cached.campaign_name) l.campaign_name_resolved = cached.campaign_name;
           }
         });
