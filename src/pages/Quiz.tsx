@@ -542,6 +542,7 @@ export default function Quiz() {
       const eventTimestamp = Math.floor(Date.now() / 1000);
       const eventIds: Record<string, string> = {
         CompleteRegistration: `${insertedLead?.id}_CompleteRegistration_${eventTimestamp}`,
+        Lead: `${insertedLead?.id}_Lead_${eventTimestamp}`,
         MQL: `${insertedLead?.id}_MQL_${eventTimestamp}`,
       };
 

@@ -118,7 +118,30 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 2. Tier event
+    // 2. Standard Lead event (must be the literal event_name "Lead" so Meta
+    // counts it as the standard event campaigns optimize for — the tier event
+    // below uses a custom name and never counted toward it)
+    if (!capiSent["Lead"]) {
+      eventsToSend.push("Lead");
+      try {
+        const res = await fetch(capiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-webhook-secret": INTERNAL_WEBHOOK_SECRET,
+            "Authorization": `Bearer ${serviceKey}`,
+          },
+          body: JSON.stringify({ lead_id: lead_db_id, event_name: "Lead", event_id: sharedEventIds["Lead"] || undefined, event_source_url }),
+        });
+        const txt = await res.text();
+        console.log(`[fire-capi-events] Lead status=${res.status}: ${txt}`);
+        if (res.ok) capiSent["Lead"] = true;
+      } catch (e) {
+        console.error("[fire-capi-events] Lead error:", e);
+      }
+    }
+
+    // 3. Tier event
     const tierEventName = `Lead_${tier.replace("+", "Plus")}`;
     if (!capiSent[tierEventName] && tier !== "Desqualificado") {
       eventsToSend.push(tierEventName);
@@ -140,7 +163,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 3. MQL
+    // 4. MQL
     const isMql = MQL_FAIXAS.includes(investimentoFaixa);
     if (!capiSent["MQL"] && isMql) {
       eventsToSend.push("MQL");

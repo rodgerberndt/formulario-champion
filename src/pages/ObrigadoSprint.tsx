@@ -151,12 +151,14 @@ export default function ObrigadoSprint() {
       if (typeof window.fbq === 'function') {
         // Read shared event_ids for CAPI deduplication
         let crEventID: string | undefined;
+        let leadEventID: string | undefined;
         let mqlEventID: string | undefined;
         try {
           const stored = localStorage.getItem('champion_event_ids');
           if (stored) {
             const parsed = JSON.parse(stored);
             crEventID = parsed.event_ids?.CompleteRegistration;
+            leadEventID = parsed.event_ids?.Lead;
             mqlEventID = parsed.event_ids?.MQL;
           }
         } catch { /* ignore */ }
@@ -164,6 +166,14 @@ export default function ObrigadoSprint() {
         // Fire CompleteRegistration with matching event_id
         window.fbq('track', 'CompleteRegistration', {}, { eventID: crEventID });
         console.log('Facebook Pixel: CompleteRegistration fired with eventID:', crEventID);
+
+        // Standard Lead event (must use 'track', not 'trackCustom', so Meta
+        // counts it toward the Lead objective/column campaigns optimize for)
+        window.fbq('track', 'Lead', {
+          content_name: 'Lead',
+          investimento_faixa: formData.investimento_faixa || 'unknown',
+        }, { eventID: leadEventID });
+        console.log('Facebook Pixel: Lead fired with eventID:', leadEventID);
 
         // Slug-specific custom event: Sprint
         window.fbq('trackCustom', 'Sprint', {

@@ -56,11 +56,13 @@ export default function Obrigado() {
 
       if (typeof window.fbq === 'function') {
         let eventID: string | undefined;
+        let leadEventID: string | undefined;
         try {
           const stored = localStorage.getItem('champion_event_ids');
           if (stored) {
             const parsedIds = JSON.parse(stored);
             eventID = parsedIds.event_ids?.CompleteRegistration;
+            leadEventID = parsedIds.event_ids?.Lead;
           }
         } catch { /* ignore */ }
 
@@ -68,12 +70,13 @@ export default function Obrigado() {
         window.fbq('track', 'CompleteRegistration', {}, { eventID });
         console.log('Facebook Pixel: CompleteRegistration fired on /obrigado with eventID:', eventID);
 
-        // Slug-specific custom event: Lead
-        window.fbq('trackCustom', 'Lead', {
+        // Standard Lead event (must use 'track', not 'trackCustom', so Meta
+        // counts it toward the Lead objective/column campaigns optimize for)
+        window.fbq('track', 'Lead', {
           content_name: 'Lead',
           investimento_faixa: parsed?.investimento_faixa || 'unknown',
-        });
-        console.log('Facebook Pixel: Lead (custom) fired on /obrigado');
+        }, { eventID: leadEventID });
+        console.log('Facebook Pixel: Lead fired on /obrigado with eventID:', leadEventID);
       }
     } catch {
       navigate("/quiz");
