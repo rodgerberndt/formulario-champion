@@ -2195,6 +2195,7 @@ Deno.serve(async (req: Request) => {
       if (body.installments_count !== undefined) updates.installments_count = body.installments_count === null || body.installments_count === "" ? null : parseInt(body.installments_count);
       if (body.installment_value !== undefined) updates.installment_value = body.installment_value === null || body.installment_value === "" ? null : parseFloat(body.installment_value);
       if (body.amount_received !== undefined) updates.amount_received = parseFloat(body.amount_received) || 0;
+      if (body.delivery_months !== undefined) updates.delivery_months = body.delivery_months === null || body.delivery_months === "" ? null : parseFloat(body.delivery_months);
       const { data, error } = await supabase.from("manual_sales").update(updates).eq("id", saleId).select().maybeSingle();
       if (error) throw error;
       return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -2211,6 +2212,7 @@ Deno.serve(async (req: Request) => {
       const amountReceived = params.amount_received !== undefined && params.amount_received !== ""
         ? parseFloat(params.amount_received)
         : (paymentType === "tcv_total" ? revenue : 0);
+      const deliveryMonths = params.delivery_months ? parseFloat(params.delivery_months) : null;
       const { data, error } = await supabase.from("manual_sales").insert([{
         sale_date: params.sale_date,
         revenue,
@@ -2224,6 +2226,7 @@ Deno.serve(async (req: Request) => {
         installments_count: installmentsCount,
         installment_value: installmentValue,
         amount_received: isNaN(amountReceived) ? 0 : amountReceived,
+        delivery_months: deliveryMonths !== null && !isNaN(deliveryMonths) ? deliveryMonths : null,
       }]).select().maybeSingle();
 
       if (error) throw error;

@@ -177,6 +177,7 @@ interface ManualSale {
   installments_count?: number | null;
   installment_value?: number | null;
   amount_received?: number | null;
+  delivery_months?: number | null;
 }
 
 // Links das agendas dos closers (exibidos nos diálogos de reunião).
@@ -246,6 +247,49 @@ function formatPercent(value: number | null): string {
 
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("pt-BR").format(value);
+}
+
+// ── Margem / comissão (regra fixa do negócio) ──
+const CAYO_COMMISSION_RATE = 0.0625; // 6,25% sobre o recebido da venda (dinâmico, cresce a cada parcela)
+const MIGUEL_COMMISSION_RATE = 0.01; // 1% sobre o valor total da venda (TCV)
+const MIGUEL_SDR_FIXED_COST = 2000; // custo fixo mensal do Miguel (SDR)
+const CAIO_CLOSER_FIXED_COST = 3000; // custo fixo mensal do Caio (Closer)
+const BODIES_PER_MONTH = 25; // bodys de entrega por mês (copy + edição) por cliente
+const COPY_SALARY = 3500;
+const COPY_CAPACITY_BODIES_PER_MONTH = 250; // ~10 clientes × 25 bodys
+const EDITOR_SALARIES = [2000, 2000, 3000]; // editores atuais (2 de R$2k, 1 de R$3k)
+const EDITOR_CAPACITY_BODIES_PER_MONTH = 80; // média por editor, sem otimização
+const COPY_COST_PER_BODY = COPY_SALARY / COPY_CAPACITY_BODIES_PER_MONTH;
+const EDITOR_AVG_SALARY = EDITOR_SALARIES.reduce((a, b) => a + b, 0) / EDITOR_SALARIES.length;
+const EDITOR_COST_PER_BODY = EDITOR_AVG_SALARY / EDITOR_CAPACITY_BODIES_PER_MONTH;
+const DELIVERY_COST_PER_BODY = COPY_COST_PER_BODY + EDITOR_COST_PER_BODY;
+
+interface SaleMargin {
+  cac: number;
+  cayoCommission: number;
+  miguelCommission: number;
+  deliveryCost: number;
+  totalCost: number;
+  margin: number;
+  marginPct: number | null;
+}
+
+// CAC já vem do próprio painel (spend ÷ vendas do tipo) — só atribuímos aqui por venda.
+function calcSaleMargin(
+  sale: ManualSale,
+  cacByType: { sprint: number | null; assessoria: number | null }
+): SaleMargin {
+  const revenue = Number(sale.revenue) || 0;
+  const received = Number(sale.amount_received) || 0;
+  const months = Number(sale.delivery_months) || 0;
+  const cac = (sale.sale_type === "assessoria" ? cacByType.assessoria : cacByType.sprint) || 0;
+  const cayoCommission = received * CAYO_COMMISSION_RATE;
+  const miguelCommission = revenue * MIGUEL_COMMISSION_RATE;
+  const deliveryCost = months * BODIES_PER_MONTH * DELIVERY_COST_PER_BODY;
+  const totalCost = cac + cayoCommission + miguelCommission + deliveryCost;
+  const margin = revenue - totalCost;
+  const marginPct = revenue > 0 ? margin / revenue : null;
+  return { cac, cayoCommission, miguelCommission, deliveryCost, totalCost, margin, marginPct };
 }
 
 const MQL_FAT_MIN_FAIXAS = [
@@ -453,6 +497,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     installments_count: "",
     installment_value: "",
     amount_received: "",
+    delivery_months: "",
   });
   const [savingSale, setSavingSale] = useState(false);
 
@@ -483,6 +528,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     installments_count: "",
     installment_value: "",
     amount_received: "",
+    delivery_months: "",
   });
   const [savingEditSale, setSavingEditSale] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
@@ -630,9 +676,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         installments_count: saleForm.installments_count,
         installment_value: saleForm.installment_value,
         amount_received: saleForm.amount_received,
+        delivery_months: saleForm.delivery_months,
       });
       toast({ title: "Venda registrada!" });
-      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint", closer: "Caio", payment_type: "tcv_total", installments_count: "", installment_value: "", amount_received: "" });
+      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint", closer: "Caio", payment_type: "tcv_total", installments_count: "", installment_value: "", amount_received: "", delivery_months: "" });
       setSelectedLeadId(null);
       setShowAddSale(false);
       loadData();
@@ -708,6 +755,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           installments_count: editSaleForm.installments_count,
           installment_value: editSaleForm.installment_value,
           amount_received: editSaleForm.amount_received,
+          delivery_months: editSaleForm.delivery_months,
         }),
       });
       toast({ title: "Venda atualizada!" });
@@ -721,6 +769,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         installments_count: editSaleForm.installments_count ? parseInt(editSaleForm.installments_count) : null,
         installment_value: editSaleForm.installment_value ? parseFloat(editSaleForm.installment_value) : null,
         amount_received: editSaleForm.amount_received ? parseFloat(editSaleForm.amount_received) : 0,
+        delivery_months: editSaleForm.delivery_months ? parseFloat(editSaleForm.delivery_months) : null,
       } : s));
       setEditingSale(null);
       loadData();
@@ -1272,6 +1321,22 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         const avgResponse5k = calcAvgResponse(isQualifiedLead);
         const avgResponseMql = calcAvgResponse(isMqlLead);
 
+        // ── Margem real (comissões + custo de entrega + CAC + custo fixo comercial)
+        const cacByType = { sprint: cacSprint, assessoria: cacAssessoria };
+        const salesMargins = salesList.map((s) => ({ sale: s, m: calcSaleMargin(s, cacByType) }));
+        const totalCayoCommission = salesMargins.reduce((sum, x) => sum + x.m.cayoCommission, 0);
+        const totalMiguelCommission = salesMargins.reduce((sum, x) => sum + x.m.miguelCommission, 0);
+        const totalDeliveryCost = salesMargins.reduce((sum, x) => sum + x.m.deliveryCost, 0);
+        const totalCacCost = salesMargins.reduce((sum, x) => sum + x.m.cac, 0);
+        const marginBeforeFixed = salesMargins.reduce((sum, x) => sum + x.m.margin, 0);
+        const periodDays = Math.max(
+          1,
+          Math.round((new Date(endDateOnly).getTime() - new Date(startDateOnly).getTime()) / 86400000) + 1
+        );
+        const fixedTeamCostProrated = (MIGUEL_SDR_FIXED_COST + CAIO_CLOSER_FIXED_COST) * (periodDays / 30);
+        const netMargin = marginBeforeFixed - fixedTeamCostProrated;
+        const netMarginPct = totals.revenue > 0 ? netMargin / totals.revenue : null;
+
         const MetricItem = ({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) => (
           <div>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</p>
@@ -1468,7 +1533,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </Card>
 
           {/* Row 4: Vendas */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
             {/* Sprint */}
             <Card className="border-violet-500/20">
               <CardContent className="pt-4">
@@ -1586,6 +1651,30 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 </div>
               </CardContent>
             </Card>
+            {/* Margem real */}
+            <Card className="border-amber-500/20">
+              <CardContent className="pt-4">
+                <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-3 border-b border-amber-500/20 pb-2">Margem</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <MetricItem
+                    label="Lucro Líquido"
+                    value={formatCurrency(netMargin) || "—"}
+                    color={netMargin >= 0 ? "text-emerald-400" : "text-rose-400"}
+                    sub={`${netMarginPct != null ? (netMarginPct * 100).toFixed(1) : "0.0"}% de margem`}
+                  />
+                  <MetricItem
+                    label="Custo Fixo Comercial"
+                    value={formatCurrency(fixedTeamCostProrated) || "—"}
+                    color="text-amber-300"
+                    sub="SDR + Closer, no período"
+                  />
+                  <MetricItem label="Comissão Cayo" value={formatCurrency(totalCayoCommission) || "—"} color="text-amber-300" sub="6,25% do recebido" />
+                  <MetricItem label="Comissão Miguel" value={formatCurrency(totalMiguelCommission) || "—"} color="text-amber-300" sub="1% do total vendido" />
+                  <MetricItem label="Custo de Entrega" value={formatCurrency(totalDeliveryCost) || "—"} color="text-amber-300" sub="Copy + edição" />
+                  <MetricItem label="CAC Atribuído" value={formatCurrency(totalCacCost) || "—"} color="text-amber-300" sub="Já contado por venda" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Sales table inline (expanded under Total card) */}
@@ -1607,6 +1696,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                         <TableHead className="text-right">TCV</TableHead>
                         <TableHead>Pagamento</TableHead>
                         <TableHead className="text-right">Recebido</TableHead>
+                        <TableHead className="text-right">Margem</TableHead>
                         <TableHead>Criativo</TableHead>
                         <TableHead>Notas</TableHead>
                         <TableHead className="w-20"></TableHead>
@@ -1647,6 +1737,21 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                               )}
                             </div>
                           </TableCell>
+                          <TableCell className="text-right">
+                            {(() => {
+                              const m = calcSaleMargin(sale, cacByType);
+                              return (
+                                <div className="flex flex-col items-end">
+                                  <span className={`font-semibold text-sm ${m.margin >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                                    {formatCurrency(m.margin)}
+                                  </span>
+                                  <span className="text-[10px] text-muted-foreground">
+                                    {m.marginPct != null ? `${(m.marginPct * 100).toFixed(1)}%` : "—"}
+                                  </span>
+                                </div>
+                              );
+                            })()}
+                          </TableCell>
                           <TableCell>
                             {sale.utm_content || sale.creative_key ? (
                               <Badge variant="outline" className="text-xs">{sale.utm_content || sale.creative_key}</Badge>
@@ -1671,6 +1776,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                                     installments_count: sale.installments_count != null ? String(sale.installments_count) : "",
                                     installment_value: sale.installment_value != null ? String(sale.installment_value) : "",
                                     amount_received: sale.amount_received != null ? String(sale.amount_received) : "",
+                                    delivery_months: sale.delivery_months != null ? String(sale.delivery_months) : "",
                                   });
                                 }}
                               >
@@ -2378,6 +2484,18 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
               <p className="text-[10px] text-muted-foreground mt-1">Quanto já entrou na conta. O restante fica como "a receber".</p>
             </div>
             <div>
+              <label className="text-sm text-muted-foreground">Meses de entrega</label>
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                placeholder="Ex: 6"
+                value={saleForm.delivery_months}
+                onChange={e => setSaleForm(p => ({ ...p, delivery_months: e.target.value }))}
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Quantos meses de entrega (25 bodys/mês) essa venda gerou — usado no cálculo de margem.</p>
+            </div>
+            <div>
               <label className="text-sm text-muted-foreground">Observação</label>
               <Input placeholder="Notas adicionais" value={saleForm.notes} onChange={e => setSaleForm(p => ({ ...p, notes: e.target.value }))} />
             </div>
@@ -2575,6 +2693,17 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 value={editSaleForm.amount_received}
                 onChange={e => setEditSaleForm(p => ({ ...p, amount_received: e.target.value }))}
               />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Meses de entrega</label>
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                value={editSaleForm.delivery_months}
+                onChange={e => setEditSaleForm(p => ({ ...p, delivery_months: e.target.value }))}
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Quantos meses de entrega (25 bodys/mês) essa venda gerou — usado no cálculo de margem.</p>
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Observação</label>
