@@ -31,6 +31,96 @@ async function verifyAdminToken(token: string): Promise<boolean> {
   }
 }
 
+// Resolve nome real de anúncio/criativo pra uma lista de ad_ids numéricos do Meta
+// (mesma lógica já usada em /leads, extraída aqui pra reaproveitar em /creatives).
+// Ordem de prioridade: meta_ads_cache.creative_name (nome real do criativo, via
+// Graph API) > ad_spend.ad_name / meta_ads_cache.ad_name > null (chamador decide
+// o fallback, geralmente o próprio raw ID).
+async function resolveCreativeNames(
+  supabase: any,
+  adIds: string[]
+): Promise<Map<string, { ad_name: string | null; campaign_name: string | null; creative_name: string | null; creative_thumbnail_url: string | null }>> {
+  const result = new Map<string, { ad_name: string | null; campaign_name: string | null; creative_name: string | null; creative_thumbnail_url: string | null }>();
+  if (adIds.length === 0) return result;
+
+  const [{ data: adRows }, { data: cacheRows }] = await Promise.all([
+    supabase.from("ad_spend").select("ad_id, ad_name, campaign_name").in("ad_id", adIds).not("ad_name", "is", null),
+    supabase.from("meta_ads_cache").select("ad_id, ad_name, campaign_name, creative_name, creative_thumbnail_url, last_synced_at").in("ad_id", adIds),
+  ]);
+
+  (adRows || []).forEach((r: any) => {
+    if (!result.has(r.ad_id)) {
+      result.set(r.ad_id, { ad_name: r.ad_name, campaign_name: r.campaign_name, creative_name: null, creative_thumbnail_url: null });
+    }
+  });
+
+  const cacheByAdId = new Map<string, any>();
+  (cacheRows || []).forEach((r: any) => {
+    cacheByAdId.set(r.ad_id, r);
+    const existing = result.get(r.ad_id);
+    result.set(r.ad_id, {
+      ad_name: existing?.ad_name || r.ad_name || null,
+      campaign_name: existing?.campaign_name || r.campaign_name || null,
+      creative_name: r.creative_name || null,
+      creative_thumbnail_url: r.creative_thumbnail_url || null,
+    });
+  });
+
+  const nowMs = Date.now();
+  const isFresh = (r: any) => !!r && !!r.creative_name && (nowMs - new Date(r.last_synced_at).getTime()) < 24 * 60 * 60 * 1000;
+  const idsToFetchLive = adIds.filter((id) => !isFresh(cacheByAdId.get(id))).slice(0, 30);
+
+  const metaAccessToken = Deno.env.get("META_ACCESS_TOKEN");
+  if (metaAccessToken && idsToFetchLive.length > 0) {
+    const metaApiVersion = "v21.0";
+    const resolved = await Promise.all(idsToFetchLive.map(async (adId) => {
+      try {
+        const res = await fetch(
+          `https://graph.facebook.com/${metaApiVersion}/${adId}?fields=id,name,campaign{id,name},creative{name,thumbnail_url}&access_token=${metaAccessToken}`
+        );
+        if (!res.ok) return null;
+        const json: any = await res.json();
+        if (!json.name && !json.campaign?.name && !json.creative?.name) return null;
+        return {
+          ad_id: adId,
+          ad_name: json.name || null,
+          campaign_name: json.campaign?.name || null,
+          creative_name: json.creative?.name || null,
+          creative_thumbnail_url: json.creative?.thumbnail_url || null,
+        };
+      } catch {
+        return null;
+      }
+    }));
+
+    const freshlyResolved = resolved.filter((r: any) => r !== null) as any[];
+    if (freshlyResolved.length > 0) {
+      await supabase.from("meta_ads_cache").upsert(
+        freshlyResolved.map((r) => ({
+          ad_id: r.ad_id,
+          ad_name: r.ad_name,
+          campaign_name: r.campaign_name,
+          creative_name: r.creative_name,
+          creative_thumbnail_url: r.creative_thumbnail_url,
+          last_synced_at: new Date().toISOString(),
+        })),
+        { onConflict: "ad_id" }
+      );
+      freshlyResolved.forEach((r) => {
+        const existing = result.get(r.ad_id);
+        result.set(r.ad_id, {
+          ad_name: r.ad_name || existing?.ad_name || null,
+          campaign_name: r.campaign_name || existing?.campaign_name || null,
+          creative_name: r.creative_name || existing?.creative_name || null,
+          creative_thumbnail_url: r.creative_thumbnail_url || existing?.creative_thumbnail_url || null,
+        });
+      });
+    }
+  }
+
+  return result;
+}
+
 Deno.serve(async (req: Request) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -1826,6 +1916,34 @@ Deno.serve(async (req: Request) => {
         }
       }
 
+      // Resolve nome real dos criativos cujo utm_content é o ID numérico cru do Meta
+      // (ex: "120253695740100054") — antes esses IDs viravam o rótulo direto na
+      // tabela "Performance por Criativo"; a resolução (ad_spend/meta_ads_cache/Graph
+      // API) já existia pra /leads, faltava plugar aqui também.
+      const isNumericAdId = (v: unknown): v is string => typeof v === "string" && /^\d+$/.test(v);
+      const numericIdsForResolve = new Set<string>();
+      for (const lead of allLeads) {
+        if (isNumericAdId(lead.utm_content)) numericIdsForResolve.add(lead.utm_content);
+      }
+      for (const s of (spendData || [])) {
+        const k = s.utm_content || s.ad_name;
+        if (isNumericAdId(k)) numericIdsForResolve.add(k);
+      }
+      for (const sale of (salesData || [])) {
+        const k = sale.creative_key || sale.utm_content;
+        if (isNumericAdId(k)) numericIdsForResolve.add(k);
+      }
+      for (const meeting of (meetingsData || [])) {
+        const k = meeting.creative_key || meeting.utm_content;
+        if (isNumericAdId(k)) numericIdsForResolve.add(k);
+      }
+      const resolvedCreativeNames = await resolveCreativeNames(supabase, [...numericIdsForResolve]);
+      const resolveLabel = (rawKey: string): string => {
+        if (!isNumericAdId(rawKey)) return rawKey;
+        const r = resolvedCreativeNames.get(rawKey);
+        return r?.creative_name || r?.ad_name || rawKey;
+      };
+
       // Process leads (filter by campaign_type if specified)
       for (const lead of allLeads) {
         // Campaign type filter
@@ -1844,7 +1962,7 @@ Deno.serve(async (req: Request) => {
           label = UNATTRIBUTED_LABEL;
         } else {
           ck = normalized;
-          label = rawKey;
+          label = resolveLabel(rawKey);
           leadsWithCreative++;
         }
         const agg = getOrCreate(ck, label, "utm_content");
@@ -1887,7 +2005,7 @@ Deno.serve(async (req: Request) => {
         const ck = s.creative_key || normalizeKey(rawKey);
         if (!ck) continue;
         spendMapped += amount;
-        const agg = getOrCreate(ck, rawKey, s.utm_content ? "utm_content" : "fallback");
+        const agg = getOrCreate(ck, resolveLabel(rawKey), s.utm_content ? "utm_content" : "fallback");
         agg.spend += amount;
         agg.clicks += Number(s.clicks) || 0;
         agg.impressions += Number(s.impressions) || 0;
@@ -1937,7 +2055,7 @@ Deno.serve(async (req: Request) => {
           label = UNATTRIBUTED_LABEL;
         } else {
           ck = normalized;
-          label = rawKey;
+          label = resolveLabel(rawKey);
         }
         const agg = getOrCreate(ck, label, "utm_content");
         agg.sales_count++;
@@ -1975,7 +2093,7 @@ Deno.serve(async (req: Request) => {
           label = UNATTRIBUTED_LABEL;
         } else {
           ck = normalized;
-          label = rawKey;
+          label = resolveLabel(rawKey);
         }
         const agg = getOrCreate(ck, label, "utm_content");
         agg.meetings_count++;

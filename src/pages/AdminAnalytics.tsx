@@ -390,6 +390,7 @@ export default function AdminAnalytics() {
   const [leadsSdrFilter, setLeadsSdrFilter] = useState<string>("all");
   const [leadsAdsetFilter, setLeadsAdsetFilter] = useState<string>("all");
   const [leadsConversionFilter, setLeadsConversionFilter] = useState<string>("all");
+  const [leadsAttributionFilter, setLeadsAttributionFilter] = useState<string>("all");
   const [meetingLeadIds, setMeetingLeadIds] = useState<Set<string>>(new Set());
   const [saleLeadIds, setSaleLeadIds] = useState<Set<string>>(new Set());
 
@@ -876,6 +877,10 @@ export default function AdminAnalytics() {
     
     // Adset (conjunto de anúncio / criativo) filter
     if (leadsAdsetFilter !== "all" && lead.utm_content !== leadsAdsetFilter) return false;
+
+    // Caminho de atribuição: veio direto do anúncio, recuperado (mesmo IP, ex.
+    // Instagram/bio) ou orgânico sem nenhum sinal de anúncio
+    if (leadsAttributionFilter !== "all" && (lead.attribution_source || "organic") !== leadsAttributionFilter) return false;
 
     // Conversion filter (reunião agendada / venda)
     if (leadsConversionFilter === "with_meeting" && !meetingLeadIds.has(lead.id)) return false;
@@ -1896,6 +1901,17 @@ export default function AdminAnalytics() {
                     <SelectItem value="none">Sem conversão</SelectItem>
                   </SelectContent>
                 </Select>
+                <Select value={leadsAttributionFilter} onValueChange={setLeadsAttributionFilter}>
+                  <SelectTrigger className="w-full md:w-48">
+                    <SelectValue placeholder="Caminho" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os caminhos</SelectItem>
+                    <SelectItem value="direct_ad">📢 Direto do anúncio</SelectItem>
+                    <SelectItem value="bio_recovery">🔗 Recuperado (Instagram/bio)</SelectItem>
+                    <SelectItem value="organic">🌿 Orgânico (sem anúncio)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               {/* Actions - note: date filter is now in the global header */}
@@ -1908,17 +1924,18 @@ export default function AdminAnalytics() {
                   <Download className="w-4 h-4 mr-2" />
                   Exportar CSV
                 </Button>
-                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all" || leadsAdsetFilter !== "all" || leadsConversionFilter !== "all") && (
-                  <Button 
-                    variant="ghost" 
+                {(leadsStatusFilter !== "all" || leadsMercadoFilter !== "all" || leadsTierFilter !== "all" || leadsSdrFilter !== "all" || leadsAdsetFilter !== "all" || leadsConversionFilter !== "all" || leadsAttributionFilter !== "all") && (
+                  <Button
+                    variant="ghost"
                     onClick={() => {
                       setLeadsStatusFilter("all");
                       setLeadsMercadoFilter("all");
-                      
+
                       setLeadsTierFilter("all");
                       setLeadsSdrFilter("all");
                       setLeadsAdsetFilter("all");
                       setLeadsConversionFilter("all");
+                      setLeadsAttributionFilter("all");
                     }}
                   >
                     <XCircle className="w-4 h-4 mr-2" />
