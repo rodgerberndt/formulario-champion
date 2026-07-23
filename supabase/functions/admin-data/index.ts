@@ -1938,10 +1938,31 @@ Deno.serve(async (req: Request) => {
         if (isNumericAdId(k)) numericIdsForResolve.add(k);
       }
       const resolvedCreativeNames = await resolveCreativeNames(supabase, [...numericIdsForResolve]);
-      const resolveLabel = (rawKey: string): string => {
-        if (!isNumericAdId(rawKey)) return rawKey;
-        const r = resolvedCreativeNames.get(rawKey);
-        return r?.creative_name || r?.ad_name || rawKey;
+
+      // O mesmo ad_id do Meta às vezes chega com utm_content = ID numérico cru pro
+      // lead, mas o ad_spend sincronizado (cron) já teria salvo esse MESMO ad_id sob
+      // uma creative_key legível (normalmente o nome do conjunto de anúncios) — sem
+      // isso, lead e gasto do mesmo anúncio caíam em linhas diferentes da tabela
+      // (lead numa linha numérica com R$0 de spend, dinheiro noutra linha com nome).
+      // Aqui casa pelo ad_id e agrupa o lead na MESMA linha do gasto real.
+      const adIdToSpendKey = new Map<string, { key: string; label: string }>();
+      for (const s of (spendData || [])) {
+        if (!s.ad_id || adIdToSpendKey.has(s.ad_id)) continue;
+        const spendRawKey = s.utm_content || s.ad_name;
+        if (!spendRawKey) continue;
+        const key = s.creative_key || normalizeKey(spendRawKey);
+        if (!key) continue;
+        adIdToSpendKey.set(s.ad_id, { key, label: spendRawKey });
+      }
+
+      const resolveAttribution = (rawKey: string): { ck: string; label: string } => {
+        if (isNumericAdId(rawKey)) {
+          const spendMatch = adIdToSpendKey.get(rawKey);
+          if (spendMatch) return { ck: spendMatch.key, label: spendMatch.label };
+          const r = resolvedCreativeNames.get(rawKey);
+          return { ck: normalizeKey(rawKey), label: r?.creative_name || r?.ad_name || rawKey };
+        }
+        return { ck: normalizeKey(rawKey), label: rawKey };
       };
 
       // Process leads (filter by campaign_type if specified)
@@ -1961,8 +1982,9 @@ Deno.serve(async (req: Request) => {
           ck = UNATTRIBUTED_KEY;
           label = UNATTRIBUTED_LABEL;
         } else {
-          ck = normalized;
-          label = resolveLabel(rawKey);
+          const attribution = resolveAttribution(rawKey);
+          ck = attribution.ck;
+          label = attribution.label;
           leadsWithCreative++;
         }
         const agg = getOrCreate(ck, label, "utm_content");
@@ -2005,7 +2027,8 @@ Deno.serve(async (req: Request) => {
         const ck = s.creative_key || normalizeKey(rawKey);
         if (!ck) continue;
         spendMapped += amount;
-        const agg = getOrCreate(ck, resolveLabel(rawKey), s.utm_content ? "utm_content" : "fallback");
+        const spendLabel = isNumericAdId(rawKey) ? resolveAttribution(rawKey).label : rawKey;
+        const agg = getOrCreate(ck, spendLabel, s.utm_content ? "utm_content" : "fallback");
         agg.spend += amount;
         agg.clicks += Number(s.clicks) || 0;
         agg.impressions += Number(s.impressions) || 0;
@@ -2054,8 +2077,9 @@ Deno.serve(async (req: Request) => {
           ck = UNATTRIBUTED_KEY;
           label = UNATTRIBUTED_LABEL;
         } else {
-          ck = normalized;
-          label = resolveLabel(rawKey);
+          const attribution = resolveAttribution(rawKey);
+          ck = attribution.ck;
+          label = attribution.label;
         }
         const agg = getOrCreate(ck, label, "utm_content");
         agg.sales_count++;
@@ -2092,8 +2116,9 @@ Deno.serve(async (req: Request) => {
           ck = UNATTRIBUTED_KEY;
           label = UNATTRIBUTED_LABEL;
         } else {
-          ck = normalized;
-          label = resolveLabel(rawKey);
+          const attribution = resolveAttribution(rawKey);
+          ck = attribution.ck;
+          label = attribution.label;
         }
         const agg = getOrCreate(ck, label, "utm_content");
         agg.meetings_count++;
