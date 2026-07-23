@@ -1533,7 +1533,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           </Card>
 
           {/* Row 4: Vendas */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             {/* Sprint */}
             <Card className="border-violet-500/20">
               <CardContent className="pt-4">
@@ -1651,33 +1651,32 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 </div>
               </CardContent>
             </Card>
-            {/* Margem real */}
-            <Card className="border-amber-500/20">
-              <CardContent className="pt-4">
-                <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-3 border-b border-amber-500/20 pb-2">Margem</p>
-                <div className="space-y-4">
-                  <MetricItem
-                    label="Lucro Líquido"
-                    value={formatCurrency(netMargin) || "—"}
-                    color={netMargin >= 0 ? "text-emerald-400" : "text-rose-400"}
-                    sub={`${netMarginPct != null ? (netMarginPct * 100).toFixed(1) : "0.0"}% de margem`}
-                  />
-                  <MetricItem
-                    label="Custo Fixo Comercial"
-                    value={formatCurrency(fixedTeamCostProrated) || "—"}
-                    color="text-amber-300"
-                    sub="SDR + Closer, no período"
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <MetricItem label="Comissão Cayo" value={formatCurrency(totalCayoCommission) || "—"} color="text-amber-300" sub="6,25% do recebido" />
-                    <MetricItem label="Comissão Miguel" value={formatCurrency(totalMiguelCommission) || "—"} color="text-amber-300" sub="1% do total vendido" />
-                    <MetricItem label="Custo de Entrega" value={formatCurrency(totalDeliveryCost) || "—"} color="text-amber-300" sub="Copy + edição" />
-                    <MetricItem label="CAC Atribuído" value={formatCurrency(totalCacCost) || "—"} color="text-amber-300" sub="Já contado por venda" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
+
+          {/* Margem real — card de largura total, tem mais campos que os outros */}
+          <Card className="border-amber-500/20">
+            <CardContent className="pt-4">
+              <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-3 border-b border-amber-500/20 pb-2">Margem</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                <MetricItem
+                  label="Lucro Líquido"
+                  value={formatCurrency(netMargin) || "—"}
+                  color={netMargin >= 0 ? "text-emerald-400" : "text-rose-400"}
+                  sub={`${netMarginPct != null ? (netMarginPct * 100).toFixed(1) : "0.0"}% de margem`}
+                />
+                <MetricItem
+                  label="Custo Fixo Comercial"
+                  value={formatCurrency(fixedTeamCostProrated) || "—"}
+                  color="text-amber-300"
+                  sub="SDR + Closer, no período"
+                />
+                <MetricItem label="Comissão Cayo" value={formatCurrency(totalCayoCommission) || "—"} color="text-amber-300" sub="6,25% do recebido" />
+                <MetricItem label="Comissão Miguel" value={formatCurrency(totalMiguelCommission) || "—"} color="text-amber-300" sub="1% do total vendido" />
+                <MetricItem label="Custo de Entrega" value={formatCurrency(totalDeliveryCost) || "—"} color="text-amber-300" sub="Copy + edição" />
+                <MetricItem label="CAC Atribuído" value={formatCurrency(totalCacCost) || "—"} color="text-amber-300" sub="Já contado por venda" />
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Sales table inline (expanded under Total card) */}
           {showSalesList && (
