@@ -252,9 +252,11 @@ function formatNumber(value: number): string {
 // ── Margem / comissão (regra fixa do negócio) ──
 const CAYO_COMMISSION_RATE = 0.0625; // 6,25% sobre o recebido da venda (dinâmico, cresce a cada parcela)
 const MIGUEL_COMMISSION_RATE = 0.01; // 1% sobre o valor total da venda (TCV)
-const MIGUEL_SDR_FIXED_COST = 2000; // custo fixo mensal do Miguel (SDR)
-const CAIO_CLOSER_FIXED_COST = 3000; // custo fixo mensal do Caio (Closer)
 const BODIES_PER_MONTH = 25; // bodys de entrega por mês (copy + edição) por cliente
+// Faixas de faturamento que contam como "lead até 20k" pro CAC real do Sprint —
+// inclui a faixa clássica do Sprint (5k–10k) e a primeira faixa de MQL (10k–20k),
+// já que também fecham Sprint com leads dessa faixa.
+const SPRINT_CAC_FAIXAS = ["De R$ 5 mil a R$ 10 mil", "De R$ 10 mil a R$ 20 mil"];
 const COPY_SALARY = 3500;
 const COPY_CAPACITY_BODIES_PER_MONTH = 250; // ~10 clientes × 25 bodys
 const EDITOR_SALARIES = [2000, 2000, 3000]; // editores atuais (2 de R$2k, 1 de R$3k)
@@ -274,7 +276,9 @@ interface SaleMargin {
   marginPct: number | null;
 }
 
-// CAC já vem do próprio painel (spend ÷ vendas do tipo) — só atribuímos aqui por venda.
+// CAC é atribuído por venda: Assessoria usa o CAC do próprio painel (spend ÷ vendas
+// assessoria); Sprint usa um CAC "real" — spend alocado proporcionalmente aos leads
+// até R$20k (não o spend total) ÷ vendas Sprint. Ver SPRINT_CAC_FAIXAS.
 function calcSaleMargin(
   sale: ManualSale,
   cacByType: { sprint: number | null; assessoria: number | null }
@@ -1201,6 +1205,13 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         const mqlLeadsCount = leadsList.filter(
           (l) => MQL_FAT_MIN_FAIXAS.includes(l.investimento_faixa || "")
         ).length;
+        // CAC real do Sprint (usado na Margem): spend alocado proporcionalmente aos
+        // leads até R$20k (5k–10k + 10k–20k), não o spend total do período.
+        const leadsUpTo20k = leadsList.filter(
+          (l) => SPRINT_CAC_FAIXAS.includes(l.investimento_faixa || "")
+        ).length;
+        const spendForSprintLeads = totals.leads > 0 ? totals.spend * (leadsUpTo20k / totals.leads) : 0;
+        const cacSprintReal = (totals.sales_sprint || 0) > 0 ? spendForSprintLeads / (totals.sales_sprint || 0) : null;
         const sprintWinRate = sprintLeadsCount > 0
           ? ((totals.sales_sprint || 0) / sprintLeadsCount) * 100
           : null;
@@ -1321,20 +1332,15 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         const avgResponse5k = calcAvgResponse(isQualifiedLead);
         const avgResponseMql = calcAvgResponse(isMqlLead);
 
-        // ── Margem real (comissões + custo de entrega + CAC + custo fixo comercial)
-        const cacByType = { sprint: cacSprint, assessoria: cacAssessoria };
+        // ── Margem real (comissões + custo de entrega + CAC) — sem custo fixo comercial,
+        // só a comissão do time entra na conta.
+        const cacByType = { sprint: cacSprintReal, assessoria: cacAssessoria };
         const salesMargins = salesList.map((s) => ({ sale: s, m: calcSaleMargin(s, cacByType) }));
         const totalCayoCommission = salesMargins.reduce((sum, x) => sum + x.m.cayoCommission, 0);
         const totalMiguelCommission = salesMargins.reduce((sum, x) => sum + x.m.miguelCommission, 0);
         const totalDeliveryCost = salesMargins.reduce((sum, x) => sum + x.m.deliveryCost, 0);
         const totalCacCost = salesMargins.reduce((sum, x) => sum + x.m.cac, 0);
-        const marginBeforeFixed = salesMargins.reduce((sum, x) => sum + x.m.margin, 0);
-        const periodDays = Math.max(
-          1,
-          Math.round((new Date(endDateOnly).getTime() - new Date(startDateOnly).getTime()) / 86400000) + 1
-        );
-        const fixedTeamCostProrated = (MIGUEL_SDR_FIXED_COST + CAIO_CLOSER_FIXED_COST) * (periodDays / 30);
-        const netMargin = marginBeforeFixed - fixedTeamCostProrated;
+        const netMargin = salesMargins.reduce((sum, x) => sum + x.m.margin, 0);
         const netMarginPct = totals.revenue > 0 ? netMargin / totals.revenue : null;
 
         const MetricItem = ({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) => (
@@ -1657,23 +1663,22 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           <Card className="border-amber-500/20">
             <CardContent className="pt-4">
               <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-3 border-b border-amber-500/20 pb-2">Margem</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                 <MetricItem
                   label="Lucro Líquido"
                   value={formatCurrency(netMargin) || "—"}
                   color={netMargin >= 0 ? "text-emerald-400" : "text-rose-400"}
                   sub={`${netMarginPct != null ? (netMarginPct * 100).toFixed(1) : "0.0"}% de margem`}
                 />
-                <MetricItem
-                  label="Custo Fixo Comercial"
-                  value={formatCurrency(fixedTeamCostProrated) || "—"}
-                  color="text-amber-300"
-                  sub="SDR + Closer, no período"
-                />
                 <MetricItem label="Comissão Cayo" value={formatCurrency(totalCayoCommission) || "—"} color="text-amber-300" sub="6,25% do recebido" />
                 <MetricItem label="Comissão Miguel" value={formatCurrency(totalMiguelCommission) || "—"} color="text-amber-300" sub="1% do total vendido" />
                 <MetricItem label="Custo de Entrega" value={formatCurrency(totalDeliveryCost) || "—"} color="text-amber-300" sub="Copy + edição" />
-                <MetricItem label="CAC Atribuído" value={formatCurrency(totalCacCost) || "—"} color="text-amber-300" sub="Já contado por venda" />
+                <MetricItem
+                  label="CAC Atribuído"
+                  value={formatCurrency(totalCacCost) || "—"}
+                  color="text-amber-300"
+                  sub="Sprint: spend até 20k · Assessoria: spend ÷ vendas"
+                />
               </div>
             </CardContent>
           </Card>
