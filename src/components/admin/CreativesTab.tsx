@@ -1655,7 +1655,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
             <Card className="border-amber-500/20">
               <CardContent className="pt-4">
                 <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-3 border-b border-amber-500/20 pb-2">Margem</p>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <MetricItem
                     label="Lucro Líquido"
                     value={formatCurrency(netMargin) || "—"}
@@ -1668,10 +1668,12 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     color="text-amber-300"
                     sub="SDR + Closer, no período"
                   />
-                  <MetricItem label="Comissão Cayo" value={formatCurrency(totalCayoCommission) || "—"} color="text-amber-300" sub="6,25% do recebido" />
-                  <MetricItem label="Comissão Miguel" value={formatCurrency(totalMiguelCommission) || "—"} color="text-amber-300" sub="1% do total vendido" />
-                  <MetricItem label="Custo de Entrega" value={formatCurrency(totalDeliveryCost) || "—"} color="text-amber-300" sub="Copy + edição" />
-                  <MetricItem label="CAC Atribuído" value={formatCurrency(totalCacCost) || "—"} color="text-amber-300" sub="Já contado por venda" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <MetricItem label="Comissão Cayo" value={formatCurrency(totalCayoCommission) || "—"} color="text-amber-300" sub="6,25% do recebido" />
+                    <MetricItem label="Comissão Miguel" value={formatCurrency(totalMiguelCommission) || "—"} color="text-amber-300" sub="1% do total vendido" />
+                    <MetricItem label="Custo de Entrega" value={formatCurrency(totalDeliveryCost) || "—"} color="text-amber-300" sub="Copy + edição" />
+                    <MetricItem label="CAC Atribuído" value={formatCurrency(totalCacCost) || "—"} color="text-amber-300" sub="Já contado por venda" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
