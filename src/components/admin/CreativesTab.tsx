@@ -250,8 +250,8 @@ function formatNumber(value: number): string {
 }
 
 // ── Margem / comissão (regra fixa do negócio) ──
-const CAYO_COMMISSION_RATE = 0.0625; // 6,25% sobre o recebido da venda (dinâmico, cresce a cada parcela)
-const MIGUEL_COMMISSION_RATE = 0.01; // 1% sobre o valor total da venda (TCV)
+const CLOSER_COMMISSION_RATE = 0.0625; // 6,25% sobre o recebido da venda, pro closer que fechou (sale.closer)
+const MIGUEL_COMMISSION_RATE = 0.01; // 1% sobre o valor total da venda (TCV) — comissão fixa, não depende do closer
 const BODIES_PER_MONTH = 25; // bodys de entrega por mês (copy + edição) por cliente
 // Faixas de faturamento que contam como "lead até 20k" pro CAC real do Sprint —
 // inclui a faixa clássica do Sprint (5k–10k) e a primeira faixa de MQL (10k–20k),
@@ -268,7 +268,8 @@ const DELIVERY_COST_PER_BODY = COPY_COST_PER_BODY + EDITOR_COST_PER_BODY;
 
 interface SaleMargin {
   cac: number;
-  cayoCommission: number;
+  closer: string;
+  closerCommission: number;
   miguelCommission: number;
   deliveryCost: number;
   totalCost: number;
@@ -287,13 +288,14 @@ function calcSaleMargin(
   const received = Number(sale.amount_received) || 0;
   const months = Number(sale.delivery_months) || 0;
   const cac = (sale.sale_type === "assessoria" ? cacByType.assessoria : cacByType.sprint) || 0;
-  const cayoCommission = received * CAYO_COMMISSION_RATE;
+  const closer = sale.closer || "Sem closer";
+  const closerCommission = received * CLOSER_COMMISSION_RATE;
   const miguelCommission = revenue * MIGUEL_COMMISSION_RATE;
   const deliveryCost = months * BODIES_PER_MONTH * DELIVERY_COST_PER_BODY;
-  const totalCost = cac + cayoCommission + miguelCommission + deliveryCost;
+  const totalCost = cac + closerCommission + miguelCommission + deliveryCost;
   const margin = revenue - totalCost;
   const marginPct = revenue > 0 ? margin / revenue : null;
-  return { cac, cayoCommission, miguelCommission, deliveryCost, totalCost, margin, marginPct };
+  return { cac, closer, closerCommission, miguelCommission, deliveryCost, totalCost, margin, marginPct };
 }
 
 const MQL_FAT_MIN_FAIXAS = [
@@ -632,6 +634,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       await loadData();
       if (!cancelled) await loadSales();
       if (!cancelled) await loadLeads();
+      if (!cancelled) await loadMeetings();
     };
 
     loadInitialData();
@@ -639,7 +642,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     return () => {
       cancelled = true;
     };
-  }, [loadData, loadSales, loadLeads]);
+  }, [loadData, loadSales, loadLeads, loadMeetings]);
 
   useEffect(() => {
     if (showMeetingsList) {
@@ -687,6 +690,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       setSelectedLeadId(null);
       setShowAddSale(false);
       loadData();
+      loadSales();
     } catch {
       toast({ title: "Erro ao salvar venda", variant: "destructive" });
     } finally {
@@ -716,7 +720,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       setMeetingSelectedLeadId(null);
       setShowAddMeeting(false);
       loadData();
-      if (showMeetingsList) loadMeetings();
+      loadMeetings();
     } catch {
       toast({ title: "Erro ao salvar reunião", variant: "destructive" });
     } finally {
@@ -1336,12 +1340,32 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         // só a comissão do time entra na conta.
         const cacByType = { sprint: cacSprintReal, assessoria: cacAssessoria };
         const salesMargins = salesList.map((s) => ({ sale: s, m: calcSaleMargin(s, cacByType) }));
-        const totalCayoCommission = salesMargins.reduce((sum, x) => sum + x.m.cayoCommission, 0);
+        // Comissão de closer agrupada por quem de fato fechou a venda (sale.closer),
+        // não mais um valor fixo atribuído sempre ao Cayo.
+        const KNOWN_CLOSERS = Object.keys(CLOSER_CALENDARS);
+        const commissionByCloser: Record<string, number> = Object.fromEntries(KNOWN_CLOSERS.map((c) => [c, 0]));
+        for (const x of salesMargins) {
+          commissionByCloser[x.m.closer] = (commissionByCloser[x.m.closer] || 0) + x.m.closerCommission;
+        }
+        const closerCommissionEntries = [
+          ...KNOWN_CLOSERS,
+          ...Object.keys(commissionByCloser).filter((c) => !KNOWN_CLOSERS.includes(c)),
+        ].map((c) => [c, commissionByCloser[c]] as const);
         const totalMiguelCommission = salesMargins.reduce((sum, x) => sum + x.m.miguelCommission, 0);
         const totalDeliveryCost = salesMargins.reduce((sum, x) => sum + x.m.deliveryCost, 0);
         const totalCacCost = salesMargins.reduce((sum, x) => sum + x.m.cac, 0);
+        const totalCostSum = salesMargins.reduce((sum, x) => sum + x.m.totalCost, 0);
         const netMargin = salesMargins.reduce((sum, x) => sum + x.m.margin, 0);
         const netMarginPct = totals.revenue > 0 ? netMargin / totals.revenue : null;
+
+        // ── Conversão de call por closer (Realizadas → Assessoria), a partir das
+        // reuniões e vendas reais no período (não do totals agregado por criativo).
+        const callConversionByCloser = (closerName: string): number | null => {
+          const attended = meetingsList.filter((m) => m.attended && (m.closer || "Sem closer") === closerName).length;
+          if (attended === 0) return null;
+          const won = salesList.filter((s) => s.sale_type === "assessoria" && (s.closer || "Sem closer") === closerName).length;
+          return (won / attended) * 100;
+        };
 
         const MetricItem = ({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) => (
           <div>
@@ -1440,11 +1464,23 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   {showMeetingsList ? "Ocultar" : "Ver reuniões"}
                 </Button>
               </div>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
                 <MetricItem label="Taxa Agendamento" value={scheduleRate !== null ? `${scheduleRate.toFixed(1)}%` : "—"} color="text-yellow-400" sub="MQL → Reuniões" />
                 <MetricItem label="Agendadas" value={formatNumber(totals.meetings)} color="text-orange-400" sub={formatCurrency(totals.cp_meeting) || undefined} />
                 <MetricItem label="Realizadas" value={formatNumber(totals.meetings_attended || 0)} color="text-emerald-400" sub={totals.meetings > 0 ? `${((totals.meetings_attended || 0) / totals.meetings * 100).toFixed(0)}% show rate` : "—"} />
                 <MetricItem label="Conversão Call" value={callConversion !== null ? `${callConversion.toFixed(1)}%` : "—"} color="text-cyan-400" sub="Realizadas → Assessoria" />
+                {Object.keys(CLOSER_CALENDARS).map((closerName) => {
+                  const conv = callConversionByCloser(closerName);
+                  return (
+                    <MetricItem
+                      key={closerName}
+                      label={`Conversão ${closerName}`}
+                      value={conv !== null ? `${conv.toFixed(1)}%` : "—"}
+                      color="text-cyan-300"
+                      sub="Realizadas → Assessoria"
+                    />
+                  );
+                })}
               </div>
               {showMeetingsList && (
                 <div className="mt-4 border-t border-border/50 pt-4">
@@ -1663,14 +1699,28 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           <Card className="border-amber-500/20">
             <CardContent className="pt-4">
               <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-3 border-b border-amber-500/20 pb-2">Margem</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
                 <MetricItem
-                  label="Lucro Líquido"
+                  label="Margem de Contribuição"
                   value={formatCurrency(netMargin) || "—"}
                   color={netMargin >= 0 ? "text-emerald-400" : "text-rose-400"}
                   sub={`${netMarginPct != null ? (netMarginPct * 100).toFixed(1) : "0.0"}% de margem`}
                 />
-                <MetricItem label="Comissão Cayo" value={formatCurrency(totalCayoCommission) || "—"} color="text-amber-300" sub="6,25% do recebido" />
+                <MetricItem
+                  label="Custo Total"
+                  value={formatCurrency(totalCostSum) || "—"}
+                  color="text-rose-300"
+                  sub="Comissões + entrega + CAC"
+                />
+                {closerCommissionEntries.map(([closerName, amount]) => (
+                  <MetricItem
+                    key={closerName}
+                    label={`Comissão ${closerName}`}
+                    value={formatCurrency(amount) || "—"}
+                    color="text-amber-300"
+                    sub="6,25% do recebido"
+                  />
+                ))}
                 <MetricItem label="Comissão Miguel" value={formatCurrency(totalMiguelCommission) || "—"} color="text-amber-300" sub="1% do total vendido" />
                 <MetricItem label="Custo de Entrega" value={formatCurrency(totalDeliveryCost) || "—"} color="text-amber-300" sub="Copy + edição" />
                 <MetricItem
