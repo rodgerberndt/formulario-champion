@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 // SDR routing: MQL (>=10k) → Miguel | 5k-10k → Gustavo | <5k → sem SDR (redireciona externo)
-const MIGUEL_WHATSAPP_NUMBER = "5511932748979";
+const MIGUEL_WHATSAPP_NUMBER = "5511934025412";
 const GUSTAVO_WHATSAPP_NUMBER = "5548996378499";
 const SUPPORT_WHATSAPP_NUMBER = "5548996560104";
 const SUBMISSION_TS_KEY = "champion_submit_ts";
