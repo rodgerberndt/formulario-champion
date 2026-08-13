@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy, Component, type ReactNode } from "react";
 import { TrackingProvider } from "@/hooks/useTracking";
 import { usePresence } from "@/hooks/usePresence";
@@ -11,6 +11,7 @@ import { useServiceWorker } from "@/hooks/useServiceWorker";
 import { DateRangeProvider } from "@/context/DateRangeContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import { HEADLINE_TEST_VARIANTS } from "@/config/headlineVariants";
 
 // Component to enable presence tracking + service worker
 function AppInitializer() {
@@ -94,6 +95,27 @@ const App = () => (
           <AppInitializer />
           <Routes>
             <Route path="/" element={<Index />} />
+            {/* Teste de headline: mesma página, só o Hero muda. Cada variante
+                tem seu próprio path pra o tracking separar os funis. As rotas
+                em minúsculas existem porque o React Router é case-sensitive e
+                a URL pode chegar digitada de outro jeito do anúncio. */}
+            {HEADLINE_TEST_VARIANTS.map((variant) => (
+              <Route
+                key={variant.path}
+                path={variant.path}
+                element={<Index variant={variant} />}
+              />
+            ))}
+            {HEADLINE_TEST_VARIANTS.map((variant) => (
+              <Route
+                key={`${variant.path}-lower`}
+                path={variant.path.toLowerCase()}
+                // Redireciona em vez de renderizar: cada variante precisa de UMA
+                // URL só, senão o mesmo teste grava metade dos eventos em /hd1 e
+                // metade em /HD1 e o funil fica partido ao meio.
+                element={<Navigate to={variant.path} replace />}
+              />
+            ))}
             <Route 
               path="/quiz" 
               element={

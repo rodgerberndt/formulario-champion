@@ -2773,7 +2773,12 @@ Deno.serve(async (req: Request) => {
 
     // GET /landing-behavior — funil por seção, scroll depth, cliques + comparação período anterior
     if (path === "/landing-behavior" && req.method === "GET") {
-      const LANDING_PAGE = "/";
+      // Variantes de headline em teste (espelha src/config/headlineVariants.ts).
+      // Cada uma é uma página própria pro tracking, pra dar pra comparar funil,
+      // tempo de leitura e conversão de headline contra headline.
+      const LANDING_PATHS = ["/", "/HD1", "/HD2", "/HD3", "/HD4"];
+      const requestedPage = url.searchParams.get("page");
+      const LANDING_PAGE = LANDING_PATHS.includes(requestedPage || "") ? requestedPage! : "/";
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
       const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
@@ -2843,6 +2848,9 @@ Deno.serve(async (req: Request) => {
           const fp = (s.first_page || "").toLowerCase();
           if (ref.includes("lovable.dev") || ref.includes("lovableproject.com")) return;
           if (fp === "/admin") return;
+          // Só quem entrou POR esta variante. Sem isso o denominador de cada
+          // headline incluiria as sessões de todas as outras.
+          if (fp !== LANDING_PAGE.toLowerCase()) return;
           validSessions.add(s.id);
         });
 

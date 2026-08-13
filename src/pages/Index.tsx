@@ -22,14 +22,23 @@ import { useSectionThemes } from "@/hooks/useSectionThemes";
 import { useLandingTracking } from "@/hooks/useLandingTracking";
 import { useLandingHit, generateClickId } from "@/hooks/useLandingHit";
 import { Loader2 } from "lucide-react";
+import { HEADLINE_VARIANTS, type HeadlineVariant } from "@/config/headlineVariants";
 
-const Index = () => {
+interface IndexProps {
+  /** Variante de headline. Ausente = página original ("/"). */
+  variant?: HeadlineVariant;
+}
+
+const Index = ({ variant }: IndexProps) => {
   const navigate = useNavigate();
   const { trackStartClick } = useTracking();
+  const headline = variant ?? HEADLINE_VARIANTS[0];
   useUtmCapture();
   useSmoothScroll();
   useSectionThemes();
-  useLandingTracking("/");
+  // O path da variante vira o `page` de todo evento de tracking — é o que
+  // separa o funil de cada headline no admin.
+  useLandingTracking(headline.path);
   useLandingHit();
 
   // Prefetch the Quiz chunk so navigation to /quiz is instant.
@@ -76,7 +85,7 @@ const Index = () => {
 
       <main>
         <section data-theme="cave" data-track-id="hero" data-track-order="10">
-          <Hero onStartClick={() => handleStartClick("start_btn_1")} />
+          <Hero variant={headline} onStartClick={() => handleStartClick("start_btn_1")} />
         </section>
 
         <section data-theme="void" data-track-id="social_proof" data-track-order="20">

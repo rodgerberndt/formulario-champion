@@ -3,14 +3,25 @@ import { ArrowRight, Users, Sparkles, TrendingUp } from "lucide-react";
 import championHeroLogo from "@/assets/champion-hero-logo.png";
 import { ShimmerText, KeywordGlow, LineReveal } from "@/components/landing/TextEffects";
 import { useReveal } from "@/hooks/useReveal";
+import { HEADLINE_VARIANTS, type HeadlineVariant } from "@/config/headlineVariants";
 
 interface HeroProps {
   onStartClick?: () => void;
+  /** Variante de headline do teste A/B. Sem isso, cai na original. */
+  variant?: HeadlineVariant;
 }
 export function Hero({
-  onStartClick
+  onStartClick,
+  variant
 }: HeroProps) {
   const { ref: sectionRef, isVisible } = useReveal();
+  const headline = variant ?? HEADLINE_VARIANTS[0];
+  // Headline longa em text-4xl estoura a tela no mobile. O tamanho acompanha o
+  // comprimento pra todas as variantes ocuparem o mesmo espaço visual.
+  const headlineLength =
+    headline.lead.length + (headline.highlight?.length ?? 0) + (headline.tail?.length ?? 0);
+  const headlineSize =
+    headlineLength > 110 ? "text-2xl md:text-3xl" : headlineLength > 75 ? "text-3xl md:text-4xl" : "text-4xl";
   return <section ref={sectionRef} className="min-h-[55vh] md:min-h-[80vh] flex items-center justify-center pt-12 pb-0 md:pb-2 relative overflow-hidden">
       {/* Simplified Background - Remove heavy effects on mobile */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -33,12 +44,16 @@ export function Hero({
               </div>
 
               {/* Headline */}
-              <h1 className="font-medium text-foreground mb-4 leading-tight text-4xl">
-                <ShimmerText isVisible={isVisible}>
-                  APLIQUE CRIATIVOS ANDRÔMEDA NA SUA OPERAÇÃO E TENHA ATÉ{" "}
-                </ShimmerText>
-                <KeywordGlow>3X MAIS LUCRO.</KeywordGlow>
+              <h1 className={`font-medium text-foreground mb-4 leading-tight ${headlineSize}`}>
+                <ShimmerText isVisible={isVisible}>{headline.lead}</ShimmerText>
+                {headline.highlight && <KeywordGlow>{headline.highlight}</KeywordGlow>}
+                {headline.tail && <ShimmerText isVisible={isVisible}>{headline.tail}</ShimmerText>}
               </h1>
+              {headline.attribution && (
+                <p className="text-xs md:text-sm text-secondary/90 font-medium mb-4 max-w-sm mx-auto md:mx-0">
+                  {headline.attribution}
+                </p>
+              )}
 
               {/* Subheadline */}
               <p className="text-sm md:text-base text-muted-foreground max-w-sm mx-auto md:mx-0 mb-6">

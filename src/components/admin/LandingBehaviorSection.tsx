@@ -4,6 +4,7 @@ import { useDateRange } from "@/context/DateRangeContext";
 import { Loader2, TrendingDown, TrendingUp, MousePointerClick, ArrowDown, Activity, Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ScrollAttentionHeatmap from "./ScrollAttentionHeatmap";
+import { HEADLINE_VARIANTS } from "@/config/headlineVariants";
 
 /**
  * BumpNumber: mostra o valor numérico e, quando ele muda, exibe um overlay
@@ -191,6 +192,7 @@ function ClickPositionGrid({ cells }: { cells: ClickCell[] }) {
 
 export default function LandingBehaviorSection({ fetchAdminData }: Props) {
   const { startISO, endExclusiveISO } = useDateRange();
+  const [variantPath, setVariantPath] = useState<string>("/");
   const [data, setData] = useState<BehaviorResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -208,7 +210,7 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
     // Só mostra "loading" full quando ainda não há dados; refreshes ficam discretos
     if (!data) setLoading(true);
     setRefreshing(true);
-    fetchAdminData("/landing-behavior", { from: startISO, to: endExclusiveISO })
+    fetchAdminData("/landing-behavior", { from: startISO, to: endExclusiveISO, page: variantPath })
       .then((res) => { if (!cancelled) setData(res); })
       .catch((e) => { console.error("landing-behavior", e); })
       .finally(() => {
@@ -218,7 +220,7 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
         }
       });
     return () => { cancelled = true; };
-  }, [startISO, endExclusiveISO, fetchAdminData]);
+  }, [startISO, endExclusiveISO, variantPath, fetchAdminData]);
 
   const cur = data?.current;
   const prev = data?.previous;
@@ -238,15 +240,35 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
     );
   }
 
+  const variantPicker = (
+    <div className="flex flex-wrap gap-1.5">
+      {HEADLINE_VARIANTS.map((v) => (
+        <button
+          key={v.path}
+          onClick={() => setVariantPath(v.path)}
+          className={`px-2.5 py-1 rounded-md text-[10px] font-medium border transition-colors ${
+            variantPath === v.path
+              ? "bg-primary/15 border-primary/40 text-primary"
+              : "bg-transparent border-border/50 text-muted-foreground hover:border-border"
+          }`}
+          title={`${v.lead}${v.highlight ?? ""}${v.tail ?? ""}`}
+        >
+          {v.label}
+        </button>
+      ))}
+    </div>
+  );
+
   if (!cur || cur.totalVisitors === 0) {
     return (
       <Card className="border-primary/30">
-        <CardContent className="pt-6 text-center space-y-2">
-          <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        <CardContent className="pt-6 space-y-3">
+          <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground text-center">
             Comportamento na Landing Page
           </p>
-          <p className="text-xs text-muted-foreground">
-            Ainda não há dados de comportamento neste período. O tracking começou agora — volte em algumas horas.
+          <div className="flex justify-center">{variantPicker}</div>
+          <p className="text-xs text-muted-foreground text-center">
+            Ainda não há dados de comportamento para <span className="font-mono">{variantPath}</span> neste período.
           </p>
         </CardContent>
       </Card>
@@ -258,7 +280,7 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
   return (
     <Card className="border-primary/30">
       <CardContent className="pt-4 space-y-6">
-        <div className="flex items-center justify-between border-b border-border/50 pb-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 pb-2">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
             Comportamento na Landing Page — funil por seção, scroll e cliques
             {refreshing && (
@@ -267,10 +289,13 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
               </span>
             )}
           </p>
-          <Badge variant="outline" className="text-[10px]">
-            {cur.totalVisitors} visitantes medidos
-            {cur.untrackedSessions ? ` de ${cur.sessionsInPeriod}` : ""}
-          </Badge>
+          <div className="flex items-center gap-2">
+            {variantPicker}
+            <Badge variant="outline" className="text-[10px]">
+              {cur.totalVisitors} visitantes medidos
+              {cur.untrackedSessions ? ` de ${cur.sessionsInPeriod}` : ""}
+            </Badge>
+          </div>
         </div>
 
         {/* INSIGHTS */}
