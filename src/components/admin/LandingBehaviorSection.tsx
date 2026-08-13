@@ -76,6 +76,7 @@ interface FunnelStep {
   continue_rate: number;
   click_rate?: number;
   avg_time_ms: number;
+  time_sample?: number;
   pct_of_visitors: number;
 }
 
@@ -83,11 +84,13 @@ interface ScrollDepth { milestone: number; users: number; pct: number; }
 interface TopClick { id: string; label: string; section: string | null; type: string; count: number; uniqueUsers: number; }
 interface ButtonClick { id: string; label: string; type: string; count: number; uniqueUsers: number; }
 interface AttentionBin { bin: number; range_pct: [number, number]; total_time_ms: number; avg_time_ms: number; users: number; pct_of_visitors: number; }
-interface SectionBoundary { section_id: string; pos_pct: number; }
+interface SectionBoundary { section_id: string; pos_pct: number; end_pct?: number | null; measured?: boolean; }
 interface ClickCell { col: number; row: number; count: number; }
 
 interface PeriodData {
   totalVisitors: number;
+  sessionsInPeriod?: number;
+  untrackedSessions?: number;
   funnel: FunnelStep[];
   scrollDepth: ScrollDepth[];
   scrollAttention?: AttentionBin[];
@@ -117,6 +120,8 @@ const SECTION_LABELS: Record<string, string> = {
   portfolio: "Portfólio",
   cta_intermediario: "CTA intermediário",
   metodo: "Método Champion",
+  success_cases: "Casos de sucesso",
+  criativos: "Criativos (vídeos)",
   gancho_corpo: "Gancho & Corpo",
   como_funciona: "Como funciona",
   faq: "FAQ",
@@ -263,7 +268,8 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
             )}
           </p>
           <Badge variant="outline" className="text-[10px]">
-            {cur.totalVisitors} visitantes únicos
+            {cur.totalVisitors} visitantes medidos
+            {cur.untrackedSessions ? ` de ${cur.sessionsInPeriod}` : ""}
           </Badge>
         </div>
 
@@ -285,7 +291,7 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
             <ArrowDown className="w-3 h-3" /> Funil por seção da landing
           </p>
           <div className="space-y-1.5">
-            {cur.funnel.filter((f) => !HIDDEN_SECTIONS.has(f.section_id)).map((f) => {
+            {cur.funnel.filter((f) => !HIDDEN_SECTIONS.has(f.section_id)).map((f, idx) => {
               const label = SECTION_LABELS[f.section_id] || f.section_id;
               const widthPct = maxReached > 0 ? (f.reached / maxReached) * 100 : 0;
               const intensity = f.pct_of_visitors / 100;
@@ -316,7 +322,10 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
                     />
                     <div className="relative h-full px-3 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-[10px] font-mono text-muted-foreground w-5 flex-shrink-0">#{f.order}</span>
+                        {/* Posição na página, não o section_order cru do banco:
+                            o order é espaçado (10, 20, 30…) pra permitir inserir
+                            seção no meio sem renumerar tudo. */}
+                        <span className="text-[10px] font-mono text-muted-foreground w-5 flex-shrink-0">#{idx + 1}</span>
                         <span className="text-xs font-semibold truncate">{label}</span>
                         {canExpand && (
                           <span className="text-[9px] text-muted-foreground/60 flex-shrink-0">
@@ -334,7 +343,12 @@ export default function LandingBehaviorSection({ fetchAdminData }: Props) {
                         </div>
                         <div className="text-right">
                           <p className="text-muted-foreground">Tempo médio</p>
-                          <p className="font-bold text-violet-300">{fmtTime(f.avg_time_ms)}</p>
+                          <p className="font-bold text-violet-300" title={f.time_sample !== undefined ? `Média sobre ${f.time_sample} sessões com tempo medido nesta seção` : undefined}>
+                            {fmtTime(f.avg_time_ms)}
+                            {f.time_sample !== undefined && f.time_sample < f.reached && (
+                              <span className="ml-1 text-[9px] font-normal text-muted-foreground/60">n={f.time_sample}</span>
+                            )}
+                          </p>
                         </div>
                         <div className="text-right">
                           <p className="text-muted-foreground">Continuou</p>

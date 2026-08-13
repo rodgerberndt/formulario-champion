@@ -75,32 +75,32 @@ const Index = () => {
       <LandingNavbar />
 
       <main>
-        <section data-theme="cave" data-track-id="hero" data-track-order="1">
+        <section data-theme="cave" data-track-id="hero" data-track-order="10">
           <Hero onStartClick={() => handleStartClick("start_btn_1")} />
         </section>
 
-        <section data-theme="void" data-track-id="social_proof" data-track-order="2">
+        <section data-theme="void" data-track-id="social_proof" data-track-order="20">
           <SocialProofCarousel />
         </section>
 
-        <section data-theme="ember" data-track-id="dor" data-track-order="3">
+        <section data-theme="ember" data-track-id="dor" data-track-order="30">
           <PainSection />
         </section>
 
-        <section data-theme="cave" data-track-id="metodo" data-track-order="5">
+        <section data-theme="cave" data-track-id="metodo" data-track-order="40">
           <MetodoChampion />
         </section>
 
-        <section data-theme="void" data-track-id="success_cases" data-track-order="5.3">
+        <section data-theme="void" data-track-id="success_cases" data-track-order="50">
           <SuccessCases />
         </section>
 
 
-        <section data-theme="blue-temple" data-track-id="criativos" data-track-order="5.6">
+        <section data-theme="blue-temple" data-track-id="criativos" data-track-order="60">
           <VturbCreatives />
         </section>
 
-        <section data-theme="cave" data-track-id="cta_intermediario" data-track-order="6" className="py-10 md:py-16">
+        <section data-theme="cave" data-track-id="cta_intermediario" data-track-order="70" className="py-10 md:py-16">
           <div className="container mx-auto px-5 text-center max-w-md">
             <p className="text-sm md:text-base text-muted-foreground mb-6">
               Preencha a aplicação rápida para que o próximo feedback seja você!
@@ -128,15 +128,15 @@ const Index = () => {
           </div>
         </section>
 
-        <section data-theme="blue-temple" data-track-id="como_funciona" data-track-order="8">
+        <section data-theme="blue-temple" data-track-id="como_funciona" data-track-order="80">
           <HowItWorks />
         </section>
 
-        <section data-theme="cave" data-track-id="faq" data-track-order="9">
+        <section data-theme="cave" data-track-id="faq" data-track-order="90">
           <FAQSection />
         </section>
 
-        <section data-theme="gold-haze" data-track-id="cta_final" data-track-order="10">
+        <section data-theme="gold-haze" data-track-id="cta_final" data-track-order="100">
           <FinalCTA />
         </section>
       </main>

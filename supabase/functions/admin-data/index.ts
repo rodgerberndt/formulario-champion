@@ -2773,6 +2773,7 @@ Deno.serve(async (req: Request) => {
 
     // GET /landing-behavior — funil por seção, scroll depth, cliques + comparação período anterior
     if (path === "/landing-behavior" && req.method === "GET") {
+      const LANDING_PAGE = "/";
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
       const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
@@ -2825,11 +2826,16 @@ Deno.serve(async (req: Request) => {
         // roda 2x — período atual e período anterior).
         const [sessionRows, sectionRows, clickRows, scrollRows, attentionRows] = await Promise.all([
           pagedFetch("lead_sessions", "id, referrer, first_page", fromIso, toIso),
-          pagedFetch("section_views", "session_id, section_id, section_order, time_spent_ms", fromIso, toIso, "created_at", 20000),
-          pagedFetch("click_events", "session_id, click_type, click_id, section_id, label, href, pos_x_pct, pos_y_pct", fromIso, toIso, "created_at", 20000),
-          pagedFetch("scroll_milestones", "session_id, milestone", fromIso, toIso, "reached_at", 20000),
-          pagedFetch("scroll_attention_bins", "session_id, bin, time_ms", fromIso, toIso, "created_at", 20000),
+          pagedFetch("section_views", "session_id, section_id, section_order, time_spent_ms, page, pos_start_pct, pos_end_pct", fromIso, toIso, "created_at", 20000),
+          pagedFetch("click_events", "session_id, click_type, click_id, section_id, label, href, pos_x_pct, pos_y_pct, page", fromIso, toIso, "created_at", 20000),
+          pagedFetch("scroll_milestones", "session_id, milestone, page", fromIso, toIso, "reached_at", 20000),
+          pagedFetch("scroll_attention_bins", "session_id, bin, time_ms, page", fromIso, toIso, "created_at", 20000),
         ]);
+
+        // Só eventos da landing. As tabelas de tracking são compartilhadas com
+        // outras páginas; sem esse filtro, evento de /quiz entrava no funil da
+        // landing.
+        const onLanding = (r: any) => (r.page || "/") === LANDING_PAGE;
 
         const validSessions = new Set<string>();
         (sessionRows || []).forEach((s: any) => {
@@ -2839,17 +2845,37 @@ Deno.serve(async (req: Request) => {
           if (fp === "/admin") return;
           validSessions.add(s.id);
         });
-        const totalVisitors = validSessions.size;
 
-        const sections = (sectionRows || []).filter((r: any) => validSessions.has(r.session_id));
+        const sections = (sectionRows || []).filter((r: any) => onLanding(r) && validSessions.has(r.session_id));
+
+        // BASE DO FUNIL — sessões com evidência de que a landing realmente
+        // carregou e foi rastreada (viu alguma seção, rolou, ou clicou nela).
+        //
+        // Antes o denominador era `validSessions` inteiro (toda linha de
+        // lead_sessions do período) e a primeira seção recebia TODAS elas à
+        // força, enquanto as seções seguintes só contavam quem tinha evento de
+        // tracking. Resultado: o degrau da 1ª pra 2ª seção não media abandono
+        // de leitura, media a COBERTURA do tracking — por isso dava sempre a
+        // mesma taxa de saída na headline em qualquer filtro de data.
+        const trackedSessions = new Set<string>();
+        sections.forEach((r: any) => trackedSessions.add(r.session_id));
+        (scrollRows || []).forEach((r: any) => { if (onLanding(r) && validSessions.has(r.session_id)) trackedSessions.add(r.session_id); });
+        (clickRows || []).forEach((r: any) => { if (onLanding(r) && validSessions.has(r.session_id)) trackedSessions.add(r.session_id); });
+
+        const totalVisitors = trackedSessions.size;
+        // Sessões registradas no período que não geraram nenhum evento de
+        // landing (bot, saída antes do JS montar, tracking bloqueado). Ficam
+        // FORA do funil e são reportadas à parte, em vez de virar "saiu na
+        // headline".
+        const untrackedSessions = Math.max(0, validSessions.size - totalVisitors);
 
         // Group sections — usa o MAIOR section_order encontrado (ordem mais recente
         // da página vence; evita rótulos antigos com ordem desatualizada)
-        const sectionMap = new Map<string, { id: string; order: number; sessions: Set<string>; totalTime: number; count: number }>();
+        const sectionMap = new Map<string, { id: string; order: number; sessions: Set<string>; totalTime: number; count: number; starts: number[]; ends: number[] }>();
         sections.forEach((r: any) => {
           let s = sectionMap.get(r.section_id);
           if (!s) {
-            s = { id: r.section_id, order: r.section_order, sessions: new Set(), totalTime: 0, count: 0 };
+            s = { id: r.section_id, order: r.section_order, sessions: new Set(), totalTime: 0, count: 0, starts: [], ends: [] };
             sectionMap.set(r.section_id, s);
           } else if (r.section_order > s.order) {
             s.order = r.section_order;
@@ -2857,12 +2883,25 @@ Deno.serve(async (req: Request) => {
           s.sessions.add(r.session_id);
           s.totalTime += r.time_spent_ms || 0;
           s.count += 1;
+          // Posição real medida no browser do visitante. Varia com o tamanho da
+          // tela (mobile alonga a página), por isso guardamos todas e usamos a
+          // mediana em vez da média — um outlier de tela minúscula não desloca
+          // a régua inteira.
+          if (r.pos_start_pct !== null && r.pos_start_pct !== undefined) s.starts.push(Number(r.pos_start_pct));
+          if (r.pos_end_pct !== null && r.pos_end_pct !== undefined) s.ends.push(Number(r.pos_end_pct));
         });
+
+        const median = (arr: number[]) => {
+          if (arr.length === 0) return null;
+          const sorted = [...arr].sort((a, b) => a - b);
+          const mid = Math.floor(sorted.length / 2);
+          return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+        };
 
         const sortedSections = Array.from(sectionMap.values()).sort((a, b) => a.order - b.order);
 
         // click events (need them BEFORE funnel to count clicks per section)
-        const clicks = (clickRows || []).filter((r: any) => validSessions.has(r.session_id));
+        const clicks = (clickRows || []).filter((r: any) => onLanding(r) && trackedSessions.has(r.session_id));
 
         // Map: section_id -> Set of session_ids that clicked something in that section
         const clickSessionsBySection = new Map<string, Set<string>>();
@@ -2874,7 +2913,7 @@ Deno.serve(async (req: Request) => {
         });
 
         // scroll milestones (precisamos ANTES do funil para usar como base)
-        const scrolls = (scrollRows || []).filter((r: any) => validSessions.has(r.session_id));
+        const scrolls = (scrollRows || []).filter((r: any) => onLanding(r) && trackedSessions.has(r.session_id));
 
         // maxScrollBySession: maior milestone atingido por cada sessão
         const maxScrollBySession = new Map<string, number>();
@@ -2896,8 +2935,15 @@ Deno.serve(async (req: Request) => {
         // Uma sessão "alcançou" a seção se: (a) viu a seção via observer OU (b) scroll máximo >= posição da seção.
         // Garantia de monotonicidade: reached(N) inclui todos de reached(N+1) — se chegou no fim, viu tudo antes.
         const N = sortedSections.length;
-        // Posição estimada de cada seção em % da página (distribuição uniforme entre 0% e 100%).
-        const sectionScrollPos = sortedSections.map((_, idx) => N > 1 ? (idx / (N - 1)) * 100 : 0);
+        // Posição de cada seção em % da altura da página. Prioridade pra medida
+        // real enviada pelo browser (mediana entre os visitantes); a
+        // distribuição uniforme entre 0% e 100% fica só como fallback pra dados
+        // antigos, gravados antes da medição existir.
+        const sectionScrollPos = sortedSections.map((s, idx) => {
+          const real = median(s.starts);
+          return real !== null ? real : (N > 1 ? (idx / (N - 1)) * 100 : 0);
+        });
+        const hasRealPositions = sortedSections.some((s) => s.starts.length > 0);
 
         // Construir reached do FINAL para o INÍCIO garantindo monotonicidade
         const reachedSets: Set<string>[] = new Array(N).fill(null).map(() => new Set<string>());
@@ -2917,10 +2963,12 @@ Deno.serve(async (req: Request) => {
           }
         }
 
-        // Para a primeira seção, todos os visitantes válidos são considerados "alcançados"
-        // (pois entraram na página, então viram pelo menos o topo)
+        // A primeira seção recebe todas as sessões RASTREADAS (quem carregou a
+        // landing viu o topo). Não usar validSessions aqui: sessão sem nenhum
+        // evento de landing não é "chegou e saiu na headline", é sessão sem
+        // medição — ela é reportada em untrackedSessions.
         if (N > 0) {
-          validSessions.forEach((sid) => reachedSets[0].add(sid));
+          trackedSessions.forEach((sid) => reachedSets[0].add(sid));
         }
 
         const funnel = sortedSections.map((s, idx) => {
@@ -2944,7 +2992,12 @@ Deno.serve(async (req: Request) => {
             drop_rate: reached > 0 ? (dropped / reached) * 100 : 0,
             continue_rate: reached > 0 ? (continued / reached) * 100 : 0,
             click_rate: reached > 0 ? (clickedCount / reached) * 100 : 0,
-            avg_time_ms: s.count > 0 ? Math.round(s.totalTime / s.count) : 0,
+            avg_time_ms: s.sessions.size > 0 ? Math.round(s.totalTime / s.sessions.size) : 0,
+            // Quantas sessões entram na média de tempo. É menor que `reached`
+            // (que inclui quem foi inferido por scroll, sem tempo medido) — sem
+            // esse número a média de tempo parece falar da mesma população da
+            // coluna "chegou", e não fala.
+            time_sample: s.sessions.size,
             pct_of_visitors: totalVisitors > 0 ? (reached / totalVisitors) * 100 : 0,
           };
         });
@@ -3013,7 +3066,7 @@ Deno.serve(async (req: Request) => {
         // Heatmap de atenção por scroll: tempo acumulado (ms) em cada faixa de 5% da
         // página (20 bins), mais confiável que os 4 milestones pra achar "onde pararam
         // de ler" — funciona igual pra mouse e toque, já que é baseado em scroll.
-        const attentionValid = (attentionRows || []).filter((r: any) => validSessions.has(r.session_id));
+        const attentionValid = (attentionRows || []).filter((r: any) => onLanding(r) && trackedSessions.has(r.session_id));
         const binAgg: Record<number, { totalMs: number; sessions: Set<string> }> = {};
         for (let b = 0; b < 20; b++) binAgg[b] = { totalMs: 0, sessions: new Set() };
         attentionValid.forEach((r: any) => {
@@ -3039,10 +3092,15 @@ Deno.serve(async (req: Request) => {
         const sectionBoundaries = sortedSections.map((s, idx) => ({
           section_id: s.id,
           pos_pct: sectionScrollPos[idx],
+          end_pct: median(s.ends),
+          measured: s.starts.length > 0,
         }));
 
         return {
           totalVisitors,
+          sessionsInPeriod: validSessions.size,
+          untrackedSessions,
+          hasRealPositions,
           funnel,
           scrollDepth,
           scrollAttention,
@@ -3063,6 +3121,16 @@ Deno.serve(async (req: Request) => {
 
       // Insights
       const insights: string[] = [];
+      // Cobertura de medição vem PRIMEIRO: se boa parte das sessões não gerou
+      // evento nenhum, o funil abaixo fala de uma amostra, não do tráfego todo.
+      if (current.sessionsInPeriod > 0 && current.untrackedSessions > 0) {
+        const coveragePct = (current.untrackedSessions / current.sessionsInPeriod) * 100;
+        if (coveragePct >= 15) {
+          insights.push(
+            `${current.untrackedSessions} de ${current.sessionsInPeriod} sessões (${coveragePct.toFixed(0)}%) não geraram nenhum evento na landing — bot, saída antes do JS carregar ou tracking bloqueado. O funil abaixo considera só as ${current.totalVisitors} sessões medidas.`,
+          );
+        }
+      }
       if (current.funnel.length > 0) {
         const worst = [...current.funnel].sort((a, b) => b.drop_rate - a.drop_rate)[0];
         const best = [...current.funnel].sort((a, b) => b.continue_rate - a.continue_rate)[0];

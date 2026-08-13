@@ -12,6 +12,9 @@ interface AttentionBin {
 interface SectionBoundary {
   section_id: string;
   pos_pct: number;
+  end_pct?: number | null;
+  /** false = posição estimada (dado gravado antes da medição real existir) */
+  measured?: boolean;
 }
 
 interface Props {
@@ -69,14 +72,33 @@ export default function ScrollAttentionHeatmap({ scrollAttention, sectionBoundar
         <div className="relative flex-1" style={{ height: STRIP_HEIGHT }}>
           {sectionBoundaries.map((s) => {
             const topPx = Math.min(STRIP_HEIGHT - 1, (s.pos_pct / 100) * STRIP_HEIGHT);
+            // Com posição medida, a seção vira uma FAIXA da altura real que
+            // ocupa na página — é isso que faz o mapa de calor ao lado querer
+            // dizer alguma coisa. Sem medida, cai no traço simples de antes.
+            const heightPx =
+              s.measured && s.end_pct != null
+                ? Math.max(2, ((s.end_pct - s.pos_pct) / 100) * STRIP_HEIGHT)
+                : null;
             return (
               <div
                 key={s.section_id}
-                className="absolute left-0 flex items-center gap-1.5 text-[10px] text-muted-foreground"
+                className="absolute left-0 right-0 flex items-start gap-1.5 text-[10px] text-muted-foreground"
                 style={{ top: topPx }}
+                title={
+                  heightPx
+                    ? `${sectionLabels[s.section_id] || s.section_id}: ${s.pos_pct.toFixed(0)}%–${s.end_pct!.toFixed(0)}% da página`
+                    : `${sectionLabels[s.section_id] || s.section_id}: posição estimada`
+                }
               >
-                <span className="w-3 h-px bg-border" />
-                <span className="truncate">{sectionLabels[s.section_id] || s.section_id}</span>
+                {heightPx ? (
+                  <span
+                    className="w-0.5 flex-shrink-0 rounded-full bg-primary/50"
+                    style={{ height: heightPx }}
+                  />
+                ) : (
+                  <span className="w-3 h-px mt-1.5 bg-border flex-shrink-0" />
+                )}
+                <span className="truncate leading-none pt-0.5">{sectionLabels[s.section_id] || s.section_id}</span>
               </div>
             );
           })}
