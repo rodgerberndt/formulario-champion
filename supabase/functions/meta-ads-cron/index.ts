@@ -143,9 +143,18 @@ Deno.serve(async (req: Request) => {
   try {
     const metaToken = Deno.env.get("META_ACCESS_TOKEN");
     const rawAccountId = Deno.env.get("META_AD_ACCOUNT_ID") || "";
-    const accountId = rawAccountId.startsWith("act_") ? rawAccountId : `act_${rawAccountId}`;
+    // Contas extras (lista separada por vírgula) — o teste de headline roda numa
+    // conta separada da principal, e sem isso o gasto dele não entra no painel.
+    // Fica numa env var própria pra não precisar reescrever a que já funciona.
+    const extraAccounts = (Deno.env.get("META_AD_ACCOUNT_IDS_EXTRA") || "")
+      .split(",").map((a) => a.trim()).filter(Boolean);
+    const accountIds = Array.from(new Set(
+      [rawAccountId, ...extraAccounts]
+        .filter(Boolean)
+        .map((a) => (a.startsWith("act_") ? a : `act_${a}`))
+    ));
 
-    if (!metaToken || !rawAccountId) {
+    if (!metaToken || accountIds.length === 0) {
       console.log("[meta-ads-cron] Meta credentials not configured, skipping");
       return new Response(JSON.stringify({ skipped: true }), { status: 200 });
     }
@@ -162,21 +171,28 @@ Deno.serve(async (req: Request) => {
     const minDate = "2026-02-01";
     const clampedFrom = dateFrom < minDate ? minDate : dateFrom;
 
-    console.log(`[meta-ads-cron] Syncing ${clampedFrom} to ${dateTo}`);
-    const insights = await fetchMetaInsights(metaToken, accountId, clampedFrom, dateTo);
+    console.log(`[meta-ads-cron] Syncing ${clampedFrom} to ${dateTo} for ${accountIds.length} account(s)`);
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const accountCurrency = await getAdAccountCurrency(metaToken, accountId);
-    let exchangeRate = 1;
-    try {
-      exchangeRate = await getExchangeRateToBRL(supabase, accountCurrency);
-    } catch (e) {
-      console.error(`[meta-ads-cron] Could not resolve exchange rate for ${accountCurrency}, spend will NOT be converted this run:`, e);
+    // Cada conta tem a própria moeda e o próprio câmbio: uma fatura em USD e a
+    // outra pode faturar em BRL. Converter tudo pela taxa de uma só multiplicaria
+    // o gasto da outra por ~5.
+    const insights: (MetaInsight & { __account: string; __rate: number; __currency: string })[] = [];
+    for (const accountId of accountIds) {
+      const accountCurrency = await getAdAccountCurrency(metaToken, accountId);
+      let rate = 1;
+      try {
+        rate = await getExchangeRateToBRL(supabase, accountCurrency);
+      } catch (e) {
+        console.error(`[meta-ads-cron] Could not resolve exchange rate for ${accountCurrency} (${accountId}), spend will NOT be converted this run:`, e);
+      }
+      console.log(`[meta-ads-cron] ${accountId}: currency ${accountCurrency}, rate to BRL ${rate}`);
+      const rows = await fetchMetaInsights(metaToken, accountId, clampedFrom, dateTo);
+      rows.forEach((r) => insights.push({ ...r, __account: accountId, __rate: rate, __currency: accountCurrency }));
     }
-    console.log(`[meta-ads-cron] Account currency: ${accountCurrency}, rate to BRL: ${exchangeRate}`);
 
     let inserted = 0;
     let errors = 0;
@@ -198,10 +214,11 @@ Deno.serve(async (req: Request) => {
 
         return {
           date: row.date_start,
-          spend: Number((spendOriginal * exchangeRate).toFixed(2)),
+          spend: Number((spendOriginal * row.__rate).toFixed(2)),
           spend_original: spendOriginal,
-          spend_currency: accountCurrency,
-          exchange_rate: exchangeRate,
+          spend_currency: row.__currency,
+          exchange_rate: row.__rate,
+          ad_account_id: row.__account,
           impressions: parseInt(row.impressions) || 0,
           clicks: parseInt(row.clicks) || 0,
           landing_page_views: landingPageViews,

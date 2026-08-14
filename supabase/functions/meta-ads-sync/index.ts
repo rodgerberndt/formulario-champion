@@ -11,6 +11,14 @@ const META_API_VERSION = (Deno.env.get('META_API_VERSION') || 'v21.0').toLowerCa
 const META_ACCESS_TOKEN = Deno.env.get('META_ACCESS_TOKEN');
 const RAW_AD_ACCOUNT_ID = Deno.env.get('META_AD_ACCOUNT_ID') || '';
 const META_AD_ACCOUNT_ID = RAW_AD_ACCOUNT_ID.startsWith('act_') ? RAW_AD_ACCOUNT_ID : `act_${RAW_AD_ACCOUNT_ID}`;
+// Contas extras (lista separada por vírgula), mesma env var do meta-ads-cron:
+// o teste de headline roda numa conta separada da principal.
+const AD_ACCOUNT_IDS = Array.from(new Set(
+  [RAW_AD_ACCOUNT_ID, ...(Deno.env.get('META_AD_ACCOUNT_IDS_EXTRA') || '').split(',')]
+    .map((a) => a.trim())
+    .filter(Boolean)
+    .map((a) => (a.startsWith('act_') ? a : `act_${a}`))
+));
 
 async function verifyAdminToken(token: string): Promise<boolean> {
   try {
@@ -40,11 +48,11 @@ const BASE_CURRENCY = "BRL";
 // (causa não confirmada — possivelmente escopo/permissão distinto do usado
 // pelo endpoint de insights) e caindo pro fallback BRL, zerando a conversão
 // sempre que o cron rodava. Setar a env var evita depender dessa chamada.
-async function getAdAccountCurrency(): Promise<string> {
+async function getAdAccountCurrency(accountId: string = META_AD_ACCOUNT_ID): Promise<string> {
   const override = Deno.env.get("META_AD_ACCOUNT_CURRENCY");
   if (override) return override.toUpperCase();
 
-  const url = `https://graph.facebook.com/${META_API_VERSION}/${META_AD_ACCOUNT_ID}?fields=currency&access_token=${META_ACCESS_TOKEN}`;
+  const url = `https://graph.facebook.com/${META_API_VERSION}/${accountId}?fields=currency&access_token=${META_ACCESS_TOKEN}`;
   const res = await fetch(url);
   if (!res.ok) {
     console.error("Failed to fetch ad account currency, assuming BRL:", await res.text());
@@ -155,13 +163,13 @@ function getMonthlyChunks(dateFrom: string, dateTo: string): Array<{since: strin
   return chunks;
 }
 
-async function fetchMetaInsightsChunk(since: string, until: string): Promise<MetaInsight[]> {
+async function fetchMetaInsightsChunk(accountId: string, since: string, until: string): Promise<MetaInsight[]> {
   const fields = 'ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,spend,impressions,clicks,actions';
   const timeRange = JSON.stringify({ since, until });
   const limit = 500;
 
   let allData: MetaInsight[] = [];
-  const baseUrl = `https://graph.facebook.com/${META_API_VERSION}/${META_AD_ACCOUNT_ID}/insights`;
+  const baseUrl = `https://graph.facebook.com/${META_API_VERSION}/${accountId}/insights`;
   let url: string | null = `${baseUrl}?fields=${fields}&time_range=${encodeURIComponent(timeRange)}&level=ad&time_increment=1&limit=${limit}&access_token=${META_ACCESS_TOKEN}`;
 
   while (url) {
@@ -187,17 +195,17 @@ async function fetchMetaInsightsChunk(since: string, until: string): Promise<Met
   return allData;
 }
 
-async function fetchMetaInsights(dateFrom: string, dateTo: string): Promise<MetaInsight[]> {
+async function fetchMetaInsights(accountId: string, dateFrom: string, dateTo: string): Promise<MetaInsight[]> {
   const chunks = getMonthlyChunks(dateFrom, dateTo);
-  console.log(`Splitting into ${chunks.length} monthly chunks`);
-  
+  console.log(`[${accountId}] Splitting into ${chunks.length} monthly chunks`);
+
   let allData: MetaInsight[] = [];
   for (const chunk of chunks) {
-    const data = await fetchMetaInsightsChunk(chunk.since, chunk.until);
+    const data = await fetchMetaInsightsChunk(accountId, chunk.since, chunk.until);
     allData = allData.concat(data);
   }
-  
-  console.log(`Fetched ${allData.length} total insight rows from Meta`);
+
+  console.log(`[${accountId}] Fetched ${allData.length} insight rows from Meta`);
   return allData;
 }
 
@@ -216,7 +224,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    if (!META_ACCESS_TOKEN || !META_AD_ACCOUNT_ID) {
+    if (!META_ACCESS_TOKEN || AD_ACCOUNT_IDS.length === 0) {
       return new Response(
         JSON.stringify({ error: "Meta API credentials not configured", configured: false }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -235,22 +243,29 @@ Deno.serve(async (req: Request) => {
     const minDateStr = '2026-02-01';
     const clampedFrom = date_from < minDateStr ? minDateStr : date_from;
 
-    // Fetch insights from Meta
-    const insights = await fetchMetaInsights(clampedFrom, date_to);
+    // Fetch insights from Meta (todas as contas configuradas)
 
     // Prepare upsert rows
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const accountCurrency = await getAdAccountCurrency();
-    let exchangeRate = 1;
-    try {
-      exchangeRate = await getExchangeRateToBRL(supabase, accountCurrency);
-    } catch (e) {
-      console.error(`Could not resolve exchange rate for ${accountCurrency}, spend will NOT be converted this run:`, e);
+    // Cada conta tem a própria moeda e o próprio câmbio: uma fatura em USD e a
+    // outra pode faturar em BRL. Converter tudo pela taxa de uma só multiplicaria
+    // o gasto da outra por ~5.
+    const insights: (MetaInsight & { __account: string; __rate: number; __currency: string })[] = [];
+    for (const accountId of AD_ACCOUNT_IDS) {
+      const accountCurrency = await getAdAccountCurrency(accountId);
+      let rate = 1;
+      try {
+        rate = await getExchangeRateToBRL(supabase, accountCurrency);
+      } catch (e) {
+        console.error(`Could not resolve exchange rate for ${accountCurrency} (${accountId}), spend will NOT be converted this run:`, e);
+      }
+      console.log(`${accountId}: currency ${accountCurrency}, rate to BRL ${rate}`);
+      const rows = await fetchMetaInsights(accountId, clampedFrom, date_to);
+      rows.forEach((r) => insights.push({ ...r, __account: accountId, __rate: rate, __currency: accountCurrency }));
     }
-    console.log(`Ad account currency: ${accountCurrency}, rate to BRL: ${exchangeRate}`);
 
     let inserted = 0;
     let errors = 0;
@@ -274,10 +289,11 @@ Deno.serve(async (req: Request) => {
 
         return {
           date: row.date_start,
-          spend: Number((spendOriginal * exchangeRate).toFixed(2)),
+          spend: Number((spendOriginal * row.__rate).toFixed(2)),
           spend_original: spendOriginal,
-          spend_currency: accountCurrency,
-          exchange_rate: exchangeRate,
+          spend_currency: row.__currency,
+          exchange_rate: row.__rate,
+          ad_account_id: row.__account,
           impressions: parseInt(row.impressions) || 0,
           clicks: parseInt(row.clicks) || 0,
           landing_page_views: landingPageViews,
