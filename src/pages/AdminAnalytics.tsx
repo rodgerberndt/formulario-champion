@@ -15,8 +15,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useActiveUsers } from "@/hooks/usePresence";
 import UniversalDateRangePicker from "@/components/UniversalDateRangePicker";
 import PageVariantFilter, { ALL_PAGES } from "@/components/admin/PageVariantFilter";
+import CreativeFilter, { ALL_CREATIVES, type CreativeOption } from "@/components/admin/CreativeFilter";
 
 const PAGE_FILTER_KEY = "champion_admin_page_filter";
+const CREATIVE_FILTER_KEY = "champion_admin_creative_filter";
 import { useDateRange } from "@/context/DateRangeContext";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -101,6 +103,8 @@ interface Metrics {
   drop_offs: Record<string, number>;
   quiz_v2_empty?: boolean;
   quiz_v1_present?: boolean;
+  /** Criativos do período (utm_content normalizado) — alimenta o filtro global. */
+  creatives_available?: { content: string; sessions: number }[];
 }
 
 interface Session {
@@ -960,6 +964,16 @@ export default function AdminAnalytics() {
     try { localStorage.setItem(PAGE_FILTER_KEY, next); } catch { /* ignore */ }
   };
 
+  const [creativeFilter, setCreativeFilter] = useState<string>(() => {
+    try { return localStorage.getItem(CREATIVE_FILTER_KEY) || ALL_CREATIVES; } catch { return ALL_CREATIVES; }
+  });
+  const creativeFilterRef = useRef(creativeFilter);
+  creativeFilterRef.current = creativeFilter;
+  const changeCreativeFilter = (next: string) => {
+    setCreativeFilter(next);
+    try { localStorage.setItem(CREATIVE_FILTER_KEY, next); } catch { /* ignore */ }
+  };
+
   // IMPORTANT: keep a stable identity for fetchAdminData.
   // Esta função é passada como prop para tabs (CreativesTab etc.) cujos
   // useCallback/useEffect dependem dela. Sem useCallback, uma nova referência
@@ -987,6 +1001,9 @@ export default function AdminAnalytics() {
       const mergedParams: Record<string, string> = { ...(params || {}) };
       if (!mergedParams.page && pageFilterRef.current !== ALL_PAGES) {
         mergedParams.page = pageFilterRef.current;
+      }
+      if (!mergedParams.creative && creativeFilterRef.current !== ALL_CREATIVES) {
+        mergedParams.creative = creativeFilterRef.current;
       }
       const queryString = Object.keys(mergedParams).length
         ? "?" + new URLSearchParams(mergedParams).toString()
@@ -1046,7 +1063,7 @@ export default function AdminAnalytics() {
     }
     // pageFilter entra nas deps de propósito: trocar a variante muda a
     // identidade de fetchAdminData e faz todo componente que a usa recarregar.
-  }, [pageFilter]);
+  }, [pageFilter, creativeFilter]);
 
   const loadMetrics = async () => {
     try {
@@ -1677,6 +1694,11 @@ export default function AdminAnalytics() {
           <div className="flex flex-wrap items-center gap-4 mb-6">
             <UniversalDateRangePicker />
             <PageVariantFilter value={pageFilter} onChange={changePageFilter} />
+            <CreativeFilter
+              value={creativeFilter}
+              onChange={changeCreativeFilter}
+              creatives={(metrics?.creatives_available as CreativeOption[]) || []}
+            />
             <div
               id="admin-header-actions-slot"
               className="ml-auto flex flex-wrap items-center gap-2"

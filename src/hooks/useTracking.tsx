@@ -46,6 +46,18 @@ function getDeviceType(): string {
 function sanitizeParam(val: string | null): string | null {
   if (!val) return null;
   if (/\{\{.*\}\}/.test(val)) return null;
+  // Parte dos anúncios monta a URL com o valor JÁ codificado, então o
+  // URLSearchParams devolve "Luis-Nathan+Case+%232+-+V3" (uma volta de encoding
+  // sobrando) e o mesmo criativo virava dois nomes diferentes no relatório.
+  // Só desfaz quando sobrou percent-encoding: nome de campanha usa "+" real
+  // ("Ads validados + HD0") e não pode virar espaço.
+  if (/%[0-9A-Fa-f]{2}/.test(val)) {
+    try {
+      return decodeURIComponent(val.replace(/\+/g, " "));
+    } catch {
+      return val;
+    }
+  }
   return val;
 }
 

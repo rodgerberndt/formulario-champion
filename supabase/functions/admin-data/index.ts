@@ -24,6 +24,49 @@ function parsePageFilter(url: URL): string | null {
 }
 
 /**
+ * UTM como o anunciante escreveu.
+ *
+ * Parte do tráfego chega com a query string ainda codificada
+ * ("Luis-Nathan+Case+%232+-+V3"), então o MESMO criativo aparecia como dois
+ * nomes diferentes nos relatórios e cada um levava um pedaço das sessões.
+ */
+function normalizeUtm(value: string | null | undefined): string {
+  if (!value) return "";
+  // Só decodifica quando ainda HÁ percent-encoding: os nomes de campanha usam
+  // "+" de verdade ("Ads validados + HD0"), e trocar todo "+" por espaço sem
+  // esse cuidado destruiria o nome de quem já chegou decodificado.
+  if (!/%[0-9A-Fa-f]{2}/.test(value)) return value.trim();
+  try {
+    return decodeURIComponent(value.replace(/\+/g, " ")).trim();
+  } catch {
+    return value.replace(/\+/g, " ").trim();
+  }
+}
+
+/**
+ * Filtro de criativo do admin. Formatos aceitos:
+ *   all                        → sem filtro
+ *   one:<utm_content>          → um criativo exato
+ *   group:<prefixo>            → todas as variações de um criativo
+ *                                ("Luis-Nathan Case #2" pega o " - V3" e o " - C1")
+ *
+ * Existe pro teste de headline ficar com UMA variável só: sem isso a página
+ * original recebia criativos que as variantes não recebiam, e a comparação
+ * media criativo + headline juntos.
+ */
+function parseCreativeFilter(url: URL): ((utmContent: string | null) => boolean) | null {
+  const raw = url.searchParams.get("creative");
+  if (!raw || raw === "all") return null;
+  const [kind, ...rest] = raw.split(":");
+  const target = normalizeUtm(rest.join(":")).toLowerCase();
+  if (!target) return null;
+  if (kind === "group") {
+    return (c) => normalizeUtm(c).toLowerCase().startsWith(target);
+  }
+  return (c) => normalizeUtm(c).toLowerCase() === target;
+}
+
+/**
  * Seções da landing na ordem da página (espelha src/pages/Index.tsx).
  *
  * O funil precisa dessa lista pra mostrar TODAS as seções, inclusive as que
@@ -657,7 +700,7 @@ Deno.serve(async (req: Request) => {
       // Fetch sessions acquired in range (cohort by first touch)
       const rawSessions = await fetchAllPaged<any>(
         "lead_sessions",
-        "id, ip_address, created_at, last_seen_at, referrer, first_page, completed",
+        "id, ip_address, created_at, last_seen_at, referrer, first_page, completed, utm_content",
         (q: any) => {
           if (from) q = q.gte("created_at", from);
           if (toEnd) q = q.lte("created_at", toEnd);
@@ -667,6 +710,7 @@ Deno.serve(async (req: Request) => {
 
       // Filter internal/noise traffic (same rules as /metrics)
       const weeklyPageFilter = parsePageFilter(url);
+      const weeklyCreativeFilter = parseCreativeFilter(url);
       const sessions = rawSessions.filter((s: any) => {
         const ref = (s.referrer || "").toLowerCase();
         const firstPage = (s.first_page || "").toLowerCase();
@@ -674,6 +718,7 @@ Deno.serve(async (req: Request) => {
         if (firstPage === "/admin") return false;
         // Filtro global de variante de headline do admin.
         if (weeklyPageFilter && firstPage !== weeklyPageFilter.toLowerCase()) return false;
+        if (weeklyCreativeFilter && !weeklyCreativeFilter(s.utm_content)) return false;
         return true;
       });
       const sessionIds = new Set(sessions.map((s: any) => s.id));
@@ -704,7 +749,7 @@ Deno.serve(async (req: Request) => {
         for (let i = 0; i < ids.length; i += CHUNK) {
           const { data: extra } = await supabase
             .from("lead_sessions")
-            .select("id, referrer, first_page")
+            .select("id, referrer, first_page, utm_content")
             .in("id", ids.slice(i, i + CHUNK));
           (extra || []).forEach((s: any) => {
             const ref = (s.referrer || "").toLowerCase();
@@ -712,6 +757,7 @@ Deno.serve(async (req: Request) => {
             if (ref.includes("lovable.dev") || ref.includes("lovableproject.com")) return;
             if (fp === "/admin") return;
             if (weeklyPageFilter && fp !== weeklyPageFilter.toLowerCase()) return;
+            if (weeklyCreativeFilter && !weeklyCreativeFilter(s.utm_content)) return;
             weeklyEventSessionIds.add(s.id);
           });
         }
@@ -948,7 +994,7 @@ Deno.serve(async (req: Request) => {
       }
 
       // Fetch ALL sessions acquired in range (cohort by first touch)
-      const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, last_seen_at, referrer, first_page, completed, started_quiz", (q: any) => {
+      const rawSessions = await fetchAll<any>("lead_sessions", "id, ip_address, created_at, last_seen_at, referrer, first_page, completed, started_quiz, utm_content", (q: any) => {
         if (fromClamped) q = q.gte("created_at", fromClamped);
         if (toEnd) q = q.lte("created_at", toEnd);
         return q;
@@ -959,6 +1005,24 @@ Deno.serve(async (req: Request) => {
       // 2. Sessions that started on /admin
       // 3. Lovable project URLs in referrer
       const metricsPageFilter = parsePageFilter(url);
+      const metricsCreativeFilter = parseCreativeFilter(url);
+      // Lista de criativos do período ANTES do filtro de criativo — é ela que
+      // alimenta o seletor no admin, então não pode vir já filtrada.
+      const creativeTally = new Map<string, number>();
+      rawSessions.forEach((s: any) => {
+        const ref = (s.referrer || '').toLowerCase();
+        const fp = (s.first_page || '').toLowerCase();
+        if (ref.includes('lovable.dev') || ref.includes('lovableproject.com')) return;
+        if (fp === '/admin') return;
+        if (metricsPageFilter && fp !== metricsPageFilter.toLowerCase()) return;
+        const c = normalizeUtm(s.utm_content);
+        if (!c) return;
+        creativeTally.set(c, (creativeTally.get(c) || 0) + 1);
+      });
+      const creativesAvailable = Array.from(creativeTally.entries())
+        .map(([content, sessions]) => ({ content, sessions }))
+        .sort((a, b) => b.sessions - a.sessions);
+
       const sessions = rawSessions.filter((s: any) => {
         const ref = (s.referrer || '').toLowerCase();
         const firstPage = (s.first_page || '').toLowerCase();
@@ -970,6 +1034,7 @@ Deno.serve(async (req: Request) => {
         // inteiro (visitantes, entrada no quiz, etapas, conclusão) às sessões
         // que entraram POR aquela página.
         if (metricsPageFilter && firstPage !== metricsPageFilter.toLowerCase()) return false;
+        if (metricsCreativeFilter && !metricsCreativeFilter(s.utm_content)) return false;
         return true;
       });
       const filteredOutCount = rawSessions.length - sessions.length;
@@ -1011,7 +1076,7 @@ Deno.serve(async (req: Request) => {
         for (let i = 0; i < ids.length; i += CHUNK) {
           const { data: extra } = await supabase
             .from("lead_sessions")
-            .select("id, referrer, first_page")
+            .select("id, referrer, first_page, utm_content")
             .in("id", ids.slice(i, i + CHUNK));
           (extra || []).forEach((s: any) => {
             const ref = (s.referrer || "").toLowerCase();
@@ -1019,6 +1084,7 @@ Deno.serve(async (req: Request) => {
             if (ref.includes("lovable.dev") || ref.includes("lovableproject.com")) return;
             if (fp === "/admin") return;
             if (metricsPageFilter && fp !== metricsPageFilter.toLowerCase()) return;
+            if (metricsCreativeFilter && !metricsCreativeFilter(s.utm_content)) return;
             eventSessionIds.add(s.id);
           });
         }
@@ -1075,7 +1141,7 @@ Deno.serve(async (req: Request) => {
       // Conta hits únicos por session_id; se session_id null, dedup por (ip + user_agent) janela de 30min
       let hitsQuery = supabase
         .from("landing_hits")
-        .select("session_id, ip_address, user_agent, created_at, referrer, path")
+        .select("session_id, ip_address, user_agent, created_at, referrer, path, utm_content")
         .order("created_at", { ascending: true })
         .limit(15000);
       if (fromClamped) hitsQuery = hitsQuery.gte("created_at", fromClamped);
@@ -1089,6 +1155,7 @@ Deno.serve(async (req: Request) => {
           const hitPath = ((h.path || "/").split("?")[0] || "/").toLowerCase();
           if (hitPath !== metricsPageFilter.toLowerCase()) return false;
         }
+        if (metricsCreativeFilter && !metricsCreativeFilter(h.utm_content)) return false;
         return true;
       });
       const hitSessionIds = new Set<string>();
@@ -1320,6 +1387,9 @@ Deno.serve(async (req: Request) => {
           drop_offs: dropOffs,
           quiz_v2_empty: !hasV2Data,
           quiz_v1_present: hasV1Data,
+          // Alimenta o seletor de criativo do admin (já com os nomes de UTM
+          // normalizados, então cada criativo aparece uma vez só).
+          creatives_available: creativesAvailable,
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -2882,6 +2952,7 @@ Deno.serve(async (req: Request) => {
     if (path === "/landing-behavior" && req.method === "GET") {
       // null = "todas as páginas" (soma a original com as variantes).
       const pageFilter = parsePageFilter(url);
+      const behaviorCreativeFilter = parseCreativeFilter(url);
       const matchesPage = (p: string | null) => {
         const v = p || "/";
         return pageFilter ? v.toLowerCase() === pageFilter.toLowerCase() : LANDING_PATHS.includes(v);
@@ -2937,7 +3008,7 @@ Deno.serve(async (req: Request) => {
         // parecer travado no admin em ranges maiores, já que buildPeriod ainda
         // roda 2x — período atual e período anterior).
         const [sessionRows, sectionRows, clickRows, scrollRows, attentionRows] = await Promise.all([
-          pagedFetch("lead_sessions", "id, referrer, first_page", fromIso, toIso),
+          pagedFetch("lead_sessions", "id, referrer, first_page, utm_content", fromIso, toIso),
           pagedFetch("section_views", "session_id, section_id, section_order, time_spent_ms, page, pos_start_pct, pos_end_pct", fromIso, toIso, "created_at", 20000),
           pagedFetch("click_events", "session_id, click_type, click_id, section_id, label, href, pos_x_pct, pos_y_pct, page", fromIso, toIso, "created_at", 20000),
           pagedFetch("scroll_milestones", "session_id, milestone, page", fromIso, toIso, "reached_at", 20000),
@@ -2958,6 +3029,7 @@ Deno.serve(async (req: Request) => {
           // Só quem entrou POR esta variante. Sem isso o denominador de cada
           // headline incluiria as sessões de todas as outras.
           if (!matchesPage(s.first_page)) return;
+          if (behaviorCreativeFilter && !behaviorCreativeFilter(s.utm_content)) return;
           validSessions.add(s.id);
         });
 
