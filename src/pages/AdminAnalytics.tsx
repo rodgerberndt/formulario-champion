@@ -14,6 +14,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveUsers } from "@/hooks/usePresence";
 import UniversalDateRangePicker from "@/components/UniversalDateRangePicker";
+import PageVariantFilter, { ALL_PAGES } from "@/components/admin/PageVariantFilter";
+
+const PAGE_FILTER_KEY = "champion_admin_page_filter";
 import { useDateRange } from "@/context/DateRangeContext";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -945,6 +948,18 @@ export default function AdminAnalytics() {
   const logoutFiredRef = useRef(false);
   const adminRequestQueueRef = useRef<Promise<void>>(Promise.resolve());
 
+  // Filtro global de variante de headline. Persistido em localStorage pra
+  // sobreviver ao reload, como o filtro de datas.
+  const [pageFilter, setPageFilter] = useState<string>(() => {
+    try { return localStorage.getItem(PAGE_FILTER_KEY) || ALL_PAGES; } catch { return ALL_PAGES; }
+  });
+  const pageFilterRef = useRef(pageFilter);
+  pageFilterRef.current = pageFilter;
+  const changePageFilter = (next: string) => {
+    setPageFilter(next);
+    try { localStorage.setItem(PAGE_FILTER_KEY, next); } catch { /* ignore */ }
+  };
+
   // IMPORTANT: keep a stable identity for fetchAdminData.
   // Esta função é passada como prop para tabs (CreativesTab etc.) cujos
   // useCallback/useEffect dependem dela. Sem useCallback, uma nova referência
@@ -965,7 +980,17 @@ export default function AdminAnalytics() {
         throw new Error("Sessão expirada");
       }
       
-      const queryString = params ? "?" + new URLSearchParams(params).toString() : "";
+      // Filtro global de variante de headline: entra em TODA requisição do
+      // admin, então funil do site, funil do quiz, análise semanal e
+      // comportamento da landing falam sempre da mesma população. Endpoints
+      // que não sabem filtrar por página simplesmente ignoram o parâmetro.
+      const mergedParams: Record<string, string> = { ...(params || {}) };
+      if (!mergedParams.page && pageFilterRef.current !== ALL_PAGES) {
+        mergedParams.page = pageFilterRef.current;
+      }
+      const queryString = Object.keys(mergedParams).length
+        ? "?" + new URLSearchParams(mergedParams).toString()
+        : "";
       
       // Use fetch directly for proper path handling
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data${path}${queryString}`;
@@ -1019,7 +1044,9 @@ export default function AdminAnalytics() {
     } finally {
       releaseQueue();
     }
-  }, []);
+    // pageFilter entra nas deps de propósito: trocar a variante muda a
+    // identidade de fetchAdminData e faz todo componente que a usa recarregar.
+  }, [pageFilter]);
 
   const loadMetrics = async () => {
     try {
@@ -1649,6 +1676,7 @@ export default function AdminAnalytics() {
           {/* Global Date Filter + slot para ações contextuais (ex: Sync Meta Ads / Gasto / Reunião / Venda / Atualizar) */}
           <div className="flex flex-wrap items-center gap-4 mb-6">
             <UniversalDateRangePicker />
+            <PageVariantFilter value={pageFilter} onChange={changePageFilter} />
             <div
               id="admin-header-actions-slot"
               className="ml-auto flex flex-wrap items-center gap-2"

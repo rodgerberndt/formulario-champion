@@ -11,6 +11,39 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
 };
 
+// Páginas de entrada da landing — a original e as variantes de headline em
+// teste. Espelha src/config/headlineVariants.ts. Todo endpoint que aceita
+// ?page= valida contra esta lista antes de filtrar por first_page.
+const LANDING_PATHS = ["/", "/HD1", "/HD2", "/HD3", "/HD4"];
+
+/** Página pedida no filtro global do admin, ou null quando é "todas". */
+function parsePageFilter(url: URL): string | null {
+  const p = url.searchParams.get("page");
+  if (!p || p === "all") return null;
+  return LANDING_PATHS.includes(p) ? p : null;
+}
+
+/**
+ * Seções da landing na ordem da página (espelha src/pages/Index.tsx).
+ *
+ * O funil precisa dessa lista pra mostrar TODAS as seções, inclusive as que
+ * ninguém alcançou no período. Antes ele listava só as seções com registro, e
+ * uma seção sem nenhum visitante simplesmente sumia da tela — o que fazia a
+ * última seção sobrevivente parecer o ponto de abandono.
+ */
+const LANDING_SECTIONS: { id: string; order: number }[] = [
+  { id: "hero", order: 10 },
+  { id: "social_proof", order: 20 },
+  { id: "dor", order: 30 },
+  { id: "metodo", order: 40 },
+  { id: "success_cases", order: 50 },
+  { id: "criativos", order: 60 },
+  { id: "cta_intermediario", order: 70 },
+  { id: "como_funciona", order: 80 },
+  { id: "faq", order: 90 },
+  { id: "cta_final", order: 100 },
+];
+
 async function verifyAdminToken(token: string): Promise<boolean> {
   try {
     const jwtSecret = Deno.env.get("ADMIN_JWT_SECRET");
@@ -633,11 +666,14 @@ Deno.serve(async (req: Request) => {
       );
 
       // Filter internal/noise traffic (same rules as /metrics)
+      const weeklyPageFilter = parsePageFilter(url);
       const sessions = rawSessions.filter((s: any) => {
         const ref = (s.referrer || "").toLowerCase();
         const firstPage = (s.first_page || "").toLowerCase();
         if (ref.includes("lovable.dev") || ref.includes("lovableproject.com") || ref.includes("lovable.app/?forcehidebadge")) return false;
         if (firstPage === "/admin") return false;
+        // Filtro global de variante de headline do admin.
+        if (weeklyPageFilter && firstPage !== weeklyPageFilter.toLowerCase()) return false;
         return true;
       });
       const sessionIds = new Set(sessions.map((s: any) => s.id));
@@ -654,9 +690,36 @@ Deno.serve(async (req: Request) => {
           return q;
         }
       );
+      // Mesma correção do /metrics: quem já tinha sessão de antes do período e
+      // voltou pra responder o quiz precisa contar, senão a conclusão do dia
+      // desaparece do gráfico semanal enquanto aparece no funil por etapa.
+      const weeklyReturning = new Set<string>();
+      events.forEach((e: any) => {
+        if (e.session_id && !sessionIds.has(e.session_id)) weeklyReturning.add(e.session_id);
+      });
+      const weeklyEventSessionIds = new Set<string>(sessionIds);
+      if (weeklyReturning.size > 0) {
+        const ids = Array.from(weeklyReturning).slice(0, 5000);
+        const CHUNK = 200;
+        for (let i = 0; i < ids.length; i += CHUNK) {
+          const { data: extra } = await supabase
+            .from("lead_sessions")
+            .select("id, referrer, first_page")
+            .in("id", ids.slice(i, i + CHUNK));
+          (extra || []).forEach((s: any) => {
+            const ref = (s.referrer || "").toLowerCase();
+            const fp = (s.first_page || "").toLowerCase();
+            if (ref.includes("lovable.dev") || ref.includes("lovableproject.com")) return;
+            if (fp === "/admin") return;
+            if (weeklyPageFilter && fp !== weeklyPageFilter.toLowerCase()) return;
+            weeklyEventSessionIds.add(s.id);
+          });
+        }
+      }
+
       const enteredQuizSessionIds = new Set(
         events
-          .filter((e: any) => e.event_name === "quiz_view" && sessionIds.has(e.session_id))
+          .filter((e: any) => e.event_name === "quiz_view" && weeklyEventSessionIds.has(e.session_id))
           .map((e: any) => e.session_id)
       );
 
@@ -664,7 +727,7 @@ Deno.serve(async (req: Request) => {
       // que terminaram com completed=true mas ficaram sem event submit.
       const submittedSessionIds = new Set(
         events
-          .filter((e: any) => e.event_name === "submit" && sessionIds.has(e.session_id))
+          .filter((e: any) => e.event_name === "submit" && weeklyEventSessionIds.has(e.session_id))
           .map((e: any) => e.session_id)
       );
       sessions.forEach((s: any) => {
@@ -895,6 +958,7 @@ Deno.serve(async (req: Request) => {
       // 1. Lovable preview referrers
       // 2. Sessions that started on /admin
       // 3. Lovable project URLs in referrer
+      const metricsPageFilter = parsePageFilter(url);
       const sessions = rawSessions.filter((s: any) => {
         const ref = (s.referrer || '').toLowerCase();
         const firstPage = (s.first_page || '').toLowerCase();
@@ -902,6 +966,10 @@ Deno.serve(async (req: Request) => {
         if (ref.includes('lovable.dev') || ref.includes('lovableproject.com') || ref.includes('lovable.app/?forceHideBadge')) return false;
         // Exclude admin-only visits
         if (firstPage === '/admin') return false;
+        // Filtro global de variante de headline do admin: restringe o funil
+        // inteiro (visitantes, entrada no quiz, etapas, conclusão) às sessões
+        // que entraram POR aquela página.
+        if (metricsPageFilter && firstPage !== metricsPageFilter.toLowerCase()) return false;
         return true;
       });
       const filteredOutCount = rawSessions.length - sessions.length;
@@ -927,7 +995,36 @@ Deno.serve(async (req: Request) => {
         }
       );
       // Filter to only sessions in our range
-      const filteredEvents = allEvents.filter((e: any) => sessionIds.has(e.session_id));
+      // Sessões que agiram no período mas foram CRIADAS antes dele (visitante
+      // recorrente: o session_id vive no localStorage e não é recriado).
+      // Sem isso, quem já tinha visitado o site antes e voltou pra responder o
+      // quiz sumia do funil por etapa e da contagem de conclusões — foi o que
+      // fez o painel mostrar "concluíram 0" num dia com submit registrado.
+      const returningIds = new Set<string>();
+      allEvents.forEach((e: any) => {
+        if (e.session_id && !sessionIds.has(e.session_id)) returningIds.add(e.session_id);
+      });
+      const eventSessionIds = new Set<string>(sessionIds);
+      if (returningIds.size > 0) {
+        const ids = Array.from(returningIds).slice(0, 5000);
+        const CHUNK = 200;
+        for (let i = 0; i < ids.length; i += CHUNK) {
+          const { data: extra } = await supabase
+            .from("lead_sessions")
+            .select("id, referrer, first_page")
+            .in("id", ids.slice(i, i + CHUNK));
+          (extra || []).forEach((s: any) => {
+            const ref = (s.referrer || "").toLowerCase();
+            const fp = (s.first_page || "").toLowerCase();
+            if (ref.includes("lovable.dev") || ref.includes("lovableproject.com")) return;
+            if (fp === "/admin") return;
+            if (metricsPageFilter && fp !== metricsPageFilter.toLowerCase()) return;
+            eventSessionIds.add(s.id);
+          });
+        }
+      }
+
+      const filteredEvents = allEvents.filter((e: any) => eventSessionIds.has(e.session_id));
 
       // Ground truth for "completed" = sessões que efetivamente concluíram o quiz
       // (event submit OU session.completed=true), restritas às sessões NÃO filtradas (sem ruído interno).
@@ -935,7 +1032,7 @@ Deno.serve(async (req: Request) => {
       // duplicatas, bio recovery), gerando taxas > 100%.
       const sessionsWithSubmitGround = new Set(
         allEvents
-          .filter((e: any) => e.event_name === "submit" && sessionIds.has(e.session_id))
+          .filter((e: any) => e.event_name === "submit" && eventSessionIds.has(e.session_id))
           .map((e: any) => e.session_id)
       );
       const completedSessionIds = new Set<string>(sessionsWithSubmitGround);
@@ -961,7 +1058,11 @@ Deno.serve(async (req: Request) => {
             : `lead:${lead.id}`
         )
       ).size;
-      const completed = Math.max(trackedCompleted, totalLeads);
+      // Com filtro de variante, `leads` não serve de piso: a tabela não guarda
+      // por qual página o lead entrou, então somar totalLeads jogaria pra dentro
+      // de UMA variante os leads de todas as outras. Só o sinal por sessão
+      // (submit / lead_sessions.completed) sabe distinguir.
+      const completed = metricsPageFilter ? trackedCompleted : Math.max(trackedCompleted, totalLeads);
       console.log("[metrics] tracked", JSON.stringify({
         tracked_sessions: trackedSessionTotal,
         tracked_unique_visitors: trackedUniqueVisitors,
@@ -974,7 +1075,7 @@ Deno.serve(async (req: Request) => {
       // Conta hits únicos por session_id; se session_id null, dedup por (ip + user_agent) janela de 30min
       let hitsQuery = supabase
         .from("landing_hits")
-        .select("session_id, ip_address, user_agent, created_at, referrer")
+        .select("session_id, ip_address, user_agent, created_at, referrer, path")
         .order("created_at", { ascending: true })
         .limit(15000);
       if (fromClamped) hitsQuery = hitsQuery.gte("created_at", fromClamped);
@@ -982,7 +1083,13 @@ Deno.serve(async (req: Request) => {
       const { data: hitsData } = await hitsQuery;
       const cleanHits = (hitsData || []).filter((h: any) => {
         const ref = (h.referrer || "").toLowerCase();
-        return !ref.includes("lovable.dev") && !ref.includes("lovableproject.com");
+        if (ref.includes("lovable.dev") || ref.includes("lovableproject.com")) return false;
+        if (metricsPageFilter) {
+          // `path` inclui a query string (?utm_source=…): compara só o pathname.
+          const hitPath = ((h.path || "/").split("?")[0] || "/").toLowerCase();
+          if (hitPath !== metricsPageFilter.toLowerCase()) return false;
+        }
+        return true;
       });
       const hitSessionIds = new Set<string>();
       const ipUaBuckets = new Map<string, number>(); // key -> last timestamp ms
@@ -2773,12 +2880,12 @@ Deno.serve(async (req: Request) => {
 
     // GET /landing-behavior — funil por seção, scroll depth, cliques + comparação período anterior
     if (path === "/landing-behavior" && req.method === "GET") {
-      // Variantes de headline em teste (espelha src/config/headlineVariants.ts).
-      // Cada uma é uma página própria pro tracking, pra dar pra comparar funil,
-      // tempo de leitura e conversão de headline contra headline.
-      const LANDING_PATHS = ["/", "/HD1", "/HD2", "/HD3", "/HD4"];
-      const requestedPage = url.searchParams.get("page");
-      const LANDING_PAGE = LANDING_PATHS.includes(requestedPage || "") ? requestedPage! : "/";
+      // null = "todas as páginas" (soma a original com as variantes).
+      const pageFilter = parsePageFilter(url);
+      const matchesPage = (p: string | null) => {
+        const v = p || "/";
+        return pageFilter ? v.toLowerCase() === pageFilter.toLowerCase() : LANDING_PATHS.includes(v);
+      };
       const from = url.searchParams.get("from");
       const to = url.searchParams.get("to");
       const toEnd = to ? (to.includes("T") ? to : to + "T23:59:59.999Z") : null;
@@ -2837,10 +2944,10 @@ Deno.serve(async (req: Request) => {
           pagedFetch("scroll_attention_bins", "session_id, bin, time_ms, page", fromIso, toIso, "created_at", 20000),
         ]);
 
-        // Só eventos da landing. As tabelas de tracking são compartilhadas com
-        // outras páginas; sem esse filtro, evento de /quiz entrava no funil da
-        // landing.
-        const onLanding = (r: any) => (r.page || "/") === LANDING_PAGE;
+        // Só eventos da landing (da variante escolhida, ou de todas). As tabelas
+        // de tracking são compartilhadas com outras páginas; sem esse filtro,
+        // evento de /quiz entrava no funil da landing.
+        const onLanding = (r: any) => matchesPage(r.page);
 
         const validSessions = new Set<string>();
         (sessionRows || []).forEach((s: any) => {
@@ -2850,7 +2957,7 @@ Deno.serve(async (req: Request) => {
           if (fp === "/admin") return;
           // Só quem entrou POR esta variante. Sem isso o denominador de cada
           // headline incluiria as sessões de todas as outras.
-          if (fp !== LANDING_PAGE.toLowerCase()) return;
+          if (!matchesPage(s.first_page)) return;
           validSessions.add(s.id);
         });
 
@@ -2877,17 +2984,20 @@ Deno.serve(async (req: Request) => {
         // headline".
         const untrackedSessions = Math.max(0, validSessions.size - totalVisitors);
 
-        // Group sections — usa o MAIOR section_order encontrado (ordem mais recente
-        // da página vence; evita rótulos antigos com ordem desatualizada)
+        // Group sections. A ordem vem de LANDING_SECTIONS (o código da página),
+        // não do section_order gravado: dados antigos carregam numeração de
+        // versões anteriores da landing e embaralhavam o funil.
         const sectionMap = new Map<string, { id: string; order: number; sessions: Set<string>; totalTime: number; count: number; starts: number[]; ends: number[] }>();
+        // Semeia com a página inteira: seção sem nenhum visitante no período
+        // aparece com 0 em vez de sumir da lista.
+        LANDING_SECTIONS.forEach((s) => {
+          sectionMap.set(s.id, { id: s.id, order: s.order, sessions: new Set(), totalTime: 0, count: 0, starts: [], ends: [] });
+        });
         sections.forEach((r: any) => {
-          let s = sectionMap.get(r.section_id);
-          if (!s) {
-            s = { id: r.section_id, order: r.section_order, sessions: new Set(), totalTime: 0, count: 0, starts: [], ends: [] };
-            sectionMap.set(r.section_id, s);
-          } else if (r.section_order > s.order) {
-            s.order = r.section_order;
-          }
+          // Seção que não existe mais na página (portfolio, gancho_corpo…) fica
+          // de fora: entraria com a numeração antiga e cairia no lugar errado.
+          const s = sectionMap.get(r.section_id);
+          if (!s) return;
           s.sessions.add(r.session_id);
           s.totalTime += r.time_spent_ms || 0;
           s.count += 1;

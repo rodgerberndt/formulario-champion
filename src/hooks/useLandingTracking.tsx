@@ -48,7 +48,7 @@ export function useLandingTracking(page = "/") {
   // Seções atualmente dentro da viewport (usado pra religar o relógio quando a
   // aba volta do segundo plano).
   const visibleSectionsRef = useRef<Set<string>>(new Set());
-  const observerRef = useRef<IntersectionObserver | null>(null);
+  const sectionElsRef = useRef<HTMLElement[]>([]);
   const intervalRef = useRef<number | null>(null);
   const visibilityHandlerRef = useRef<(() => void) | null>(null);
   const pageHideHandlerRef = useRef<(() => void) | null>(null);
@@ -76,10 +76,6 @@ export function useLandingTracking(page = "/") {
         window.clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
-      }
       if (visibilityHandlerRef.current) {
         document.removeEventListener("visibilitychange", visibilityHandlerRef.current);
         visibilityHandlerRef.current = null;
@@ -100,6 +96,7 @@ export function useLandingTracking(page = "/") {
         window.removeEventListener("scroll", scrollHandlerRef.current);
         scrollHandlerRef.current = null;
       }
+      sectionElsRef.current = [];
       sectionStartRef.current.clear();
       sectionOrderRef.current.clear();
       sectionPosRef.current.clear();
@@ -163,42 +160,55 @@ export function useLandingTracking(page = "/") {
       return;
     }
 
-    observerRef.current?.disconnect();
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const el = entry.target as HTMLElement;
-          const id = el.dataset.trackId;
-          if (!id) return;
+    sectionElsRef.current = sections;
+    evaluateVisibleSections(sessionId);
+  }
 
-          const order = parseInt(el.dataset.trackOrder || "0", 10);
-          sectionOrderRef.current.set(id, order);
+  /**
+   * Decide quais seções estão sendo lidas agora, por geometria.
+   *
+   * Substituiu o IntersectionObserver com `intersectionRatio >= 0.2`, que tinha
+   * um furo grave: o ratio é a fração do ELEMENTO visível, então uma seção mais
+   * alta que ~5 telas nunca alcança 0.2 e NUNCA era registrada. As duas maiores
+   * seções da landing caíam nesse caso — a prova social (29% da altura da
+   * página) e o método (23%) simplesmente não existiam no funil, e o admin
+   * mostrava o visitante pulando da headline direto pra "dor".
+   *
+   * O critério agora é o inverso e não depende do tamanho da seção: a seção
+   * conta como "em leitura" quando cruza a faixa central da tela (25%–75% da
+   * viewport), que é onde o olho está.
+   */
+  function evaluateVisibleSections(sessionId: string) {
+    const vh = window.innerHeight;
+    const bandTop = vh * 0.25;
+    const bandBottom = vh * 0.75;
 
-          const visible = entry.isIntersecting && entry.intersectionRatio >= 0.2;
-          if (visible) {
-            visibleSectionsRef.current.add(id);
-            if (!sectionStartRef.current.has(id)) {
-              sectionStartRef.current.set(id, Date.now());
-            }
-            sectionPosRef.current.set(id, measureSectionPos(el));
-            if (!sectionLoggedRef.current.has(id)) {
-              sectionLoggedRef.current.add(id);
-              void ensureSectionRow(sessionId, id, order);
-            }
-            return;
-          }
+    sectionElsRef.current.forEach((el) => {
+      const id = el.dataset.trackId;
+      if (!id) return;
+      const order = parseInt(el.dataset.trackOrder || "0", 10);
+      sectionOrderRef.current.set(id, order);
 
-          visibleSectionsRef.current.delete(id);
-          if (sectionStartRef.current.has(id)) {
-            void flushSectionTime(sessionId, id, true);
-          }
-        });
-      },
-      // PERF: 1 threshold só (0.2) em vez de 4 — reduz callbacks do observer
-      { threshold: 0.2 }
-    );
+      const rect = el.getBoundingClientRect();
+      const visible = rect.top < bandBottom && rect.bottom > bandTop;
 
-    sections.forEach((section) => observerRef.current?.observe(section));
+      if (visible) {
+        visibleSectionsRef.current.add(id);
+        if (!sectionStartRef.current.has(id)) {
+          sectionStartRef.current.set(id, Date.now());
+        }
+        sectionPosRef.current.set(id, measureSectionPos(el));
+        if (!sectionLoggedRef.current.has(id)) {
+          sectionLoggedRef.current.add(id);
+          void ensureSectionRow(sessionId, id, order);
+        }
+        return;
+      }
+
+      if (visibleSectionsRef.current.delete(id) && sectionStartRef.current.has(id)) {
+        void flushSectionTime(sessionId, id, true);
+      }
+    });
   }
 
   /**
@@ -326,6 +336,7 @@ export function useLandingTracking(page = "/") {
       scrollTickingRef.current = true;
       requestAnimationFrame(() => {
         scrollTickingRef.current = false;
+        evaluateVisibleSections(sessionId);
         checkScrollMilestones(sessionId);
         const newBin = computeCurrentBin();
         if (currentBinRef.current && newBin !== currentBinRef.current.bin) {
@@ -359,6 +370,7 @@ export function useLandingTracking(page = "/") {
 
   function setupTimeFlush(sessionId: string) {
     intervalRef.current = window.setInterval(() => {
+      evaluateVisibleSections(sessionId);
       void flushAllSectionTimes();
       void flushScrollBins(sessionId);
     }, FLUSH_INTERVAL_MS);
