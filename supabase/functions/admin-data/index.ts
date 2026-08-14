@@ -14,7 +14,7 @@ const corsHeaders = {
 // Páginas de entrada da landing — a original e as variantes de headline em
 // teste. Espelha src/config/headlineVariants.ts. Todo endpoint que aceita
 // ?page= valida contra esta lista antes de filtrar por first_page.
-const LANDING_PATHS = ["/", "/HD1", "/HD2", "/HD3", "/HD4"];
+const LANDING_PATHS = ["/", "/HD0", "/HD1", "/HD2", "/HD3", "/HD4"];
 
 /** Página pedida no filtro global do admin, ou null quando é "todas". */
 function parsePageFilter(url: URL): string | null {

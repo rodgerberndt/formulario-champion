@@ -33,6 +33,16 @@ export const HEADLINE_VARIANTS: HeadlineVariant[] = [
     highlight: "3X MAIS LUCRO.",
   },
   {
+    // Mesma headline da raiz, com slug próprio. Existe para o controle do teste
+    // ficar simétrico às variantes: a "/" recebe tráfego de outras campanhas e
+    // acesso direto, então usá-la como célula de controle mistura populações.
+    // Com /HD0, o controle recebe só o que o teste manda.
+    path: "/HD0",
+    label: "HD0 · original (teste)",
+    lead: "APLIQUE CRIATIVOS ANDRÔMEDA NA SUA OPERAÇÃO E TENHA ATÉ ",
+    highlight: "3X MAIS LUCRO.",
+  },
+  {
     path: "/HD1",
     label: "HD1 · assertividade e CPA",
     lead: "Aumente a assertividade e abaixe o CPA dos seus criativos com a ",
