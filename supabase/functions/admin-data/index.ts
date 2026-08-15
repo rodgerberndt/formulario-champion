@@ -893,9 +893,15 @@ Deno.serve(async (req: Request) => {
         b.clicks += Number(row.clicks) || 0;
       });
 
+      // A tabela `leads` não guarda por qual página nem por qual criativo o lead
+      // entrou. Com filtro global ativo ela não pode servir de piso: jogaria os
+      // leads de TODAS as variantes dentro da que está selecionada — foi o que
+      // fez o bloco semanal mostrar 4 conclusões enquanto o funil do site,
+      // filtrado corretamente, mostrava 0.
+      const weeklyLeadFloorOk = !weeklyPageFilter && !weeklyCreativeFilter;
       const leadCountsByDate = new Map<string, number>();
       const leadVisitorsByDate = new Map<string, Set<string>>();
-      leadRows.forEach((lead: any) => {
+      (weeklyLeadFloorOk ? leadRows : []).forEach((lead: any) => {
         const ymd = toLocalDate(lead.created_at);
         ensure(ymd);
         leadCountsByDate.set(ymd, (leadCountsByDate.get(ymd) || 0) + 1);
@@ -1128,7 +1134,7 @@ Deno.serve(async (req: Request) => {
       // por qual página o lead entrou, então somar totalLeads jogaria pra dentro
       // de UMA variante os leads de todas as outras. Só o sinal por sessão
       // (submit / lead_sessions.completed) sabe distinguir.
-      const completed = metricsPageFilter ? trackedCompleted : Math.max(trackedCompleted, totalLeads);
+      const completed = (metricsPageFilter || metricsCreativeFilter) ? trackedCompleted : Math.max(trackedCompleted, totalLeads);
       console.log("[metrics] tracked", JSON.stringify({
         tracked_sessions: trackedSessionTotal,
         tracked_unique_visitors: trackedUniqueVisitors,
@@ -1215,11 +1221,14 @@ Deno.serve(async (req: Request) => {
       const hasVisitorSignal = landingHitsTotal > 0 || trackedSessionTotal > 0;
       const hasEventSignal = allEvents.length > 0;
 
+      // uniqueLeadVisitors vem da tabela `leads`, que não sabe de página nem de
+      // criativo — com filtro ativo, ele infla a variante selecionada com gente
+      // que entrou por outra.
       const uniqueVisitors: number | null = hasVisitorSignal
-        ? Math.max(landingViews, trackedUniqueVisitors, uniqueLeadVisitors, completed)
+        ? Math.max(landingViews, trackedUniqueVisitors, metricsPageFilter || metricsCreativeFilter ? 0 : uniqueLeadVisitors, completed)
         : null;
       const total: number | null = hasVisitorSignal
-        ? Math.max(trackedSessionTotal, totalLeads, uniqueVisitors ?? 0)
+        ? Math.max(trackedSessionTotal, (metricsPageFilter || metricsCreativeFilter) ? 0 : totalLeads, uniqueVisitors ?? 0)
         : null;
       const enteredQuiz: number | null = hasEventSignal
         ? Math.min(Math.max(sessionsWithQuizView.size, completed), uniqueVisitors ?? Number.MAX_SAFE_INTEGER)

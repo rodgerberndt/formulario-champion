@@ -166,6 +166,24 @@ function totalsOf(days: DayMetric[]) {
   };
 }
 
+/**
+ * YYYY-MM-DD para ISO no fuso LOCAL, não em UTC.
+ *
+ * Era `${ymd}T00:00:00.000Z`, meia-noite UTC — que no Brasil é 21h do dia
+ * anterior. O período de sexta e sábado vinha carregando as três últimas horas
+ * de quinta (por isso aparecia uma coluna de quinta num intervalo que não tem
+ * quinta) e perdia as três últimas horas de sábado. O backend agrupa por
+ * America/Sao_Paulo, então o recorte precisa sair daqui já no mesmo fuso.
+ */
+function dayStartISO(ymd: string): string {
+  const [y, m, d] = ymd.split("-").map((n) => parseInt(n, 10));
+  return new Date(y, m - 1, d, 0, 0, 0, 0).toISOString();
+}
+function dayEndISO(ymd: string): string {
+  const [y, m, d] = ymd.split("-").map((n) => parseInt(n, 10));
+  return new Date(y, m - 1, d, 23, 59, 59, 999).toISOString();
+}
+
 export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
   const [mode, setMode] = useState<RangeMode>("global");
   const [loading, setLoading] = useState(false);
@@ -228,12 +246,12 @@ export default function WeeklyAnalysisSection({ fetchAdminData }: Props) {
       try {
         const [a, b] = await Promise.all([
           fetchAdminData("/weekly-metrics", {
-            from: `${primary.from}T00:00:00.000Z`,
-            to: `${primary.to}T23:59:59.999Z`,
+            from: dayStartISO(primary.from),
+            to: dayEndISO(primary.to),
           }) as Promise<WeeklyMetricsResponse>,
           fetchAdminData("/weekly-metrics", {
-            from: `${previous.from}T00:00:00.000Z`,
-            to: `${previous.to}T23:59:59.999Z`,
+            from: dayStartISO(previous.from),
+            to: dayEndISO(previous.to),
           }) as Promise<WeeklyMetricsResponse>,
         ]);
         if (cancelled) return;
