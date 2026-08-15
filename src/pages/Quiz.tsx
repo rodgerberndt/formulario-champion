@@ -36,12 +36,14 @@ if (!externalSupabaseUrl || !externalSupabaseAnonKey) {
 
 const supabaseExternal = createClient(externalSupabaseUrl, externalSupabaseAnonKey);
 
-// Roteamento pós-submit por faixa de investimento:
-//  - "Não vendo ainda" ou "Até R$ 5 mil" ou "R$ 5-10 mil" → /obrigadosprint (Gustavo)
-//  - ≥ R$ 10 mil → /obrigadomql (Miguel)
-// "Não vendo ainda" entrou pra Gustavo em 2026-07-11 — antes caía no bucket
-// Direct/sem SDR e redirecionava pra fora do site sem ninguém ligar pro lead.
-const MIGUEL_FAIXAS = [
+// Roteamento pós-submit por faixa de investimento — decide o PRODUTO, não o SDR:
+//  - "Não vendo ainda", "Até R$ 5 mil" ou "R$ 5-10 mil" → /obrigadosprint (Sprint)
+//  - ≥ R$ 10 mil → /obrigadomql (Assessoria)
+// Desde 14/08/2026 o Miguel atende os dois lados; o Gustavo saiu. As faixas
+// continuam separadas porque Sprint e Assessoria são ofertas diferentes.
+// "Não vendo ainda" saiu do bucket sem SDR em 2026-07-11 — antes redirecionava
+// pra fora do site sem ninguém ligar pro lead.
+const MQL_FAIXAS = [
   "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
   "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
   "De R$ 100 mil a R$ 150 mil", "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil",
@@ -50,7 +52,7 @@ const MIGUEL_FAIXAS = [
   "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
   "Acima de R$ 10 milhões",
 ];
-const GUSTAVO_FAIXAS = ["Não vendo ainda (R$0/mês)", "Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
+const SPRINT_FAIXAS = ["Não vendo ainda (R$0/mês)", "Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
 
 interface QuizFormData {
   nome_completo: string;
@@ -554,8 +556,8 @@ export default function Quiz() {
 
       // Página de destino real do lead (usada como event_source_url no CAPI, pra bater
       // com a URL onde o pixel client-side vai efetivamente disparar o mesmo evento —
-      // ver roteamento abaixo, MIGUEL_FAIXAS/GUSTAVO_FAIXAS).
-      const destinationPath = MIGUEL_FAIXAS.includes(currentData.investimento_faixa)
+      // ver roteamento abaixo, MQL_FAIXAS/SPRINT_FAIXAS).
+      const destinationPath = MQL_FAIXAS.includes(currentData.investimento_faixa)
         ? "/obrigadomql"
         : "/obrigadosprint";
 
@@ -678,11 +680,11 @@ export default function Quiz() {
       clearTimeout(safetyTimer);
 
       const faixa = currentData.investimento_faixa;
-      if (MIGUEL_FAIXAS.includes(faixa)) {
-        // ≥ R$ 10 mil → Miguel
+      if (MQL_FAIXAS.includes(faixa)) {
+        // ≥ R$ 10 mil → Assessoria
         navigate("/obrigadomql");
-      } else if (GUSTAVO_FAIXAS.includes(faixa)) {
-        // "Não vendo ainda", até R$ 5 mil ou R$ 5-10 mil → Gustavo (Sprint)
+      } else if (SPRINT_FAIXAS.includes(faixa)) {
+        // "Não vendo ainda", até R$ 5 mil ou R$ 5-10 mil → Sprint
         navigate("/obrigadosprint");
       } else {
         // Faixa não reconhecida (dado legado/inesperado) — fallback de segurança

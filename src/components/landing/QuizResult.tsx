@@ -5,9 +5,10 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
-// SDR routing: MQL (>=10k) → Miguel | 5k-10k → Gustavo | <5k → sem SDR (redireciona externo)
+// SDR routing: Miguel atende TODOS os leads com SDR (14/08/2026 — Gustavo saiu).
+// A faixa continua decidindo a PÁGINA de obrigado (Sprint x MQL), porque isso é
+// produto, não pessoa; só o atendimento passou a ser sempre do Miguel.
 const MIGUEL_WHATSAPP_NUMBER = "5511934025412";
-const GUSTAVO_WHATSAPP_NUMBER = "5548996378499";
 const SUPPORT_WHATSAPP_NUMBER = "5548996560104";
 const SUBMISSION_TS_KEY = "champion_submit_ts";
 interface QuizResultProps {
@@ -108,14 +109,10 @@ const MIGUEL_MQL_FAIXAS = [
   "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
   "Acima de R$ 10 milhões",
 ];
-const GUSTAVO_FAIXA = "De R$ 5 mil a R$ 10 mil";
 
-function getAssignedSdr(investimento?: string): { name: string; phone: string } {
-  if (investimento && MIGUEL_MQL_FAIXAS.includes(investimento)) {
-    return { name: "Miguel", phone: MIGUEL_WHATSAPP_NUMBER };
-  }
-  // Gustavo é o fallback para qualquer lead que chegue nesse fluxo (5k-10k).
-  return { name: "Gustavo", phone: GUSTAVO_WHATSAPP_NUMBER };
+function getAssignedSdr(_investimento?: string): { name: string; phone: string } {
+  // Miguel é o SDR de todo lead que chega neste fluxo, em qualquer faixa.
+  return { name: "Miguel", phone: MIGUEL_WHATSAPP_NUMBER };
 }
 
 export function QuizResult({

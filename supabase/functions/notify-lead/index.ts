@@ -22,7 +22,6 @@ const RODGER_WHATSAPP_E164 = Deno.env.get('RODGER_WHATSAPP_E164');
 const DARA_WHATSAPP_E164 = Deno.env.get('DARA_WHATSAPP_E164');
 const CAIO_WHATSAPP_E164 = Deno.env.get('CAIO_WHATSAPP_E164');
 const MIGUEL_WHATSAPP_E164 = Deno.env.get('MIGUEL_WHATSAPP_E164');
-const GUSTAVO_WHATSAPP_E164 = Deno.env.get('GUSTAVO_WHATSAPP_E164');
 const WHATSAPP_TEMPLATE_NAME = Deno.env.get('WHATSAPP_TEMPLATE_NAME');
 const WHATSAPP_TEMPLATE_LANG = Deno.env.get('WHATSAPP_TEMPLATE_LANG') || 'pt_BR';
 
@@ -31,11 +30,9 @@ const WAHA_API_URL = Deno.env.get('WAHA_API_URL');
 const WAHA_API_KEY = Deno.env.get('WAHA_API_KEY');
 const WAHA_PHONE_NUMBER_ID = Deno.env.get('WAHA_PHONE_NUMBER_ID') || 'default';
 
-// SDR routing:
-//  - MQL (>= R$ 10 mil) → Miguel
-//  - R$ 5 mil a R$ 10 mil → Gustavo
-//  - < R$ 5 mil → sem SDR (não notifica)
-// Caio virou closer — não recebe mais leads novos.
+// SDR routing (14/08/2026): Miguel atende TODAS as faixas com SDR.
+// Gustavo saiu; Caio virou closer e não recebe leads novos. Abaixo de R$ 5 mil
+// continua sem SDR (não notifica).
 const MIGUEL_MQL_FAIXAS = [
   "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
   "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
@@ -45,14 +42,14 @@ const MIGUEL_MQL_FAIXAS = [
   "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
   "Acima de R$ 10 milhões",
 ];
-const GUSTAVO_FAIXAS = ["Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
+const SDR_EXTRA_FAIXAS = ["Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
 
 function getSdrForLead(investimentoFaixa?: string | null): { name: string; phone: string } | null {
   if (investimentoFaixa && MIGUEL_MQL_FAIXAS.includes(investimentoFaixa)) {
     return { name: "Miguel", phone: MIGUEL_WHATSAPP_E164 || "" };
   }
-  if (investimentoFaixa && GUSTAVO_FAIXAS.includes(investimentoFaixa)) {
-    return { name: "Gustavo", phone: GUSTAVO_WHATSAPP_E164 || "" };
+  if (investimentoFaixa && SDR_EXTRA_FAIXAS.includes(investimentoFaixa)) {
+    return { name: "Miguel", phone: MIGUEL_WHATSAPP_E164 || "" };
   }
   return null;
 }

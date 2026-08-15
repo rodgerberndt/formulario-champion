@@ -430,12 +430,15 @@ export default function AdminAnalytics() {
   };
 
   // SDR assignment helper - uses override if set, otherwise based on faturamento
-  // Regras de negócio:
-  //  - "Não vendo ainda", "Até R$ 5 mil" e "R$ 5 mil a R$ 10 mil" → Gustavo
-  //  - ≥ R$ 10 mil → Miguel
-  // "Não vendo ainda" entrou pra Gustavo em 2026-07-11 — antes caía no bucket
-  // Direct/sem SDR (ninguém ligava pro lead). "Direct" continua existindo só
-  // como fallback pra faixa legada/inesperada que não bate com nenhum bucket.
+  //
+  // Regra a partir de 14/08/2026: **Miguel atende todas as faixas com SDR.**
+  // O Gustavo saiu, e a faixa de faturamento passou a decidir só a PÁGINA de
+  // obrigado (Sprint x MQL), que é produto, não pessoa.
+  //
+  // O corte por data existe de propósito: sem ele, todo lead antigo do Gustavo
+  // passaria a aparecer como Miguel (o SDR é calculado na hora, não gravado) e
+  // a conversão histórica por SDR viraria ficção.
+  const SDR_MIGUEL_ONLY_FROM = "2026-08-14";
   const GUSTAVO_FAIXAS = ["Não vendo ainda (R$0/mês)", "Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
   const MIGUEL_FAIXAS = [
     "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil", "De R$ 30 mil a R$ 50 mil",
@@ -445,34 +448,35 @@ export default function AdminAnalytics() {
     "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
     "Acima de R$ 10 milhões",
   ];
-  // Faixas que disparam SDR (Gustavo ou Miguel). Leads "Direct" não geram alerta.
+  // Faixas que disparam SDR. Leads "Direct" não geram alerta.
   const SDR_CAIO_FAT = [...GUSTAVO_FAIXAS, ...MIGUEL_FAIXAS];
+  const isLegacySdrLead = (lead: Lead) => (lead.created_at || "") < SDR_MIGUEL_ONLY_FROM;
   const getLeadSdr = (lead: Lead): string => {
+    const faixa = lead.investimento_faixa || "";
+    const hasSdr = MIGUEL_FAIXAS.includes(faixa) || GUSTAVO_FAIXAS.includes(faixa);
     if (lead.sdr_override) {
       // Migrate legacy overrides
       if (lead.sdr_override === "Rodger" || lead.sdr_override === "Caio") {
         // Caio virou closer — recalcula com base no faturamento
-        const faixa = lead.investimento_faixa || "";
-        if (MIGUEL_FAIXAS.includes(faixa)) return "Miguel";
-        if (GUSTAVO_FAIXAS.includes(faixa)) return "Gustavo";
-        return "Direct";
+        if (!hasSdr) return "Direct";
+        return isLegacySdrLead(lead) && GUSTAVO_FAIXAS.includes(faixa) ? "Gustavo" : "Miguel";
       }
       if (lead.sdr_override === "Dara") return "Miguel";
+      // Override "Gustavo" só sobrevive no histórico; em lead novo cai pro Miguel.
+      if (lead.sdr_override === "Gustavo" && !isLegacySdrLead(lead)) return "Miguel";
       return lead.sdr_override;
     }
-    const faixa = lead.investimento_faixa || "";
-    if (MIGUEL_FAIXAS.includes(faixa)) return "Miguel";
-    if (GUSTAVO_FAIXAS.includes(faixa)) return "Gustavo";
-    return "Direct";
+    if (!hasSdr) return "Direct";
+    if (isLegacySdrLead(lead) && GUSTAVO_FAIXAS.includes(faixa)) return "Gustavo";
+    return "Miguel";
   };
 
-  // Cycle SDR between Gustavo and Miguel (Direct é determinado pelo faturamento, não pelo override)
+  // Com um SDR só, não há entre quem alternar. Mantido para reatribuir lead
+  // histórico do Gustavo pro Miguel com um clique.
   const toggleSdr = async (lead: Lead) => {
     const currentSdr = getLeadSdr(lead);
-    if (currentSdr === "Direct") return; // Leads <5k não têm SDR atribuível
-    const sdrCycle = ["Gustavo", "Miguel"];
-    const idx = sdrCycle.indexOf(currentSdr);
-    const newSdr = sdrCycle[(idx + 1) % sdrCycle.length];
+    if (currentSdr === "Direct" || currentSdr === "Miguel") return;
+    const newSdr = "Miguel";
     
     // Optimistic update
     setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, sdr_override: newSdr } : l));
@@ -1924,7 +1928,7 @@ export default function AdminAnalytics() {
                     <SelectContent>
                     <SelectItem value="all">Todos SDRs</SelectItem>
                     <SelectItem value="direct">Direct (&lt;5k)</SelectItem>
-                    <SelectItem value="gustavo">Gustavo</SelectItem>
+                    <SelectItem value="gustavo">Gustavo (histórico)</SelectItem>
                     <SelectItem value="miguel">Miguel</SelectItem>
                   </SelectContent>
                 </Select>

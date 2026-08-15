@@ -7,7 +7,8 @@ import { SuccessCasesCompact } from "@/components/landing/SuccessCasesCompact";
 import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
 import { supabase } from "@/integrations/supabase/client";
 
-const GUSTAVO_WHATSAPP_NUMBER = "5548996378499";
+// Miguel assumiu o atendimento do Sprint em 14/08/2026 (Gustavo saiu).
+const SDR_WHATSAPP_NUMBER = "5511934025412";
 const SUPPORT_WHATSAPP_NUMBER = "5548996560104";
 
 declare global {
@@ -219,25 +220,25 @@ export default function ObrigadoSprint() {
 
   const firstName = formData.nome_completo.split(" ")[0];
   const dorTexto = dorTextoFor(formData.dor_desejo);
-  const waLink = `https://wa.me/${GUSTAVO_WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi Gustavo! Acabei de concluir minha aplicação pro Sprint. ✅")}`;
-  const skipLink = `https://wa.me/${GUSTAVO_WHATSAPP_NUMBER}?text=${encodeURIComponent("Fala Gustavo! Furei a fila, quero entender como funciona o Sprint.")}`;
+  const waLink = `https://wa.me/${SDR_WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi Miguel! Acabei de concluir minha aplicação pro Sprint. ✅")}`;
+  const skipLink = `https://wa.me/${SDR_WHATSAPP_NUMBER}?text=${encodeURIComponent("Fala Miguel! Furei a fila, quero entender como funciona o Sprint.")}`;
 
   const steps = [
     {
       title: "Aplicação preenchida",
-      text: "Você concluiu o formulário. A partir de agora seu cadastro entra na fila do Gustavo.",
+      text: "Você concluiu o formulário. A partir de agora seu cadastro entra na fila do Miguel.",
       status: "done" as const,
       Icon: Check,
     },
     {
-      title: "Gustavo vai te chamar no WhatsApp",
-      text: `Em até 6 horas o Gustavo, sócio da Champion, vai te chamar pra entender como sua operação tá rodando hoje.`,
+      title: "Miguel vai te chamar no WhatsApp",
+      text: `Em até 6 horas o Miguel, da Champion, vai te chamar pra entender como sua operação tá rodando hoje.`,
       status: "active" as const,
       Icon: Clock,
     },
     {
       title: "Ele vai te explicar como funciona o Sprint",
-      text: `O Gustavo vai te mostrar o ecossistema do Sprint, tirar todas as suas dúvidas e, a partir do que você falou no quiz, ${dorTexto}`,
+      text: `O Miguel vai te mostrar o ecossistema do Sprint, tirar todas as suas dúvidas e, a partir do que você falou no quiz, ${dorTexto}`,
       status: "locked" as const,
       Icon: Rocket,
     },
@@ -277,7 +278,7 @@ export default function ObrigadoSprint() {
             <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
               Boa, <span className="champion-gradient-text">{firstName}</span>! Sua aplicação caiu aqui.{" "}
               <span className="champion-gradient-text">
-                O próximo passo é uma conversa direta com o Gustavo, sócio da Champion, pra te apresentar o Sprint.
+                O próximo passo é uma conversa direta com o Miguel, da Champion, pra te apresentar o Sprint.
               </span>
             </h1>
             <p className="text-muted-foreground text-base">
@@ -379,7 +380,7 @@ export default function ObrigadoSprint() {
             </div>
 
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Quando o Gustavo te chamar, ele vai te explicar tudo isso na prática e como o Sprint resolve <strong className="text-foreground">o que você marcou no quiz</strong>.
+              Quando o Miguel te chamar, ele vai te explicar tudo isso na prática e como o Sprint resolve <strong className="text-foreground">o que você marcou no quiz</strong>.
             </p>
           </div>
 
@@ -389,7 +390,7 @@ export default function ObrigadoSprint() {
               Pule a fila, caso queira adiantar
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Se você quer mesmo entender como o Sprint pode rodar na sua operação, pode pular a fila e chamar o Gustavo agora no WhatsApp em vez de esperar o contato dele.
+              Se você quer mesmo entender como o Sprint pode rodar na sua operação, pode pular a fila e chamar o Miguel agora no WhatsApp em vez de esperar o contato dele.
             </p>
             <Button variant="championOutline" size="lg" className="w-full text-base" asChild>
               <a
