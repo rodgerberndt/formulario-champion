@@ -159,11 +159,15 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ skipped: true }), { status: 200 });
     }
 
-    // Sync last 3 days to catch delayed data
+    // Sync last 3 days to catch delayed data. `?days=N` permite re-sincronizar
+    // uma janela maior quando a regra de nomeação muda e o histórico precisa ser
+    // regravado (o upsert apaga e reinsere por ad_id + data).
+    const daysParam = parseInt(new URL(req.url).searchParams.get("days") || "3", 10);
+    const days = Number.isFinite(daysParam) ? Math.min(Math.max(daysParam, 1), 30) : 3;
     const now = new Date();
     const threeDaysAgo = new Date(now);
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-    
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - days);
+
     const dateFrom = threeDaysAgo.toISOString().slice(0, 10);
     const dateTo = now.toISOString().slice(0, 10);
 
@@ -201,13 +205,24 @@ Deno.serve(async (req: Request) => {
     for (let i = 0; i < insights.length; i += batchSize) {
       const batch = insights.slice(i, i + batchSize);
       const rows = batch.map((row) => {
-        // Nome do criativo: tenta extrair um utm_content= explícito do nome do anúncio ou
-        // do conjunto; se não achar, prioriza o nome do CONJUNTO (onde a nova estrutura de
-        // campanhas coloca o nome do criativo), caindo para o nome do anúncio como último recurso.
+        // Nome do criativo: um utm_content= explícito no nome do anúncio ou do
+        // conjunto ganha de tudo. Sem ele, vale o nome do ANÚNCIO — é ele que
+        // identifica o criativo e é ele que vai na URL, então é o que casa com o
+        // utm_content do lead.
+        //
+        // O fallback pro nome do conjunto existe pra estrutura antiga, em que o
+        // anúncio se chamava "Ad" / "Ad — Cópia" e o conjunto carregava o nome
+        // do criativo. Na estrutura de teste A/B o conjunto é a HEADLINE
+        // (HD0..HD4), então priorizar o conjunto jogava TODO o gasto em chaves
+        // "hd0".."hd4" e todo criativo aparecia com spend zero no painel.
+        const genericAdName = (n?: string) =>
+          !n || /^(ad|ads|an[úu]ncio|new ad|nova publica[çc][ãa]o)/i.test(n.trim());
         const utmContentMatch =
           row.ad_name?.match(/utm_content[=:]([^\s|,]+)/i) ||
           row.adset_name?.match(/utm_content[=:]([^\s|,]+)/i);
-        const utmContent = utmContentMatch ? utmContentMatch[1] : (row.adset_name || row.ad_name);
+        const utmContent = utmContentMatch
+          ? utmContentMatch[1]
+          : (genericAdName(row.ad_name) ? (row.adset_name || row.ad_name) : row.ad_name);
         const creativeKey = utmContent ? normalizeCreativeKey(utmContent) : null;
         const landingPageViews = getPageViewsFromActions(row.actions);
         const spendOriginal = parseFloat(row.spend) || 0;

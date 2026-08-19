@@ -125,7 +125,9 @@ export async function createAdCreative(input: CreativeInput): Promise<string> {
   const cta = { type: input.ctaType, value: { link: input.linkUrl } };
 
   const storySpec: Record<string, unknown> = { page_id: input.pageId };
-  if (input.instagramActorId) storySpec.instagram_actor_id = input.instagramActorId;
+  // `instagram_user_id`, não `instagram_actor_id`: é o campo que os anúncios
+  // que já rodam na conta usam, e o antigo está a caminho da aposentadoria.
+  if (input.instagramActorId) storySpec.instagram_user_id = input.instagramActorId;
 
   if (input.videoId) {
     storySpec.video_data = {

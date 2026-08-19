@@ -83,6 +83,35 @@ async function isAuthorized(req: Request): Promise<boolean> {
   }
 }
 
+/**
+ * Token de ação por criativo, para o link de aprovação caber numa mensagem de
+ * WhatsApp sem carregar a HERMES_KEY junto. Assina só aquele id e aquela ação:
+ * quem intercepta a mensagem aprova aquele criativo, e nada além dele.
+ */
+async function actionToken(action: string, creativeId: string): Promise<string> {
+  const secret = Deno.env.get("HERMES_KEY");
+  if (!secret) return "";
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${action}:${creativeId}`));
+  return Array.from(new Uint8Array(sig)).map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+}
+
+async function tokenMatches(req: Request, url: URL): Promise<boolean> {
+  const t = url.searchParams.get("t");
+  const creativeId = url.searchParams.get("creative_id");
+  const action = url.searchParams.get("action");
+  if (!t || !creativeId || !action) return false;
+  const expected = await actionToken(action, creativeId);
+  // Comparação de tamanho fixo: o token tem sempre 32 caracteres.
+  return expected.length === 32 && t.length === 32 && expected === t;
+}
+
 function slugify(raw: string): string {
   return raw
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -272,9 +301,12 @@ async function processOne(supabase: SupabaseClient, creative: Json, config: Conf
     });
     if (!variants.length) throw new Error("nenhuma variação de copy utilizável");
 
+    // O pedaço do id entra no slug porque dois criativos do mesmo ângulo
+    // gerariam o mesmo utm_content, e aí o funil somaria os dois como se
+    // fossem um anúncio só.
     const angleSlug = slugify((creative.angle as string) || fileName) || "criativo";
     const rows = variants.map((v, i) => {
-      const utm = `hermes-${angleSlug}-v${i + 1}`;
+      const utm = `hermes-${angleSlug}-${id.slice(0, 4)}-v${i + 1}`;
       return {
         creative_id: id,
         variant: i + 1,
@@ -355,11 +387,17 @@ async function processOne(supabase: SupabaseClient, creative: Json, config: Conf
   // anúncios de antes manda a mesma mensagem de novo.
   if (criados > 0) {
     const lista = noAr.map((c) => `v${c.variant}: ${c.headline}`).join("\n");
-    await notify(
-      status === "ACTIVE"
-        ? `HERMES subiu e ATIVOU ${criados} anúncios do criativo "${fileName}":\n${lista}`
-        : `HERMES subiu ${criados} anúncios do criativo "${fileName}", todos PAUSADOS esperando sua aprovação:\n${lista}\n\nAprove quando olhar.`,
-    );
+    if (status === "ACTIVE") {
+      await notify(`HERMES subiu e ATIVOU ${criados} anúncios do criativo "${fileName}":\n${lista}`);
+    } else {
+      const base = `${Deno.env.get("SUPABASE_URL")}/functions/v1/hermes`;
+      const ok = `${base}?action=approve&creative_id=${id}&t=${await actionToken("approve", id)}`;
+      const no = `${base}?action=reject&creative_id=${id}&t=${await actionToken("reject", id)}`;
+      await notify(
+        `HERMES subiu ${criados} anúncios do criativo "${fileName}", todos PAUSADOS:\n${lista}\n\n` +
+          `Aprovar: ${ok}\nDescartar: ${no}`,
+      );
+    }
   }
 }
 
@@ -415,13 +453,52 @@ async function run(supabase: SupabaseClient): Promise<Json> {
 
 // ---------------------------------------------------------------- handler
 
+/** Página de confirmação do link assinado. O botão faz o POST que executa. */
+function confirmPage(action: string, url: URL): Response {
+  const aprovar = action === "approve";
+  const titulo = aprovar ? "Ativar os anúncios?" : "Descartar as variações?";
+  const texto = aprovar
+    ? "Os anúncios pausados deste criativo vão para ACTIVE e começam a gastar."
+    : "Os anúncios ficam pausados no Meta e o criativo sai da fila.";
+  const cor = aprovar ? "#16a34a" : "#dc2626";
+  const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Hermes</title>
+<style>body{font-family:system-ui,sans-serif;background:#0b0b0c;color:#e7e7e8;display:flex;
+min-height:100vh;align-items:center;justify-content:center;margin:0;padding:24px}
+.card{max-width:420px;width:100%}h1{font-size:20px;margin:0 0 8px}p{color:#a1a1a5;line-height:1.5}
+button{width:100%;padding:14px;border:0;border-radius:10px;background:${cor};color:#fff;
+font-size:16px;font-weight:600;cursor:pointer}#r{margin-top:16px}</style></head><body>
+<div class="card"><h1>${titulo}</h1><p>${texto}</p>
+<button onclick="go()">Confirmar</button><p id="r"></p></div>
+<script>async function go(){document.getElementById('r').textContent='Executando...';
+const res=await fetch(location.href,{method:'POST'});const j=await res.json();
+document.getElementById('r').textContent=j.ok?('Pronto. '+(j.ativados!==undefined?j.ativados+' anúncios ativados.':'Descartado.')):('Falhou: '+j.error);}
+</script></body></html>`;
+  return new Response(html, {
+    headers: { ...corsHeaders, "Content-Type": "text/html; charset=utf-8" },
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  if (!(await isAuthorized(req))) return json({ ok: false, error: "não autorizado" }, 401);
-
   const url = new URL(req.url);
   const action = url.searchParams.get("action") ?? "status";
+
+  // approve e reject aceitam também o token assinado do link do WhatsApp; o
+  // resto exige a chave completa.
+  const viaToken = (action === "approve" || action === "reject") && await tokenMatches(req, url);
+  if (!viaToken && !(await isAuthorized(req))) {
+    return json({ ok: false, error: "não autorizado" }, 401);
+  }
+
+  // O WhatsApp busca o link sozinho para montar a pré-visualização. Se o GET
+  // já executasse, todo anúncio seria aprovado no instante em que a mensagem
+  // chega. Então o link abre uma confirmação e a ação só roda no POST.
+  if (viaToken && req.method === "GET") {
+    return confirmPage(action, url);
+  }
+
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
