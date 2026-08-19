@@ -181,6 +181,7 @@ interface ManualSale {
   amount_received?: number | null;
   delivery_months?: number | null;
   ads_contracted?: number | null;
+  bodies_per_month?: number | null;
 }
 
 // Links das agendas dos closers (exibidos nos diálogos de reunião).
@@ -270,14 +271,28 @@ const FALLBACK_BODIES_PER_MONTH = 25;
  * porque body é unidade de produção mensal — foi assim que o fundador
  * descreveu o caso do Enzo Garcia (12 por mês, 36 no total, não 37).
  */
-function bodiesForSale(sale: { delivery_months?: number | null; ads_contracted?: number | null }): { bodies: number; estimated: boolean } {
+function bodiesForSale(sale: {
+  delivery_months?: number | null;
+  ads_contracted?: number | null;
+  bodies_per_month?: number | null;
+}): { bodies: number; perMonth: number; estimated: boolean } {
   const months = Number(sale.delivery_months) || 0;
   const ads = Number(sale.ads_contracted) || 0;
+  const bpm = Number(sale.bodies_per_month) || 0;
+
+  // Contrato fechado em criativos: 150 ads em 3 meses = 50/mês = 12 bodys/mês.
   if (ads > 0 && months > 0) {
-    return { bodies: Math.floor(ads / months / HOOKS_PER_BODY) * months, estimated: false };
+    const perMonth = Math.floor(ads / months / HOOKS_PER_BODY);
+    return { bodies: perMonth * months, perMonth, estimated: false };
   }
-  if (ads > 0) return { bodies: Math.floor(ads / HOOKS_PER_BODY), estimated: false };
-  return { bodies: months * FALLBACK_BODIES_PER_MONTH, estimated: months > 0 };
+  if (ads > 0) {
+    const perMonth = Math.floor(ads / HOOKS_PER_BODY);
+    return { bodies: perMonth, perMonth, estimated: false };
+  }
+  // Contrato fechado em bodys por mês, que é o formato mais comum ("25B mês").
+  if (bpm > 0 && months > 0) return { bodies: bpm * months, perMonth: bpm, estimated: false };
+  // Nem um nem outro preenchido: estima e avisa.
+  return { bodies: months * FALLBACK_BODIES_PER_MONTH, perMonth: FALLBACK_BODIES_PER_MONTH, estimated: months > 0 };
 }
 // Faixas de faturamento que contam como "lead até 20k" pro CAC real do Sprint —
 // inclui a faixa clássica do Sprint (5k–10k) e a primeira faixa de MQL (10k–20k),
@@ -299,6 +314,7 @@ interface SaleMargin {
   miguelCommission: number;
   deliveryCost: number;
   deliveryBodies: number;
+  deliveryBodiesPerMonth: number;
   deliveryEstimated: boolean;
   totalCost: number;
   margin: number;
@@ -319,12 +335,12 @@ function calcSaleMargin(
   const closer = sale.closer || "Sem closer";
   const closerCommission = received * CLOSER_COMMISSION_RATE;
   const miguelCommission = revenue * MIGUEL_COMMISSION_RATE;
-  const { bodies, estimated } = bodiesForSale(sale);
+  const { bodies, perMonth, estimated } = bodiesForSale(sale);
   const deliveryCost = bodies * DELIVERY_COST_PER_BODY;
   const totalCost = cac + closerCommission + miguelCommission + deliveryCost;
   const margin = revenue - totalCost;
   const marginPct = revenue > 0 ? margin / revenue : null;
-  return { cac, closer, closerCommission, miguelCommission, deliveryCost, deliveryBodies: bodies, deliveryEstimated: estimated, totalCost, margin, marginPct };
+  return { cac, closer, closerCommission, miguelCommission, deliveryCost, deliveryBodies: bodies, deliveryBodiesPerMonth: perMonth, deliveryEstimated: estimated, totalCost, margin, marginPct };
 }
 
 const MQL_FAT_MIN_FAIXAS = [
@@ -534,6 +550,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     amount_received: "",
     delivery_months: "",
     ads_contracted: "",
+    bodies_per_month: "",
   });
   const [savingSale, setSavingSale] = useState(false);
 
@@ -566,6 +583,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
     amount_received: "",
     delivery_months: "",
     ads_contracted: "",
+    bodies_per_month: "",
   });
   const [savingEditSale, setSavingEditSale] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
@@ -716,9 +734,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         amount_received: saleForm.amount_received,
         delivery_months: saleForm.delivery_months,
         ads_contracted: saleForm.ads_contracted,
+        bodies_per_month: saleForm.bodies_per_month,
       });
       toast({ title: "Venda registrada!" });
-      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint", closer: "Caio", payment_type: "tcv_total", installments_count: "", installment_value: "", amount_received: "", delivery_months: "", ads_contracted: "" });
+      setSaleForm({ sale_date: "", revenue: "", creative_key: "", notes: "", sale_type: "sprint", closer: "Caio", payment_type: "tcv_total", installments_count: "", installment_value: "", amount_received: "", delivery_months: "", ads_contracted: "", bodies_per_month: "" });
       setSelectedLeadId(null);
       setShowAddSale(false);
       loadData();
@@ -797,6 +816,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
           amount_received: editSaleForm.amount_received,
           delivery_months: editSaleForm.delivery_months,
           ads_contracted: editSaleForm.ads_contracted,
+          bodies_per_month: editSaleForm.bodies_per_month,
         }),
       });
       toast({ title: "Venda atualizada!" });
@@ -812,6 +832,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
         amount_received: editSaleForm.amount_received ? parseFloat(editSaleForm.amount_received) : 0,
         delivery_months: editSaleForm.delivery_months ? parseFloat(editSaleForm.delivery_months) : null,
         ads_contracted: editSaleForm.ads_contracted ? parseInt(editSaleForm.ads_contracted, 10) : null,
+        bodies_per_month: editSaleForm.bodies_per_month ? parseInt(editSaleForm.bodies_per_month, 10) : null,
       } : s));
       setEditingSale(null);
       loadData();
@@ -1872,6 +1893,7 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                                     amount_received: sale.amount_received != null ? String(sale.amount_received) : "",
                                     delivery_months: sale.delivery_months != null ? String(sale.delivery_months) : "",
                                     ads_contracted: sale.ads_contracted != null ? String(sale.ads_contracted) : "",
+                                    bodies_per_month: sale.bodies_per_month != null ? String(sale.bodies_per_month) : "",
                                   });
                                 }}
                               >
@@ -2667,6 +2689,30 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                 onChange={e => setSaleForm(p => ({ ...p, ads_contracted: e.target.value }))}
               />
               <p className="text-[10px] text-muted-foreground mt-1">Total de ads do contrato. A 4 ganchos por body: 150 ads em 3 meses = 50/mês = 12 bodys/mês = 36 no total.</p>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Bodys por mês</label>
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                placeholder="Ex: 25"
+                value={editSaleForm.bodies_per_month}
+                onChange={e => setEditSaleForm(p => ({ ...p, bodies_per_month: e.target.value }))}
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Preencha quando o contrato foi fechado em bodys ("25B mês"). Se os criativos acima estiverem preenchidos, eles mandam.</p>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Bodys por mês</label>
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                placeholder="Ex: 25"
+                value={saleForm.bodies_per_month}
+                onChange={e => setSaleForm(p => ({ ...p, bodies_per_month: e.target.value }))}
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Preencha quando o contrato foi fechado em bodys ("25B mês"). Se os criativos acima estiverem preenchidos, eles mandam.</p>
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Observação</label>

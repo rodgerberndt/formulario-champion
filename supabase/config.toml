@@ -35,3 +35,8 @@ verify_jwt = false
 
 [functions.ai-admin-assistant]
 verify_jwt = false
+
+# Auth própria (x-hermes-key ou o token assinado do link de aprovação), e o
+# link do WhatsApp abre no navegador sem header nenhum.
+[functions.hermes]
+verify_jwt = false

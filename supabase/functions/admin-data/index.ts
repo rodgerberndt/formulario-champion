@@ -2612,6 +2612,7 @@ Deno.serve(async (req: Request) => {
       if (body.amount_received !== undefined) updates.amount_received = parseFloat(body.amount_received) || 0;
       if (body.delivery_months !== undefined) updates.delivery_months = body.delivery_months === null || body.delivery_months === "" ? null : parseFloat(body.delivery_months);
       if (body.ads_contracted !== undefined) updates.ads_contracted = body.ads_contracted === null || body.ads_contracted === "" ? null : parseInt(body.ads_contracted, 10);
+      if (body.bodies_per_month !== undefined) updates.bodies_per_month = body.bodies_per_month === null || body.bodies_per_month === "" ? null : parseInt(body.bodies_per_month, 10);
       const { data, error } = await supabase.from("manual_sales").update(updates).eq("id", saleId).select().maybeSingle();
       if (error) throw error;
       return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -2631,6 +2632,7 @@ Deno.serve(async (req: Request) => {
       const deliveryMonths = params.delivery_months ? parseFloat(params.delivery_months) : null;
       // Criativos contratados: base do custo de entrega (4 ganchos = 1 body).
       const adsContracted = params.ads_contracted ? parseInt(params.ads_contracted, 10) : null;
+      const bodiesPerMonth = params.bodies_per_month ? parseInt(params.bodies_per_month, 10) : null;
       const { data, error } = await supabase.from("manual_sales").insert([{
         sale_date: params.sale_date,
         revenue,
@@ -2646,6 +2648,7 @@ Deno.serve(async (req: Request) => {
         amount_received: isNaN(amountReceived) ? 0 : amountReceived,
         delivery_months: deliveryMonths !== null && !isNaN(deliveryMonths) ? deliveryMonths : null,
         ads_contracted: adsContracted !== null && !isNaN(adsContracted) ? adsContracted : null,
+        bodies_per_month: bodiesPerMonth !== null && !isNaN(bodiesPerMonth) ? bodiesPerMonth : null,
       }]).select().maybeSingle();
 
       if (error) throw error;
