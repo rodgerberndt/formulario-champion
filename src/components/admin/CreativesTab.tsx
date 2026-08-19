@@ -109,6 +109,8 @@ interface CreativeData {
   meetings_attended_count: number;
   cost_per_meeting: number | null;
   landing_page_views: number;
+  sessions_count?: number;
+  quiz_views_count?: number;
   lead_per_view: number | null;
   is_active: boolean;
   avg_lead_score: number | null;
@@ -440,8 +442,8 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
 
   // Drag & drop column ordering (persisted)
   const DEFAULT_COLUMN_ORDER = [
-    "creative", "spend", "lpv", "leads", "ctl", "mql_cpmql",
-    "qualified_5_10k", "score", "meetings", "booking_rate", "call_conv", "sales_cac",
+    "creative", "spend", "lpv", "conv_page", "conv_quiz", "conv_total", "leads", "ctl", "mql_cpmql",
+    "qualified_5_10k", "score", "meetings", "cost_meeting", "booking_rate", "call_conv", "sales_cac",
     "cac_sprint", "cac_assessoria", "win_rate", "revenue", "roas",
   ] as const;
   type ColumnId = (typeof DEFAULT_COLUMN_ORDER)[number];
@@ -925,6 +927,10 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
       const getValue = (c: CreativeData) => {
         if (sortField === "cpl") return c.spend > 0 && c.leads_count > 0 ? c.spend / c.leads_count : null;
         if (sortField === "ctl") return c.clicks > 0 ? (c.leads_count / c.clicks) * 100 : null;
+        if (sortField === "conv_page") return (c.sessions_count || 0) > 0 ? ((c.quiz_views_count || 0) / (c.sessions_count || 1)) * 100 : null;
+        if (sortField === "conv_quiz") return (c.quiz_views_count || 0) > 0 ? (c.leads_count / (c.quiz_views_count || 1)) * 100 : null;
+        if (sortField === "conv_total") return (c.sessions_count || 0) > 0 ? (c.leads_count / (c.sessions_count || 1)) * 100 : null;
+        if (sortField === "cost_meeting") return c.meetings_attended_count > 0 ? c.spend / c.meetings_attended_count : null;
         const extras = creativeExtrasRaw.get(c.creative_key);
         if (sortField === "call_conv_rate") return extras?.callConvRate ?? null;
         if (sortField === "booking_rate") return extras?.bookingRate ?? null;
@@ -1949,6 +1955,55 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                     );
                   },
                 },
+                conv_page: {
+                  id: "conv_page", label: "Conv.Pág", width: "5%", sortField: "conv_page",
+                  title: "Conversão da PÁGINA: entraram no quiz ÷ sessões × 100 (tracking próprio, não o LPV do Meta)",
+                  renderCell: (c) => {
+                    const sess = c.sessions_count || 0;
+                    const quiz = c.quiz_views_count || 0;
+                    const pct = sess > 0 ? (quiz / sess) * 100 : null;
+                    if (pct === null) return <span className="text-muted-foreground">—</span>;
+                    return (
+                      <span className="text-cyan-400">
+                        <div className="font-semibold">{pct.toFixed(1)}%</div>
+                        <div className="text-[9px] text-muted-foreground">{quiz}/{sess}</div>
+                      </span>
+                    );
+                  },
+                },
+                conv_quiz: {
+                  id: "conv_quiz", label: "Conv.Quiz", width: "5%", sortField: "conv_quiz",
+                  title: "Conversão do QUIZ: leads ÷ entraram no quiz × 100",
+                  renderCell: (c) => {
+                    const quiz = c.quiz_views_count || 0;
+                    const pct = quiz > 0 ? (c.leads_count / quiz) * 100 : null;
+                    if (pct === null) return <span className="text-muted-foreground">—</span>;
+                    return (
+                      <span className="text-violet-400">
+                        <div className="font-semibold">{pct.toFixed(1)}%</div>
+                        <div className="text-[9px] text-muted-foreground">{c.leads_count}/{quiz}</div>
+                      </span>
+                    );
+                  },
+                },
+                conv_total: {
+                  id: "conv_total", label: "Conv.Total", width: "6%", sortField: "conv_total",
+                  title: "Funil inteiro: leads ÷ sessões × 100. Embaixo, sessão → MQL",
+                  renderCell: (c) => {
+                    const sess = c.sessions_count || 0;
+                    const pct = sess > 0 ? (c.leads_count / sess) * 100 : null;
+                    const pctMql = sess > 0 ? (c.mql_count / sess) * 100 : null;
+                    if (pct === null) return <span className="text-muted-foreground">—</span>;
+                    return (
+                      <span className="text-emerald-400">
+                        <div className="font-semibold">{pct.toFixed(1)}%</div>
+                        {pctMql !== null && (
+                          <div className="text-[9px] text-muted-foreground">MQL {pctMql.toFixed(1)}%</div>
+                        )}
+                      </span>
+                    );
+                  },
+                },
                 leads: {
                   id: "leads", label: "Leads", width: "6%", sortField: "leads_count",
                   renderCell: (c) => <div className="font-semibold">{c.leads_count}</div>,
@@ -2019,10 +2074,27 @@ export default function CreativesTab({ fetchAdminData, startDateOnly, endDateOnl
                   renderCell: (c) => (
                     <span className="text-orange-400">
                       {c.meetings_count > 0 ? (
-                        <><div className="font-semibold">{c.meetings_count}</div><div className="text-[9px]">{formatCurrency(c.cost_per_meeting)}</div></>
+                        <><div className="font-semibold">{c.meetings_count}</div><div className="text-[9px] text-muted-foreground">{c.meetings_attended_count} real.</div></>
                       ) : <span className="text-muted-foreground">0</span>}
                     </span>
                   ),
+                },
+                cost_meeting: {
+                  id: "cost_meeting", label: "R$/Reun.", width: "6%", sortField: "cost_meeting",
+                  title: "Custo por reunião REALIZADA (Spend ÷ reuniões que aconteceram). É a métrica de decisão nº 2. Embaixo, o custo por reunião agendada",
+                  renderCell: (c) => {
+                    const real = c.meetings_attended_count > 0 ? c.spend / c.meetings_attended_count : null;
+                    const ag = c.meetings_count > 0 ? c.spend / c.meetings_count : null;
+                    if (real === null && ag === null) return <span className="text-muted-foreground">—</span>;
+                    return (
+                      <span className="text-amber-400">
+                        <div className="font-semibold">{real !== null ? formatCurrency(real) : "—"}</div>
+                        {ag !== null && (
+                          <div className="text-[9px] text-muted-foreground">ag. {formatCurrency(ag)}</div>
+                        )}
+                      </span>
+                    );
+                  },
                 },
                 booking_rate: {
                   id: "booking_rate", label: "Tx.Agend", width: "5%", sortField: "booking_rate",

@@ -1908,6 +1908,13 @@ Deno.serve(async (req: Request) => {
         meetings_count: number;
         meetings_attended_count: number;
         landing_page_views: number;
+        // Sessões e entradas no quiz vêm do tracking próprio (lead_sessions /
+        // lead_events), não do Meta: são elas que permitem calcular conversão da
+        // PÁGINA (sessão → quiz) e do QUIZ (quiz → lead) por criativo. O
+        // landing_page_views do Meta não serve pra isso, é outra medição e
+        // costuma divergir bastante do nosso número.
+        sessions_count: number;
+        quiz_views_count: number;
         last_activity: string | null;
         leads_by_stage: Record<string, number>;
         campaigns: Set<string>;
@@ -1945,6 +1952,8 @@ Deno.serve(async (req: Request) => {
             meetings_count: 0,
             meetings_attended_count: 0,
             landing_page_views: 0,
+            sessions_count: 0,
+            quiz_views_count: 0,
             last_activity: null,
             leads_by_stage: {},
             campaigns: new Set(),
@@ -2223,6 +2232,83 @@ Deno.serve(async (req: Request) => {
         const spendDate = s.date;
         if (!agg.last_activity || spendDate > agg.last_activity) {
           agg.last_activity = spendDate;
+        }
+      }
+
+      // ── Sessões e entradas no quiz por criativo (tracking próprio) ──
+      // Alimenta as conversões de página e de quiz na aba de criativos. Sem
+      // isso só dava pra medir do clique pra baixo, e o degrau que mais perde
+      // gente (página → quiz) ficava invisível por criativo.
+      {
+        const sessionRows: any[] = [];
+        const PAGE = 1000;
+        let off = 0;
+        let more = true;
+        while (more && sessionRows.length < 20000) {
+          let sq = supabase
+            .from("lead_sessions")
+            .select("id, utm_content, utm_campaign, referrer, first_page")
+            .order("created_at", { ascending: true })
+            .range(off, off + PAGE - 1);
+          if (from) sq = sq.gte("created_at", from);
+          if (toEnd) sq = sq.lte("created_at", toEnd);
+          const { data } = await sq;
+          if (data) sessionRows.push(...data);
+          more = (data?.length || 0) === PAGE;
+          off += PAGE;
+        }
+
+        const sessionCreative = new Map<string, string>();
+        for (const sess of sessionRows) {
+          const ref = (sess.referrer || "").toLowerCase();
+          const fp = (sess.first_page || "").toLowerCase();
+          if (ref.includes("lovable.dev") || ref.includes("lovableproject.com")) continue;
+          if (fp === "/admin") continue;
+          if (campaignType === "mql" && !isMqlCampaign(sess.utm_campaign)) continue;
+          if (campaignType === "lead" && isMqlCampaign(sess.utm_campaign)) continue;
+          if (campaignFilter && !matchesCampaignFilter(sess.utm_campaign)) continue;
+
+          const raw = sess.utm_content;
+          const normalized = raw ? normalizeKey(raw) : "";
+          let ck: string;
+          let label: string;
+          if (!raw || !normalized || DIRECT_KEYS.has(normalized) || raw === "{{ad.name}}") {
+            ck = UNATTRIBUTED_KEY;
+            label = UNATTRIBUTED_LABEL;
+          } else {
+            const attribution = resolveAttribution(raw);
+            ck = attribution.ck;
+            label = attribution.label;
+          }
+          sessionCreative.set(sess.id, ck);
+          const agg = getOrCreate(ck, label, "utm_content");
+          agg.sessions_count += 1;
+        }
+
+        if (sessionCreative.size > 0) {
+          const quizSessions = new Set<string>();
+          let qoff = 0;
+          let qmore = true;
+          while (qmore && quizSessions.size < 20000) {
+            let qq = supabase
+              .from("lead_events")
+              .select("session_id")
+              .eq("event_name", "quiz_view")
+              .order("created_at", { ascending: true })
+              .range(qoff, qoff + PAGE - 1);
+            if (from) qq = qq.gte("created_at", from);
+            if (toEnd) qq = qq.lte("created_at", toEnd);
+            const { data } = await qq;
+            (data || []).forEach((e: any) => quizSessions.add(e.session_id));
+            qmore = (data?.length || 0) === PAGE;
+            qoff += PAGE;
+          }
+          for (const sid of quizSessions) {
+            const ck = sessionCreative.get(sid);
+            if (!ck) continue;
+            const agg = creativeMap.get(ck);
+            if (agg) agg.quiz_views_count += 1;
+          }
         }
       }
 
