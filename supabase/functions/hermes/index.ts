@@ -21,11 +21,14 @@
 import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
 import { verify } from "https://deno.land/x/djwt@v2.9.1/mod.ts";
 import {
+  adsetNames,
   checkAccount,
+  copyAdset,
   createAd,
   createAdCreative,
   listAdsets,
   listBusinesses,
+  setAdsetStatus,
   setAdStatus,
   uploadImage,
   uploadVideo,
@@ -230,18 +233,40 @@ interface Config {
   ad_account_id: string;
   page_id: string;
   instagram_actor_id: string | null;
-  default_adset_id: string;
+  adset_mode: "fixo" | "duplicar";
+  default_adset_id: string | null;
+  default_campaign_id: string | null;
+  template_adset_id: string | null;
+  adset_name_pattern: string;
   link_url: string;
   cta_type: string;
   copies_per_creative: number;
   auto_activate: boolean;
 }
 
+/**
+ * Próximo número livre do padrão de nome dentro da campanha. Se já existem
+ * HD1 a HD4, o próximo criativo começa no HD5, sem colidir com o que roda.
+ */
+function nextSlot(existentes: string[], pattern: string): number {
+  // Escapa o padrão inteiro antes de abrir o buraco do número, senão um
+  // padrão com parêntese ou ponto vira metacaractere de regex sem querer.
+  const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`^${escaped.replace("\\{n\\}", "(\\d+)")}$`, "i");
+  let max = 0;
+  for (const nome of existentes) {
+    const m = nome.trim().match(re);
+    if (m) max = Math.max(max, parseInt(m[1], 10));
+  }
+  return max + 1;
+}
+
 async function processOne(supabase: SupabaseClient, creative: Json, config: Config): Promise<void> {
   const id = creative.id as string;
   const fileName = creative.file_name as string;
   const adAccountId = config.ad_account_id;
-  const adsetId = (creative.adset_id as string | null) ?? config.default_adset_id;
+  // Só usado no modo 'fixo'; no 'duplicar' cada variação ganha o conjunto dela.
+  const adsetId = (creative.adset_id as string | null) ?? config.default_adset_id ?? "";
 
   await supabase.from("hermes_creatives")
     .update({ status: "processando", attempts: (creative.attempts as number) + 1, updated_at: new Date().toISOString() })
@@ -329,23 +354,54 @@ async function processOne(supabase: SupabaseClient, creative: Json, config: Conf
 
   // 3. Um anúncio por variação, para que cada copy tenha CPMQL próprio.
   const status = config.auto_activate ? "ACTIVE" : "PAUSED";
-  const noAr: Array<{ variant: number; headline: string }> = [];
+  const duplicando = config.adset_mode === "duplicar";
+  const noAr: Array<{ variant: number; headline: string; adset?: string }> = [];
   let criados = 0;
+
+  // No modo duplicar a headline é a variável do conjunto, então cada variação
+  // precisa saber qual número de slot é o dela antes de sair criando conjunto.
+  let slot = 0;
+  if (duplicando && copies.some((c: Json) => !c.meta_adset_id)) {
+    slot = nextSlot(await adsetNames(config.default_campaign_id!), config.adset_name_pattern);
+  }
+
   for (const copy of copies) {
     if (copy.meta_ad_id) {
       // Já subiu num tick anterior que morreu depois. Entra na contagem para
       // não parecer que este criativo terminou sem produzir nada.
-      noAr.push({ variant: copy.variant, headline: copy.headline });
+      noAr.push({ variant: copy.variant, headline: copy.headline, adset: copy.adset_name });
       continue;
     }
     const utm = String(copy.ad_name).match(/utm_content=([^\s|,]+)/)?.[1] ?? `hermes-v${copy.variant}`;
     try {
+      // Destino desta variação: conjunto clonado só dela, ou o conjunto fixo.
+      let destino = adsetId;
+      let nomeConjunto: string | null = copy.adset_name ?? null;
+      if (duplicando) {
+        if (copy.meta_adset_id) {
+          destino = copy.meta_adset_id;
+        } else {
+          nomeConjunto = config.adset_name_pattern.replace("{n}", String(slot));
+          destino = await copyAdset(config.template_adset_id!, config.default_campaign_id!, nomeConjunto);
+          await supabase.from("hermes_copies")
+            .update({ meta_adset_id: destino, adset_name: nomeConjunto }).eq("id", copy.id);
+          await log(supabase, id, `conjunto_v${copy.variant}`, true, `${nomeConjunto} = ${destino}`);
+          slot++;
+        }
+      }
+
+      // O link acompanha o conjunto quando a config usa {slot}: é assim que a
+      // campanha de headlines distingue HD1 de HD2 no destino do clique.
+      const linkUrl = nomeConjunto
+        ? config.link_url.replace("{slot}", nomeConjunto)
+        : config.link_url.replace("{slot}", "");
+
       const creativeMetaId = copy.meta_creative_id ?? await createAdCreative({
         adAccountId,
         name: copy.ad_name,
         pageId: config.page_id,
         instagramActorId: config.instagram_actor_id,
-        linkUrl: config.link_url,
+        linkUrl,
         ctaType: config.cta_type,
         primaryText: copy.primary_text,
         headline: copy.headline,
@@ -357,14 +413,14 @@ async function processOne(supabase: SupabaseClient, creative: Json, config: Conf
           `utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}` +
           `&utm_content=${utm}&utm_term={{adset.name}}`,
       });
-      const adId = await createAd(adAccountId, adsetId, copy.ad_name, creativeMetaId, status);
+      const adId = await createAd(adAccountId, destino, copy.ad_name, creativeMetaId, status);
       await supabase.from("hermes_copies").update({
         meta_creative_id: creativeMetaId,
         meta_ad_id: adId,
         status: status === "ACTIVE" ? "ativo" : "pausado",
         last_error: null,
       }).eq("id", copy.id);
-      noAr.push({ variant: copy.variant, headline: copy.headline });
+      noAr.push({ variant: copy.variant, headline: copy.headline, adset: nomeConjunto ?? undefined });
       criados++;
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -386,7 +442,9 @@ async function processOne(supabase: SupabaseClient, creative: Json, config: Conf
   // Só avisa se este tick produziu algo. Sem isso, um tick que só reencontra
   // anúncios de antes manda a mesma mensagem de novo.
   if (criados > 0) {
-    const lista = noAr.map((c) => `v${c.variant}: ${c.headline}`).join("\n");
+    const lista = noAr
+      .map((c) => `${c.adset ? `${c.adset} ` : `v${c.variant} `}: ${c.headline}`)
+      .join("\n");
     if (status === "ACTIVE") {
       await notify(`HERMES subiu e ATIVOU ${criados} anúncios do criativo "${fileName}":\n${lista}`);
     } else {
@@ -535,6 +593,10 @@ Deno.serve(async (req) => {
         let ativados = 0;
         for (const c of alvo ?? []) {
           if (!c.meta_ad_id) continue;
+          // O conjunto clonado nasce pausado. Ativar só o anúncio deixaria ele
+          // ACTIVE dentro de um conjunto parado, que não entrega nada e é o
+          // tipo de falha que ninguém percebe até cobrar o resultado.
+          if (c.meta_adset_id) await setAdsetStatus(c.meta_adset_id, "ACTIVE");
           await setAdStatus(c.meta_ad_id, "ACTIVE");
           await supabase.from("hermes_copies").update({ status: "ativo" }).eq("id", c.id);
           ativados++;
@@ -557,6 +619,7 @@ Deno.serve(async (req) => {
           // entrega some junto com o anúncio, e às vezes a copy rejeitada hoje
           // é a que a gente quer olhar no mês que vem.
           if (c.meta_ad_id) await setAdStatus(c.meta_ad_id, "PAUSED").catch(() => {});
+          if (c.meta_adset_id) await setAdsetStatus(c.meta_adset_id, "PAUSED").catch(() => {});
           await supabase.from("hermes_copies").update({ status: "rejeitado" }).eq("id", c.id);
         }
         if (creativeId) {
@@ -585,13 +648,28 @@ Deno.serve(async (req) => {
         if (!raw) return json({ ok: false, error: "ad_account_id obrigatório" }, 400);
         const adAccountId = raw.startsWith("act_") ? raw : `act_${raw}`;
         await checkAccount(adAccountId); // falha cedo se o token não escreve nessa conta
+
+        const modo = (body.adset_mode as string) ?? "fixo";
+        if (modo === "duplicar" && !(body.template_adset_id && body.default_campaign_id)) {
+          return json({
+            ok: false,
+            error: "modo duplicar exige template_adset_id e default_campaign_id",
+          }, 400);
+        }
+        if (modo === "fixo" && !body.default_adset_id) {
+          return json({ ok: false, error: "modo fixo exige default_adset_id" }, 400);
+        }
+
         const { data, error } = await supabase.from("hermes_config").upsert({
           label: body.label ?? adAccountId,
           ad_account_id: adAccountId,
           page_id: body.page_id,
           instagram_actor_id: body.instagram_actor_id ?? null,
+          adset_mode: modo,
           default_campaign_id: body.default_campaign_id ?? null,
-          default_adset_id: body.default_adset_id,
+          default_adset_id: body.default_adset_id ?? null,
+          template_adset_id: body.template_adset_id ?? null,
+          adset_name_pattern: body.adset_name_pattern ?? "HD{n}",
           link_url: body.link_url,
           cta_type: body.cta_type ?? "LEARN_MORE",
           copies_per_creative: body.copies_per_creative ?? 3,

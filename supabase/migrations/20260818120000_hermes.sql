@@ -17,14 +17,27 @@ CREATE TABLE IF NOT EXISTS public.hermes_config (
   page_id            TEXT NOT NULL,              -- página do Facebook do anúncio
   instagram_actor_id TEXT,                       -- conta do IG (opcional)
   default_campaign_id TEXT,
-  default_adset_id   TEXT NOT NULL,              -- onde os anúncios nascem
-  link_url           TEXT NOT NULL,              -- destino do clique
+  default_adset_id   TEXT,                       -- destino no modo 'fixo'
+  -- 'duplicar' espelha a estrutura que a casa já usa na campanha de TESTE AB:
+  -- a headline é a variável do CONJUNTO (HD1..HDn), não do anúncio. Cada
+  -- headline gerada vira um conjunto clonado do modelo, com o mesmo público,
+  -- pixel, orçamento e lance, e o criativo entra em todos eles.
+  adset_mode         TEXT NOT NULL DEFAULT 'fixo' CHECK (adset_mode IN ('fixo','duplicar')),
+  template_adset_id  TEXT,                       -- conjunto-modelo a clonar
+  adset_name_pattern TEXT NOT NULL DEFAULT 'HD{n}',
+  link_url           TEXT NOT NULL,              -- {slot} vira o nome do conjunto
   cta_type           TEXT NOT NULL DEFAULT 'LEARN_MORE',
   copies_per_creative SMALLINT NOT NULL DEFAULT 3 CHECK (copies_per_creative BETWEEN 1 AND 10),
   auto_activate      BOOLEAN NOT NULL DEFAULT false,  -- false = sobe pausado e espera aprovação
   active             BOOLEAN NOT NULL DEFAULT true,
   created_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at         TIMESTAMPTZ NOT NULL DEFAULT now()
+  updated_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+  -- Cada modo exige o seu destino. Sem isto, uma config pela metade só
+  -- aparece como erro do Meta lá na frente, depois do upload já pago.
+  CONSTRAINT hermes_config_destino CHECK (
+    (adset_mode = 'fixo'      AND default_adset_id  IS NOT NULL) OR
+    (adset_mode = 'duplicar'  AND template_adset_id IS NOT NULL AND default_campaign_id IS NOT NULL)
+  )
 );
 
 -- Fila de criativos.
@@ -59,6 +72,9 @@ CREATE TABLE IF NOT EXISTS public.hermes_copies (
   angle_used      TEXT,          -- de qual referência de performance saiu
   rationale       TEXT,          -- por que o modelo escreveu assim
   ad_name         TEXT,
+  -- No modo 'duplicar' cada variação ganha o seu próprio conjunto clonado.
+  meta_adset_id   TEXT,
+  adset_name      TEXT,
   meta_creative_id TEXT,
   meta_ad_id      TEXT,
   status          TEXT NOT NULL DEFAULT 'gerada'

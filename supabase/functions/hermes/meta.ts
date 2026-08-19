@@ -196,8 +196,55 @@ export async function createAd(
   return id;
 }
 
+/**
+ * Clona um conjunto-modelo dentro da campanha indicada e renomeia o clone.
+ *
+ * É assim, e não montando um adset do zero, porque público, pixel, evento de
+ * otimização, orçamento e estratégia de lance são decisões que a casa já tomou
+ * no modelo. Recriar isso por parâmetro significaria eu adivinhar cada uma, e
+ * um público errado só aparece depois de a verba ter sido gasta.
+ *
+ * `deep_copy: false` copia o conjunto sem arrastar os anúncios do modelo junto.
+ */
+export async function copyAdset(
+  templateAdsetId: string,
+  campaignId: string,
+  newName: string,
+): Promise<string> {
+  const json = await graph("copiar_conjunto", `${templateAdsetId}/copies`, {
+    method: "POST",
+    body: form({
+      campaign_id: campaignId,
+      deep_copy: "false",
+      status_option: "PAUSED",
+    }),
+  });
+  // A resposta varia entre versões: ora `copied_adset_id`, ora `id`, ora a
+  // lista `ad_object_ids`. Aceita as três em vez de apostar numa.
+  const objs = json.ad_object_ids as Array<{ copied_id?: string }> | undefined;
+  const newId = (json.copied_adset_id as string | undefined) ??
+    (json.id as string | undefined) ??
+    objs?.[0]?.copied_id;
+  if (!newId) throw new MetaError("copiar_conjunto", json);
+
+  await graph("renomear_conjunto", newId, { method: "POST", body: form({ name: newName }) });
+  return newId;
+}
+
+/** Nomes dos conjuntos de uma campanha, para descobrir o próximo slot livre. */
+export async function adsetNames(campaignId: string): Promise<string[]> {
+  const json = await graph("nomes_conjuntos", `${campaignId}/adsets`, {
+    query: { fields: "name", limit: "500" },
+  });
+  return ((json.data ?? []) as Array<{ name?: string }>).map((a) => a.name ?? "");
+}
+
 export async function setAdStatus(adId: string, status: "ACTIVE" | "PAUSED"): Promise<void> {
   await graph("set_ad_status", adId, { method: "POST", body: form({ status }) });
+}
+
+export async function setAdsetStatus(adsetId: string, status: "ACTIVE" | "PAUSED"): Promise<void> {
+  await graph("set_adset_status", adsetId, { method: "POST", body: form({ status }) });
 }
 
 /** Confere se o token realmente escreve na conta antes de gastar upload à toa. */
