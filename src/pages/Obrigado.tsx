@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { QuizResult } from "@/components/landing/QuizResult";
 import { SuccessCasesCompact } from "@/components/landing/SuccessCasesCompact";
 import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
+import { pixelPermitido, avisarPixelBloqueado } from "@/lib/ambienteMeta";
 
 // Declare fbq for TypeScript
 declare global {
@@ -54,7 +55,10 @@ export default function Obrigado() {
       setInvestimentoFaixa(parsed?.investimento_faixa ?? "");
       setEstagioNegocio(parsed?.estagio_negocio ?? "");
 
-      if (typeof window.fbq === 'function') {
+      // Fora do domínio de produção o pixel não dispara (ver
+      // src/lib/ambienteMeta.ts): o `fbq` não aceita test_event_code e o
+      // evento viraria conversão real na conta.
+      if (typeof window.fbq === 'function' && pixelPermitido()) {
         let eventID: string | undefined;
         let leadEventID: string | undefined;
         try {
@@ -66,7 +70,8 @@ export default function Obrigado() {
           }
         } catch { /* ignore */ }
 
-        window.fbq('track', 'PageView');
+        // PageView já saiu do index.html com event_id (a página abre com
+        // navegação completa); repetir aqui contava duas visitas.
         window.fbq('track', 'CompleteRegistration', {}, { eventID });
         console.log('Facebook Pixel: CompleteRegistration fired on /obrigado with eventID:', eventID);
 
@@ -77,6 +82,9 @@ export default function Obrigado() {
           investimento_faixa: parsed?.investimento_faixa || 'unknown',
         }, { eventID: leadEventID });
         console.log('Facebook Pixel: Lead fired on /obrigado with eventID:', leadEventID);
+      }
+      if (typeof window.fbq === 'function' && !pixelPermitido()) {
+        avisarPixelBloqueado('/obrigado');
       }
     } catch {
       navigate("/quiz");

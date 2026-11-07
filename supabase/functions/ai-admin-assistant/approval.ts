@@ -1,5 +1,38 @@
 // approval.ts — Approval Gate. Hard blocks NUNCA executam automaticamente.
 import { getServiceClient } from "./logger.ts";
+import { capiKey } from "../_shared/meta.ts";
+
+/**
+ * Venda e reunião criadas por aqui não geravam evento nenhum para o Meta
+ * (auditoria de 06/09): a mesma venda registrada pelo painel virava Purchase,
+ * e registrada pelo assistente ficava muda. Passa pelo mesmo funil
+ * (meta-capi), com o mesmo event_id que o painel usaria, então tanto faz por
+ * onde entrou. Best effort: o Meta fora do ar não pode desfazer a ação
+ * aprovada.
+ */
+async function dispararCapi(body: Record<string, unknown>): Promise<void> {
+  try {
+    const url = `${Deno.env.get("SUPABASE_URL")!}/functions/v1/meta-capi`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-webhook-secret": Deno.env.get("INTERNAL_WEBHOOK_SECRET") || "",
+        "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!}`,
+      },
+      body: JSON.stringify({ caller: "assistente", ...body }),
+    });
+    console.log(`[assistente] CAPI ${body.event_name} status=${res.status}: ${(await res.text()).slice(0, 300)}`);
+  } catch (e) {
+    console.error(`[assistente] CAPI ${body.event_name} error:`, e);
+  }
+}
+
+function saleDateSeconds(d?: string | null): number | undefined {
+  if (!d) return undefined;
+  const t = Date.parse(`${String(d).slice(0, 10)}T12:00:00Z`);
+  return Number.isFinite(t) ? Math.floor(t / 1000) : undefined;
+}
 
 // Soft-executable: a Edge Function pode aplicar APÓS aprovação humana.
 export const SOFT_EXECUTABLE_ACTIONS = new Set([
@@ -166,6 +199,19 @@ async function applySoftAction(actionType: string, change: any): Promise<{ ok: b
         utm_content: utm_content ?? null, notes: notes ?? null,
       }).select().single();
       if (error) return { ok: false, error: error.message };
+      if (lead_id && data?.id) {
+        await dispararCapi({
+          lead_id,
+          event_name: "Purchase",
+          event_id: `sale_${data.id}`,
+          dedup_key: capiKey("Purchase", data.id),
+          value: Number(revenue),
+          currency: "BRL",
+          event_time: saleDateSeconds(sale_date),
+          action_source: "system_generated",
+          custom_data: { order_id: data.id, content_name: sale_type ?? "sprint", content_type: "product" },
+        });
+      }
       return { ok: true, affectedTable: "manual_sales", affectedRowId: data?.id };
     }
     case "update_manual_sale": {
@@ -182,12 +228,44 @@ async function applySoftAction(actionType: string, change: any): Promise<{ ok: b
         notes: notes ?? null, creative_key: creative_key ?? null, utm_content: utm_content ?? null,
       }).select().single();
       if (error) return { ok: false, error: error.message };
+      if (lead_id && data?.id) {
+        await dispararCapi({
+          lead_id,
+          event_name: "Schedule",
+          event_id: `meeting_${data.id}`,
+          dedup_key: capiKey("Schedule", data.id),
+          action_source: "system_generated",
+          custom_data: { meeting_id: data.id },
+        });
+        if (attended) {
+          await dispararCapi({
+            lead_id,
+            event_name: "MeetingHeld",
+            event_id: `meeting_${data.id}_MeetingHeld`,
+            dedup_key: capiKey("MeetingHeld", data.id),
+            action_source: "system_generated",
+            custom_data: { meeting_id: data.id },
+          });
+        }
+      }
       return { ok: true, affectedTable: "meetings", affectedRowId: data?.id };
     }
     case "update_meeting_attended": {
       if (!change?.id || typeof change.attended !== "boolean") return { ok: false, error: "Missing id or attended(boolean)" };
-      const { error } = await sb.from("meetings").update({ attended: change.attended }).eq("id", change.id);
+      const { data, error } = await sb.from("meetings").update({ attended: change.attended }).eq("id", change.id).select("id, lead_id").maybeSingle();
       if (error) return { ok: false, error: error.message };
+      // Compareceu = o sinal mais forte antes da venda. Mesmo id que o painel
+      // usaria ao marcar "realizada", então não duplica com ele.
+      if (change.attended && data?.lead_id) {
+        await dispararCapi({
+          lead_id: data.lead_id,
+          event_name: "MeetingHeld",
+          event_id: `meeting_${change.id}_MeetingHeld`,
+          dedup_key: capiKey("MeetingHeld", change.id),
+          action_source: "system_generated",
+          custom_data: { meeting_id: change.id },
+        });
+      }
       return { ok: true, affectedTable: "meetings", affectedRowId: change.id };
     }
     case "insert_daily_report": {

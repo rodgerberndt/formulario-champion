@@ -1,0 +1,226 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Sistema de botões da landing (17/09/2026)
+   ─────────────────────────────────────────────────────────────────────────────
+   UM componente para a página inteira: formulário do topo, CTA dos cases, CTA
+   intermediário, CTA final, header e barra fixa do celular. Antes cada lugar
+   tinha o seu (raio 12, 14 e 16; altura 48, 52 e 56; rótulo ora em caixa alta
+   ora não), e o resultado era uma pílula dourada grande e genérica repetida
+   seis vezes.
+
+   Referência: mattered.com. Retângulo de cantos levemente arredondados (10 px,
+   não pílula), rótulo em MICROCAIXA-ALTA com tracking, seta que anda no hover e
+   troca de rótulo por máscara (o texto sobe e a cópia entra por baixo).
+
+   Detalhes que não são estética:
+   - A cópia do rótulo é um `::after` com `content: attr(data-rotulo)`, NÃO um
+     segundo <span>. Pseudo-elemento não entra no `innerText`, e é o innerText
+     que o tracking grava em `click_events.label` — com <span> duplicado a
+     coluna gravava "PREENCHER APLICAÇÃOPREENCHER APLICAÇÃO".
+   - Hover só em `@media (hover: hover)`: no toque, `:hover` gruda depois do
+     clique e o rótulo ficaria travado no meio da máscara.
+   - A máscara exige rótulo de UMA linha. Abaixo de 400 px de tela a fonte e o
+     tracking encolhem para o rótulo mais longo caber sem quebrar.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.btn {
+  --btn-h: 48px;
+  --btn-px: 22px;
+  --btn-fs: 11.5px;
+  --btn-ls: 0.14em;
+  /* O mesmo dourado do destaque das headlines (.keyword-glow). */
+  --btn-ouro: #e8b93c;
+  --btn-ouro-claro: #f2c650;
+  --btn-tinta: hsl(235 80% 5%);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: var(--btn-h);
+  padding: 0 var(--btn-px);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-family: 'Montserrat', 'Montserrat Fallback', sans-serif;
+  font-size: var(--btn-fs);
+  /* 600 e não 700: em caixa alta com tracking, o peso 700 engrossa a mancha e
+     é o que dava o ar de "botão de oferta". (openai.com/index/gpt-6-astra usa
+     500 em tudo; aqui o rótulo é caixa alta, então 600 é o equivalente.) */
+  font-weight: 600;
+  letter-spacing: var(--btn-ls);
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn:active { transform: scale(0.985); }
+
+.btn:focus-visible {
+  outline: 2px solid var(--btn-ouro);
+  outline-offset: 3px;
+}
+
+.btn[disabled],
+.btn[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.85;
+}
+.btn[disabled]:active { transform: none; }
+
+/* ---------- Tamanhos ---------- */
+.btn--sm {
+  --btn-h: 38px;
+  --btn-px: 16px;
+  --btn-fs: 11px;
+  --btn-ls: 0.12em;
+}
+.btn--lg {
+  --btn-h: 54px;
+  --btn-px: 28px;
+  --btn-fs: 12px;
+}
+
+/* Largura total: sempre (`--bloco`) ou só no celular (`--bloco-mobile`). */
+.btn--bloco { width: 100%; }
+@media (max-width: 767px) {
+  .btn--bloco-mobile { width: 100%; }
+}
+
+/* ---------- Variante primária: dourado sólido sobre navy ----------
+   Sem halo dourado em repouso. O brilho embaixo do botão era metade do ar de
+   "botão de oferta" que o dono reclamou; o dourado chapado sobre navy já tem
+   contraste de sobra. A luz só aparece no hover, e só onde há ponteiro. */
+.btn--primario {
+  background: var(--btn-ouro);
+  color: var(--btn-tinta);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+/* No toque não existe hover: o feedback do dedo é o escurecer do dourado. */
+.btn--primario:active { background: #d9a92e; }
+
+/* ---------- Variante secundária: hairline + vidro ---------- */
+.btn--secundario {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: hsl(var(--foreground));
+}
+.btn--secundario:active { background: rgba(255, 255, 255, 0.12); }
+
+/* ---------- Variante link/texto ---------- */
+.btn--link {
+  --btn-h: auto;
+  --btn-px: 0;
+  height: auto;
+  padding: 2px 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--btn-ouro);
+}
+.btn--link .btn-rotulo::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------- Rótulo com máscara (o texto sobe, a cópia entra por baixo) ---------- */
+.btn-rotulo {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  height: 1.2em;
+  line-height: 1.2em;
+}
+.btn-rotulo > span {
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-rotulo::after {
+  content: attr(data-rotulo);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-seta {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estado "enviando" do formulário: sem máscara, com o rodinha girando. */
+.btn-simples { display: block; }
+.btn-girando {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  animation: btn-girar 0.9s linear infinite;
+}
+@keyframes btn-girar {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Hover: só onde existe ponteiro de verdade ---------- */
+@media (hover: hover) {
+  .btn:hover .btn-rotulo > span { transform: translateY(-100%); }
+  .btn:hover .btn-rotulo::after { transform: translateY(0); }
+  .btn:hover .btn-seta { transform: translateX(4px); }
+
+  .btn--primario:hover {
+    background: var(--btn-ouro-claro);
+    box-shadow:
+      0 10px 28px -16px rgba(232, 185, 60, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .btn--secundario:hover {
+    background: rgba(232, 185, 60, 0.08);
+    border-color: rgba(232, 185, 60, 0.5);
+    color: var(--btn-ouro);
+  }
+
+  .btn--link:hover .btn-rotulo::before { transform: scaleX(1); }
+
+  .btn[disabled]:hover .btn-rotulo > span,
+  .btn[disabled]:hover .btn-rotulo::after,
+  .btn[disabled]:hover .btn-seta { transform: none; }
+}
+
+/* ---------- Telas estreitas: o rótulo mais longo tem que caber em uma linha ---------- */
+@media (max-width: 400px) {
+  .btn {
+    --btn-px: 16px;
+    --btn-fs: 11px;
+    --btn-ls: 0.1em;
+  }
+  .btn--lg { --btn-h: 52px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn-rotulo > span,
+  .btn-rotulo::after,
+  .btn-rotulo::before,
+  .btn-seta { transition: none; }
+  .btn:active { transform: none; }
+  .btn-girando { animation-duration: 1.6s; }
+}

@@ -57,7 +57,10 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { getTierFromFaturamento, computeLeadScore100, bandColorClass } from "@/lib/leadScoring";
+import { getTierFromFaturamento, bandColorClass } from "@/lib/leadScoring";
+import { calcularNotaPorVersao, linhasDoBreakdown } from "@/lib/leadScore";
+import { limiarHql } from "@/lib/hql";
+import { formatarReais } from "@/lib/faturamento";
 
 interface Lead {
   id: string;
@@ -100,6 +103,8 @@ interface Lead {
   sdr_override: string | null;
   decisor: boolean | null;
   nps_score?: number | null;
+  /** Faturamento em número, digitado pelo lead a partir de 03/09/2026. */
+  faturamento_declarado?: number | null;
   raw_answers_json: Record<string, unknown> | null;
 }
 
@@ -109,7 +114,16 @@ const QUIZ_LABELS: Record<string, string> = {
   nps_score: "Entendimento do site (0 = não leu · 5 = leu e não entendeu · 10 = leu e entendeu)",
   compromisso_whatsapp: "Compromisso WhatsApp",
   aceita_call_diagnostico: "Aceita call de diagnóstico",
+  faturamento_valor: "Faturamento total declarado",
+  faturamento_confirmado: "O faturamento é caixa ou expectativa?",
   lgpd: "Concordo em receber contato sobre a call de diagnóstico (antes R$ 2.000, agora gratuita), e responder o mais rápido possível.",
+};
+
+/** Rótulos legíveis das respostas que o quiz grava como código. */
+const QUIZ_VALORES: Record<string, string> = {
+  faturei: "Foi o que faturei no mês passado",
+  media: "É a minha média dos últimos meses",
+  espera: "É o que eu espero faturar",
 };
 
 const HIDE_QUIZ_KEYS = new Set([
@@ -123,7 +137,8 @@ const formatQuizValue = (value: unknown): string => {
   if (value === null || value === undefined || value === "") return "—";
   if (typeof value === "boolean") return value ? "Sim" : "Não";
   if (typeof value === "object") return JSON.stringify(value);
-  return String(value);
+  const bruto = String(value);
+  return QUIZ_VALORES[bruto] || bruto;
 };
 
 const getQuizEntries = (lead: Lead): [string, unknown][] => {
@@ -585,6 +600,96 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
   const srcRank = useMemo(() => buildRanking(filtered, mqls, l => l.utm_source || "Direto"), [filtered, mqls]);
   const campaignRank = useMemo(() => buildRanking(filtered, mqls, l => l.utm_campaign || "Direto"), [filtered, mqls]);
 
+  // ── As respostas do quiz que ainda não tinham KPI ─────────────────────────
+  //
+  // O painel media mercado, faturamento, estágio e dor — e mais nada. Metade do
+  // quiz nunca virou número: operações ativas, entendimento do site, o
+  // compromisso no WhatsApp e a confirmação do faturamento existiam só dentro
+  // do JSON de cada lead, um a um. São exatamente as perguntas que separam quem
+  // marca reunião de quem some, e ficavam invisíveis no agregado.
+  const respostaCrua = useCallback((l: Lead, chave: string): unknown => {
+    const raw = l.raw_answers_json && typeof l.raw_answers_json === "object" ? l.raw_answers_json : {};
+    return (raw as Record<string, unknown>)[chave];
+  }, []);
+
+  const rotulo = useCallback((v: unknown): string => {
+    if (v === null || v === undefined || v === "") return "Não informado";
+    if (typeof v === "boolean") return v ? "Sim" : "Não";
+    const s = String(v);
+    return QUIZ_VALORES[s] || s;
+  }, []);
+
+  const querVenderRank = useMemo(
+    () => buildRanking(filtered, mqls, l => rotulo(respostaCrua(l, "quer_vender_mais"))),
+    [filtered, mqls, respostaCrua, rotulo],
+  );
+  const operacoesRank = useMemo(
+    () => buildRanking(filtered, mqls, l => {
+      const n = l.operacoes_ativas ?? (respostaCrua(l, "operacoes_ativas") as number | null);
+      if (n === null || n === undefined) return "Não informado";
+      return n === 0 ? "Nenhuma" : `${n} operação${n > 1 ? "s" : ""}`;
+    }),
+    [filtered, mqls, respostaCrua],
+  );
+  // A nota do site não é NPS: 0 = não leu, 5 = leu e não entendeu, 10 = leu e
+  // entendeu. Agrupada nesses três baldes porque é assim que a pergunta foi
+  // feita — a escala intermediária nunca teve significado combinado.
+  const entendimentoRank = useMemo(
+    () => buildRanking(filtered, mqls, l => {
+      const n = l.nps_score ?? (respostaCrua(l, "nps_score") as number | null);
+      if (n === null || n === undefined) return "Não informado";
+      if (n <= 2) return "0–2 · não leu a página";
+      if (n <= 7) return "3–7 · leu e não entendeu";
+      return "8–10 · leu e entendeu";
+    }),
+    [filtered, mqls, respostaCrua],
+  );
+  const compromissoRank = useMemo(
+    () => buildRanking(filtered, mqls, l => rotulo(respostaCrua(l, "compromisso_whatsapp"))),
+    [filtered, mqls, respostaCrua, rotulo],
+  );
+  const aceitaCallRank = useMemo(
+    () => buildRanking(filtered, mqls, l => rotulo(respostaCrua(l, "aceita_call_diagnostico"))),
+    [filtered, mqls, respostaCrua, rotulo],
+  );
+  // Só quem declarou faixa alta responde esta. Quem não respondeu fica fora do
+  // ranking em vez de virar "Não informado": misturar os dois faria a base do
+  // percentual ser a base inteira, e o número perderia o sentido.
+  const confirmacaoRank = useMemo(() => {
+    const comResposta = filtered.filter(l => !!respostaCrua(l, "faturamento_confirmado"));
+    const mqlsCom = mqls.filter(l => !!respostaCrua(l, "faturamento_confirmado"));
+    return buildRanking(comResposta, mqlsCom, l => rotulo(respostaCrua(l, "faturamento_confirmado")));
+  }, [filtered, mqls, respostaCrua, rotulo]);
+
+  // O número exato, agora que o lead digita em vez de escolher faixa. A mediana
+  // é o que responde a pergunta que a faixa esconde: "de 10 a 20 mil" é povoada
+  // por gente de 10 ou de 19?
+  const faturamentoDeclarado = useMemo(() => {
+    const valores = filtered
+      .map(l => (typeof l.faturamento_declarado === "number" ? l.faturamento_declarado : null))
+      .filter((v): v is number => v !== null && isFinite(v))
+      .sort((a, b) => a - b);
+    if (!valores.length) return null;
+    const meio = Math.floor(valores.length / 2);
+    const mediana = valores.length % 2 === 0 ? (valores[meio - 1] + valores[meio]) / 2 : valores[meio];
+    const mqlValores = mqls
+      .map(l => (typeof l.faturamento_declarado === "number" ? l.faturamento_declarado : null))
+      .filter((v): v is number => v !== null && isFinite(v))
+      .sort((a, b) => a - b);
+    const meioMql = Math.floor(mqlValores.length / 2);
+    const medianaMql = mqlValores.length
+      ? (mqlValores.length % 2 === 0 ? (mqlValores[meioMql - 1] + mqlValores[meioMql]) / 2 : mqlValores[meioMql])
+      : null;
+    return {
+      total: valores.length,
+      mediana,
+      medianaMql,
+      // Quantos ficaram exatamente na régua. Se este número for alto, a régua
+      // está sendo mirada, não atingida.
+      exatos10k: valores.filter(v => v === 10_000).length,
+    };
+  }, [filtered, mqls]);
+
   const icps = useMemo(() => detectICPs(mqls), [mqls]);
   const insights = useMemo(() => generateInsights(filtered, mqls), [filtered, mqls]);
   const creativeSuggestions = useMemo(() => generateCreativeSuggestions(filtered, mqls), [filtered, mqls]);
@@ -645,11 +750,16 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
   };
 
   const exportCSV = useCallback(() => {
-    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento", "Dor/Desejo", "Tier", "MQL", "Aceita Call Diagnóstico", "UTM Source", "UTM Campaign", "UTM Content"];
+    const headers = ["Data", "Nome", "WhatsApp", "Instagram", "E-mail", "Mercado", "Estágio", "Faturamento (faixa)", "Faturamento (número)", "Operações ativas", "Entendimento do site", "Compromisso WhatsApp", "Dor/Desejo", "Tier", "MQL", "Aceita Call Diagnóstico", "UTM Source", "UTM Campaign", "UTM Content"];
     const rows = tableLeads.map(l => [
       format(new Date(l.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }),
       l.nome_completo, l.whatsapp, l.instagram, l.email || "", normalizeMercado(l.mercado),
-      l.estagio_negocio || "", l.investimento_faixa || "", `"${(l.dor_desejo || "").replace(/"/g, '""')}"`,
+      l.estagio_negocio || "", l.investimento_faixa || "",
+      typeof l.faturamento_declarado === "number" ? String(l.faturamento_declarado) : "",
+      l.operacoes_ativas ?? "",
+      l.nps_score ?? "",
+      String((l.raw_answers_json as Record<string, unknown> | null)?.compromisso_whatsapp ?? ""),
+      `"${(l.dor_desejo || "").replace(/"/g, '""')}"`,
       getTierFromFaturamento(l.investimento_faixa), isMql(l) ? "Sim" : "Não",
       getAceitaCall(l) || "—",
       l.utm_source || "", l.utm_campaign || "", l.utm_content || "",
@@ -956,6 +1066,94 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
               <CardHeader className="pb-2"><CardTitle className="text-sm">Top Campanhas → MQL</CardTitle></CardHeader>
               <CardContent><RankingTable data={campaignRank} /></CardContent>
             </Card>
+          </div>
+        )}
+      </div>
+
+      <div>
+        <SectionHeader
+          id="quiz"
+          icon={Target}
+          title="Respostas do Quiz"
+          subtitle="Cada pergunta do formulário cruzada com MQL — o que o lead responde antes de virar reunião"
+        />
+        {!collapsedSections.has("quiz") && (
+          <div className="space-y-4">
+            {faturamentoDeclarado && (
+              <Card className="border-sky-500/20">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Faturamento declarado em número</CardTitle>
+                  <CardDescription className="text-xs">
+                    Preenchido a partir de 03/09/2026, quando o lead passou a digitar o valor
+                    em vez de escolher uma faixa. {faturamentoDeclarado.total} lead(s) no período.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Mediana geral</p>
+                      <p className="text-xl font-bold tabular-nums">{formatarReais(faturamentoDeclarado.mediana)}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Mediana dos MQL</p>
+                      <p className="text-xl font-bold tabular-nums text-emerald-400">
+                        {faturamentoDeclarado.medianaMql !== null ? formatarReais(faturamentoDeclarado.medianaMql) : "—"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Exatamente R$ 10 mil</p>
+                      <p className="text-xl font-bold tabular-nums">{faturamentoDeclarado.exatos10k}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        Muitos aqui significa que a régua está sendo mirada, não atingida.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="border-border/50">
+                <CardHeader className="pb-2"><CardTitle className="text-sm">Operações ativas → MQL</CardTitle></CardHeader>
+                <CardContent><RankingTable data={operacoesRank} /></CardContent>
+              </Card>
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Entendimento da página → MQL</CardTitle>
+                  <CardDescription className="text-xs">0 = não leu · 5 = leu e não entendeu · 10 = leu e entendeu</CardDescription>
+                </CardHeader>
+                <CardContent><RankingTable data={entendimentoRank} /></CardContent>
+              </Card>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="border-border/50">
+                <CardHeader className="pb-2"><CardTitle className="text-sm">Compromisso no WhatsApp → MQL</CardTitle></CardHeader>
+                <CardContent><RankingTable data={compromissoRank} /></CardContent>
+              </Card>
+              <Card className="border-border/50">
+                <CardHeader className="pb-2"><CardTitle className="text-sm">Aceita call de diagnóstico → MQL</CardTitle></CardHeader>
+                <CardContent><RankingTable data={aceitaCallRank} /></CardContent>
+              </Card>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Caixa ou expectativa → MQL</CardTitle>
+                  <CardDescription className="text-xs">
+                    Só quem declara faixa alta responde. A base aqui é só quem respondeu.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent><RankingTable data={confirmacaoRank} /></CardContent>
+              </Card>
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Quer vender mais → MQL</CardTitle>
+                  <CardDescription className="text-xs">
+                    98,5% respondem "sim". Serve para ver se alguma variante do quiz muda isso.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent><RankingTable data={querVenderRank} /></CardContent>
+              </Card>
+            </div>
           </div>
         )}
       </div>
@@ -1271,14 +1469,16 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                 </div>
 
                 {(() => {
-                  const sr = computeLeadScore100({
+                  // Na régua da VERSÃO do lead: o formulário curto (v3-form)
+                  // só tem faturamento e mercado, e mostrar "Aceita call 0/12"
+                  // numa pergunta que ele nunca viu é inventar desconto.
+                  const sr = calcularNotaPorVersao({
                     investimento_faixa: selectedLead.investimento_faixa,
                     mercado: selectedLead.mercado,
-                    operacoes_ativas: selectedLead.operacoes_ativas,
                     nps_score: selectedLead.nps_score,
                     dor_desejo: selectedLead.dor_desejo,
                     raw_answers_json: selectedLead.raw_answers_json,
-                  });
+                  }, (selectedLead as { score_version?: string | null }).score_version);
                   return (
                     <div className="p-3 bg-muted/20 border border-border/50 rounded-lg space-y-2">
                       <div className="flex items-center justify-between">
@@ -1300,16 +1500,20 @@ export default function LeadReportsTab({ leads, loading }: LeadReportsTabProps) 
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-muted-foreground pt-1">
-                        <span>Faturamento: {sr.breakdown.faturamento}/25</span>
-                        <span>Entendimento do site: {sr.breakdown.nps}/30</span>
-                        <span>Compromisso WA: {sr.breakdown.compromisso_whatsapp}/10</span>
-                        <span>Aceita call: {sr.breakdown.aceita_call}/8</span>
-                        <span>Mercado: {sr.breakdown.mercado}/8</span>
-                        <span>Operações: {sr.breakdown.operacoes}/6</span>
-                        <span>Quer vender mais: {sr.breakdown.quer_vender_mais}/5</span>
-                        <span>Dor/desejo: {sr.breakdown.dor_desejo}/5</span>
-                        <span>LGPD: {sr.breakdown.lgpd}/3</span>
+                        {linhasDoBreakdown(sr).map((l) => (
+                          <span key={l.rotulo}>{l.rotulo}: {l.valor}/{l.max}</span>
+                        ))}
+                        <span className="col-span-2 opacity-70">
+                          {sr.version} · corte de lead qualificado: {limiarHql(sr.version)}
+                        </span>
                       </div>
+                      {sr.flags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 pt-0.5">
+                          {sr.flags.map((f) => (
+                            <Badge key={f} variant="outline" className="text-[9px] text-amber-500 border-amber-500/40">{f}</Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   );
                 })()}

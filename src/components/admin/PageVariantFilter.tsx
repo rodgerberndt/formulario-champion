@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { HEADLINE_VARIANTS } from "@/config/headlineVariants";
+import { SUBHEADLINE_VARIANTS } from "@/config/subheadlineVariants";
 
 export const ALL_PAGES = "all";
 
@@ -33,6 +34,13 @@ export default function PageVariantFilter({ value, onChange }: Props) {
       path: v.path,
       label: v.label,
       hint: `${v.lead}${v.highlight ?? ""}`.trim(),
+    })),
+    // Variantes do teste de subheadline: mesma headline (HD3), só o bloco de
+    // baixo muda. O hint mostra o eixo testado, não a copy inteira.
+    ...SUBHEADLINE_VARIANTS.map((v) => ({
+      path: v.path,
+      label: v.label,
+      hint: v.axis,
     })),
   ];
 

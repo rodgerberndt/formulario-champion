@@ -1,0 +1,1804 @@
+{
+  "consultado_em": "2026-09-10T21:43:37.038Z",
+  "path": "act_1107952820265255/campaigns",
+  "params": {
+    "fields": "id,name,objective,status,effective_status,bid_strategy,daily_budget,lifetime_budget,budget_remaining,created_time,start_time,stop_time,special_ad_categories,buying_type,spend_cap,pacing_type",
+    "limit": "300"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 109,
+    "data": [
+      {
+        "id": "120241173106100044",
+        "name": "Publicação do Instagram: Nesse post você entende...",
+        "objective": "LINK_CLICKS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "3100",
+        "budget_remaining": "3100",
+        "created_time": "2026-04-18T21:26:00-0300",
+        "start_time": "2026-04-18T21:26:30-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120241173103170044",
+        "name": "Publicação do Instagram: Converse com o nosso...",
+        "objective": "LINK_CLICKS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "3100",
+        "budget_remaining": "3100",
+        "created_time": "2026-04-18T21:25:35-0300",
+        "start_time": "2026-04-18T21:26:05-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120241158702880044",
+        "name": "OBJ \"Vendas\" - Ads validados",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "budget_remaining": "20000",
+        "created_time": "2026-04-18T12:31:16-0300",
+        "start_time": "2026-04-18T12:31:17-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120239992362590044",
+        "name": "Teste de Criativos MQL CBO",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "20000",
+        "budget_remaining": "20000",
+        "created_time": "2026-04-03T15:39:21-0300",
+        "start_time": "2026-04-03T15:39:21-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120239923570380044",
+        "name": "BIDCAP MONSTRA — Cópia",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITH_BID_CAP",
+        "daily_budget": "30000",
+        "budget_remaining": "30000",
+        "created_time": "2026-04-02T19:45:50-0300",
+        "start_time": "2026-04-02T19:45:51-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120239923516540044",
+        "name": "Ads validados - OBJ - Reuniões",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "budget_remaining": "12000",
+        "created_time": "2026-04-02T19:44:03-0300",
+        "start_time": "2026-04-03T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120239399765540044",
+        "name": "BIDCAP MONSTRA",
+        "objective": "OUTCOME_LEADS",
+        "status": "ACTIVE",
+        "effective_status": "ACTIVE",
+        "bid_strategy": "LOWEST_COST_WITH_BID_CAP",
+        "daily_budget": "70000",
+        "budget_remaining": "70000",
+        "created_time": "2026-03-26T19:58:25-0300",
+        "start_time": "2026-03-27T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120239380042000044",
+        "name": "OBJ: \"MQL\" - Ads validados",
+        "objective": "OUTCOME_LEADS",
+        "status": "ACTIVE",
+        "effective_status": "ACTIVE",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "budget_remaining": "15000",
+        "created_time": "2026-03-26T11:31:01-0300",
+        "start_time": "2026-03-26T11:31:02-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120237206369410044",
+        "name": "Escala T04 - C1 e C4 - CL",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "budget_remaining": "25400",
+        "created_time": "2026-02-18T21:33:04-0300",
+        "start_time": "2026-02-19T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120236764576600044",
+        "name": "Escala T01 - C3 - CL — OBJ: \"Lead\"",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "budget_remaining": "10000",
+        "created_time": "2026-02-08T15:22:21-0300",
+        "start_time": "2026-02-09T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120236483295540044",
+        "name": "Teste de Criativos - Champions League — OBJ: \"Lead\"",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "budget_remaining": "15000",
+        "created_time": "2026-02-02T21:38:17-0300",
+        "start_time": "2026-02-03T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120236481149370044",
+        "name": "Teste de Criativos - Champions League",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "budget_remaining": "10000",
+        "created_time": "2026-02-02T21:33:35-0300",
+        "start_time": "2026-02-03T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120236075004090044",
+        "name": "C.T.S - Primeiro Teste Ads",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "budget_remaining": "6000",
+        "created_time": "2026-01-22T21:57:40-0300",
+        "start_time": "2026-01-23T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120235668139230044",
+        "name": "Teste ads em Imagem (X1)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2200",
+        "budget_remaining": "2200",
+        "created_time": "2026-01-12T20:38:24-0300",
+        "start_time": "2026-01-12T23:59:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120233591977880044",
+        "name": "CBO/Best ads 2025",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "3000",
+        "budget_remaining": "3000",
+        "created_time": "2025-12-02T21:39:18-0300",
+        "start_time": "2025-12-03T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120232327150080044",
+        "name": "Escala ADV#18",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "budget_remaining": "9000",
+        "created_time": "2025-11-11T19:50:57-0300",
+        "start_time": "2025-11-12T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120231597658210044",
+        "name": "ABO/ [Teste Criativos]",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "budget_remaining": "100",
+        "created_time": "2025-10-30T22:04:15-0300",
+        "start_time": "2025-10-31T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120231340467650044",
+        "name": "CBO/1-3-8  [T02 - ADV#15 e #16]",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "7000",
+        "budget_remaining": "7000",
+        "created_time": "2025-10-27T20:05:21-0300",
+        "start_time": "2025-10-28T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120230658543930044",
+        "name": "ONGOING - CBO/ADV#13 - V1 a V4",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "7000",
+        "budget_remaining": "7000",
+        "created_time": "2025-10-17T14:09:55-0300",
+        "start_time": "2025-10-18T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120230592029030044",
+        "name": "Lotar Grupo 1-4-5 (ADS NOVOS JET)",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "5000",
+        "budget_remaining": "5000",
+        "created_time": "2025-10-16T20:36:26-0300",
+        "start_time": "2025-10-17T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120229424071220044",
+        "name": "Teste de Criativo ADV#12 - V1 a V4 — Cópia",
+        "objective": "OUTCOME_TRAFFIC",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2500",
+        "budget_remaining": "2500",
+        "created_time": "2025-09-28T21:01:14-0300",
+        "start_time": "2025-09-29T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120229180174200044",
+        "name": "Lotar Grupo 1-4-2 — Novo teste presell",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2500",
+        "budget_remaining": "2500",
+        "created_time": "2025-09-24T17:12:20-0300",
+        "start_time": "2025-09-25T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120229179303470044",
+        "name": "Teste de Criativo ADV#12 - V1 a V4",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2500",
+        "budget_remaining": "2500",
+        "created_time": "2025-09-24T16:56:18-0300",
+        "start_time": "2025-09-25T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120228857901580044",
+        "name": "Lotar Grupo 1-4-2 — Novo teste presell — Cópia",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2500",
+        "budget_remaining": "2500",
+        "created_time": "2025-09-17T12:04:06-0300",
+        "start_time": "2025-09-18T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120228501580600044",
+        "name": "Lotar Grupo 1-4-2 — Novo teste presell",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2500",
+        "budget_remaining": "2500",
+        "created_time": "2025-09-10T13:28:32-0300",
+        "start_time": "2025-09-11T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120228473278180044",
+        "name": "ONGOING - CBO/Best Ads New — (Conversão)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2500",
+        "budget_remaining": "2500",
+        "created_time": "2025-09-09T20:05:15-0300",
+        "start_time": "2025-09-10T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120228473249910044",
+        "name": "ONGOING - CBO/Best Ads New — (Lead)",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2500",
+        "budget_remaining": "2500",
+        "created_time": "2025-09-09T20:05:58-0300",
+        "start_time": "2025-09-10T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120228148079160044",
+        "name": "ONGOING - CBO/Best Ads New (x1)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2500",
+        "budget_remaining": "2500",
+        "created_time": "2025-09-03T14:11:33-0300",
+        "start_time": "2025-09-04T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120227898401020044",
+        "name": "Variações ADV#2 (V13, V14, V17)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-08-28T15:24:39-0300",
+        "start_time": "2025-08-28T15:24:40-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120227443887780044",
+        "name": "Variações ADV#2 (V10, V11, V12)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "5200",
+        "budget_remaining": "5200",
+        "created_time": "2025-08-19T15:59:22-0300",
+        "start_time": "2025-08-20T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120227043659320044",
+        "name": "Lotar Grupo 1-4-4",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2500",
+        "budget_remaining": "2500",
+        "created_time": "2025-08-13T16:42:28-0300",
+        "start_time": "2025-08-14T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120226813269960044",
+        "name": "Tráfego pro Perfil ADV — Cópia",
+        "objective": "OUTCOME_TRAFFIC",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "budget_remaining": "0",
+        "created_time": "2025-08-08T13:34:47-0300",
+        "start_time": "2025-08-08T13:34:47-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120226730345080044",
+        "name": "CBO/Teste de criativo ADV#2 V9 Lula",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-08-06T12:01:04-0300",
+        "start_time": "2025-08-06T12:01:05-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120226298630850044",
+        "name": "Tráfego pro Perfil ADV",
+        "objective": "OUTCOME_TRAFFIC",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "budget_remaining": "0",
+        "created_time": "2025-07-30T15:30:00-0300",
+        "start_time": "2025-07-30T15:30:01-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120226284224240044",
+        "name": "ONGOING - CBO/Best Ads New (x1)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2200",
+        "budget_remaining": "2200",
+        "created_time": "2025-07-30T10:56:54-0300",
+        "start_time": "2025-07-30T10:56:55-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120226229418990044",
+        "name": "ONGOING - CBO/Best Ads New (X1)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2200",
+        "budget_remaining": "2200",
+        "created_time": "2025-07-29T14:00:38-0300",
+        "start_time": "2025-07-29T14:00:39-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120225998836280044",
+        "name": "ONGOING - CBO/Teste criativo ADV#8 — Estrutura nova",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "5200",
+        "budget_remaining": "5200",
+        "created_time": "2025-07-24T10:26:17-0300",
+        "start_time": "2025-07-24T10:26:18-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120225869029800044",
+        "name": "ONGOING - CBO/Teste criativo ADV#8",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-07-22T14:10:54-0300",
+        "start_time": "2025-07-23T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120225528407600044",
+        "name": "ADV#7 - Variações",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-07-15T16:21:02-0300",
+        "start_time": "2025-07-16T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120225160324910044",
+        "name": "ADV#7 SIM",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-07-08T11:41:46-0300",
+        "start_time": "2025-07-08T11:41:47-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120224754085710044",
+        "name": "Publicação do Instagram: Converse com o nosso...",
+        "objective": "LINK_CLICKS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2800",
+        "budget_remaining": "2800",
+        "created_time": "2025-07-01T08:59:46-0300",
+        "start_time": "2025-07-01T09:00:16-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120224719019930044",
+        "name": "Publicação do Instagram: Converse com o nosso...",
+        "objective": "MESSAGES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2500",
+        "budget_remaining": "2500",
+        "created_time": "2025-06-30T16:11:31-0300",
+        "start_time": "2025-06-30T16:12:01-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120224718423320044",
+        "name": "Variações do V1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-06-30T16:21:49-0300",
+        "start_time": "2025-07-01T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120224375137600044",
+        "name": "ONGOING - CBO/Best Ads New (X1)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2200",
+        "budget_remaining": "2200",
+        "created_time": "2025-06-25T12:01:45-0300",
+        "start_time": "2025-06-26T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120224318406330044",
+        "name": "ONGOING - CBO/ADV#4 Igor caixinha",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "3000",
+        "budget_remaining": "3000",
+        "created_time": "2025-06-24T17:36:05-0300",
+        "start_time": "2025-06-25T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120224317816040044",
+        "name": "ONGOING - CBO/ADV#2 Variações novas (1-4-4)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-06-24T17:26:52-0300",
+        "start_time": "2025-06-25T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120223120076700044",
+        "name": "ONGOING - CBO/Melhores Ads — 2",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-06-09T15:04:56-0300",
+        "start_time": "2025-06-10T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120222983790820044",
+        "name": "ONGOING - CBO/Melhores Ads - Atualizado",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-06-07T16:42:36-0300",
+        "start_time": "2025-06-09T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120222976740570044",
+        "name": "ONGOING - CBO/ADV#2 Variações #2 (1-4-3)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-06-07T14:58:20-0300",
+        "start_time": "2025-06-09T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120222471021010044",
+        "name": "ONGOING - CBO/ADV#2 Variações (1-4-4)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-05-28T12:01:48-0300",
+        "start_time": "2025-05-29T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120222186111940044",
+        "name": "ONGOING - CBO/ADV#2 Variações",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-05-23T15:59:17-0300",
+        "start_time": "2025-05-26T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120221170395150044",
+        "name": "ONGOING - CBO/Melhores Ads — Cópia",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "3000",
+        "budget_remaining": "3000",
+        "created_time": "2025-05-05T23:03:11-0300",
+        "start_time": "2025-05-06T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120220293430450044",
+        "name": "Lara social media",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "3000",
+        "budget_remaining": "3000",
+        "created_time": "2025-04-29T21:39:14-0300",
+        "start_time": "2025-04-30T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120219556881120044",
+        "name": "ONGOING - CBO/Melhores Ads",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "3000",
+        "budget_remaining": "3000",
+        "created_time": "2025-04-22T08:25:44-0300",
+        "start_time": "2025-04-22T08:25:46-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120219053247460044",
+        "name": "ADV #2",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "budget_remaining": "0",
+        "created_time": "2025-04-17T06:01:59-0300",
+        "start_time": "2025-04-17T06:02:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120218223736730044",
+        "name": "ONGOING - CBO/Estrutura",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-04-10T06:02:38-0300",
+        "start_time": "2025-04-10T06:02:39-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120218013065280044",
+        "name": "[CHAMPION 14] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-07T22:33:23-0300",
+        "start_time": "2025-04-08T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120218013065270044",
+        "name": "[CHAMPION 16] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-07T22:33:23-0300",
+        "start_time": "2025-04-08T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120218013065260044",
+        "name": "[CHAMPION 17] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-07T22:33:23-0300",
+        "start_time": "2025-04-08T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120218013065180044",
+        "name": "[CHAMPION 13] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-07T22:33:23-0300",
+        "start_time": "2025-04-08T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120218013065170044",
+        "name": "[CHAMPION 12] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-07T22:33:23-0300",
+        "start_time": "2025-04-08T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120218013065160044",
+        "name": "[CHAMPION 18] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-07T22:33:23-0300",
+        "start_time": "2025-04-08T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120218013065110044",
+        "name": "[CHAMPION 15] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-07T22:33:23-0300",
+        "start_time": "2025-04-07T22:33:24-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120218013065060044",
+        "name": "[CHAMPION 11] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-07T22:33:23-0300",
+        "start_time": "2025-04-08T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217922653200044",
+        "name": "[CHAMPION 9] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-06T21:25:39-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217922653190044",
+        "name": "[CHAMPION 8] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-06T21:25:39-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217922653120044",
+        "name": "[CHAMPION 10] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-06T21:25:39-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217922653090044",
+        "name": "[CHAMPION 7] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-06T21:25:40-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217922572670044",
+        "name": "[CHAMPION 6] 1-1-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-06T21:25:39-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217922472670044",
+        "name": "[CHAMPION 3] 1-4-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-06T21:25:40-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217922472660044",
+        "name": "[CHAMPION 2] 1-4-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-06T21:25:39-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217922472610044",
+        "name": "[CHAMPION 4] 1-4-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-06T21:25:39-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217922472530044",
+        "name": "[CHAMPION 5] 1-4-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-06T21:25:39-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217919008590044",
+        "name": "[CHAMPION 1] 1-4-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "budget_remaining": "2000",
+        "created_time": "2025-04-06T21:25:40-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217892495680044",
+        "name": "LARA - AD2 — Cópia",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "5000",
+        "budget_remaining": "5000",
+        "created_time": "2025-04-06T13:54:20-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217892340260044",
+        "name": "LARA - AD1 — Cópia",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "5000",
+        "budget_remaining": "5000",
+        "created_time": "2025-04-06T13:54:20-0300",
+        "start_time": "2025-04-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217837277980044",
+        "name": "LARA - AD2",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "5000",
+        "budget_remaining": "5000",
+        "created_time": "2025-04-05T22:14:45-0300",
+        "start_time": "2025-04-06T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217837011620044",
+        "name": "LARA - AD1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "5000",
+        "budget_remaining": "5000",
+        "created_time": "2025-04-05T22:14:45-0300",
+        "start_time": "2025-04-06T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217708138410044",
+        "name": "ESCALA 1-4-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-04-05T00:04:25-0300",
+        "start_time": "2025-04-05T00:04:27-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217708138400044",
+        "name": "ESCALA 1-4-1 / Teste orçamento alto",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "8000",
+        "budget_remaining": "8000",
+        "created_time": "2025-04-05T00:04:25-0300",
+        "start_time": "2025-04-05T00:04:27-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217708138300044",
+        "name": "ESCALA 1-4-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-04-05T00:04:25-0300",
+        "start_time": "2025-04-05T00:04:26-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217607833250044",
+        "name": "Validado teste estrutura 1-4-1 — Cópia",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-04-04T10:42:35-0300",
+        "start_time": "2025-04-04T10:42:36-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217607833240044",
+        "name": "Validado teste estrutura 1-4-1 — Cópia",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-04-04T10:42:35-0300",
+        "start_time": "2025-04-04T10:42:36-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217270043430044",
+        "name": "Validado teste estrutura 1-4-4",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-04-03T00:49:52-0300",
+        "start_time": "2025-04-03T00:49:54-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120217268609950044",
+        "name": "Validado teste estrutura 1-4-3",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-04-03T00:28:36-0300",
+        "start_time": "2025-04-03T00:28:37-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120216989315410044",
+        "name": "Validado teste estrutura 1-4-1",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-04-01T18:20:33-0300",
+        "start_time": "2025-04-02T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120216988690510044",
+        "name": "Validado teste de estrutura 1-3-3",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-04-01T18:19:19-0300",
+        "start_time": "2025-04-02T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120216983800120044",
+        "name": "Ad validado Variações breves",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-04-01T18:12:15-0300",
+        "start_time": "2025-04-02T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120216462823860044",
+        "name": "Campanha AD Lula",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "budget_remaining": "0",
+        "created_time": "2025-03-30T05:45:51-0300",
+        "start_time": "2025-03-30T05:45:52-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120216443560920044",
+        "name": "Dark Post AD Validado",
+        "objective": "OUTCOME_AWARENESS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "budget_remaining": "0",
+        "created_time": "2025-03-30T04:34:29-0300",
+        "start_time": "2025-03-30T04:34:29-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120216172024440044",
+        "name": "Campanha AD VALIDADO",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "budget_remaining": "0",
+        "created_time": "2025-03-28T05:20:36-0300",
+        "start_time": "2025-03-28T05:20:37-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120216162254960044",
+        "name": "Funil 01 - Forms",
+        "objective": "OUTCOME_LEADS",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "budget_remaining": "0",
+        "created_time": "2025-03-28T01:23:29-0300",
+        "start_time": "2025-03-28T01:23:29-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120215952930030044",
+        "name": "Campanha Europe — Cópia",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "3300",
+        "budget_remaining": "3300",
+        "created_time": "2025-03-25T18:25:52-0300",
+        "start_time": "2025-03-26T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120215952930020044",
+        "name": "Campanha Europe — Cópia",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "3300",
+        "budget_remaining": "3300",
+        "created_time": "2025-03-25T18:25:52-0300",
+        "start_time": "2025-03-26T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120215939769930044",
+        "name": "Campanha Europe",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "3300",
+        "budget_remaining": "3300",
+        "created_time": "2025-03-25T18:25:52-0300",
+        "start_time": "2025-03-26T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120215933142160044",
+        "name": "Teste Ads Daniel — Cópia",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-03-25T07:45:52-0300",
+        "start_time": "2025-03-25T07:45:53-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120215933142150044",
+        "name": "Teste Ads Daniel — Cópia",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-03-25T07:45:52-0300",
+        "start_time": "2025-03-25T07:45:53-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120215932552080044",
+        "name": "Teste Ads Daniel",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "4000",
+        "budget_remaining": "4000",
+        "created_time": "2025-03-25T07:45:52-0300",
+        "start_time": "2025-03-25T07:45:53-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120215594023030044",
+        "name": "Teste ADs F-portfólio",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "budget_remaining": "0",
+        "created_time": "2025-03-17T21:30:08-0300",
+        "start_time": "2025-03-18T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120215433683080044",
+        "name": "Campanha Oferta Taroo",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "5000",
+        "budget_remaining": "5000",
+        "created_time": "2025-03-13T20:24:53-0300",
+        "start_time": "2025-03-14T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120214954776390044",
+        "name": "Tráfego para VSL",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "budget_remaining": "0",
+        "created_time": "2025-03-05T21:47:54-0300",
+        "start_time": "2025-03-06T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120214954086950044",
+        "name": "Teste de Criativos demanda nova",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "budget_remaining": "0",
+        "created_time": "2025-03-05T21:11:56-0300",
+        "start_time": "2025-03-06T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120214437316570044",
+        "name": "VAi irmão, é o AD1 brabo",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "budget_remaining": "0",
+        "created_time": "2025-02-25T00:04:25-0300",
+        "start_time": "2025-02-25T00:04:26-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120214436848490044",
+        "name": "ONGOING - CBO/Teste de criativo — Cópia",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "5000",
+        "budget_remaining": "5000",
+        "created_time": "2025-02-25T00:04:25-0300",
+        "start_time": "2025-02-25T00:04:26-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120214298162090044",
+        "name": "Teste de criativo",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "3000",
+        "budget_remaining": "3000",
+        "created_time": "2025-02-23T22:54:50-0300",
+        "start_time": "2025-02-24T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120213195599700044",
+        "name": "ONGOING - CBO/Teste de criativo — Cópia",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "6000",
+        "budget_remaining": "6000",
+        "created_time": "2025-02-06T11:02:10-0300",
+        "start_time": "2025-02-06T11:02:11-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120213029259430044",
+        "name": "2 ONGOING - CBO/Teste de criativo",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "6000",
+        "budget_remaining": "6000",
+        "created_time": "2025-01-31T17:53:56-0300",
+        "start_time": "2025-02-01T09:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120213029259290044",
+        "name": "3 ONGOING - CBO/Teste de criativo",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "6000",
+        "budget_remaining": "6000",
+        "created_time": "2025-01-31T17:53:56-0300",
+        "start_time": "2025-02-01T09:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      },
+      {
+        "id": "120212182169020044",
+        "name": "ONGOING - CBO/Teste de criativo",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "6000",
+        "budget_remaining": "6000",
+        "created_time": "2025-01-06T17:40:29-0300",
+        "start_time": "2025-01-07T00:00:00-0300",
+        "special_ad_categories": [],
+        "buying_type": "AUCTION",
+        "pacing_type": [
+          "standard"
+        ]
+      }
+    ]
+  }
+}

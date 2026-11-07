@@ -1,0 +1,229 @@
+{
+  "consultado_em": "2026-09-11T00:05:18.062Z",
+  "path": "act_1733204057869041/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-08-01\",\"until\":\"2026-08-15\"}",
+    "level": "account",
+    "fields": "spend,impressions,clicks,actions,action_values,date_start",
+    "breakdowns": "device_platform",
+    "limit": "200"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 4,
+    "data": [
+      {
+        "spend": "0.099997",
+        "impressions": "19",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "3"
+          },
+          {
+            "action_type": "video_view",
+            "value": "3"
+          }
+        ],
+        "date_start": "2026-08-01",
+        "date_stop": "2026-08-15",
+        "device_platform": "desktop"
+      },
+      {
+        "spend": "286.900006",
+        "impressions": "17513",
+        "clicks": "1282",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "2"
+          },
+          {
+            "action_type": "link_click",
+            "value": "1065"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "23"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "23"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "49"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "23"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "66"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "870"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "870"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "2"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "4155"
+          },
+          {
+            "action_type": "like",
+            "value": "1"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "72"
+          },
+          {
+            "action_type": "comment",
+            "value": "8"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "4156"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "74"
+          },
+          {
+            "action_type": "post",
+            "value": "9"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "25"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "47"
+          },
+          {
+            "action_type": "lead",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "click_to_call_native_20s_call_connect",
+            "value": "23"
+          },
+          {
+            "action_type": "offsite_add_to_cart_add_20_s_calls",
+            "value": "23"
+          },
+          {
+            "action_type": "click_to_call_native_60s_call_connect",
+            "value": "14"
+          },
+          {
+            "action_type": "video_view",
+            "value": "3018"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "115"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "115"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "25"
+          }
+        ],
+        "date_start": "2026-08-01",
+        "date_stop": "2026-08-15",
+        "device_platform": "mobile_app"
+      },
+      {
+        "spend": "0.069998",
+        "impressions": "11",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1"
+          }
+        ],
+        "date_start": "2026-08-01",
+        "date_stop": "2026-08-15",
+        "device_platform": "mobile_web"
+      },
+      {
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "1",
+        "date_start": "2026-08-01",
+        "date_stop": "2026-08-15",
+        "device_platform": "unknown"
+      }
+    ]
+  }
+}

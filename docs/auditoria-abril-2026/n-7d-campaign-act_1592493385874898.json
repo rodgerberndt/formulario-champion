@@ -1,0 +1,110 @@
+{
+  "consultado_em": "2026-09-10T22:10:30.767Z",
+  "path": "act_1592493385874898/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-09-04\",\"until\":\"2026-09-10\"}",
+    "level": "campaign",
+    "fields": "campaign_id,campaign_name,adset_id,adset_name,ad_id,ad_name,spend,impressions,clicks,inline_link_clicks,actions,action_values,objective,optimization_goal,attribution_setting,account_currency,date_start,date_stop",
+    "limit": "500"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 1,
+    "data": [
+      {
+        "campaign_id": "120252040734020116",
+        "campaign_name": "CA 05 - Validados - Leads",
+        "spend": "29.72",
+        "impressions": "2355",
+        "clicks": "150",
+        "inline_link_clicks": "143",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "2"
+          },
+          {
+            "action_type": "link_click",
+            "value": "143"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "6"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "106"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "106"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1091"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "6"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1091"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "6"
+          },
+          {
+            "action_type": "lead",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "942"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      }
+    ]
+  }
+}

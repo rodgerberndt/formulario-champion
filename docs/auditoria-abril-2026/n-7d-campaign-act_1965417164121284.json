@@ -1,0 +1,630 @@
+{
+  "consultado_em": "2026-09-10T22:10:40.298Z",
+  "path": "act_1965417164121284/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-09-04\",\"until\":\"2026-09-10\"}",
+    "level": "campaign",
+    "fields": "campaign_id,campaign_name,adset_id,adset_name,ad_id,ad_name,spend,impressions,clicks,inline_link_clicks,actions,action_values,objective,optimization_goal,attribution_setting,account_currency,date_start,date_stop",
+    "limit": "500"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 14,
+    "data": [
+      {
+        "campaign_id": "52595874690893",
+        "campaign_name": "CA 03 - Leads - Ads Novos Caio",
+        "spend": "4.87",
+        "impressions": "278",
+        "clicks": "1",
+        "inline_link_clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "86"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "86"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "85"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595880369093",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD0",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911445493",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "na",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911445693",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911445893",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911446093",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD4",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "spend": "1.56",
+        "impressions": "91",
+        "clicks": "5",
+        "inline_link_clicks": "4",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "4"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "5"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "5"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "34"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "34"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "29"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "spend": "216.98",
+        "impressions": "12130",
+        "clicks": "287",
+        "inline_link_clicks": "193",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "7"
+          },
+          {
+            "action_type": "link_click",
+            "value": "193"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "7"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "7"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "32"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "3"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "172"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "6"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "172"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "4"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "4388"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "47"
+          },
+          {
+            "action_type": "comment",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "4388"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "7"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "52"
+          },
+          {
+            "action_type": "post_uncomment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "3"
+          },
+          {
+            "action_type": "post",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "28"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "lead",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "6"
+          },
+          {
+            "action_type": "video_view",
+            "value": "4148"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "6"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "232.29"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598802362693",
+        "campaign_name": "CA 03 - Vendas - Ads validados (Teste Objetivo de campanha)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600508857293",
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "spend": "295.83",
+        "impressions": "18194",
+        "clicks": "272",
+        "inline_link_clicks": "193",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "15"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "193"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "15"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "13"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "15"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "34"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "6"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "166"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "14"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "166"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "10"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "3"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "4897"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "42"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "4897"
+          },
+          {
+            "action_type": "purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "15"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "45"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "5"
+          },
+          {
+            "action_type": "post",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "15"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "4"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "31"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "3"
+          },
+          {
+            "action_type": "lead",
+            "value": "14"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "9"
+          },
+          {
+            "action_type": "video_view",
+            "value": "4662"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "14"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "14"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "973.52"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "973.52"
+          },
+          {
+            "action_type": "purchase",
+            "value": "973.52"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "0.1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "291.29"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "973.52"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "973.52"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "973.52"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600695284893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Quiz)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      }
+    ]
+  }
+}

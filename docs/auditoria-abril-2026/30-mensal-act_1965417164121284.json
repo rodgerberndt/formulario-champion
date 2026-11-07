@@ -1,0 +1,467 @@
+{
+  "consultado_em": "2026-09-10T21:45:58.332Z",
+  "path": "act_1965417164121284/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-01-01\",\"until\":\"2026-09-09\"}",
+    "level": "account",
+    "time_increment": "monthly",
+    "fields": "spend,impressions,clicks,actions,action_values,date_start,date_stop,account_currency",
+    "limit": "100"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 2,
+    "data": [
+      {
+        "spend": "1871.58",
+        "impressions": "125177",
+        "clicks": "6175",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "89"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "6"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "6"
+          },
+          {
+            "action_type": "link_click",
+            "value": "5205"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "89"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "62"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "89"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "319"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "21"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "3504"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "88"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "3504"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_block",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "10"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "32"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "59060"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "504"
+          },
+          {
+            "action_type": "comment",
+            "value": "23"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "6"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "59060"
+          },
+          {
+            "action_type": "purchase",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "89"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "537"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "post",
+            "value": "95"
+          },
+          {
+            "action_type": "onsite_conversion.post_unsave",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "89"
+          },
+          {
+            "action_type": "view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "67"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "23"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "66"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "287"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "lead",
+            "value": "88"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "21"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "14"
+          },
+          {
+            "action_type": "video_view",
+            "value": "53351"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "88"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "88"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "21"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "66843.83"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "37.21"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "286.51"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "286.51"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "37.21"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "66843.83"
+          },
+          {
+            "action_type": "purchase",
+            "value": "66843.83"
+          },
+          {
+            "action_type": "view_content",
+            "value": "286.51"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "6.68"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "37.21"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "286.51"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "286.51"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "66843.83"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "37.21"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "66843.83"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "66843.83"
+          }
+        ],
+        "date_start": "2026-08-01",
+        "date_stop": "2026-08-31",
+        "account_currency": "USD"
+      },
+      {
+        "spend": "1020.2",
+        "impressions": "59906",
+        "clicks": "1304",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "52"
+          },
+          {
+            "action_type": "link_click",
+            "value": "896"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "52"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "35"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "52"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "138"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "10"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "772"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "50"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "772"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "15"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "11"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "18993"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "200"
+          },
+          {
+            "action_type": "comment",
+            "value": "7"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "18993"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "52"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "212"
+          },
+          {
+            "action_type": "post_uncomment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "10"
+          },
+          {
+            "action_type": "post",
+            "value": "30"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "52"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "25"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "25"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "127"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "5"
+          },
+          {
+            "action_type": "lead",
+            "value": "50"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "18"
+          },
+          {
+            "action_type": "video_view",
+            "value": "17897"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "50"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "50"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "523.59"
+          }
+        ],
+        "date_start": "2026-09-01",
+        "date_stop": "2026-09-09",
+        "account_currency": "USD"
+      }
+    ]
+  }
+}

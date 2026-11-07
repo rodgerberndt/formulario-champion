@@ -15,8 +15,12 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Montserrat', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        display: ['Oswald', 'sans-serif'],
+        // A família '… Fallback' vem logo depois da definitiva: é o Arial local
+        // com as métricas reescritas para ocupar o mesmo espaço, e é o que
+        // elimina o pulo quando o woff2 chega. Ver o @font-face no topo de
+        // src/index.css.
+        sans: ['Montserrat', 'Montserrat Fallback', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['Oswald', 'Oswald Fallback', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

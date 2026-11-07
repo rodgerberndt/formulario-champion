@@ -1,15 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <!-- O OneSignal saiu em 03/09/2026.
+         Ele registrava um SEGUNDO service worker no escopo "/", brigando com o
+         nosso (public/sw.js): o `navigator.serviceWorker.ready` podia resolver
+         para o worker dele, e a inscrição própria com a nossa chave VAPID
+         falhava calada. A tabela push_subscriptions estava com zero linhas.
+         Além disso ele só sabia mandar para o segmento "All" — todo mundo — e o
+         SLA precisa mandar para UMA pessoa. Push agora é Web Push próprio. -->
+
+    <!-- Instalável na tela de início. No iPhone o push só existe com o app
+         instalado; sem manifest não há instalação, e sem instalação não há
+         notificação nenhuma no celular do time. -->
+    <!-- O manifest só existe no painel (/admin). Na landing ele fazia o Chrome
+         do Android oferecer "instalar Champion — Painel" para LEAD, e o
+         start_url apontava para um slug antigo que caía no 404.
+         `beforeinstallprompt` é guardado cedo porque dispara antes de o chunk
+         do painel carregar; o botão "Instalar app" usa o evento guardado. -->
     <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "2ba7eef1-4bc9-47dd-83fc-745bb1548799",
-        });
-      });
+      (function () {
+        try {
+          var noPainel = window.location.pathname.indexOf('/admin') === 0;
+          if (noPainel) {
+            var l = document.createElement('link');
+            l.rel = 'manifest';
+            l.href = '/manifest.webmanifest';
+            document.head.appendChild(l);
+          }
+          window.addEventListener('beforeinstallprompt', function (e) {
+            e.preventDefault();
+            if (!noPainel) return;
+            window.__championInstallPrompt = e;
+            window.dispatchEvent(new Event('champion-install-disponivel'));
+          });
+        } catch (e) {}
+      })();
     </script>
+    <meta name="theme-color" content="#070a1a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Champion" />
+    <link rel="apple-touch-icon" href="/icons/icon-180.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://%VITE_SUPABASE_PROJECT_ID%.supabase.co" crossorigin />
@@ -19,7 +52,6 @@
           var LOCK_CLASS = '__locked__';
           var STYLE_ID = '__scroll_lock__';
           var SESSION_KEY = 'champion_scroll_bootstrap_v3';
-          var RELOAD_KEY = 'champion_post_load_reload_v1';
           var LOCK_TIMEOUT_MS = 550;
           var releaseTimer = null;
           var pinTimer = null;
@@ -118,17 +150,20 @@
             }, { once: true });
           }
 
+          // A RECARGA FORÇADA DA LANDING SAIU EM 17/09/2026.
+          //
+          // O que havia aqui: no `load` da raiz, um `window.location.reload()`
+          // uma vez por aba. O app inteiro era baixado, parseado e executado
+          // DUAS VEZES em toda primeira visita — medido em 17/09: +0,8 s de LCP
+          // no mobile e cerca de 2 s de CPU jogados fora, na página que recebe o
+          // tráfego pago. Ele existia para contornar um estado de rolagem do
+          // primeiro pintar; o trava-rolagem acima (applyLock/startPinning/
+          // release) já resolve isso sem recarregar nada.
+          //
+          // A gambiarra `__championSkipPv` saiu junto: ela existia SÓ por causa
+          // desta recarga, para o segundo load não contar um segundo PageView.
           window.addEventListener('load', function () {
             scheduleRelease(firstLoadInTab ? 120 : 80);
-            try {
-              var isLanding = window.location.pathname === '/' || window.location.pathname === '/index.html';
-              if (isLanding && sessionStorage.getItem(RELOAD_KEY) !== '1') {
-                sessionStorage.setItem(RELOAD_KEY, '1');
-                setTimeout(function () {
-                  window.location.reload();
-                }, 1);
-              }
-            } catch (e) {}
           }, { once: true });
 
           window.addEventListener('pageshow', function (event) {
@@ -136,6 +171,75 @@
             boot();
             scheduleRelease(120);
           });
+
+          // GUARDA CONTRA O SALTO TARDIO DO WEBKIT (25/09/2026).
+          //
+          // O bug: no iPhone, abrindo pelo navegador do Instagram, a página às
+          // vezes salta sozinha para o fim logo depois de aparecer. Filmado em
+          // 25/09: topo aos 3 s, rodapé aos 5 s, sem ninguém tocar na tela.
+          //
+          // Por que o trava-rolagem acima não pega: ele solta 120 ms depois do
+          // `load`, e o WebKit restaura a posição da visita anterior DEPOIS
+          // disso, quando o conteúdo abaixo da dobra (players, imagens) termina
+          // de medir e a página ganha os seus 17 mil pixels. Nesse instante já
+          // não há ninguém olhando. O `pageshow` também não resolve: ele só age
+          // quando a página volta do cache (`event.persisted`), e este caso é
+          // carga normal.
+          //
+          // Por isso o guarda aqui não trava nada: ele observa. Se a rolagem
+          // pular sozinha na primeira janela de tempo, devolve ao topo; e some
+          // no instante em que a pessoa encosta na tela, porque a partir daí
+          // qualquer rolagem é dela e não pode ser desfeita.
+          //
+          // Só vale para quem chega no topo: se a página abriu já rolada (link
+          // com âncora), não é este bug e o guarda nem começa.
+          (function () {
+            // A contagem começa no `load`, e não no parse do HTML: o salto
+            // acontece DEPOIS que o conteúdo abaixo da dobra termina de medir,
+            // que é justamente o que o `load` marca. Contando do parse, a
+            // janela fecharia antes da hora em que o problema aparece.
+            // 5 s depois do `load`. A janela é generosa de propósito: o salto
+            // aparece quando o conteúdo abaixo da dobra termina de medir, e
+            // isso depende da rede do celular. Ser generoso aqui não custa
+            // nada, porque o guarda se desliga no primeiro toque e, no celular,
+            // rolagem sem toque é sempre do navegador, nunca da pessoa.
+            var JANELA_MS = 5000;
+            var TOLERANCIA = 120;
+            var inicio = Date.now();
+            var vigiando = true;
+
+            var desligar = function () {
+              if (!vigiando) return;
+              vigiando = false;
+              window.removeEventListener('scroll', aoRolar);
+            };
+
+            var aoRolar = function () {
+              if (!vigiando) return;
+              if (Date.now() - inicio > JANELA_MS) { desligar(); return; }
+              var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+              if (y > TOLERANCIA) {
+                // Sem `behavior`, para ser instantâneo: uma animação aqui
+                // brigaria com a rolagem que o navegador acabou de aplicar.
+                window.scrollTo(0, 0);
+                if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+              }
+            };
+
+            ['touchstart', 'wheel', 'keydown', 'pointerdown'].forEach(function (evt) {
+              window.addEventListener(evt, desligar, { once: true, passive: true });
+            });
+            window.addEventListener('scroll', aoRolar, { passive: true });
+
+            // Reinicia a contagem no `load`: até aqui a página ainda estava
+            // medindo, e é depois disso que o salto aparece.
+            var fechar = setTimeout(desligar, JANELA_MS);
+            window.addEventListener('load', function () {
+              inicio = Date.now();
+              clearTimeout(fechar);
+              fechar = setTimeout(desligar, JANELA_MS);
+            }, { once: true });
+          })();
         } catch (e) {}
       })();
     </script>
@@ -144,9 +248,18 @@
     <script>
       !function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);
     </script>
-    <link rel="preload" href="https://scripts.converteai.net/3b4a85ca-8939-45e7-ae40-d0be1d6af49b/players/69f7bc652c68b8e06e0b5d3d/v4/player.js" as="script">
-    <link rel="preload" href="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js" as="script">
-    <link rel="preload" href="https://cdn.converteai.net/3b4a85ca-8939-45e7-ae40-d0be1d6af49b/69f7bc5eaa91dbb84131f336/main.m3u8" as="fetch" crossorigin>
+    <!-- OS TRÊS PRELOADS DA CONVERTEAI SAÍRAM EM 17/09/2026.
+         Eles vinham da época em que o topo da página tinha um VSL. Hoje o topo é
+         headline + formulário (src/components/landing/Hero.tsx) e nenhum player
+         é montado acima da dobra; os players que existem são os do carrossel de
+         criativos (src/components/landing/VturbCreatives.tsx), lá embaixo, e
+         cada um carrega o próprio script quando entra na tela.
+         Além de não servirem ao primeiro pintar, dois deles apontavam para o
+         lugar errado: o `main.m3u8` era do id 69f7bc5eaa91dbb84131f336, que não
+         está em VIDEOS[] em VturbCreatives.tsx — resto de um vídeo que saiu da
+         página. Preload em <head> é prioridade alta e disputa banda com o LCP;
+         os preconnect/dns-prefetch abaixo ficam, porque custam handshake e não
+         download. -->
     <link rel="dns-prefetch" href="https://cdn.converteai.net">
     <link rel="dns-prefetch" href="https://scripts.converteai.net">
     <link rel="dns-prefetch" href="https://images.converteai.net">
@@ -157,15 +270,44 @@
     <link rel="preconnect" href="https://api.vturb.com.br" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@400;600;700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
-    <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/oswald/v57/TK3IWkUHHAIjg75cFRf3bXL8LICs1_Fv40pKlN4NNSeSASz7FmlWHYjMdZwl.woff2" crossorigin />
+    <!-- PRELOAD DE FONTE REMOVIDO EM 18/09/2026 — e por que ele não volta.
+         Havia dois `<link rel=preload as=font>` apontando para os arquivos
+         latin de Montserrat e Oswald. Eles estavam certos para o Chrome do
+         desktop e ERRADOS para o iOS, que é de onde vem quase todo o tráfego
+         pago (o navegador embutido do Instagram no iPhone). A URL do .woff2
+         que o Google entrega DEPENDE DO USER AGENT. Medido hoje, no mesmo
+         css2?family=Oswald…&family=Montserrat…:
+
+           Chrome/desktop  montserrat/v31/JTUSjIg1_i6t8kCHKm459Wlhyw.woff2
+                           oswald/v57/…FmlWHYg.woff2
+           Safari/iOS      montserrat/v31/JTUSjIg1_i6t8kCHKm459WlhyyTh89Y.woff2
+                           oswald/v57/…FmlWHYjMdZwl.woff2
+
+         (E de quebra: o arquivo terminado em `HYjMdZwl.woff2`, que o comentário
+         anterior chamava de "latin-ext que não aparece mais no CSS", é o LATIN
+         do Safari. Ele aparece, só não para o Chrome.)
+
+         No iPhone, portanto, o preload baixava ~40 KB que nenhuma regra de CSS
+         chegava a usar, no exato momento em que a rede é mais disputada, e a
+         fonte de verdade só começava a baixar depois do CSS. É a definição de
+         "preloaded but not used".
+
+         Preload de fonte servida por terceiro com URL dependente de UA não tem
+         conserto pela URL. As duas saídas reais são: (a) hospedar os .woff2 no
+         nosso /public com @font-face próprio e preload do NOSSO arquivo, que aí
+         é um só para todo mundo; (b) não pré-carregar e deixar o preconnect de
+         fonts.gstatic.com (linha 47) resolver o handshake, que é o que fica
+         valendo agora. Ao escolher (a) no futuro, medir CLS antes e depois. -->
+
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@400;600;700&display=swap" /></noscript>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Champion Criativos | Diagnóstico Gratuito</title>
     
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src="https://api.championadstudio.com/1eqrcpumrx.js?"+i;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','6eippod=ERZQMiQuXyFKOj5HPSAoVw5PX1tBRRYfRREFFB0TGx4WEwkGBBYWGBdcDhod');</script>
-    <!-- End Google Tag Manager -->
+    <!-- O loader do GTM (api.championadstudio.com/1eqrcpumrx.js, um Custom
+         Loader da Stape de uma implementação antiga) saiu em 06/09/2026: o
+         subdomínio não resolve mais no DNS e toda visita tentava carregar um
+         script que não existe. O tracking é o pixel abaixo + CAPI no Supabase. -->
 
     <!-- Facebook Pixel Code -->
     <script>
@@ -177,16 +319,79 @@
       t.src=v;s=b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '2171667863227042');
-      // Landing (`/`) força um reload completo logo após o primeiro load (ver script de
-      // scroll-lock acima), o que reexecuta este script e disparava PageView 2x por
-      // visita nova. RELOAD_KEY já vem setado '1' nesse segundo load — dispara só uma vez.
+      // Advanced matching manual: quem preencheu o quiz chega na página de
+      // obrigado com e-mail, telefone e nome guardados (champion_am, ver
+      // src/lib/metaTracking.ts) e o pixel já nasce sabendo quem é a pessoa.
+      // Sem isso o Lead do navegador só tinha fbp e IP para casar.
+      var championAm = {};
       try {
-        if (sessionStorage.getItem('champion_post_load_reload_v1') !== '1') {
-          fbq('track', 'PageView');
-        }
-      } catch (e) {
-        fbq('track', 'PageView');
+        var amRaw = localStorage.getItem('champion_am');
+        if (amRaw) championAm = JSON.parse(amRaw) || {};
+        var sidAm = localStorage.getItem('champion_session_id');
+        if (sidAm && !championAm.external_id) championAm.external_id = sidAm;
+      } catch (e) {}
+      fbq('init', '2171667863227042', championAm);
+      // SÓ NA PÁGINA QUE O ANÚNCIO APONTA (19/09/2026).
+      //
+      // "Landing page view" é a contagem de quem CHEGOU depois de clicar, e o
+      // Meta divide isso pelos cliques para dar o connect rate. Se o PageView
+      // dispara também no /quiz, no /obrigado e no /agendar, um clique só vira
+      // duas ou três visualizações e o connect rate passa de 100% — foi o que
+      // acontecia (medido em 19/09: 122% no acumulado).
+      //
+      // A conta continua íntegra porque os eventos de CONVERSÃO são outros e
+      // têm id próprio: CompleteRegistration, Lead, MQL e Sprint são disparados
+      // em `conversaoPixel.ts` e nas páginas de obrigado, sem depender de
+      // PageView nenhum. Tirar o PageView de lá não esconde conversão, só para
+      // de inflar o denominador.
+      //
+      // Efeito colateral bem-vindo: o /admin também parava de disparar. O time
+      // abrindo o painel somava visualização de página na conta de anúncio.
+      window.__championEhLanding = (function () {
+        var c = (window.location.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
+        // A landing é a raiz e as variantes do teste (/HD0../HD4, /SH0../SH6),
+        // em qualquer caixa. Todo o resto é tela de dentro do funil.
+        return c === '/' || /^\/(hd|sh)\d+$/.test(c);
+      })();
+
+      // PageView com event_id: o beacon no fim do body manda o mesmo id ao
+      // servidor, que dispara o PageView irmão pela CAPI (redundância
+      // desduplicada, como o GTM Server do método Allan Tracker). Sem id, o
+      // `landing-hit` grava a visita e NÃO chama a CAPI — é assim que o irmão
+      // do servidor respeita a mesma regra sem precisar repeti-la lá.
+      window.__championPvEventId = window.__championEhLanding
+        ? 'pv_' + (window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : (Date.now() + '_' + Math.random().toString(36).slice(2)))
+        : null;
+
+      // SÓ EM PRODUÇÃO (17/09/2026).
+      //
+      // O pixel é o mesmo em localhost, na prévia do Cloudflare e no domínio
+      // real, e o `fbq` não aceita `test_event_code` — não existe PageView de
+      // navegador que o Meta trate como teste. Então, fora do domínio de
+      // produção, não se dispara: nem o do navegador, nem o irmão do servidor
+      // (o beacon manda `pv_event_id: null` e o `landing-hit` não chama a CAPI
+      // sem ele). Mesma regra de src/lib/ambienteMeta.ts, repetida aqui porque
+      // este script roda antes de qualquer módulo.
+      //
+      // A gambiarra `__championSkipPv` SAIU: ela existia só para o segundo load
+      // da recarga forçada não contar um PageView a mais, e a recarga acabou.
+      // Agora o PageView sai uma vez por carga de página, como deve.
+      window.__championEhProducao = (function () {
+        var h = (window.location.hostname || '').toLowerCase();
+        // DOMÍNIO NOVO ADICIONADO EM 25/09/2026. O championadstudio.com expirou
+        // e o tráfego passou para assessoriachampion.com; com a lista antiga o
+        // PageView do pixel não disparava no domínio novo e a Meta ficou cega
+        // (9 cliques, zero "visualizações da página de destino"). O antigo
+        // fica na lista para o caso de ser renovado.
+        return h === 'www.championadstudio.com' || h === 'championadstudio.com' ||
+               h === 'www.assessoriachampion.com' || h === 'assessoriachampion.com';
+      })();
+      if (window.__championEhProducao && window.__championEhLanding) {
+        fbq('track', 'PageView', {}, { eventID: window.__championPvEventId });
+      } else if (!window.__championEhProducao) {
+        console.log('[meta] PageView NÃO disparado: host "' + window.location.hostname + '" não é produção.');
+      } else {
+        console.log('[meta] PageView NÃO disparado: "' + window.location.pathname + '" não é a landing do anúncio.');
       }
     </script>
     <!-- End Facebook Pixel Code -->
@@ -215,36 +420,109 @@
     <div id="root"></div>
     <!-- Early landing_hit (sendBeacon) — dispara ANTES do React/JS app, para capturar 100% das visitas -->
     <script>
+      // ── SESSION_ID: nasce aqui, no primeiro byte, e em TRÊS camadas ────────
+      //
+      // Roda FORA do bloco do landing_hit de propósito. Antes ele vivia depois
+      // do `return` de "esta aba já mandou o hit", então numa recarga completa
+      // na mesma aba o id não era nem lido nem gravado.
+      //
+      // As três camadas existem porque o Web Storage some no navegador embutido
+      // do Instagram no iOS. Em 11/09/2026, 2 dos 11 leads nascidos após a
+      // coluna passar a ser gravada chegaram sem sessão, os dois nesse
+      // ambiente, com a sessão INTEIRA gravada em `lead_sessions` e o evento
+      // `submit` saindo com o id certo um segundo depois. Os cookies do Meta
+      // sobreviveram nos dois casos; o localStorage, não.
+      //
+      // O cookie guarda O MESMO id — não é heurística. Nada de IP, nada de
+      // user agent, nada inferido.
+      (function(){
+        var EH_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        var lerCookie = function(n){
+          try { var m = document.cookie.match(new RegExp('(?:^|; )' + n + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : null; }
+          catch(e){ return null; }
+        };
+        var sid = null;
+        try { sid = localStorage.getItem('champion_session_id'); } catch(e){}
+        if (!sid || !EH_UUID.test(sid)) {
+          var doCookie = lerCookie('champion_index');
+          if (doCookie && EH_UUID.test(doCookie)) sid = doCookie;
+        }
+        if (!sid || !EH_UUID.test(sid)) {
+          if (window.crypto && window.crypto.randomUUID) {
+            sid = window.crypto.randomUUID();
+          } else {
+            sid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
+              var r = Math.random()*16|0, v = c=='x' ? r : (r&0x3|0x8); return v.toString(16);
+            });
+          }
+        }
+        try { localStorage.setItem('champion_session_id', sid); } catch(e){}
+        try {
+          if (lerCookie('champion_index') !== sid) {
+            var h = window.location.hostname;
+            // Sem atributo de domínio quando o host não tem ponto (localhost):
+            // navegador descarta `Domain=localhost`.
+            var dom = /championadstudio\.com$/.test(h) ? '; domain=.championadstudio.com'
+                    : /assessoriachampion\.com$/.test(h) ? '; domain=.assessoriachampion.com'
+                    : (h.indexOf('.') === -1 ? '' : '; domain=' + h);
+            document.cookie = 'champion_index=' + encodeURIComponent(sid) + '; max-age=31536000; path=/' + dom + '; SameSite=Lax; Secure';
+          }
+        } catch(e){}
+        window.__championSid = sid;
+      })();
       (function(){
         try {
           if (sessionStorage.getItem('champion_landing_hit_fired') === '1') return;
           var url = 'https://%VITE_SUPABASE_PROJECT_ID%.supabase.co/functions/v1/landing-hit';
           var sp = new URLSearchParams(window.location.search);
           var get = function(k){ var v = sp.get(k); return (v && v.indexOf('{{') === -1) ? v : null; };
-          // Gera/recupera session_id (UUID v4) ANTES do React, para garantir unique_sessions correto
-          var sid = null;
-          try {
-            sid = localStorage.getItem('champion_session_id');
-            if (!sid || !/^[0-9a-f-]{36}$/i.test(sid)) {
-              if (window.crypto && window.crypto.randomUUID) {
-                sid = window.crypto.randomUUID();
-              } else {
-                sid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
-                  var r = Math.random()*16|0, v = c=='x' ? r : (r&0x3|0x8); return v.toString(16);
-                });
-              }
-              localStorage.setItem('champion_session_id', sid);
-            }
-          } catch(e){}
+          var sid = window.__championSid || null;
           var cid = null;
           try {
             var raw = sessionStorage.getItem('champion_click_id');
             if (raw) { var p = JSON.parse(raw); cid = p && p.id ? p.id : null; }
           } catch(e){}
+          var getCookie = function(n){ try { var m = document.cookie.match(new RegExp('(?:^|; )' + n + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : null; } catch(e){ return null; } };
+          // O `_fbp`, criado por nós quando o pixel ainda não criou (24/09/2026).
+          //
+          // Este bloco roda antes do `fbevents.js` terminar de carregar, então na
+          // PRIMEIRA visita de cada pessoa o cookie ainda não existe e o PageView
+          // saía sem esse parâmetro. Medido no `capi_events_log`: `_fbp` em 18%
+          // dos PageView e em 79% dos eventos de lead.
+          //
+          // Esperar pelo pixel atrasaria justamente o evento que precisa sair
+          // cedo. Então invertemos a ordem: escrevemos primeiro, e o pixel adota
+          // o valor que encontra em vez de criar outro. Formato obrigatório do
+          // Meta, `fb.1.<epoch ms>.<inteiro>`; fora dele o valor é descartado.
+          var garantirFbp = function(){
+            try {
+              var atual = getCookie('_fbp');
+              if (atual && /^fb\.1\.\d+\.\d+$/.test(atual)) return atual;
+              var h = window.location.hostname;
+              var dom = /championadstudio\.com$/.test(h) ? '; domain=.championadstudio.com'
+                    : /assessoriachampion\.com$/.test(h) ? '; domain=.assessoriachampion.com'
+                    : (h.indexOf('.') === -1 ? '' : '; domain=' + h);
+              var novo = 'fb.1.' + Date.now() + '.' + Math.floor(Math.random() * 1e10);
+              document.cookie = '_fbp=' + novo + '; max-age=7776000; path=/' + dom + '; SameSite=Lax; Secure';
+              // Devolve só o que o navegador aceitou: com cookie bloqueado a
+              // escrita falha calada, e mandar um id que o pixel nunca verá
+              // separaria o evento do navegador do evento do servidor, que é
+              // pior do que mandar sem.
+              return getCookie('_fbp');
+            } catch(e){ return null; }
+          };
           var payload = {
             session_id: sid,
             click_id: cid,
             path: window.location.pathname + window.location.search,
+            page_url: window.location.href.split('#')[0],
+            // Cookies do Meta. O `_fbc` continua vindo do pixel ou do fbclid;
+            // o `_fbp` a gente garante acima.
+            fbp: garantirFbp(),
+            fbc: getCookie('_fbc'),
+            // Só em produção: sem id, o `landing-hit` grava a visita mas NÃO
+            // manda o PageView irmão pela CAPI. Teste não polui a conta.
+            pv_event_id: (window.__championEhProducao && window.__championPvEventId) || null,
             referrer: document.referrer || null,
             utm_source: get('utm_source'),
             utm_medium: get('utm_medium'),

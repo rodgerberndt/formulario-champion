@@ -3,10 +3,18 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useReveal } from "@/hooks/useReveal";
 import { KeywordGlow } from "./TextEffects";
+import { useCopyNicho } from "@/config/nichoLanding";
 
 type Niche = "Info" | "Lowticket" | "Nutra" | "Hot";
+// Do mais novo para o mais antigo (invertido em 19/09/2026 a pedido do
+// Rodger). A lista continua escrita na ordem em que os criativos foram
+// produzidos — inverter na exibição, e não reescrever a lista, é o que mantém
+// óbvio qual é o mais recente quando chegar o próximo.
 const VIDEOS: { id: string; niche: Niche }[] = [
-  { id: "69f7bc652c68b8e06e0b5d3d", niche: "Info" },
+  // "69f7bc652c68b8e06e0b5d3d" (Info) saiu em 29/09/2026: o vídeo desse player
+  // é horizontal e aparecia com faixa preta em cima e embaixo dentro do card
+  // 9:16, com a marca d'água da Champion por cima. Volta quando existir a
+  // versão vertical no Vturb.
   { id: "69f7bc5c2cdb6c72eb25d070", niche: "Lowticket" },
   { id: "69f7bc54ac9b67e415cfb9c4", niche: "Info" },
   { id: "69f7bc48429b5d0eef53891b", niche: "Lowticket" },
@@ -16,7 +24,7 @@ const VIDEOS: { id: string; niche: Niche }[] = [
   { id: "6a1736114e90c02561faa1fd", niche: "Lowticket" },
   { id: "6a1735e8be176651058cdfed", niche: "Nutra" },
   { id: "6a1735b292e602d534b94243", niche: "Info" },
-];
+].reverse();
 
 const NICHE_STYLES: Record<Niche, string> = {
   Info: "bg-secondary/15 text-secondary border-secondary/40",
@@ -27,10 +35,38 @@ const NICHE_STYLES: Record<Niche, string> = {
 
 const ACCOUNT_ID = "3b4a85ca-8939-45e7-ae40-d0be1d6af49b";
 
-function VturbPlayer({ id, index, niche }: { id: string; index: number; niche: Niche }) {
+function VturbPlayer({ id, index, niche, mostrarBadge }: { id: string; index: number; niche: Niche; mostrarBadge: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(index < 2); // first row eager
   const [scriptLoaded, setScriptLoaded] = useState(false);
+  /**
+   * O player já tem altura própria?
+   *
+   * Não basta o script ter carregado: entre o `onload` e o elemento
+   * customizado de fato pintar existe um intervalo. Soltar os 9/16 nesse
+   * intervalo faz o cartão colapsar para zero e a fila inteira pular. Então
+   * quem manda é a altura medida, não o evento do script.
+   *
+   * Para a altura medida querer dizer alguma coisa, o player precisa estar em
+   * FLUXO (ver o `class` dele lá embaixo). Enquanto ele ficava
+   * `absolute inset-0 h-full` dentro do wrapper de 9/16, media a altura do
+   * wrapper e não a dele: passava dos 40 px vazio, o 9/16 era solto antes do
+   * vídeo existir e o cartão desabava para uma linha. Como o observer se
+   * desconecta na primeira medição boa, ele não voltava mais (21/09/2026).
+   */
+  const [temAlturaPropria, setTemAlturaPropria] = useState(false);
+
+  useEffect(() => {
+    const alvo = playerRef.current;
+    if (!inView || !alvo || temAlturaPropria) return;
+    const obs = new ResizeObserver(() => {
+      const el = alvo.querySelector("vturb-smartplayer") as HTMLElement | null;
+      if (el && el.offsetHeight > 40) { setTemAlturaPropria(true); obs.disconnect(); }
+    });
+    obs.observe(alvo);
+    return () => obs.disconnect();
+  }, [inView, temAlturaPropria]);
 
   useEffect(() => {
     if (inView) return;
@@ -68,21 +104,40 @@ function VturbPlayer({ id, index, niche }: { id: string; index: number; niche: N
       className="group relative rounded-2xl overflow-hidden border border-secondary/15 bg-gradient-to-b from-card/60 to-background/40 backdrop-blur-sm shadow-lg shadow-black/30 hover:border-secondary/40 hover:shadow-secondary/10 transition-all duration-300"
     >
       <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-tr from-secondary/5 via-transparent to-primary/10" />
-      <div className="absolute top-3 left-3 z-10">
-        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] md:text-xs font-semibold uppercase tracking-wider border backdrop-blur-md ${NICHE_STYLES[niche]}`}>
-          {niche}
-        </span>
-      </div>
+      {/* O badge de nicho (Info, Lowticket, Nutra, Hot) é rótulo interno de
+          mercado. Numa página nichada ele entrega, logo no primeiro card, que
+          a peça não foi feita para quem está lendo. */}
+      {mostrarBadge && (
+        <div className="absolute top-3 left-3 z-10">
+          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] md:text-xs font-semibold uppercase tracking-wider border backdrop-blur-md ${NICHE_STYLES[niche]}`}>
+            {niche}
+          </span>
+        </div>
+      )}
       <div className="relative p-2 sm:p-3">
+        {/* A ALTURA É DO PLAYER, NÃO NOSSA (19/09/2026).
+            
+            Antes esta caixa forçava 9/16 em todo criativo. A maioria é vertical
+            e coube, mas os que não são (quadrado, 4:5) apareciam pequenos no
+            meio de uma moldura alta demais, com um vazio embaixo — o "bugado"
+            que o Rodger viu no celular.
+            
+            O player do Vturb já se dimensiona sozinho: ele aplica
+            `padding: <playerInit.aspectRatio>%` no próprio wrapper. Bastava
+            parar de mandar por cima.
+            
+            Os 9/16 continuam valendo ENQUANTO o player não carregou, para o
+            espaço estar reservado e a página não pular quando o vídeo entra. */}
         <div
+          ref={playerRef}
           className="relative w-full overflow-hidden rounded-xl bg-black/40"
-          style={{ aspectRatio: "9 / 16" }}
+          style={temAlturaPropria ? undefined : { aspectRatio: "9 / 16" }}
         >
           {inView && (
             // @ts-expect-error custom element
             <vturb-smartplayer
               id={`vid-${id}`}
-              class="absolute inset-0 w-full h-full"
+              class="block w-full"
               style={{ display: "block" }}
             />
           )}
@@ -99,6 +154,7 @@ function VturbPlayer({ id, index, niche }: { id: string; index: number; niche: N
 
 export function VturbCreatives() {
   const { ref, isVisible } = useReveal(0.05);
+  const { criativos } = useCopyNicho();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(true);
@@ -149,10 +205,10 @@ export function VturbCreatives() {
       <div className="container mx-auto px-5 max-w-6xl relative z-10">
         <div className={`text-center mb-10 md:mb-14 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-3 leading-tight">
-            <KeywordGlow>PORTFÓLIO</KeywordGlow>
+            <KeywordGlow>{criativos.titulo}</KeywordGlow>
           </h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
-            Alguns exemplos reais de criativos em vídeo desenvolvidos pela Champion para campanhas de performance.
+            {criativos.sub}
           </p>
         </div>
 
@@ -180,7 +236,10 @@ export function VturbCreatives() {
 
           <div
             ref={scrollRef}
-            className="flex gap-5 md:gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
+            // `items-start`: sem isto o flex estica todo cartão até a altura do mais
+            // alto, e o vídeo mais baixo ganharia de volta o vazio que acabou de
+            // sair da moldura.
+            className="flex items-start gap-5 md:gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
             style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}
           >
             {VIDEOS.map((v, i) => (
@@ -188,7 +247,7 @@ export function VturbCreatives() {
                 key={v.id}
                 className="flex-shrink-0 snap-center w-[78vw] sm:w-[46vw] md:w-[320px] lg:w-[340px]"
               >
-                <VturbPlayer id={v.id} index={i} niche={v.niche} />
+                <VturbPlayer id={v.id} index={i} niche={v.niche} mostrarBadge={criativos.mostrarBadgeNicho} />
               </div>
             ))}
           </div>

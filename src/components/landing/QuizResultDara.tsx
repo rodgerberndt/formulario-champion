@@ -3,7 +3,7 @@ import { Check, MessageCircle, AlertTriangle, ArrowRight, Clock, Shield } from "
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
-const DARA_WA_LINK = "https://wa.me/5548996560104?text=Oiee%2C%20furei%20a%20fila%20pra%20falar%20com%20voc%C3%AA%2C%20como%20funciona%3F";
+const DARA_WA_LINK = "https://wa.me/5548996560104?text=Oiee%2C%20acabei%20de%20concluir%20meu%20cadastro.%20%E2%9C%85";
 
 function markSkippedQueue() {
   try {

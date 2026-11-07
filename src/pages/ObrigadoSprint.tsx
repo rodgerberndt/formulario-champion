@@ -6,9 +6,10 @@ import { Progress } from "@/components/ui/progress";
 import { SuccessCasesCompact } from "@/components/landing/SuccessCasesCompact";
 import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
 import { supabase } from "@/integrations/supabase/client";
+import { pixelPermitido, avisarPixelBloqueado } from "@/lib/ambienteMeta";
 
 // Miguel assumiu o atendimento do Sprint em 14/08/2026 (Gustavo saiu).
-const SDR_WHATSAPP_NUMBER = "5511934025412";
+const SDR_WHATSAPP_NUMBER = "5548996631376";
 const SUPPORT_WHATSAPP_NUMBER = "5548996560104";
 
 declare global {
@@ -134,13 +135,9 @@ export default function ObrigadoSprint() {
   const conversionEventFired = useRef(false);
   const [progress, setProgress] = useState(0);
 
-  // Fire PageView so Meta sees conversions from this URL
-  useEffect(() => {
-    if (typeof window.fbq === 'function') {
-      window.fbq('track', 'PageView');
-      console.log('Facebook Pixel: PageView fired on /obrigadosprint');
-    }
-  }, []);
+  // PageView: a página é aberta com navegação completa a partir do quiz (ver
+  // Quiz.tsx), então o index.html já disparou o PageView desta URL com
+  // event_id. Disparar de novo aqui contava duas visitas.
 
   useEffect(() => {
     const t = setTimeout(() => setProgress(33), 400);
@@ -149,11 +146,20 @@ export default function ObrigadoSprint() {
 
   useEffect(() => {
     if (formData && !conversionEventFired.current) {
+      // Fora do domínio de produção o pixel não dispara: o `fbq` não aceita
+      // test_event_code, e o evento entraria como conversão REAL na conta.
+      // Ver src/lib/ambienteMeta.ts.
+      if (!pixelPermitido()) {
+        avisarPixelBloqueado('/obrigadosprint');
+        conversionEventFired.current = true;
+        return;
+      }
       if (typeof window.fbq === 'function') {
         // Read shared event_ids for CAPI deduplication
         let crEventID: string | undefined;
         let leadEventID: string | undefined;
         let mqlEventID: string | undefined;
+        let sprintEventID: string | undefined;
         try {
           const stored = localStorage.getItem('champion_event_ids');
           if (stored) {
@@ -161,6 +167,7 @@ export default function ObrigadoSprint() {
             crEventID = parsed.event_ids?.CompleteRegistration;
             leadEventID = parsed.event_ids?.Lead;
             mqlEventID = parsed.event_ids?.MQL;
+            sprintEventID = parsed.event_ids?.Sprint;
           }
         } catch { /* ignore */ }
 
@@ -176,11 +183,12 @@ export default function ObrigadoSprint() {
         }, { eventID: leadEventID });
         console.log('Facebook Pixel: Lead fired with eventID:', leadEventID);
 
-        // Slug-specific custom event: Sprint
+        // Slug-specific custom event: Sprint (com o mesmo id do servidor,
+        // fire-capi-events manda o irmão pela CAPI)
         window.fbq('trackCustom', 'Sprint', {
           content_name: 'Sprint Application',
           investimento_faixa: formData.investimento_faixa || 'unknown',
-        });
+        }, { eventID: sprintEventID });
         console.log('Facebook Pixel: Sprint (custom) fired on /obrigadosprint');
 
         // Only fire MQL for leads with faturamento >= R$ 10k
@@ -221,7 +229,6 @@ export default function ObrigadoSprint() {
   const firstName = formData.nome_completo.split(" ")[0];
   const dorTexto = dorTextoFor(formData.dor_desejo);
   const waLink = `https://wa.me/${SDR_WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi Miguel! Acabei de concluir minha aplicação pro Sprint. ✅")}`;
-  const skipLink = `https://wa.me/${SDR_WHATSAPP_NUMBER}?text=${encodeURIComponent("Fala Miguel! Furei a fila, quero entender como funciona o Sprint.")}`;
 
   const steps = [
     {
@@ -384,47 +391,6 @@ export default function ObrigadoSprint() {
             </p>
           </div>
 
-          {/* Pular a fila */}
-          <div className="bg-card/70 backdrop-blur-xl border border-border/50 rounded-2xl p-5 md:p-6 space-y-4">
-            <h2 className="text-lg md:text-xl font-bold text-foreground leading-tight">
-              Pule a fila, caso queira adiantar
-            </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Se você quer mesmo entender como o Sprint pode rodar na sua operação, pode pular a fila e chamar o Miguel agora no WhatsApp em vez de esperar o contato dele.
-            </p>
-            <Button variant="championOutline" size="lg" className="w-full text-base" asChild>
-              <a
-                href={skipLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => {
-                  try {
-                    const leadId = localStorage.getItem('champion_lead_id');
-                    if (leadId) {
-                      const now = new Date().toISOString();
-                      supabase
-                        .from('leads')
-                        .update({
-                          skipped_queue: true,
-                          skipped_queue_at: now,
-                          clicked_whatsapp: true,
-                          clicked_whatsapp_at: now,
-                        })
-                        .eq('id', leadId)
-                        .then(({ error }) => {
-                          if (error) console.warn('[skip-queue] update failed:', error);
-                        });
-                    }
-                  } catch (e) {
-                    console.warn('[skip-queue] error:', e);
-                  }
-                }}
-              >
-                <MessageCircle className="w-5 h-5" />
-                Pular a fila agora
-              </a>
-            </Button>
-          </div>
         </div>
       </main>
     </div>

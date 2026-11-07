@@ -1,0 +1,71 @@
+{
+  "consultado_em": "2026-09-11T00:03:14.301Z",
+  "path": "act_1733204057869041/campaigns",
+  "params": {
+    "fields": "id,name,objective,status,effective_status,bid_strategy,daily_budget,lifetime_budget,created_time,start_time,stop_time,updated_time,buying_type,spend_cap",
+    "limit": "300"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 5,
+    "data": [
+      {
+        "id": "120253841407370054",
+        "name": "Teste — ABO - OBJ MQL",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "created_time": "2026-07-13T11:18:19-0300",
+        "start_time": "2026-07-13T11:18:21-0300",
+        "updated_time": "2026-08-07T10:13:30-0300",
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120253695740100054",
+        "name": "ABO - OBJ MQL",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "created_time": "2026-07-08T19:26:01-0300",
+        "start_time": "2026-07-08T19:26:02-0300",
+        "updated_time": "2026-08-15T09:09:16-0300",
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120253582381090054",
+        "name": "LP4 - ABO - (04/07)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "created_time": "2026-07-04T22:00:11-0300",
+        "start_time": "2026-07-05T00:00:00-0300",
+        "updated_time": "2026-07-08T13:41:57-0300",
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120253392582600054",
+        "name": "LP3 - ABO - (29/06)",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "created_time": "2026-06-29T22:09:22-0300",
+        "start_time": "2026-06-29T22:09:23-0300",
+        "updated_time": "2026-07-03T08:17:29-0300",
+        "buying_type": "AUCTION"
+      },
+      {
+        "id": "120252321639770054",
+        "name": "ABO - OBJ MQL - Champion Front",
+        "objective": "OUTCOME_SALES",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "created_time": "2026-06-16T23:02:55-0300",
+        "start_time": "2026-06-16T23:53:00-0300",
+        "updated_time": "2026-07-01T12:37:54-0300",
+        "buying_type": "AUCTION"
+      }
+    ]
+  }
+}

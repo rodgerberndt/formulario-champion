@@ -426,7 +426,14 @@ function buildNoteText(
 ━━━━━━━━━━━━━━━━━
 🎯 quiz_mercado: ${d.mercado || "N/A"}
 📈 quiz_estagio: ${d.estagio_negocio || "N/A"}
-💸 Faturamento Mensal: ${d.investimento_faixa || "N/A"}
+💸 Faturamento Mensal: ${
+    d.faturamento_declarado != null
+      // O número exato que o lead digitou. A faixa continua ao lado porque é
+      // ela que define MQL, mas quem vai ligar precisa do valor: "de 10 a 20
+      // mil" e "R$ 10.500" pedem conversas diferentes.
+      ? `R$ ${Number(d.faturamento_declarado).toLocaleString("pt-BR", { maximumFractionDigits: 0 })} (${d.investimento_faixa || "faixa N/A"})`
+      : (d.investimento_faixa || "N/A")
+  }
 🎯 quiz_objetivo: ${d.objetivo || "N/A"}
 ━━━━━━━━━━━━━━━━━
 📝 quiz_dor_desejo:
@@ -735,146 +742,23 @@ Deno.serve(async (req) => {
       );
     }
 
-    // ── STEP 4: Fire Meta CAPI events (CompleteRegistration + tier + MQL) ──
+    // ── STEP 4: eventos de nascimento do lead no Meta ──
+    // Antes este webhook tinha a própria cópia da lógica (e da lista de faixas
+    // de MQL) e mandava eventos sem event_id, duplicando o que o front e o
+    // gatilho de banco já mandavam. Agora existe um lugar só: fire-capi-events,
+    // que gera ids determinísticos e desduplica por capi_events_sent.
     if (leadDbId) {
       try {
-        console.log(
-          `[kommo-webhook] STEP 4: Starting CAPI events for lead ${leadDbId}`,
-        );
-        const leadRow = await waitForLeadRow(supabase, leadDbId);
-
-        console.log(
-          `[kommo-webhook] CAPI lead data: tier=${leadRow?.tier}, investimento=${leadRow?.investimento_faixa}, capi_sent=${JSON.stringify(leadRow?.capi_events_sent)}`,
-        );
-
-        const capiSent = leadRow?.capi_events_sent || {};
-        const tier = leadRow?.tier || "Desqualificado";
-        const capiUrl = `${SUPABASE_URL}/functions/v1/meta-capi`;
-        const webhookSecret = INTERNAL_WEBHOOK_SECRET || "";
-        const serviceKey = SUPABASE_SERVICE_ROLE_KEY;
-        const eventsToSend: string[] = [];
-
-        console.log(
-          `[kommo-webhook] CAPI URL: ${capiUrl}, has webhook secret: ${!!webhookSecret}, has service key: ${!!serviceKey}`,
-        );
-
-        // Send CompleteRegistration if not sent
-        if (!capiSent["CompleteRegistration"]) {
-          eventsToSend.push("CompleteRegistration");
-          try {
-            const res = await fetch(capiUrl, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "x-webhook-secret": webhookSecret,
-                "Authorization": `Bearer ${serviceKey}`,
-              },
-              body: JSON.stringify({
-                lead_id: leadDbId,
-                event_name: "CompleteRegistration",
-              }),
-            });
-            const resultText = await res.text();
-            console.log(
-              `[kommo-webhook] CAPI CompleteRegistration status=${res.status}:`,
-              resultText,
-            );
-            if (res.ok) capiSent["CompleteRegistration"] = true;
-          } catch (e) {
-            console.error(
-              "[kommo-webhook] CAPI CompleteRegistration error:",
-              e,
-            );
-          }
-        }
-
-        // Send tier event (Lead_Small, Lead_Medium, etc.)
-        const tierEventName = `Lead_${tier.replace("+", "Plus")}`;
-        if (!capiSent[tierEventName] && tier !== "Desqualificado") {
-          eventsToSend.push(tierEventName);
-          try {
-            const res = await fetch(capiUrl, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "x-webhook-secret": webhookSecret,
-                "Authorization": `Bearer ${serviceKey}`,
-              },
-              body: JSON.stringify({
-                lead_id: leadDbId,
-                event_name: tierEventName,
-              }),
-            });
-            const resultText = await res.text();
-            console.log(
-              `[kommo-webhook] CAPI ${tierEventName} status=${res.status}:`,
-              resultText,
-            );
-            if (res.ok) capiSent[tierEventName] = true;
-          } catch (e) {
-            console.error(`[kommo-webhook] CAPI ${tierEventName} error:`, e);
-          }
-        }
-
-        // Send MQL event for qualified leads (faturamento >= R$10k)
-        // MQL faixas: "De R$ 10 mil" em diante, or legacy "R$ 8k – 20k" em diante
-        const investimentoFaixa = leadRow?.investimento_faixa || "";
-        const MQL_FAIXAS = [
-          "De R$ 10 mil a R$ 20 mil",
-          "De R$ 20 mil a R$ 30 mil",
-          "De R$ 30 mil a R$ 50 mil",
-          "De R$ 50 mil a R$ 75 mil",
-          "De R$ 75 mil a R$ 100 mil",
-          "De R$ 100 mil a R$ 150 mil",
-          "De R$ 150 mil a R$ 200 mil",
-          "De R$ 200 mil a R$ 300 mil",
-          "De R$ 300 mil a R$ 500 mil",
-          "De R$ 500 mil a R$ 750 mil",
-          "De R$ 750 mil a R$ 1 milhão",
-          "De R$ 1 milhão a R$ 2 milhões",
-          "De R$ 2 milhões a R$ 3 milhões",
-          "De R$ 3 milhões a R$ 5 milhões",
-          "De R$ 5 milhões a R$ 10 milhões",
-          "Acima de R$ 10 milhões",
-          // Legacy
-          "R$ 8k – 20k",
-          "R$ 20k – 50k",
-          "R$ 50k – 100k",
-        ];
-        const isMql = MQL_FAIXAS.includes(investimentoFaixa);
-        if (!capiSent["MQL"] && isMql) {
-          eventsToSend.push("MQL");
-          try {
-            const res = await fetch(capiUrl, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "x-webhook-secret": webhookSecret,
-                "Authorization": `Bearer ${serviceKey}`,
-              },
-              body: JSON.stringify({ lead_id: leadDbId, event_name: "MQL" }),
-            });
-            const resultText = await res.text();
-            console.log(
-              `[kommo-webhook] CAPI MQL status=${res.status}:`,
-              resultText,
-            );
-            if (res.ok) capiSent["MQL"] = true;
-          } catch (e) {
-            console.error("[kommo-webhook] CAPI MQL error:", e);
-          }
-        }
-
-        // Update dedup tracking
-        if (eventsToSend.length > 0) {
-          await supabase
-            .from("leads")
-            .update({ capi_events_sent: capiSent })
-            .eq("id", leadDbId);
-          console.log(
-            `[kommo-webhook] CAPI events sent: ${eventsToSend.join(", ")}`,
-          );
-        }
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/fire-capi-events`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-webhook-secret": INTERNAL_WEBHOOK_SECRET || "",
+            "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          },
+          body: JSON.stringify({ lead_db_id: leadDbId, caller: "kommo" }),
+        });
+        console.log(`[kommo-webhook] fire-capi-events status=${res.status}: ${await res.text()}`);
       } catch (capiErr) {
         console.error("[kommo-webhook] CAPI integration error:", capiErr);
       }

@@ -689,6 +689,10 @@ export type Database = {
           estagio_negocio: string | null
           faturamento_faixa: string | null
           fbclid: string | null
+          fbc: string | null
+          user_agent: string | null
+          page_url: string | null
+          session_id: string | null
           first_opened_at: string | null
           gargalo: string | null
           gclid: string | null
@@ -746,6 +750,10 @@ export type Database = {
           estagio_negocio?: string | null
           faturamento_faixa?: string | null
           fbclid?: string | null
+          fbc?: string | null
+          user_agent?: string | null
+          page_url?: string | null
+          session_id?: string | null
           first_opened_at?: string | null
           gargalo?: string | null
           gclid?: string | null
@@ -803,6 +811,10 @@ export type Database = {
           estagio_negocio?: string | null
           faturamento_faixa?: string | null
           fbclid?: string | null
+          fbc?: string | null
+          user_agent?: string | null
+          page_url?: string | null
+          session_id?: string | null
           first_opened_at?: string | null
           gargalo?: string | null
           gclid?: string | null
@@ -914,6 +926,8 @@ export type Database = {
           id: string
           lead_id: string | null
           notes: string | null
+          scheduled_at: string | null
+          status: string
           utm_content: string | null
         }
         Insert: {
@@ -924,6 +938,8 @@ export type Database = {
           id?: string
           lead_id?: string | null
           notes?: string | null
+          scheduled_at?: string | null
+          status?: string
           utm_content?: string | null
         }
         Update: {
@@ -934,6 +950,8 @@ export type Database = {
           id?: string
           lead_id?: string | null
           notes?: string | null
+          scheduled_at?: string | null
+          status?: string
           utm_content?: string | null
         }
         Relationships: [
@@ -1198,6 +1216,24 @@ export type Database = {
           p_session_id: string
         }
         Returns: undefined
+      }
+      update_lead_session: {
+        Args: {
+          p_session_id: string
+          p_completed?: boolean
+          p_current_step_id?: string
+          p_entered_quiz_page?: boolean
+          p_fbp?: string
+          p_last_page?: string
+          p_lead_instagram?: string
+          p_lead_market?: string
+          p_lead_name?: string
+          p_lead_stage?: string
+          p_lead_whatsapp?: string
+          p_start_button_id?: string
+          p_started_quiz?: boolean
+        }
+        Returns: boolean
       }
     }
     Enums: {

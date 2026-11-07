@@ -21,6 +21,10 @@ verify_jwt = false
 [functions.web-push]
 verify_jwt = false
 
+# O cron chama com x-webhook-secret, não com JWT.
+[functions.sla-check]
+verify_jwt = false
+
 [functions.meta-ads-sync]
 verify_jwt = false
 
@@ -39,4 +43,39 @@ verify_jwt = false
 # Auth própria (x-hermes-key ou o token assinado do link de aprovação), e o
 # link do WhatsApp abre no navegador sem header nenhum.
 [functions.hermes]
+verify_jwt = false
+
+# O /callback do OAuth é o navegador voltando do Google, sem header nenhum.
+# As demais rotas exigem x-admin-token, verificado dentro da função.
+[functions.google-calendar]
+verify_jwt = false
+
+# Agendamento automático (17/09/2026): o lead não tem login. A função valida o
+# lead_id sozinha (UUID existente, < 24 h, faixa >= R$ 100 mil).
+[functions.agendamento]
+verify_jwt = false
+
+# Chamada pelo Apito (squads/operacao-champion) com a service role no Authorization; valida dentro da função.
+[functions.apito-token]
+verify_jwt = false
+
+[functions.instagram-webhook]
+verify_jwt = false
+
+[functions.ig-link]
+verify_jwt = false
+
+[functions.direct-admin]
+verify_jwt = false
+
+[functions.agentes-admin]
+verify_jwt = false
+
+[functions.whatsapp-webhook]
+verify_jwt = false
+
+[functions.whatsapp-admin]
+verify_jwt = false
+
+[functions.esteira]
 verify_jwt = false

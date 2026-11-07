@@ -1,0 +1,58 @@
+{
+  "consultado_em": "2026-09-11T00:08:32.653Z",
+  "path": "act_1592493385874898/ads",
+  "params": {
+    "fields": "id,name,adset_id,campaign_id,effective_status,created_time,creative{id,name,effective_object_story_id,object_type}",
+    "limit": "300"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 3,
+    "data": [
+      {
+        "id": "120252041120320116",
+        "name": "Case Ighor #2",
+        "adset_id": "120252041120310116",
+        "campaign_id": "120252040734020116",
+        "effective_status": "ACTIVE",
+        "created_time": "2026-09-07T15:16:42+0000",
+        "creative": {
+          "id": "2088614528418174",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-09-c9f1fc27db2e30b62be77e2102675686",
+          "effective_object_story_id": "516497034872440_122181714002624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252040734010116",
+        "name": "Luis-Nathan Case #2 – V3",
+        "adset_id": "120252040734030116",
+        "campaign_id": "120252040734020116",
+        "effective_status": "ACTIVE",
+        "created_time": "2026-09-07T15:18:31+0000",
+        "creative": {
+          "id": "965531359163204",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-09-00552b7c4b52d450385e12687bf24964",
+          "effective_object_story_id": "516497034872440_122181713984624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252041120330116",
+        "name": "Case Ighor #4",
+        "adset_id": "120252041120300116",
+        "campaign_id": "120252040734020116",
+        "effective_status": "ACTIVE",
+        "created_time": "2026-09-07T15:17:43+0000",
+        "creative": {
+          "id": "915776631606500",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-09-71c727f45aa3e1e0f987825862ced1fb",
+          "effective_object_story_id": "516497034872440_122181713996624529",
+          "object_type": "VIDEO"
+        }
+      }
+    ]
+  }
+}

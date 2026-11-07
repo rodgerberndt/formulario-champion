@@ -1,0 +1,4480 @@
+{
+  "consultado_em": "2026-09-11T00:06:46.066Z",
+  "path": "act_1733204057869041/adsets",
+  "params": {
+    "fields": "id,name,targeting,effective_status,updated_time,daily_budget",
+    "limit": "100"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 61,
+    "data": [
+      {
+        "id": "120254605219930054",
+        "name": "Case Caio rainha #4",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-08-12T10:56:15-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120254605219920054",
+        "name": "Case Caio rainha #3",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-08-12T10:56:14-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120254605219910054",
+        "name": "Case Caio rainha #2",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-08-12T10:56:28-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120254534758990054",
+        "name": "Case Caio rainha #1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-08-12T10:56:33-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120254417309110054",
+        "name": "Luis-Nathan Case #2 - V2",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-09T14:22:41-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120254417309100054",
+        "name": "Luis-Nathan Case #2 - V4",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-09T14:22:39-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120254417309080054",
+        "name": "Luis-Nathan Case #2 - V5",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-09T14:22:44-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120254417309050054",
+        "name": "Luis-Nathan Case #2 - V1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-09T14:22:35-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120253841407460054",
+        "name": "Luis-nathan Case #1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-04T19:32:04-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120253841407430054",
+        "name": "Luis-nathan Case #2",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-13T11:18:40-0300",
+        "daily_budget": "1500"
+      },
+      {
+        "id": "120253841407400054",
+        "name": "Luis-nathan Case #3",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-04T19:32:08-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120253841407390054",
+        "name": "Luis-nathan Case #2 - C1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-13T11:18:39-0300",
+        "daily_budget": "700"
+      },
+      {
+        "id": "120253841407340054",
+        "name": "Luis-nathan Case #2 - V3",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-13T11:18:52-0300",
+        "daily_budget": "1500"
+      },
+      {
+        "id": "120253702643330054",
+        "name": "Luis-nathan Case #2 - C1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-04T19:32:25-0300",
+        "daily_budget": "700"
+      },
+      {
+        "id": "120253702643320054",
+        "name": "Luis-nathan Case #1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-04T19:32:21-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120253702643260054",
+        "name": "Luis-nathan Case #2",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-14T12:00:00-0300",
+        "daily_budget": "700"
+      },
+      {
+        "id": "120253702643240054",
+        "name": "Luis-nathan Case #2 - V3",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-09T14:22:31-0300",
+        "daily_budget": "700"
+      },
+      {
+        "id": "120253695740110054",
+        "name": "Luis-nathan Case #3",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-04T19:32:23-0300",
+        "daily_budget": "500"
+      },
+      {
+        "id": "120253664793600054",
+        "name": "C5",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-07T16:18:39-0300",
+        "daily_budget": "2000"
+      },
+      {
+        "id": "120253624990380054",
+        "name": "C4",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-06T14:58:57-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253624867270054",
+        "name": "C3",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-06T14:49:57-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253624622180054",
+        "name": "C2",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-08T12:07:25-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253623846330054",
+        "name": "C1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-08T12:07:27-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253582433580054",
+        "name": "C1G2",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-06T13:35:01-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253582433570054",
+        "name": "C1G3",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-06T13:35:02-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253582381350054",
+        "name": "C1G1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-06T13:35:04-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253522383330054",
+        "name": "B2",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-02T16:58:13-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130620054",
+        "name": "B1H 3",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-01T14:43:31-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130610054",
+        "name": "B1H2",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-01T14:43:31-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130600054",
+        "name": "B1H1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-01T14:43:31-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130590054",
+        "name": "B3H5",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-02T15:24:17-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130580054",
+        "name": "B3H2",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-02T15:24:14-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130570054",
+        "name": "B2H4",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-01T14:43:31-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130560054",
+        "name": "B2H3",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-01T14:43:32-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130550054",
+        "name": "B2H2",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-01T14:43:31-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130520054",
+        "name": "B2H1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-01T14:43:31-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130400054",
+        "name": "B1H4",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-01T14:43:31-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130390054",
+        "name": "B4H2",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-02T15:22:05-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130380054",
+        "name": "B4H1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-02T15:22:07-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130370054",
+        "name": "B3H3",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-02T15:24:04-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479130360054",
+        "name": "B3H1",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-02T15:24:01-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253479109940054",
+        "name": "B4H3",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-07-02T15:22:11-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120253392582620054",
+        "name": "(C01) - reaproveitado",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "countries": [
+              "BR"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "biz_disco_feed",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-07-01T14:43:31-0300",
+        "daily_budget": "300"
+      },
+      {
+        "id": "120252932304260054",
+        "name": "C16",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-06-24T09:57:22-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252930038480054",
+        "name": "C15",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-24T09:40:24-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252929579480054",
+        "name": "C14",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-24T09:40:18-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252928806850054",
+        "name": "C13",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-24T09:40:16-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252928760170054",
+        "name": "C12",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-06-23T14:06:21-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252883108020054",
+        "name": "C11",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-24T09:41:16-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252877176370054",
+        "name": "C10",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-24T09:41:21-0300",
+        "daily_budget": "1500"
+      },
+      {
+        "id": "120252877176360054",
+        "name": "C9",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-24T09:40:37-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252877176340054",
+        "name": "C8",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-23T12:29:41-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252877176320054",
+        "name": "C7",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-24T09:40:35-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252843116060054",
+        "name": "C6G1 - CF",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-06-22T16:32:30-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252843116050054",
+        "name": "C6G2 - CF",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-06-22T16:32:38-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252843116040054",
+        "name": "C6G3 - CF",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-24T09:40:50-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252584280310054",
+        "name": "C3 - CF",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "updated_time": "2026-06-23T19:55:18-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252584280300054",
+        "name": "C5 - CF",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-22T20:23:58-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252584280290054",
+        "name": "C4 - CF",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-22T18:41:56-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252321812520054",
+        "name": "C2 - CF",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "excluded_geo_locations": {
+            "custom_locations": [
+              {
+                "custom_type": "multi_city",
+                "min_population": 100000,
+                "max_population": 40000000,
+                "country": "BR"
+              }
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-22T11:46:12-0300",
+        "daily_budget": "1000"
+      },
+      {
+        "id": "120252321639790054",
+        "name": "C1 - CF",
+        "targeting": {
+          "age_max": 65,
+          "age_min": 18,
+          "age_range": [
+            18,
+            65
+          ],
+          "geo_locations": {
+            "country_groups": [
+              "worldwide"
+            ],
+            "location_types": [
+              "home",
+              "recent"
+            ]
+          },
+          "locales": [
+            16,
+            31
+          ],
+          "brand_safety_content_filter_levels": [
+            "FACEBOOK_RELAXED"
+          ],
+          "targeting_automation": {
+            "advantage_audience": 1,
+            "individual_setting": {
+              "age": 1,
+              "gender": 1
+            }
+          },
+          "publisher_platforms": [
+            "facebook",
+            "instagram",
+            "messenger",
+            "threads"
+          ],
+          "facebook_positions": [
+            "feed",
+            "right_hand_column",
+            "instream_video",
+            "marketplace",
+            "story",
+            "search",
+            "facebook_reels",
+            "facebook_reels_overlay",
+            "profile_feed",
+            "notification"
+          ],
+          "instagram_positions": [
+            "stream",
+            "story",
+            "reels",
+            "explore_home",
+            "profile_feed",
+            "ig_search"
+          ],
+          "device_platforms": [
+            "mobile",
+            "desktop"
+          ],
+          "messenger_positions": [
+            "story"
+          ],
+          "threads_positions": [
+            "threads_stream"
+          ]
+        },
+        "effective_status": "PAUSED",
+        "updated_time": "2026-06-22T11:46:25-0300",
+        "daily_budget": "1000"
+      }
+    ]
+  }
+}

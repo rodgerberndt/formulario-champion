@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { LEAVING_LANDING_EVENT } from "./useTracking";
 
 const SESSION_KEY = "champion_session_id";
 // Flush a cada 10s. Era 30s "por performance", mas isso enviesava TODA a
@@ -60,6 +61,7 @@ export function useLandingTracking(page = "/") {
   const currentBinRef = useRef<{ bin: number; since: number } | null>(null);
   const pendingBinMsRef = useRef<Map<number, number>>(new Map());
   const scrollHandlerRef = useRef<(() => void) | null>(null);
+  const leavingHandlerRef = useRef<(() => void) | null>(null);
   const scrollTickingRef = useRef(false);
   const milestonesSentRef = useRef<Set<number>>(new Set());
   const isFlushingBinsRef = useRef(false);
@@ -95,6 +97,10 @@ export function useLandingTracking(page = "/") {
       if (scrollHandlerRef.current) {
         window.removeEventListener("scroll", scrollHandlerRef.current);
         scrollHandlerRef.current = null;
+      }
+      if (leavingHandlerRef.current) {
+        window.removeEventListener(LEAVING_LANDING_EVENT, leavingHandlerRef.current);
+        leavingHandlerRef.current = null;
       }
       sectionElsRef.current = [];
       sectionStartRef.current.clear();
@@ -401,6 +407,18 @@ export function useLandingTracking(page = "/") {
       }
     };
     document.addEventListener("visibilitychange", visibilityHandlerRef.current);
+
+    // Clique no CTA: a leitura acabou, mesmo que a aba continue visível. A
+    // navegação para o quiz é SPA e, no navegador in-app do Instagram, abrir o
+    // quiz nem sempre dispara `visibilitychange` — então sem este aviso o
+    // relógio da seção seguiria contando o tempo que a pessoa passa no quiz.
+    leavingHandlerRef.current = () => {
+      void flushAllSectionTimes();
+      void flushScrollBins(sessionId);
+      sectionStartRef.current.forEach((_, id) => sectionStartRef.current.delete(id));
+      currentBinRef.current = null;
+    };
+    window.addEventListener(LEAVING_LANDING_EVENT, leavingHandlerRef.current);
   }
 
   function setupClickTracking(sessionId: string) {

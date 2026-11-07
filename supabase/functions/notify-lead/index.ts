@@ -1,4 +1,5 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { responsaveisDoLead } from "../_shared/roteamento.ts";
 
 // Environment variables
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -30,28 +31,20 @@ const WAHA_API_URL = Deno.env.get('WAHA_API_URL');
 const WAHA_API_KEY = Deno.env.get('WAHA_API_KEY');
 const WAHA_PHONE_NUMBER_ID = Deno.env.get('WAHA_PHONE_NUMBER_ID') || 'default';
 
-// SDR routing (14/08/2026): Miguel atende TODAS as faixas com SDR.
-// Gustavo saiu; Caio virou closer e não recebe leads novos. Abaixo de R$ 5 mil
-// continua sem SDR (não notifica).
-const MIGUEL_MQL_FAIXAS = [
-  "De R$ 10 mil a R$ 20 mil", "De R$ 20 mil a R$ 30 mil",
-  "De R$ 30 mil a R$ 50 mil", "De R$ 50 mil a R$ 75 mil", "De R$ 75 mil a R$ 100 mil",
-  "De R$ 100 mil a R$ 150 mil",
-  "De R$ 150 mil a R$ 200 mil", "De R$ 200 mil a R$ 300 mil", "De R$ 300 mil a R$ 500 mil",
-  "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão", "De R$ 1 milhão a R$ 2 milhões",
-  "De R$ 2 milhões a R$ 3 milhões", "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
-  "Acima de R$ 10 milhões",
-];
-const SDR_EXTRA_FAIXAS = ["Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
 
+// O roteamento saiu daqui e virou `_shared/roteamento.ts`, porque o `sla-check`
+// precisa da MESMA resposta para saber a quem escalar. Duas cópias da regra é
+// como se descobre, meses depois, que o painel e a notificação discordam sobre
+// de quem é o lead.
 function getSdrForLead(investimentoFaixa?: string | null): { name: string; phone: string } | null {
-  if (investimentoFaixa && MIGUEL_MQL_FAIXAS.includes(investimentoFaixa)) {
-    return { name: "Miguel", phone: MIGUEL_WHATSAPP_E164 || "" };
-  }
-  if (investimentoFaixa && SDR_EXTRA_FAIXAS.includes(investimentoFaixa)) {
-    return { name: "Miguel", phone: MIGUEL_WHATSAPP_E164 || "" };
-  }
-  return null;
+  const r = responsaveisDoLead(investimentoFaixa);
+  if (!r) return null;
+  // O telefone só existe para o Miguel hoje. Quem não tem número cadastrado
+  // ainda recebe o push, que é o canal que o Rodger escolheu em 03/09/2026.
+  const TELEFONES: Record<string, string | undefined> = {
+    Miguel: MIGUEL_WHATSAPP_E164 || undefined,
+  };
+  return { name: r.dono, phone: TELEFONES[r.dono] || "" };
 }
 
 // URLs
@@ -424,6 +417,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const leadTier = leadTierFromDb || session.lead_stage || 'N/A';
+    const responsaveis = responsaveisDoLead(leadInvestimentoFaixa);
     const sdr = getSdrForLead(leadInvestimentoFaixa);
     console.log(`SDR assigned: ${sdr?.name || 'none'} (faturamento: ${leadInvestimentoFaixa || 'N/A'}, tier: ${leadTier})`);
 
@@ -514,16 +508,37 @@ Deno.serve(async (req: Request) => {
 
     // Determine if this lead is MQL (faturamento >= R$ 10k) for distinct push styling
     const isMqlForPush = isPixelMqlEligible;
-    const pushTitle = isMqlForPush ? '🏆 Novo MQL Caiu!' : '🚀 Novo Lead Caiu!';
-    const pushHeading = isMqlForPush ? '🏆 Novo MQL!' : '🚀 Novo Lead!';
 
     // 3. Send Web Push notification (non-blocking)
     let webPushSuccess = false;
     try {
+      const nomeDoLead = (session.lead_name as string) || 'Lead sem nome';
+      const nicho = (session.lead_market as string) || '';
+      const etapa = (session.lead_stage as string) || '';
+      // A notificação é lida de relance, na tela de bloqueio: o SDR tem que
+      // saber SE é MQL, DE QUE nicho e QUANTO fatura sem abrir o painel. É isso
+      // que decide se ele larga o que está fazendo.
+      const linhas = [
+        `💰 ${leadInvestimentoFaixa || 'Faturamento não informado'}`,
+        `🎯 ${nicho || 'Nicho não informado'}`,
+        etapa ? `📍 ${etapa}` : null,
+        responsaveis ? `👤 com ${responsaveis.dono}` : null,
+      ].filter(Boolean);
+      // Tag pelo WhatsApp: o mesmo lead avisado pelo push e pelo polling de uma
+      // aba aberta vira UMA notificação. Espelha tagDoLead() no front.
+      const digitos = String(session.lead_whatsapp || '').replace(/\D/g, '').slice(-11);
       const pushPayload = {
-        title: pushTitle,
-        body: `Tier: ${leadTier} | SDR: ${sdr?.name || 'Nenhum'}`,
-        url: `/${ADMIN_ROUTE_SLUG}?highlight=${targetId}`,
+        tipo: 'lead',
+        title: isMqlForPush ? `🏆 MQL caiu: ${nomeDoLead}` : `🚀 Lead caiu: ${nomeDoLead}`,
+        body: linhas.join('\n'),
+        tag: digitos ? `lead-${digitos}` : `lead-${targetId}`,
+        dados: { mql: isMqlForPush, faturamento: leadInvestimentoFaixa, nicho, etapa, sessao: targetId },
+        // /admin é a rota real do painel; o slug antigo caía no 404.
+        url: '/admin',
+        // TODO aparelho inscrito recebe o lead (decisão do Rodger em 14/09/2026:
+        // quem tem o painel instalado ou aberto fica sabendo). A cobrança por
+        // pessoa continua no sla-check, que escala por nome.
+        pessoas: [],
       };
 
       const pushResponse = await fetch(
@@ -532,6 +547,10 @@ Deno.serve(async (req: Request) => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            // O `web-push` valida `x-webhook-secret` para chamadas entre
+            // functions. Antes aqui ia só o service role no Authorization, que
+            // aquela função nunca olhou: TODO push de lead tomava 401 calado.
+            'x-webhook-secret': Deno.env.get('INTERNAL_WEBHOOK_SECRET') || '',
             'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
           },
           body: JSON.stringify(pushPayload),
@@ -546,36 +565,12 @@ Deno.serve(async (req: Request) => {
       console.error('Web Push failed (non-critical):', msg);
     }
 
-    // 4. Send OneSignal push notification (non-blocking)
-    let oneSignalSuccess = false;
-    try {
-      const oneSignalApiKey = Deno.env.get('ONESIGNAL_REST_API_KEY');
-      if (oneSignalApiKey) {
-        const leadName = session.lead_name || 'Desconhecido';
-        const osResponse = await fetch('https://api.onesignal.com/notifications', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Key ${oneSignalApiKey}`,
-          },
-          body: JSON.stringify({
-            app_id: '2ba7eef1-4bc9-47dd-83fc-745bb1548799',
-            included_segments: ['All'],
-            headings: { en: pushHeading },
-            contents: { en: `Nome: ${leadName} - Tier: ${leadTier} SDR: ${sdr?.name || 'Nenhum'}` },
-            url: `/${ADMIN_ROUTE_SLUG}?highlight=${targetId}`,
-          }),
-        });
-        const osResult = await osResponse.json();
-        oneSignalSuccess = osResponse.ok;
-        console.log('OneSignal result:', JSON.stringify(osResult));
-      } else {
-        console.log('ONESIGNAL_REST_API_KEY not configured, skipping');
-      }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error);
-      console.error('OneSignal push failed (non-critical):', msg);
-    }
+    // O OneSignal saiu em 03/09/2026. Ele mandava para o segmento "All", ou
+    // seja, para todo mundo que já tinha aceitado notificação em qualquer
+    // navegador — sem saber quem era quem. Isso é o oposto do que o SLA precisa,
+    // e o SDK dele ainda registrava um segundo service worker no escopo "/",
+    // brigando com o nosso e provavelmente derrubando a inscrição própria.
+    const oneSignalSuccess = false;
 
     console.log('Notification complete - Kommo:', kommoSuccess, 'WhatsApp:', whatsappSuccess, 'WebPush:', webPushSuccess, 'OneSignal:', oneSignalSuccess, 'WAHA:', wahaSuccess);
 

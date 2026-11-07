@@ -1,0 +1,101 @@
+{
+  "consultado_em": "2026-09-11T00:39:38.020Z",
+  "path": "act_1965417164121284/campaigns",
+  "params": {
+    "fields": "id,name,effective_status,updated_time,daily_budget,stop_time",
+    "limit": "100"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 14,
+    "data": [
+      {
+        "id": "52600745887093",
+        "name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-09-01T13:19:13+0000"
+      },
+      {
+        "id": "52600695284893",
+        "name": "CA 03 - Leads - Ads validados + TESTE AB (Quiz)",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-09-01T13:19:10+0000"
+      },
+      {
+        "id": "52600508857293",
+        "name": "CA 03 - Leads - Case Ighor (30-08)",
+        "effective_status": "ACTIVE",
+        "updated_time": "2026-09-06T20:20:07+0000"
+      },
+      {
+        "id": "52599732081693",
+        "name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-31T20:52:49+0000"
+      },
+      {
+        "id": "52599056564293",
+        "name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-25T23:32:25+0000"
+      },
+      {
+        "id": "52598802362693",
+        "name": "CA 03 - Vendas - Ads validados (Teste Objetivo de campanha)",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-31T20:50:35+0000",
+        "daily_budget": "800"
+      },
+      {
+        "id": "52598800739293",
+        "name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "effective_status": "ACTIVE",
+        "updated_time": "2026-09-06T20:20:12+0000"
+      },
+      {
+        "id": "52596173251893",
+        "name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-09-04T15:10:39+0000"
+      },
+      {
+        "id": "52595911446093",
+        "name": "CA 03 - Leads - Ads validados + HD4",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-14T13:58:44+0000"
+      },
+      {
+        "id": "52595911445893",
+        "name": "CA 03 - Leads - Ads validados + HD3",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-14T13:58:43+0000"
+      },
+      {
+        "id": "52595911445693",
+        "name": "CA 03 - Leads - Ads validados + HD2",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-14T13:58:39+0000"
+      },
+      {
+        "id": "52595911445493",
+        "name": "CA 03 - Leads - Ads validados + HD1",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-14T13:58:40+0000"
+      },
+      {
+        "id": "52595880369093",
+        "name": "CA 03 - Leads - Ads validados + HD0",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-08-14T13:58:36+0000"
+      },
+      {
+        "id": "52595874690893",
+        "name": "CA 03 - Leads - Ads Novos Caio",
+        "effective_status": "PAUSED",
+        "updated_time": "2026-09-04T15:10:11+0000"
+      }
+    ]
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "consultado_em": "2026-09-11T00:07:34.557Z",
+  "path": "act_1733204057869041/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-07-16\",\"until\":\"2026-07-31\"}",
+    "level": "account",
+    "fields": "spend,impressions,reach,frequency",
+    "breakdowns": "publisher_platform",
+    "limit": "50"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 5,
+    "data": [
+      {
+        "spend": "3.860298",
+        "impressions": "266",
+        "reach": "218",
+        "frequency": "1.220183",
+        "date_start": "2026-07-16",
+        "date_stop": "2026-07-31",
+        "publisher_platform": "audience_network"
+      },
+      {
+        "spend": "233.448023",
+        "impressions": "8176",
+        "reach": "4692",
+        "frequency": "1.74254",
+        "date_start": "2026-07-16",
+        "date_stop": "2026-07-31",
+        "publisher_platform": "facebook"
+      },
+      {
+        "spend": "280.491655",
+        "impressions": "25289",
+        "reach": "11842",
+        "frequency": "2.135535",
+        "date_start": "2026-07-16",
+        "date_stop": "2026-07-31",
+        "publisher_platform": "instagram"
+      },
+      {
+        "spend": "0",
+        "impressions": "1",
+        "reach": "1",
+        "frequency": "1",
+        "date_start": "2026-07-16",
+        "date_stop": "2026-07-31",
+        "publisher_platform": "messenger"
+      },
+      {
+        "spend": "0.300023",
+        "impressions": "38",
+        "reach": "27",
+        "frequency": "1.407407",
+        "date_start": "2026-07-16",
+        "date_stop": "2026-07-31",
+        "publisher_platform": "threads"
+      }
+    ]
+  }
+}

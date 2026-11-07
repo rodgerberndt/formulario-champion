@@ -1,87 +1,23 @@
 import { motion } from "framer-motion";
-import {
-  Clock,
-  XCircle,
-  TrendingUp,
-  Target,
-  Ban,
-  LineChart,
-  GraduationCap,
-  Hourglass,
-  Flame,
-  AlertTriangle,
-} from "lucide-react";
 import { useReveal } from "@/hooks/useReveal";
 import { ShimmerText, KeywordGlow } from "./TextEffects";
-
-const pains = [
-  {
-    icon: Clock,
-    title: "Sem tempo pra criar",
-    desc: "Você é gargalo do próprio negócio. Sem delegar, não escala, e ninguém entrega no seu nível.",
-  },
-  {
-    icon: XCircle,
-    title: "Criativos que não vendem",
-    desc: "Você posta, roda, espera, e o resultado é silêncio. Visualização não vira venda.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Criativo não aguenta escala",
-    desc: "Funciona em R$ 500/dia. Quando você dobra o orçamento, o CPA explode e a margem some.",
-  },
-  {
-    icon: Target,
-    title: "Lead vem desqualificado",
-    desc: "Volume até existe, mas é gente sem dinheiro, sem urgência e que some no primeiro contato.",
-  },
-  {
-    icon: Ban,
-    title: "CRIATIVO REPROVANDO TODA HORA",
-    desc: "Você produz, sobe, e a Meta derruba. Conta restrita, BM travada, anúncio em loop de revisão.",
-  },
-  {
-    icon: LineChart,
-    title: "Otimiza no achismo",
-    desc: "Você olha o gerenciador e não sabe o que pausar, o que escalar nem onde está sangrando.",
-  },
-  {
-    icon: GraduationCap,
-    title: "Falta repertório técnico",
-    desc: "Você aprendeu copiando guru. Falta método, falta estrutura, e isso te custa caro todo mês.",
-  },
-  {
-    icon: Hourglass,
-    title: "Preso no operacional",
-    desc: "Você gasta o dia editando, briefando e revisando criativo. Sobra zero tempo pro que realmente faz o negócio crescer: estratégia.",
-  },
-  {
-    icon: Flame,
-    title: "CPA alto engolindo a margem",
-    desc: "O criativo até roda, mas o custo por venda sobe e come o lucro. Você fatura mais e ganha menos no fim do mês.",
-  },
-  {
-    icon: AlertTriangle,
-    title: "Refém de um único criativo",
-    desc: "Sua escala inteira está apoiada em um vencedor só. No dia que ele fadigar, a operação inteira despenca junto.",
-  },
-];
+import { useCopyNicho } from "@/config/nichoLanding";
 
 export function PainSection() {
   const { ref, isVisible } = useReveal(0.08);
+  const { dor } = useCopyNicho();
+  const pains = dor.itens;
 
   return (
     <section className="py-12 md:py-20 relative overflow-hidden" ref={ref}>
       <div className="container mx-auto px-5 max-w-6xl relative z-10">
         <div className={`text-center mb-8 reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-2">
-            <ShimmerText isVisible={isVisible}>
-              O &nbsp;ANDRÔMEDA TROUXE UMA SÉRIE DE PROBLEMAS PRA SUA OPERAÇÃO.
-            </ShimmerText>{" "}
-            <KeywordGlow>VOCÊ RECONHECE ALGUM DELES?</KeywordGlow>
+            <ShimmerText isVisible={isVisible}>{dor.tituloInicio}</ShimmerText>{" "}
+            <KeywordGlow>{dor.tituloDestaque}</KeywordGlow>
           </h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-            O novo motor de IA do Meta mudou as regras do jogo. Quem não se adaptou, está sentindo na pele toda semana.
+            {dor.sub}
           </p>
         </div>
 
@@ -94,11 +30,19 @@ export function PainSection() {
               transition={{ delay: 0.05 + i * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="gold-card"
             >
-              <div className="w-10 h-10 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center justify-center mb-3">
-                <pain.icon className="w-5 h-5 text-destructive" />
+              {/* Índice em microcaixa-alta no lugar do rótulo dourado no
+                  título: com 10 cartões, o título dourado em todos fazia o
+                  dourado virar cor de texto e não destaque. */}
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center shrink-0">
+                  <pain.icone className="w-4 h-4 text-destructive" />
+                </div>
+                <span className="rotulo-micro text-secondary/70 tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
               </div>
               <h3 className="text-foreground mb-1.5" style={{ fontSize: "1.15rem" }}>
-                <KeywordGlow>{pain.title}</KeywordGlow>
+                {pain.titulo}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{pain.desc}</p>
             </motion.div>

@@ -39,11 +39,69 @@
 # Service worker — never cache (must always update)
 /sw.js
   Cache-Control: no-cache, no-store, must-revalidate
-/OneSignalSDKWorker.js
+
+# Versão do build: o painel compara com a versão que ele carregou e se
+# atualiza sozinho. Em cache, o aparelho nunca descobriria que ficou velho.
+/version.json
   Cache-Control: no-cache, no-store, must-revalidate
+
+# O manifest também não pode ficar preso em cache: é ele que define o nome, o
+# ícone e o start_url do app instalado na tela de início.
+/manifest.webmanifest
+  Cache-Control: no-cache, no-store, must-revalidate
+  Content-Type: application/manifest+json
 
 # HTML — never cache (so deploys go live immediately)
 /*.html
   Cache-Control: no-cache, no-store, must-revalidate
+
+# A LANDING PERDEU O `no-store` EM 17/09/2026.
+#
+# `no-cache` já garante o que se queria: o navegador revalida com o servidor
+# antes de reusar, então um deploy aparece na hora. `no-store` vai muito além —
+# ele proíbe GUARDAR a resposta em qualquer lugar, e isso desliga o bfcache do
+# navegador. Efeito prático: o lead que abre a landing, clica em algo que sai do
+# site e aperta VOLTAR não volta para a página viva; ela é baixada e executada do
+# zero, com o formulário em branco e o scroll no topo. É a pior interação
+# possível no caminho de conversão, em troca de nada — as duas diretivas
+# entregam o mesmo frescor de deploy.
 /
+  Cache-Control: no-cache, must-revalidate
+
+# Rotas do SPA: são o mesmo index.html servido sem extensão, então as regras
+# acima (/ e /*.html) NÃO as cobrem. Sem isto o /admin herda o padrão do Pages
+# (max-age=0, must-revalidate) e um deploy pode demorar a aparecer para quem já
+# tinha a página aberta — que foi exatamente o que aconteceu.
+/admin
+  Cache-Control: no-cache, no-store, must-revalidate
+/admin/*
+  Cache-Control: no-cache, no-store, must-revalidate
+# Variantes de headline e a página de agendamento: são a MESMA landing servida
+# em outra rota, e até 17/09/2026 não tinham regra nenhuma — herdavam o padrão
+# do Pages e um deploy podia demorar a aparecer para quem já tinha a aba aberta.
+# Mesma regra da raiz, `no-cache` sem `no-store`, para não matar o bfcache: são
+# exatamente as rotas onde o lead volta pelo botão de voltar.
+/HD0
+  Cache-Control: no-cache, must-revalidate
+/HD1
+  Cache-Control: no-cache, must-revalidate
+/HD2
+  Cache-Control: no-cache, must-revalidate
+/HD3
+  Cache-Control: no-cache, must-revalidate
+/HD4
+  Cache-Control: no-cache, must-revalidate
+/agendar
+  Cache-Control: no-cache, must-revalidate
+
+/quiz
+  Cache-Control: no-cache, no-store, must-revalidate
+/obrigado
+  Cache-Control: no-cache, no-store, must-revalidate
+/obrigadomql
+  Cache-Control: no-cache, no-store, must-revalidate
+/obrigadosprint
+  Cache-Control: no-cache, no-store, must-revalidate
+# Esteira do orgânico (17/10/2026): ferramenta interna, mesma regra do /admin.
+/esteira
   Cache-Control: no-cache, no-store, must-revalidate

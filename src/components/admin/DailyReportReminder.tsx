@@ -16,6 +16,47 @@ function todayLocalISODate(): string {
   return `${y}-${m}-${day}`;
 }
 
+/**
+ * Apito do LEMBRETE. Sintetizado de proposito, e NAO usa /newlead.wav.
+ *
+ * Os dois tocavam o mesmo arquivo, e em 09/09/2026 isso custou uma
+ * investigacao: o painel apitava "lead" a cada 30 min e nao havia lead nenhum,
+ * era esta cobranca. Som de cobranca tem que soar como cobranca.
+ *
+ * Dois tons curtos DESCENDENTES e graves, o oposto do chime ascendente do lead
+ * e da fanfarra do MQL. Mesma tecnica do playMqlSound de useLeadNotifications,
+ * entao nao entra arquivo novo em public/.
+ */
+function tocarLembrete() {
+  try {
+    const AudioCtx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const agora = ctx.currentTime;
+
+    // 440 Hz -> 330 Hz: desce, nao sobe. Ganho baixo: e lembrete, nao alarme.
+    for (const { freq, inicio } of [{ freq: 440, inicio: 0 }, { freq: 330, inicio: 0.22 }]) {
+      const osc = ctx.createOscillator();
+      const ganho = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, agora + inicio);
+      ganho.gain.setValueAtTime(0, agora + inicio);
+      ganho.gain.linearRampToValueAtTime(0.18, agora + inicio + 0.02);
+      ganho.gain.exponentialRampToValueAtTime(0.001, agora + inicio + 0.18);
+      osc.connect(ganho);
+      ganho.connect(ctx.destination);
+      osc.start(agora + inicio);
+      osc.stop(agora + inicio + 0.2);
+    }
+    // Um AudioContext por beep vaza se ficar aberto; a cada 30 min, fecha.
+    setTimeout(() => { void ctx.close(); }, 800);
+  } catch {
+    // Autoplay bloqueado ou sem Web Audio: silencioso, como era antes.
+  }
+}
+
 interface DailyReportRow {
   id: string;
   sdr_name: string;
@@ -34,7 +75,6 @@ export function DailyReportReminder({ enabled }: Props) {
   const [pendingSdrs, setPendingSdrs] = useState<string[]>([]);
   const [dismissedUntil, setDismissedUntil] = useState<number>(0);
   const lastBeepRef = useRef<number>(0);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
@@ -63,13 +103,7 @@ export function DailyReportReminder({ enabled }: Props) {
           const ts = Date.now();
           if (ts - lastBeepRef.current >= BEEP_INTERVAL_MS) {
             lastBeepRef.current = ts;
-            try {
-              if (!audioRef.current) audioRef.current = new Audio("/newlead.wav");
-              audioRef.current.currentTime = 0;
-              await audioRef.current.play();
-            } catch {
-              // Browser bloqueou autoplay — silencioso
-            }
+            tocarLembrete();
           }
         }
       } catch {

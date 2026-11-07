@@ -1,38 +1,20 @@
-import { useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ClipboardCheck, BarChart3, PhoneCall, Rocket, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTracking } from "@/hooks/useTracking";
+import { Botao } from "./Botao";
 import { useReveal } from "@/hooks/useReveal";
-import { generateClickId } from "@/hooks/useLandingHit";
+import { useCopyNicho } from "@/config/nichoLanding";
 import { ShimmerText, KeywordGlow, LineReveal } from "./TextEffects";
 
-const steps = [
-  { icon: ClipboardCheck, text: "Preencha a aplicação (1–2 min)" },
-  { icon: BarChart3, text: "Análise do seu cenário (hoje)" },
-  { icon: PhoneCall, text: "Especialista te chama" },
-  { icon: Rocket, text: "Plano de criativos + próximos passos" },
-];
+interface FinalCTAProps {
+  /**
+   * Ação do botão. Desde 17/09/2026 a landing passa a função que registra o
+   * clique e rola até o formulário do topo; o quiz deixou de ser o destino.
+   */
+  onStartClick: (buttonId: string) => void;
+}
 
-export function FinalCTA() {
-  const navigate = useNavigate();
-  const { trackStartClick } = useTracking();
+export function FinalCTA({ onStartClick }: FinalCTAProps) {
   const { ref, isVisible } = useReveal(0.08);
-  const [loading, setLoading] = useState(false);
-  const lastClickRef = useRef<number>(0);
-
-  const handleCTA = async () => {
-    const now = Date.now();
-    if (loading) return;
-    if (now - lastClickRef.current < 1500) return;
-    lastClickRef.current = now;
-    setLoading(true);
-    try { generateClickId(); } catch { /* ignore */ }
-    try { await trackStartClick("final_cta"); } catch {}
-    await new Promise(r => setTimeout(r, 50));
-    navigate("/quiz");
-  };
+  const { ctaFinal } = useCopyNicho();
 
   return (
     <section id="cta-final" className="py-16 md:py-24 relative overflow-hidden" ref={ref}>
@@ -44,53 +26,43 @@ export function FinalCTA() {
       <div className="container mx-auto px-5 max-w-2xl relative z-10">
         <div className={`text-center reveal-up ${isVisible ? "visible" : ""}`}>
           <h2 className="text-foreground mb-3">
-            <ShimmerText isVisible={isVisible}>PREENCHA SUA APLICAÇÃO DE</ShimmerText>{" "}
-            <KeywordGlow>CRIATIVOS 360 AGORA!!!!!</KeywordGlow>
+            <ShimmerText isVisible={isVisible}>{ctaFinal.tituloInicio}</ShimmerText>{" "}
+            <KeywordGlow>{ctaFinal.tituloDestaque}</KeywordGlow>
           </h2>
 
           <LineReveal isVisible={isVisible} delay={200}>
             <p className="text-sm text-muted-foreground mb-8 max-w-md mx-auto">
-              Em 2 minutos a gente entende sua operação e agenda sua call de diagnóstico criativo 360 — gratuita.
+              {ctaFinal.sub}
             </p>
           </LineReveal>
 
-          {/* Steps mini */}
-          <div className="grid grid-cols-2 gap-3 mb-8 max-w-md mx-auto">
-            {steps.map((step, i) => (
+          {/* Os 4 passos viram uma linha numerada com hairline entre eles: o
+              ícone em caixinha dourada repetido quatro vezes competia com o
+              botão. Uma animação só para os quatro (stagger curto). */}
+          <div className="grid grid-cols-2 gap-x-6 gap-y-0 mb-9 max-w-md mx-auto text-left">
+            {ctaFinal.passos.map((passo, i) => (
               <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 8 }}
+                key={passo}
+                initial={{ opacity: 0, y: 12 }}
                 animate={isVisible ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
-                className="flex items-center gap-2"
+                transition={{ delay: 0.25 + i * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="flex items-start gap-3 py-3 border-t border-white/10"
               >
-                <div className="w-7 h-7 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center flex-shrink-0">
-                  <step.icon className="w-3.5 h-3.5 text-secondary" />
-                </div>
-                <span className="text-xs text-muted-foreground font-medium text-left">{step.text}</span>
+                <span className="rotulo-micro text-secondary/70 pt-px tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="text-xs text-muted-foreground leading-snug">{passo}</span>
               </motion.div>
             ))}
           </div>
 
-          <LineReveal isVisible={isVisible} delay={600}>
-            <Button
-              size="lg"
-              onClick={handleCTA}
-              disabled={loading}
-              className="btn-shine glow-breathe w-full sm:w-auto h-14 px-8 sm:px-10 text-sm sm:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 transition-all active:scale-[0.98] min-h-[56px]"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  CARREGANDO...
-                </>
-              ) : (
-                <>
-                  QUERO PREENCHER MINHA APLICAÇÃO
-                  <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
-                </>
-              )}
-            </Button>
+          <LineReveal isVisible={isVisible} delay={560}>
+            <Botao
+              rotulo={ctaFinal.rotulo}
+              tamanho="lg"
+              blocoMobile
+              onClick={() => onStartClick("final_cta")}
+            />
           </LineReveal>
         </div>
       </div>

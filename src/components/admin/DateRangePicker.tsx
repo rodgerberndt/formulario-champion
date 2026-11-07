@@ -1,3 +1,11 @@
+// ATENÇÃO: este componente NÃO é o seletor em uso.
+//
+// O painel usa `UniversalDateRangePicker`, apoiado em `src/lib/dateRange.ts`.
+// Este arquivo ficou para trás e não é importado por ninguém — confirmado em
+// 03/09/2026, quando uma correção de semana foi feita aqui e não apareceu em
+// produção. Mantido só para não apagar código sem o Rodger mandar; se for
+// mexer em filtro de data, mexa em `src/lib/dateRange.ts`.
+
 import { useState, useMemo } from "react";
 import { format, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subWeeks, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -31,7 +39,7 @@ const PRESET_OPTIONS = [
   { value: "last_14", label: "Últimos 14 dias" },
   { value: "last_28", label: "Últimos 28 dias" },
   { value: "last_30", label: "Últimos 30 dias" },
-  { value: "this_week", label: "Esta semana" },
+  { value: "this_week", label: "Esta semana (da meta)" },
   { value: "last_week", label: "Semana passada" },
   { value: "this_month", label: "Este mês" },
   { value: "last_month", label: "Mês passado" },
@@ -66,11 +74,16 @@ function getPresetDateRange(preset: string): DateRange {
       return { from: subDays(new Date(), 27), to: new Date() };
     case "last_30":
       return { from: subDays(new Date(), 29), to: new Date() };
+    // A semana começa na SEGUNDA, não no domingo.
+    //
+    // É a semana de venda, a mesma que a meta usa para se dividir. Enquanto isto
+    // começava no domingo, "esta semana" no filtro e "esta semana" na meta eram
+    // intervalos diferentes, e os dois números na tela nunca fechavam.
     case "this_week":
-      return { from: startOfWeek(new Date(), { weekStartsOn: 0 }), to: new Date() };
+      return { from: startOfWeek(new Date(), { weekStartsOn: 1 }), to: new Date() };
     case "last_week": {
       const lastWeek = subWeeks(new Date(), 1);
-      return { from: startOfWeek(lastWeek, { weekStartsOn: 0 }), to: endOfWeek(lastWeek, { weekStartsOn: 0 }) };
+      return { from: startOfWeek(lastWeek, { weekStartsOn: 1 }), to: endOfWeek(lastWeek, { weekStartsOn: 1 }) };
     }
     case "this_month":
       return { from: startOfMonth(new Date()), to: new Date() };

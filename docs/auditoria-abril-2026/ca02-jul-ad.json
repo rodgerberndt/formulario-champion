@@ -1,0 +1,5101 @@
+{
+  "consultado_em": "2026-09-11T00:03:10.116Z",
+  "path": "act_1733204057869041/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-07-01\",\"until\":\"2026-07-31\"}",
+    "level": "ad",
+    "fields": "campaign_id,campaign_name,adset_id,adset_name,ad_id,ad_name,spend,impressions,clicks,inline_link_clicks,actions,action_values,objective,optimization_goal,buying_type,attribution_setting,account_currency,date_start,frequency,reach",
+    "limit": "500"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 63,
+    "data": [
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252321639790054",
+        "adset_name": "C1 - CF",
+        "ad_id": "120252321639780054",
+        "ad_name": "C1 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252321812520054",
+        "adset_name": "C2 - CF",
+        "ad_id": "120252321812510054",
+        "ad_name": "C2 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252584280290054",
+        "adset_name": "C4 - CF",
+        "ad_id": "120252584280320054",
+        "ad_name": "C4 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252584280300054",
+        "adset_name": "C5 - CF",
+        "ad_id": "120252584280330054",
+        "ad_name": "C5 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252584280310054",
+        "adset_name": "C3 - CF",
+        "ad_id": "120252584280340054",
+        "ad_name": "C3 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252843116060054",
+        "adset_name": "C6G1 - CF",
+        "ad_id": "120252843116070054",
+        "ad_name": "C6G1 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252843116040054",
+        "adset_name": "C6G3 - CF",
+        "ad_id": "120252843116080054",
+        "ad_name": "C6G3 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252843116050054",
+        "adset_name": "C6G2 - CF",
+        "ad_id": "120252843116090054",
+        "ad_name": "C6G2 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252877176340054",
+        "adset_name": "C8",
+        "ad_id": "120252877176330054",
+        "ad_name": "C8",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252877176360054",
+        "adset_name": "C9",
+        "ad_id": "120252877176350054",
+        "ad_name": "C9",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252877176320054",
+        "adset_name": "C7",
+        "ad_id": "120252877176380054",
+        "ad_name": "C7",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252877176370054",
+        "adset_name": "C10",
+        "ad_id": "120252877176390054",
+        "ad_name": "C10",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252883108020054",
+        "adset_name": "C11",
+        "ad_id": "120252883108010054",
+        "ad_name": "C11",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252928760170054",
+        "adset_name": "C12",
+        "ad_id": "120252928760180054",
+        "ad_name": "C12",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252928806850054",
+        "adset_name": "C13",
+        "ad_id": "120252928806840054",
+        "ad_name": "C13",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252929579480054",
+        "adset_name": "C14",
+        "ad_id": "120252929579490054",
+        "ad_name": "C14",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252930038480054",
+        "adset_name": "C15",
+        "ad_id": "120252930038490054",
+        "ad_name": "C15",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252932304260054",
+        "adset_name": "C16",
+        "ad_id": "120252932304270054",
+        "ad_name": "C16",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253392582620054",
+        "adset_name": "(C01) - reaproveitado",
+        "ad_id": "120253392582610054",
+        "ad_name": "C01",
+        "spend": "1.1",
+        "impressions": "112",
+        "clicks": "10",
+        "inline_link_clicks": "5",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "6"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "4"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "4"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "48"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "48"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "6"
+          },
+          {
+            "action_type": "view_content",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "6"
+          },
+          {
+            "action_type": "video_view",
+            "value": "43"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "6"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.018182",
+        "reach": "110",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479109940054",
+        "adset_name": "B4H3",
+        "ad_id": "120253479109950054",
+        "ad_name": "BH",
+        "spend": "3.41",
+        "impressions": "373",
+        "clicks": "19",
+        "inline_link_clicks": "14",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "14"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "12"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "11"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "11"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "117"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "2"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "117"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "12"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "12"
+          },
+          {
+            "action_type": "view_content",
+            "value": "12"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "12"
+          },
+          {
+            "action_type": "video_view",
+            "value": "101"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "12"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "12"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.056657",
+        "reach": "353",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130570054",
+        "adset_name": "B2H4",
+        "ad_id": "120253479130350054",
+        "ad_name": "BH",
+        "spend": "5.7",
+        "impressions": "359",
+        "clicks": "29",
+        "inline_link_clicks": "26",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "26"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "10"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "10"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "10"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "41"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "21"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "3"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "21"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "120"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "2"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "120"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "41"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "41"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "view_content",
+            "value": "41"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "10"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "10"
+          },
+          {
+            "action_type": "lead",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "41"
+          },
+          {
+            "action_type": "video_view",
+            "value": "92"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "41"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "41"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "128.15"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "38.44"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "76.92"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "76.92"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "128.15"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "38.44"
+          },
+          {
+            "action_type": "lead",
+            "value": "38.44"
+          },
+          {
+            "action_type": "view_content",
+            "value": "76.92"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "128.15"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "76.92"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "76.92"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "128.15"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.094512",
+        "reach": "328",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130520054",
+        "adset_name": "B2H1",
+        "ad_id": "120253479130410054",
+        "ad_name": "BH",
+        "spend": "5.76",
+        "impressions": "537",
+        "clicks": "39",
+        "inline_link_clicks": "28",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "28"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "25"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "18"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "18"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "191"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "7"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "191"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "25"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "25"
+          },
+          {
+            "action_type": "view_content",
+            "value": "25"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "25"
+          },
+          {
+            "action_type": "video_view",
+            "value": "156"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "1"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "25"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "25"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.142553",
+        "reach": "470",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130560054",
+        "adset_name": "B2H3",
+        "ad_id": "120253479130420054",
+        "ad_name": "BH",
+        "spend": "5.52",
+        "impressions": "467",
+        "clicks": "28",
+        "inline_link_clicks": "20",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "20"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "23"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "18"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "4"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "18"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "173"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "173"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "23"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "23"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "view_content",
+            "value": "23"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "lead",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "23"
+          },
+          {
+            "action_type": "video_view",
+            "value": "150"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "1"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "4"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "23"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "23"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "25.65"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "51.31"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "12.83"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "12.83"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "25.65"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "51.31"
+          },
+          {
+            "action_type": "lead",
+            "value": "51.31"
+          },
+          {
+            "action_type": "view_content",
+            "value": "12.83"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "25.65"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "12.83"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "12.83"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "25.65"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.141809",
+        "reach": "409",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130550054",
+        "adset_name": "B2H2",
+        "ad_id": "120253479130430054",
+        "ad_name": "BH",
+        "spend": "5.99",
+        "impressions": "409",
+        "clicks": "38",
+        "inline_link_clicks": "25",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "25"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "16"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "14"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "14"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "160"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "160"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "16"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "16"
+          },
+          {
+            "action_type": "view_content",
+            "value": "16"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "16"
+          },
+          {
+            "action_type": "video_view",
+            "value": "135"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "1"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "16"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "16"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.120548",
+        "reach": "365",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130590054",
+        "adset_name": "B3H5",
+        "ad_id": "120253479130440054",
+        "ad_name": "BH",
+        "spend": "4.02",
+        "impressions": "353",
+        "clicks": "45",
+        "inline_link_clicks": "31",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "31"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "31"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "21"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "21"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "149"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "149"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "31"
+          },
+          {
+            "action_type": "video_view",
+            "value": "115"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "31"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.050595",
+        "reach": "336",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130380054",
+        "adset_name": "B4H1",
+        "ad_id": "120253479130450054",
+        "ad_name": "BH",
+        "spend": "3.23",
+        "impressions": "307",
+        "clicks": "32",
+        "inline_link_clicks": "21",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "21"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "21"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "18"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "18"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "124"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "124"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "21"
+          },
+          {
+            "action_type": "video_view",
+            "value": "100"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "21"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.037162",
+        "reach": "296",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130400054",
+        "adset_name": "B1H4",
+        "ad_id": "120253479130460054",
+        "ad_name": "BH",
+        "spend": "6.38",
+        "impressions": "435",
+        "clicks": "18",
+        "inline_link_clicks": "14",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "14"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "7"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "7"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "7"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "33"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "11"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "126"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "126"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "33"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "33"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "view_content",
+            "value": "33"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "7"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "7"
+          },
+          {
+            "action_type": "lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "33"
+          },
+          {
+            "action_type": "video_view",
+            "value": "109"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "1"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "33"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "33"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "82.02"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "25.61"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "189.81"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "189.81"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "82.02"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "25.61"
+          },
+          {
+            "action_type": "lead",
+            "value": "25.61"
+          },
+          {
+            "action_type": "view_content",
+            "value": "189.81"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "82.02"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "189.81"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "189.81"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "82.02"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.16",
+        "reach": "375",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130580054",
+        "adset_name": "B3H2",
+        "ad_id": "120253479130470054",
+        "ad_name": "BH",
+        "spend": "3.83",
+        "impressions": "292",
+        "clicks": "18",
+        "inline_link_clicks": "13",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "13"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "13"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "11"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "11"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "104"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "104"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "13"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "13"
+          },
+          {
+            "action_type": "view_content",
+            "value": "13"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "13"
+          },
+          {
+            "action_type": "video_view",
+            "value": "91"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "1"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "13"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "13"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.046595",
+        "reach": "279",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130390054",
+        "adset_name": "B4H2",
+        "ad_id": "120253479130480054",
+        "ad_name": "BH",
+        "spend": "3.54",
+        "impressions": "341",
+        "clicks": "34",
+        "inline_link_clicks": "22",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "22"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "18"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "13"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "13"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "144"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "144"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "18"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "18"
+          },
+          {
+            "action_type": "view_content",
+            "value": "18"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "18"
+          },
+          {
+            "action_type": "video_view",
+            "value": "119"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "18"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "18"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.07571",
+        "reach": "317",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130600054",
+        "adset_name": "B1H1",
+        "ad_id": "120253479130490054",
+        "ad_name": "BH",
+        "spend": "6.1",
+        "impressions": "481",
+        "clicks": "50",
+        "inline_link_clicks": "33",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "33"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "31"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "30"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "30"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "200"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "5"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "200"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "3"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "31"
+          },
+          {
+            "action_type": "video_view",
+            "value": "162"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "3"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "31"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "12.79"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "12.79"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "12.79"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "12.79"
+          },
+          {
+            "action_type": "lead",
+            "value": "12.79"
+          },
+          {
+            "action_type": "view_content",
+            "value": "12.79"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "12.79"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "12.79"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.06181",
+        "reach": "453",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130370054",
+        "adset_name": "B3H3",
+        "ad_id": "120253479130500054",
+        "ad_name": "BH",
+        "spend": "3.74",
+        "impressions": "324",
+        "clicks": "22",
+        "inline_link_clicks": "17",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "17"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "18"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "15"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "15"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "149"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "149"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "18"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "18"
+          },
+          {
+            "action_type": "view_content",
+            "value": "18"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "18"
+          },
+          {
+            "action_type": "video_view",
+            "value": "131"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "1"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "18"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "18"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.045161",
+        "reach": "310",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130360054",
+        "adset_name": "B3H1",
+        "ad_id": "120253479130510054",
+        "ad_name": "BH",
+        "spend": "2.96",
+        "impressions": "2462",
+        "clicks": "50",
+        "inline_link_clicks": "18",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "18"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "20"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "16"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "15"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "15"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "383"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "20"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "383"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "16"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "20"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "16"
+          },
+          {
+            "action_type": "view_content",
+            "value": "16"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "20"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "16"
+          },
+          {
+            "action_type": "video_view",
+            "value": "345"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "16"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "16"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.247846",
+        "reach": "1973",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130610054",
+        "adset_name": "B1H2",
+        "ad_id": "120253479130530054",
+        "ad_name": "BH",
+        "spend": "5.67",
+        "impressions": "411",
+        "clicks": "51",
+        "inline_link_clicks": "32",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "32"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "29"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "22"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "22"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "182"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "2"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "182"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "29"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "29"
+          },
+          {
+            "action_type": "view_content",
+            "value": "29"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "29"
+          },
+          {
+            "action_type": "video_view",
+            "value": "148"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "29"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "29"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "25.65"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "12.83"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "12.83"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "25.65"
+          },
+          {
+            "action_type": "view_content",
+            "value": "12.83"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "25.65"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "12.83"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "12.83"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "25.65"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.101877",
+        "reach": "373",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130620054",
+        "adset_name": "B1H 3",
+        "ad_id": "120253479130540054",
+        "ad_name": "BH",
+        "spend": "5.67",
+        "impressions": "644",
+        "clicks": "61",
+        "inline_link_clicks": "47",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "47"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "44"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "4"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "42"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "42"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "53"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "5"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "53"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "44"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "44"
+          },
+          {
+            "action_type": "view_content",
+            "value": "44"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "44"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "6"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "6"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "44"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "44"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.127846",
+        "reach": "571",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253522383330054",
+        "adset_name": "B2",
+        "ad_id": "120253522383340054",
+        "ad_name": "BH",
+        "spend": "2.62",
+        "impressions": "136",
+        "clicks": "19",
+        "inline_link_clicks": "16",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "16"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "10"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "10"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "10"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "63"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "63"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "10"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "10"
+          },
+          {
+            "action_type": "view_content",
+            "value": "10"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "10"
+          },
+          {
+            "action_type": "video_view",
+            "value": "46"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "10"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "10"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.054264",
+        "reach": "129",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253582381350054",
+        "adset_name": "C1G1",
+        "ad_id": "120253582381320054",
+        "ad_name": "BH",
+        "spend": "4.3",
+        "impressions": "346",
+        "clicks": "6",
+        "inline_link_clicks": "7",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "7"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "7"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "5"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "5"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "97"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "5"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "97"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "7"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "7"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "view_content",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "7"
+          },
+          {
+            "action_type": "video_view",
+            "value": "85"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "7"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "7"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "62.92"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "62.92"
+          },
+          {
+            "action_type": "view_content",
+            "value": "62.92"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "62.92"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "62.92"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.189003",
+        "reach": "291",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253582433580054",
+        "adset_name": "C1G2",
+        "ad_id": "120253582433560054",
+        "ad_name": "BH",
+        "spend": "5.48",
+        "impressions": "405",
+        "clicks": "18",
+        "inline_link_clicks": "15",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "15"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "15"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "14"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "14"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "171"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "171"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "15"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "15"
+          },
+          {
+            "action_type": "view_content",
+            "value": "15"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "15"
+          },
+          {
+            "action_type": "video_view",
+            "value": "153"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "2"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "15"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "15"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "8.99"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "134.84"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "134.84"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "8.99"
+          },
+          {
+            "action_type": "view_content",
+            "value": "134.84"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "8.99"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "134.84"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "134.84"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "8.99"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.238532",
+        "reach": "327",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253582433570054",
+        "adset_name": "C1G3",
+        "ad_id": "120253582433590054",
+        "ad_name": "BH",
+        "spend": "5.01",
+        "impressions": "491",
+        "clicks": "17",
+        "inline_link_clicks": "13",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "13"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "8"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "7"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "7"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "128"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "128"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "8"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "8"
+          },
+          {
+            "action_type": "view_content",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "8"
+          },
+          {
+            "action_type": "video_view",
+            "value": "112"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "1"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "8"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "8"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "8.99"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "71.91"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "71.91"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "8.99"
+          },
+          {
+            "action_type": "view_content",
+            "value": "71.91"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "8.99"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "71.91"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "71.91"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "8.99"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.295515",
+        "reach": "379",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253623846330054",
+        "adset_name": "C1",
+        "ad_id": "120253623846320054",
+        "ad_name": "BH",
+        "spend": "6.55",
+        "impressions": "538",
+        "clicks": "22",
+        "inline_link_clicks": "12",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "12"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "14"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "9"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "9"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "125"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "5"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "125"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "14"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "14"
+          },
+          {
+            "action_type": "view_content",
+            "value": "14"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "14"
+          },
+          {
+            "action_type": "video_view",
+            "value": "108"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "2"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "14"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "14"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "135.76"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "135.76"
+          },
+          {
+            "action_type": "view_content",
+            "value": "135.76"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "135.76"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "135.76"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.334988",
+        "reach": "403",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253624622180054",
+        "adset_name": "C2",
+        "ad_id": "120253624622190054",
+        "ad_name": "BH",
+        "spend": "7.1",
+        "impressions": "513",
+        "clicks": "30",
+        "inline_link_clicks": "22",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "22"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "21"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "17"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "17"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "149"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "2"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "149"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "21"
+          },
+          {
+            "action_type": "video_view",
+            "value": "125"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "21"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "21"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "285.65"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "285.65"
+          },
+          {
+            "action_type": "view_content",
+            "value": "285.65"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "285.65"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "285.65"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.295455",
+        "reach": "396",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253624867270054",
+        "adset_name": "C3",
+        "ad_id": "120253624867260054",
+        "ad_name": "BH",
+        "spend": "6.17",
+        "impressions": "1158",
+        "clicks": "40",
+        "inline_link_clicks": "32",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "32"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "56"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "28"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "28"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "37"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "5"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "37"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "56"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "56"
+          },
+          {
+            "action_type": "view_content",
+            "value": "56"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "3"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "56"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "56"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "56"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "36.65"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "630.23"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "630.23"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "36.65"
+          },
+          {
+            "action_type": "view_content",
+            "value": "630.23"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "36.65"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "630.23"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "630.23"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "36.65"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.273927",
+        "reach": "909",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253624990380054",
+        "adset_name": "C4",
+        "ad_id": "120253624990390054",
+        "ad_name": "BH",
+        "spend": "6.12",
+        "impressions": "903",
+        "clicks": "35",
+        "inline_link_clicks": "33",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "33"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "31"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "29"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "29"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "36"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "36"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "31"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "2"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "31"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "31"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "18.71"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "395.71"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "395.71"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "18.71"
+          },
+          {
+            "action_type": "view_content",
+            "value": "395.71"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "18.71"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "395.71"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "395.71"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "18.71"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.159178",
+        "reach": "779",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253664793600054",
+        "adset_name": "C5",
+        "ad_id": "120253664793590054",
+        "ad_name": "BH",
+        "spend": "13.04",
+        "impressions": "2017",
+        "clicks": "109",
+        "inline_link_clicks": "91",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "91"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "4"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "80"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "3"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "75"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "75"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "2"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "99"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "6"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "99"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "80"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "80"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "view_content",
+            "value": "80"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "4"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "80"
+          },
+          {
+            "action_type": "video_view",
+            "value": "2"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "6"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "6"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "80"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "80"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "74.68"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "1494.83"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "1494.83"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "74.68"
+          },
+          {
+            "action_type": "view_content",
+            "value": "1494.83"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "74.68"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "1494.83"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "1494.83"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "74.68"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.196323",
+        "reach": "1686",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253702643260054",
+        "adset_name": "Luis-nathan Case #2",
+        "ad_id": "120253702643280054",
+        "ad_name": "Ad",
+        "spend": "62.71",
+        "impressions": "15418",
+        "clicks": "647",
+        "inline_link_clicks": "506",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "506"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "10"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "10"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "21"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "10"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "14"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "439"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "439"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "3"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1015"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "29"
+          },
+          {
+            "action_type": "comment",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1015"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "32"
+          },
+          {
+            "action_type": "post",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "10"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "18"
+          },
+          {
+            "action_type": "click_to_call_native_20s_call_connect",
+            "value": "10"
+          },
+          {
+            "action_type": "offsite_add_to_cart_add_20_s_calls",
+            "value": "10"
+          },
+          {
+            "action_type": "click_to_call_native_60s_call_connect",
+            "value": "8"
+          },
+          {
+            "action_type": "video_view",
+            "value": "480"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "29"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "29"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "10"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.459209",
+        "reach": "10566",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253702643240054",
+        "adset_name": "Luis-nathan Case #2 - V3",
+        "ad_id": "120253702643290054",
+        "ad_name": "Ad",
+        "spend": "328.63",
+        "impressions": "28639",
+        "clicks": "1093",
+        "inline_link_clicks": "705",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "28"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "3"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "3"
+          },
+          {
+            "action_type": "link_click",
+            "value": "705"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "28"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "17"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "28"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "100"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "20"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "12"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "607"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "5"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "607"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "5"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "10867"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "162"
+          },
+          {
+            "action_type": "comment",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "10867"
+          },
+          {
+            "action_type": "purchase",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "19"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "28"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "168"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "19"
+          },
+          {
+            "action_type": "post",
+            "value": "22"
+          },
+          {
+            "action_type": "onsite_conversion.post_unsave",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "29"
+          },
+          {
+            "action_type": "view_content",
+            "value": "19"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "33"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "7"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "32"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "95"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "2"
+          },
+          {
+            "action_type": "lead",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "19"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "5"
+          },
+          {
+            "action_type": "click_to_call_native_20s_call_connect",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_add_to_cart_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "10000"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "26"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "26"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "6"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "19"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "19"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "8612.91"
+          },
+          {
+            "action_type": "omni_initiated_checkout",
+            "value": "26.01"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "191"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "191"
+          },
+          {
+            "action_type": "onsite_web_initiate_checkout",
+            "value": "26.01"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "8612.91"
+          },
+          {
+            "action_type": "purchase",
+            "value": "8612.91"
+          },
+          {
+            "action_type": "view_content",
+            "value": "191"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "0.86"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_initiate_checkout",
+            "value": "26.01"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "191"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "191"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "8612.91"
+          },
+          {
+            "action_type": "initiate_checkout",
+            "value": "26.01"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "8612.91"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "8612.91"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.991724",
+        "reach": "14379",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253702643330054",
+        "adset_name": "Luis-nathan Case #2 - C1",
+        "ad_id": "120253728646220054",
+        "ad_name": "Ad — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253695740110054",
+        "adset_name": "Luis-nathan Case #3",
+        "ad_id": "120253732835920054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253702643320054",
+        "adset_name": "Luis-nathan Case #1",
+        "ad_id": "120253732902850054",
+        "ad_name": "AD",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253702643330054",
+        "adset_name": "Luis-nathan Case #2 - C1",
+        "ad_id": "120253770210790054",
+        "ad_name": "Ad — Cópia — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407460054",
+        "adset_name": "Luis-nathan Case #1",
+        "ad_id": "120253841407330054",
+        "ad_name": "AD",
+        "spend": "96.16",
+        "impressions": "5828",
+        "clicks": "289",
+        "inline_link_clicks": "232",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "2"
+          },
+          {
+            "action_type": "link_click",
+            "value": "232"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "16"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "5"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "10"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "181"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "181"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "2000"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "23"
+          },
+          {
+            "action_type": "comment",
+            "value": "2"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "2000"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "1"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "23"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "6"
+          },
+          {
+            "action_type": "view_content",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "16"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "click_to_call_native_20s_call_connect",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_add_to_cart_add_20_s_calls",
+            "value": "4"
+          },
+          {
+            "action_type": "click_to_call_native_60s_call_connect",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1745"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "16"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "16"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "5"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "1"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "18.98"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "13"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "18.98"
+          },
+          {
+            "action_type": "view_content",
+            "value": "18.98"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "18.98"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "13"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "18.98"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "13"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.660872",
+        "reach": "3509",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407400054",
+        "adset_name": "Luis-nathan Case #3",
+        "ad_id": "120253841407350054",
+        "ad_name": "Ad",
+        "spend": "96.79",
+        "impressions": "5077",
+        "clicks": "304",
+        "inline_link_clicks": "256",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "256"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "9"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "9"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "15"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "9"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "15"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "211"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "211"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1876"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "22"
+          },
+          {
+            "action_type": "comment",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1876"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "22"
+          },
+          {
+            "action_type": "post",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "9"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "15"
+          },
+          {
+            "action_type": "click_to_call_native_20s_call_connect",
+            "value": "9"
+          },
+          {
+            "action_type": "offsite_add_to_cart_add_20_s_calls",
+            "value": "9"
+          },
+          {
+            "action_type": "click_to_call_native_60s_call_connect",
+            "value": "8"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1598"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "27"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "27"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "9"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.47716",
+        "reach": "3437",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407390054",
+        "adset_name": "Luis-nathan Case #2 - C1",
+        "ad_id": "120253841407360054",
+        "ad_name": "Ad — Cópia",
+        "spend": "62.88",
+        "impressions": "3905",
+        "clicks": "134",
+        "inline_link_clicks": "87",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "2"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "87"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "7"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "3"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "73"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "73"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1192"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "13"
+          },
+          {
+            "action_type": "comment",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1192"
+          },
+          {
+            "action_type": "purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "14"
+          },
+          {
+            "action_type": "post",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "2"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1092"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "4"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "4"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "387.96"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "387.96"
+          },
+          {
+            "action_type": "purchase",
+            "value": "387.96"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "0.04"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "387.96"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "387.96"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "387.96"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.481411",
+        "reach": "2636",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407430054",
+        "adset_name": "Luis-nathan Case #2",
+        "ad_id": "120253841407380054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407340054",
+        "adset_name": "Luis-nathan Case #2 - V3",
+        "ad_id": "120253841407410054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407390054",
+        "adset_name": "Luis-nathan Case #2 - C1",
+        "ad_id": "120253841407420054",
+        "ad_name": "Ad — Cópia — Cópia",
+        "spend": "72.29",
+        "impressions": "4348",
+        "clicks": "191",
+        "inline_link_clicks": "140",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "3"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "140"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "11"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "4"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "6"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "118"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "118"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1495"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "19"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1495"
+          },
+          {
+            "action_type": "purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "3"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "19"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "3"
+          },
+          {
+            "action_type": "post",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "4"
+          },
+          {
+            "action_type": "view_content",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "11"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_content_view_add_meta_leads",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "click_to_call_native_20s_call_connect",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_add_to_cart_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "click_to_call_native_60s_call_connect",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1336"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "12"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "12"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "3"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "6224.41"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_view_content",
+            "value": "56.85"
+          },
+          {
+            "action_type": "omni_view_content",
+            "value": "56.85"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "6224.41"
+          },
+          {
+            "action_type": "purchase",
+            "value": "6224.41"
+          },
+          {
+            "action_type": "view_content",
+            "value": "56.85"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "0.62"
+          },
+          {
+            "action_type": "onsite_web_view_content",
+            "value": "56.85"
+          },
+          {
+            "action_type": "onsite_web_app_view_content",
+            "value": "56.85"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "6224.41"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "6224.41"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "6224.41"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "1.416287",
+        "reach": "3070",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254417309080054",
+        "adset_name": "Luis-Nathan Case #2 - V5",
+        "ad_id": "120254417309060054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254417309050054",
+        "adset_name": "Luis-Nathan Case #2 - V1",
+        "ad_id": "120254417309070054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254417309110054",
+        "adset_name": "Luis-Nathan Case #2 - V2",
+        "ad_id": "120254417309090054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254417309100054",
+        "adset_name": "Luis-Nathan Case #2 - V4",
+        "ad_id": "120254417309120054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254534758990054",
+        "adset_name": "Case Caio rainha #1",
+        "ad_id": "120254534758980054",
+        "ad_name": "Case Caio Rainha #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254605219930054",
+        "adset_name": "Case Caio rainha #4",
+        "ad_id": "120254605219900054",
+        "ad_name": "Case Caio Rainha #4",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254605219910054",
+        "adset_name": "Case Caio rainha #2",
+        "ad_id": "120254605219950054",
+        "ad_name": "Case Caio Rainha #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254605219920054",
+        "adset_name": "Case Caio rainha #3",
+        "ad_id": "120254605219960054",
+        "ad_name": "Case Caio Rainha #3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "frequency": "0",
+        "reach": "0",
+        "date_stop": "2026-07-31"
+      }
+    ]
+  }
+}

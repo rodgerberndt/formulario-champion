@@ -1,0 +1,21 @@
+{
+  "consultado_em": "2026-09-11T00:41:01.566Z",
+  "path": "act_1107952820265255",
+  "params": {
+    "fields": "name,account_status,disable_reason,balance,amount_spent,created_time,currency"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "objeto": {
+      "name": "CA03 BM NOVA",
+      "account_status": 3,
+      "disable_reason": 0,
+      "balance": "300526",
+      "amount_spent": "12858665",
+      "created_time": "2024-05-17T18:15:36-0300",
+      "currency": "BRL",
+      "id": "act_1107952820265255"
+    }
+  }
+}

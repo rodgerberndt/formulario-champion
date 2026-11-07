@@ -16,18 +16,13 @@ export function ShimmerText({
   className?: string;
   delay?: number;
 }) {
-  return (
-    <span
-      className={`inline-block ${className}`}
-      style={{
-        animationDelay: `${delay}ms`,
-      }}
-    >
-      <span className={`shimmer-text-effect ${isVisible ? "active" : ""}`} style={{ animationDelay: `${delay + 300}ms` }}>
-        {children}
-      </span>
-    </span>
-  );
+  // Texto corrido, sem o reflexo dourado. O span era inline-block, e inline-block
+  // descarta o espaço nas bordas: "Andrômeda" + " em resultado" virava
+  // "ANDRÔMEDAEM". O reflexo passando também deixava letras soltas douradas.
+  // Mantida a assinatura (isVisible, delay) para não mexer nos 13 usos.
+  void isVisible;
+  void delay;
+  return <span className={className}>{children}</span>;
 }
 
 /**

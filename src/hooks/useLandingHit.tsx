@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { obterOuCriarFbp, getFbc } from "@/lib/metaTracking";
 
 const SESSION_KEY = "champion_session_id";
 const CLICK_ID_KEY = "champion_click_id";
@@ -58,6 +59,10 @@ function pickUtm() {
       fbclid: get("fbclid"),
       gclid: get("gclid"),
       ttclid: get("ttclid"),
+      // `path` já carrega a query string inteira, então o servidor consegue
+      // extrair o posicionamento sozinho. Mandar explícito evita depender do
+      // parse do path e deixa o contrato do corpo claro.
+      placement: get("utm_placement") || get("placement"),
     };
   } catch {
     return {};
@@ -78,6 +83,15 @@ export function fireLandingHit(force = false) {
       click_id: readClickId(),
       path: window.location.pathname + window.location.search,
       referrer: document.referrer || null,
+      // `fbp` e `fbc` FALTAVAM AQUI (24/09/2026), e é por isso que o PageView
+      // chegava à Meta sem eles: a função `landing-hit` sempre soube lê-los do
+      // corpo, mas ninguém mandava. Medido antes da correção: `fbp` em 18% dos
+      // PageView, `fbc` em 72%.
+      //
+      // `obterOuCriarFbp` cria o cookie quando o pixel ainda não criou, que é
+      // o caso da primeira visita — ver o comentário dela em metaTracking.
+      fbp: obterOuCriarFbp(),
+      fbc: getFbc(),
       ...pickUtm(),
     };
 

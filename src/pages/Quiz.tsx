@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, memo, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { getNavigationForLead, saveAdvancedMatching, eventIdsForLead } from "@/lib/metaTracking";
+import { useNavigate, useLocation } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,12 +20,21 @@ import {
   calculateLeadScore,
   computeLeadScore100,
   getTierFromFaturamento,
-  MERCADO_OPTIONS,
-  INVESTIMENTO_OPTIONS } from
+  MERCADO_OPTIONS } from
 "@/lib/leadScoring";
+import {
+  digitosParaValor,
+  faixaDoFaturamento,
+  faturamentoSuspeito,
+  formatarReais } from
+"@/lib/faturamento";
 import { useTracking } from "@/hooks/useTracking";
 import { useUtmCapture, getUtmForDb, getAttributionSource } from "@/hooks/useUtmCapture";
+import { instagramValido, normalizarInstagram } from "@/lib/instagramUsuario";
+import { resgatarAtribuicaoDoLead } from "@/lib/atribuicaoPaga";
 import { PhoneField, isPhoneE164Valid } from "@/components/PhoneField";
+import { getQuizVariantByPath, visitaNoTeste, QUIZ_CONTROLE } from "@/config/quizVariants";
+import { codigoDeTesteMeta } from "@/lib/ambienteMeta";
 
 const env = import.meta.env as Record<string, string | undefined>;
 const externalSupabaseUrl = env.SUPABASE_URL ?? env.VITE_SUPABASE_URL;
@@ -54,6 +64,9 @@ const MQL_FAIXAS = [
 ];
 const SPRINT_FAIXAS = ["Não vendo ainda (R$0/mês)", "Até R$ 5 mil", "De R$ 5 mil a R$ 10 mil"];
 
+/** Duração da animação da tela de envio. O lead é gravado antes disso, não depois. */
+const LOADING_MS = 10000;
+
 interface QuizFormData {
   nome_completo: string;
   whatsapp: string;
@@ -61,20 +74,41 @@ interface QuizFormData {
   email: string;
   mercado: string;
   operacoes_ativas: number | null;
+  /**
+   * Faturamento total somando TODAS as operações, em reais, digitado pelo lead.
+   * Guardado como texto porque o campo é mascarado; vira número no envio.
+   */
+  faturamento_valor: string;
+  /** Derivada de `faturamento_valor`. Continua sendo a régua de MQL. */
   investimento_faixa: string;
   dor_desejo: string;
   quer_vender_mais: string;
   lgpd: boolean;
-  compromisso_whatsapp: boolean;
+  /** "Sim" | "Talvez" | "Não" — virou pergunta de verdade em 25/08/2026. */
+  compromisso_whatsapp: string;
   nps_score: number | null;
   aceita_call_diagnostico: string;
+  /**
+   * Investimento mensal em trafego pago, declarado pelo lead (07/09/2026).
+   * Coleta de EXPERIMENTO: nao entra no score, nao decide MQL e nao muda
+   * roteamento. Existe para descobrir se capacidade real de investimento
+   * explica venda alem do faturamento declarado. Gravado em leads.trafego_faixa.
+   */
+  trafego_faixa: string;
+  /** Só para quem declara faixa acima de R$ 500 mil: "faturei" | "media" | "espera". */
+  faturamento_confirmado: string;
 }
 
-// Bumped to v3 to invalidate old cached state from before "aceita_call_diagnostico" step
-const STORAGE_KEY = "champion_quiz_progress_v3";
+// v5: o faturamento virou número digitado (a faixa passou a ser derivada dele).
+// Progresso salvo em v4 tem `investimento_faixa` sem o número que a originou, e
+// retomar aquilo devolveria o lead a uma tela que não existe mais.
+// v6 em 07/09/2026: o quiz ganhou um passo (q13_trafego) e o loading virou o 14.
+// Sem trocar a chave, quem estava no meio do quiz com progresso salvo em v5
+// voltaria no passo errado.
+const STORAGE_KEY = "champion_quiz_progress_v6";
 const RESULT_STORAGE_KEY = "champion_quiz_result";
 
-// Step IDs for tracking (12 steps now: aceita_call_diagnostico added before loading)
+// Step IDs for tracking (13 steps: o compromisso no WhatsApp entrou antes do loading)
 const STEP_IDS = [
   "q1_quer_vender",
   "q2_mercado",
@@ -87,8 +121,42 @@ const STEP_IDS = [
   "q9_dor",
   "q10_nps",
   "q11_aceita_call",
-  "q12_loading",
+  "q12_compromisso_whats",
+  // Pergunta de EXPERIMENTO, adicionada em 07/09/2026. Entrou no FIM do quiz de
+  // proposito: quem chega aqui ja respondeu tudo, entao o custo em conversao e o
+  // menor possivel, e nenhum passo existente mudou de posicao (o funil do admin
+  // continua lendo os mesmos ids de q1 a q11).
+  "q13_trafego",
+  "q14_loading",
 ];
+
+/**
+ * Investimento mensal em trafego pago. Faixas novas, escolhidas em 07/09/2026.
+ *
+ * A coluna leads.trafego_faixa existe desde fevereiro e NUNCA foi preenchida
+ * (0 linhas em toda a base), por isso da para reusar sem misturar semantica: nao
+ * ha historico com as faixas antigas para confundir com estas.
+ */
+const TRAFEGO_OPTIONS = [
+  "Nao invisto ainda",
+  "Ate R$ 2 mil",
+  "R$ 2 mil a R$ 10 mil",
+  "R$ 10 mil a R$ 30 mil",
+  "R$ 30 mil a R$ 100 mil",
+  "Acima de R$ 100 mil",
+];
+
+// Faixas que disparam a confirmação do faturamento declarado.
+//
+// Acima de R$ 1 milhão são 49 leads na base, nenhuma assessoria fechada, e o
+// único que agendou reunião não compareceu. Parte disso é gente declarando o
+// que espera faturar. A pergunta separa caixa de expectativa.
+const FAIXAS_CONFIRMACAO = new Set([
+  "De R$ 500 mil a R$ 750 mil", "De R$ 750 mil a R$ 1 milhão",
+  "De R$ 1 milhão a R$ 2 milhões", "De R$ 2 milhões a R$ 3 milhões",
+  "De R$ 3 milhões a R$ 5 milhões", "De R$ 5 milhões a R$ 10 milhões",
+  "Acima de R$ 10 milhões",
+]);
 
 
 // Memoized background component
@@ -214,31 +282,45 @@ function NpsStep({ value, onChange }: { value: number | null; onChange: (n: numb
 }
 
 // Loading step component — shows promo phrase while submitting answers
+/**
+ * Tela de espera do envio.
+ *
+ * Duas coisas erradas moravam aqui, as duas corrigidas em 26/08/2026:
+ *
+ * 1. Ela marcava `compromisso_whatsapp = true` sozinha, para todo lead que
+ *    chegasse até aqui, e esse campo valia 10 pontos na Taxa de Qualificação.
+ *    Agora o compromisso é uma pergunta de verdade, no step 12.
+ *
+ * 2. O lead só era gravado DEPOIS de dez segundos de `setTimeout`. Quem
+ *    fechava a aba nesse meio tempo virava lead nenhum — e no celular nem
+ *    precisa fechar: o navegador congela o timer quando a aba sai de foco,
+ *    então bastava olhar uma notificação. Eram 2,6% dos leads que tinham
+ *    respondido o quiz INTEIRO, os mais caros que existem. Agora o envio
+ *    dispara no mesmo instante em que a tela aparece, e os dez segundos
+ *    valem só para a animação.
+ */
 function LoadingCommitStep({
   onFinish,
-  onCommit,
+  onStart,
   submitFailed,
   onRetry,
 }: {
   onFinish: () => void;
-  onCommit: (v: boolean) => void;
+  onStart: () => void;
   submitFailed: boolean;
   onRetry: () => void;
 }) {
   const onFinishRef = useRef(onFinish);
-  const onCommitRef = useRef(onCommit);
+  const onStartRef = useRef(onStart);
   onFinishRef.current = onFinish;
-  onCommitRef.current = onCommit;
+  onStartRef.current = onStart;
   const hasFiredRef = useRef(false);
 
   useEffect(() => {
     if (hasFiredRef.current) return;
     hasFiredRef.current = true;
-    onCommitRef.current(true);
-    const t = setTimeout(() => {
-      onFinishRef.current();
-    }, 10000);
-    return () => clearTimeout(t);
+    onStartRef.current();
+    onFinishRef.current();
   }, []);
 
   if (submitFailed) {
@@ -327,24 +409,49 @@ function LoadingCommitStep({
 
 export default function Quiz() {
   const navigate = useNavigate();
-  const { trackQuizPageView, trackStepView, trackStepNext, trackStepBack, trackSubmit } = useTracking();
+  const { pathname } = useLocation();
+  const { trackQuizPageView, trackIntroEnd, trackStepView, trackStepNext, trackStepBack, trackSubmit } = useTracking();
   const { getUtmPayload } = useUtmCapture();
 
-  const [step, setStep] = useState(1);
+  // Célula do teste A/B, decidida pelo path. Fora do teste, /quiz devolve o
+  // controle, então todo o resto do componente segue funcionando igual.
+  const variante = getQuizVariantByPath(pathname);
+  // A Q3 não tem a pergunta de engajamento: o quiz abre no mercado. Os IDs dos
+  // passos NÃO são renumerados de propósito — na Q3 o passo "q1_quer_vender"
+  // simplesmente não existe, e "q2_mercado" continua sendo q2_mercado. É isso
+  // que deixa o relatório comparar as células passo a passo sem desalinhar.
+  const primeiroPasso = variante.perguntaEngajamento ? 1 : 2;
+
+  const [step, setStep] = useState(primeiroPasso);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitFailed, setSubmitFailed] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [introCanSkip, setIntroCanSkip] = useState(false);
 
+  const introAbertaEm = useRef(Date.now());
+  const introJaFechou = useRef(false);
+
+  // O fim da abertura é o evento que separa duas desistências que hoje se
+  // confundem: quem sai no aviso e quem sai na primeira pergunta. As duas
+  // moram na mesma tela, e sem esta marca a única leitura possível era "parou
+  // no começo".
+  const fecharIntro = useCallback((como: "pulou" | "esperou") => {
+    if (introJaFechou.current) return;
+    introJaFechou.current = true;
+    setShowIntro(false);
+    const segundos = Math.round((Date.now() - introAbertaEm.current) / 100) / 10;
+    trackIntroEnd(como, segundos).catch(() => {});
+  }, [trackIntroEnd]);
+
   // Allow skipping intro after 3s; auto-close after 10s
   useEffect(() => {
     const skipTimer = setTimeout(() => setIntroCanSkip(true), 3000);
-    const t = setTimeout(() => setShowIntro(false), 10000);
+    const t = setTimeout(() => fecharIntro("esperou"), 10000);
     return () => {
       clearTimeout(t);
       clearTimeout(skipTimer);
     };
-  }, []);
+  }, [fecharIntro]);
 
   const formDataRef = useRef<QuizFormData | null>(null);
   const [phoneValid, setPhoneValid] = useState(false);
@@ -355,28 +462,40 @@ export default function Quiz() {
     email: "",
     mercado: "",
     operacoes_ativas: null,
+    faturamento_valor: "",
     investimento_faixa: "",
     dor_desejo: "",
     quer_vender_mais: "",
     lgpd: false,
-    compromisso_whatsapp: false,
+    compromisso_whatsapp: "",
     nps_score: null,
     aceita_call_diagnostico: "",
+    faturamento_confirmado: "",
+    trafego_faixa: "",
   });
 
-  const totalSteps = 12;
+  const totalSteps = 14;
   const hasTrackedQuizView = useRef(false);
   const lastTrackedStep = useRef<number | null>(null);
   const hasSubmittedRef = useRef(false); // Hard guard against double-submit
+  // Quando a tela de envio apareceu. O lead é gravado na hora; este marcador
+  // serve só para a navegação respeitar os 10 segundos da animação.
+  const loadingStartedAtRef = useRef<number | null>(null);
   const isAdvancingRef = useRef(false); // Prevents double-click on next button
 
   // Track quiz page view on mount
   useEffect(() => {
     if (!hasTrackedQuizView.current) {
       hasTrackedQuizView.current = true;
-      trackQuizPageView();
+      // A célula só é gravada para quem está DE FATO no teste. Quem chega por
+      // outra campanha vê o controle, mas não entra na contagem dele: gravar
+      // "Q5" para todo mundo encheria o controle de gente de outro criativo,
+      // outra oferta e outra landing, e a comparação deixaria de valer.
+      // Abrir /quiz/q3 na mão continua contando: é uma escolha explícita.
+      const noTeste = variante.path !== QUIZ_CONTROLE.path || visitaNoTeste();
+      trackQuizPageView(noTeste ? { codigo: variante.codigo, path: variante.path } : undefined);
     }
-  }, [trackQuizPageView]);
+  }, [trackQuizPageView, variante.codigo, variante.path]);
 
   // Track step view when step changes
   useEffect(() => {
@@ -398,7 +517,9 @@ export default function Quiz() {
       }
       // Clamp step to valid range and never resume on the loading/submit step
       if (typeof parsed?.step === "number") {
-        const safeStep = Math.max(1, Math.min(parsed.step, totalSteps - 1));
+        // Progresso salvo antes de a célula mudar não pode devolver a
+        // pessoa a um passo que esta variante não tem.
+        const safeStep = Math.max(primeiroPasso, Math.min(parsed.step, totalSteps - 1));
         setStep(safeStep);
       }
       if (parsed?.formData?.whatsapp) {
@@ -429,6 +550,11 @@ export default function Quiz() {
     setFormData((prev) => ({ ...prev, [field]: value as never }));
   }, []);
 
+  // Valor numérico do faturamento e a conferência de ordem de grandeza. Os dois
+  // saem do mesmo texto mascarado e são usados na tela e no envio.
+  const faturamentoNumero = digitosParaValor(formData.faturamento_valor);
+  const suspeitaFaturamento = faturamentoSuspeito(faturamentoNumero);
+
   const canProceed = useCallback(() => {
     switch (step) {
       case 1:
@@ -438,14 +564,23 @@ export default function Quiz() {
       case 3:
         return formData.operacoes_ativas !== null;
       case 4:
-        return formData.investimento_faixa !== "";
+        // Campo vazio não passa. Zero passa: "não vendo ainda" é resposta, e
+        // exigir número positivo empurraria esse lead a inventar um.
+        if (formData.faturamento_valor.trim() === "") return false;
+        if (formData.investimento_faixa === "") return false;
+        // Faixa alta só passa depois de dizer se o número é caixa ou expectativa.
+        if (FAIXAS_CONFIRMACAO.has(formData.investimento_faixa)) {
+          return formData.faturamento_confirmado !== "";
+        }
+        return true;
       case 5:
         return formData.nome_completo.trim().length >= 3;
       case 6: {
         return phoneValid && isPhoneE164Valid(formData.whatsapp) && formData.lgpd;
       }
       case 7:
-        return formData.instagram.trim().length >= 1;
+        // "@" sozinho tem comprimento 1 e passava na régua antiga.
+        return instagramValido(formData.instagram);
       case 8: {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(formData.email.trim());
@@ -457,6 +592,10 @@ export default function Quiz() {
       case 11:
         return formData.aceita_call_diagnostico !== "";
       case 12:
+        return formData.compromisso_whatsapp !== "";
+      case 13:
+        return formData.trafego_faixa !== "";
+      case 14:
         return true;
       default:
         return false;
@@ -470,7 +609,13 @@ export default function Quiz() {
     hasSubmittedRef.current = true;
     setSubmitFailed(false);
 
-    const currentData = formDataRef.current || formData;
+    // O Instagram é normalizado UMA vez, aqui, e vale para todos os destinos
+    // deste envio (banco, quiz_leads, n8n, tracking, página de obrigado): URL
+    // colada vira usuário, espaço e "@" repetido somem. Ver
+    // src/lib/instagramUsuario.ts — a validação do passo 7 aceitava "@" sozinho
+    // até 18/09/2026, e um lead real entrou assim.
+    const bruto = formDataRef.current || formData;
+    const currentData = { ...bruto, instagram: normalizarInstagram(bruto.instagram) };
     setIsSubmitting(true);
 
     // Safety: if everything stalls, allow retry after 25s
@@ -485,13 +630,12 @@ export default function Quiz() {
       const scoreResult = computeLeadScore100({
         investimento_faixa: currentData.investimento_faixa,
         mercado: currentData.mercado,
-        operacoes_ativas: currentData.operacoes_ativas,
         quer_vender_mais: currentData.quer_vender_mais,
         compromisso_whatsapp: currentData.compromisso_whatsapp,
         aceita_call_diagnostico: currentData.aceita_call_diagnostico,
         dor_desejo: currentData.dor_desejo,
         nps_score: currentData.nps_score,
-        lgpd: currentData.lgpd,
+        faturamento_confirmado: currentData.faturamento_confirmado,
       });
       const tier = getTierFromFaturamento(currentData.investimento_faixa);
 
@@ -509,8 +653,22 @@ export default function Quiz() {
         new Promise<null>((resolve) => setTimeout(() => resolve(null), 800)),
       ]);
 
-      const fbpMatch = document.cookie.match(/(?:^|; )_fbp=([^;]*)/);
-      const fbp = fbpMatch ? decodeURIComponent(fbpMatch[1]) : null;
+      const navegacao = getNavigationForLead();
+      const fbp = navegacao.fbp;
+
+      // Página de destino real do lead (usada como event_source_url no CAPI, pra bater
+      // com a URL onde o pixel client-side vai efetivamente disparar o mesmo evento —
+      // ver roteamento no fim do envio, MQL_FAIXAS/SPRINT_FAIXAS).
+      //
+      // Calculada ANTES do insert desde 18/09/2026: ela vai junto do lead em
+      // `destino_conversao`, e é dela que o GATILHO do banco tira o
+      // event_source_url. O gatilho não recebia nada e caía no palpite do
+      // `fire-capi-events` (`/obrigadosprint` para faixa não-MQL), que diverge
+      // da URL usada pelo pixel sempre que o destino real é outro.
+      const destinationPath = MQL_FAIXAS.includes(currentData.investimento_faixa)
+        ? "/obrigadomql"
+        : "/obrigadosprint";
+      const destinoAbsoluto = `${window.location.origin}${destinationPath}`;
 
       const dbData = {
         nome_completo: currentData.nome_completo,
@@ -520,19 +678,75 @@ export default function Quiz() {
         mercado: currentData.mercado,
         operacoes_ativas: currentData.operacoes_ativas,
         investimento_faixa: currentData.investimento_faixa,
+        // O número que o lead digitou. A faixa acima é derivada dele e continua
+        // sendo a régua de MQL; este campo é o que permite ver a distribuição
+        // dentro da faixa, que a faixa sozinha esconde.
+        faturamento_declarado: digitosParaValor(currentData.faturamento_valor),
         dor_desejo: currentData.dor_desejo,
+        // EXPERIMENTO 07/09/2026. Coluna legada , reusada porque
+        // a semantica e a mesma (investimento mensal em trafego) e ela nunca
+        // teve uma linha preenchida em toda a base — nao ha historico com as
+        // faixas antigas para se misturar com estas.
+        trafego_faixa: currentData.trafego_faixa || null,
         score: scoreResult.score,
+        // A NOTA SOZINHA NÃO DIZ DE ONDE VEIO.
+        //
+        // `calcularNota` já devolve `breakdown` e `version`; até 11/09/2026 o
+        // insert descartava os dois e gravava só o total. As colunas existem
+        // desde a migration 20260826120000, mas nunca foram preenchidas ao
+        // vivo — o que havia era um recálculo em massa rodado uma única vez em
+        // 28/08/2026 21:06, que cobriu os 2.168 leads existentes até ali e,
+        // naturalmente, nenhum lead nascido depois.
+        //
+        // Sem isto não é possível responder "QUAL componente da nota caiu",
+        // que foi exatamente a pergunta que a autópsia da CA03-BMsss não
+        // conseguiu responder para os 78 leads do período deteriorado.
+        //
+        // Isto NÃO altera fórmula, pesos, threshold nem MQL: grava o que o
+        // scorer já calculou.
+        score_breakdown: scoreResult.breakdown,
+        score_version: scoreResult.version,
+        score_calculated_at: new Date().toISOString(),
         tier,
         nps_score: currentData.nps_score,
         raw_answers_json: JSON.parse(JSON.stringify(currentData)),
         attribution_source: getAttributionSource(),
         ip_address: clientIp,
         fbp,
-        ...getUtmPayload()
+        // Dados de navegação para a CAPI identificar a pessoa depois (venda,
+        // reunião): cookie do clique, navegador, página. Ver src/lib/metaTracking.ts.
+        fbc: navegacao.fbc,
+        user_agent: navegacao.user_agent,
+        page_url: navegacao.page_url,
+        session_id: navegacao.session_id,
+        // Para onde ESTE lead vai agora — a URL que o gatilho do banco usa
+        // como event_source_url, a mesma que o pixel usa no navegador.
+        destino_conversao: destinoAbsoluto,
+        // REDE DE BAIXO (18/09/2026). `campaign_id`/`adset_id`/`ad_id`/
+        // `utm_content` vazios são preenchidos pelo toque pago guardado antes
+        // de o lead nascer — mesma ideia do resgate de `placement` no gatilho
+        // (migration 20260911150000). Valor entregue pelo navegador sempre
+        // manda; campo cheio não é tocado. Ver src/lib/atribuicaoPaga.ts.
+        ...resgatarAtribuicaoDoLead(getUtmPayload())
       };
 
       const leadId = crypto.randomUUID();
-      const { error } = await supabase.from("leads").insert([{ id: leadId, ...dbData }]);
+      let { error } = await supabase.from("leads").insert([{ id: leadId, ...dbData }]);
+      // Se a migration das colunas novas (navegação e detalhe da nota) ainda
+      // não estiver no banco, o lead NÃO pode se perder: tenta de novo sem
+      // elas. O lead vale mais que a telemetria dele.
+      if (error && /column|schema cache|PGRST204|42703/i.test(`${error.code} ${error.message}`)) {
+        console.warn("[lead] insert sem colunas opcionais (migration pendente):", error.message);
+        const {
+          fbc: _a, user_agent: _b, page_url: _c, session_id: _d,
+          score_breakdown: _e, score_version: _f, score_calculated_at: _g,
+          // `destino_conversao` só existe depois da migration 20260918180000.
+          // Sem esta linha, site novo + banco velho derrubaria todo insert.
+          destino_conversao: _h,
+          ...semColunasOpcionais
+        } = dbData;
+        ({ error } = await supabase.from("leads").insert([{ id: leadId, ...semColunasOpcionais }]));
+      }
 
       if (error) throw error;
 
@@ -541,12 +755,16 @@ export default function Quiz() {
       // Persist for "skip queue" tracking on /obrigado pages
       try { localStorage.setItem('champion_lead_id', leadId); } catch {}
 
+      // Advanced matching do pixel na página de obrigado (lida no index.html
+      // no fbq('init')): e-mail, telefone e nome normalizados.
+      saveAdvancedMatching({ email: currentData.email, whatsapp: currentData.whatsapp, nome: currentData.nome_completo, leadId });
+
+      // Ids determinísticos por lead e evento. Navegador e servidor (fire-capi-
+      // events, gatilho do banco, kommo) chegam ao MESMO id sem combinar nada,
+      // e o Meta desduplica. Antes levavam timestamp e cada chamador gerava
+      // um id diferente: o Lead contava duas vezes.
       const eventTimestamp = Math.floor(Date.now() / 1000);
-      const eventIds: Record<string, string> = {
-        CompleteRegistration: `${insertedLead?.id}_CompleteRegistration_${eventTimestamp}`,
-        Lead: `${insertedLead?.id}_Lead_${eventTimestamp}`,
-        MQL: `${insertedLead?.id}_MQL_${eventTimestamp}`,
-      };
+      const eventIds: Record<string, string> = eventIdsForLead(insertedLead.id);
 
       localStorage.setItem('champion_event_ids', JSON.stringify({
         lead_id: insertedLead?.id,
@@ -554,17 +772,19 @@ export default function Quiz() {
         timestamp: eventTimestamp,
       }));
 
-      // Página de destino real do lead (usada como event_source_url no CAPI, pra bater
-      // com a URL onde o pixel client-side vai efetivamente disparar o mesmo evento —
-      // ver roteamento abaixo, MQL_FAIXAS/SPRINT_FAIXAS).
-      const destinationPath = MQL_FAIXAS.includes(currentData.investimento_faixa)
-        ? "/obrigadomql"
-        : "/obrigadosprint";
-
       // CAPI events (background)
       if (insertedLead?.id) {
+        // `test_event_code` fora do domínio de produção: o evento aparece em
+        // "Testar eventos" no Gerenciador e o Meta não o conta em métrica
+        // nenhuma. Ver src/lib/ambienteMeta.ts.
+        const codigoTesteCapi = codigoDeTesteMeta();
         supabase.functions.invoke('fire-capi-events', {
-          body: { lead_db_id: insertedLead.id, event_ids: eventIds, event_source_url: `https://championadstudio.com${destinationPath}` },
+          body: {
+            lead_db_id: insertedLead.id,
+            event_ids: eventIds,
+            event_source_url: destinoAbsoluto,
+            ...(codigoTesteCapi ? { test_event_code: codigoTesteCapi } : {}),
+          },
         }).then(res => {
           console.log('[CAPI] fire-capi-events response:', res.data);
         }).catch(err => {
@@ -587,6 +807,8 @@ export default function Quiz() {
           mercado: currentData.mercado,
           operacoes_ativas: currentData.operacoes_ativas,
           investimento_faixa: currentData.investimento_faixa,
+          faturamento_declarado: digitosParaValor(currentData.faturamento_valor),
+          faturamento_confirmado: currentData.faturamento_confirmado,
           dor_desejo: currentData.dor_desejo,
           compromisso_whatsapp: currentData.compromisso_whatsapp,
           nps_score: currentData.nps_score,
@@ -679,16 +901,30 @@ export default function Quiz() {
 
       clearTimeout(safetyTimer);
 
+      // O lead já está gravado. O que sobra aqui é só respeitar o tempo da
+      // animação de envio, para o lead não ser jogado na página de obrigado
+      // um segundo depois de responder.
+      const decorrido = Date.now() - (loadingStartedAtRef.current ?? Date.now());
+      const restante = LOADING_MS - decorrido;
+      if (restante > 0) await new Promise((r) => setTimeout(r, restante));
+
       const faixa = currentData.investimento_faixa;
+      // Navegação COMPLETA (não SPA) para a página de obrigado: o pixel só
+      // aceita advanced matching no `init`, e o init acontece no index.html.
+      // Recarregar a página faz o pixel nascer já com e-mail, telefone e nome
+      // do lead (champion_am). Antes o Lead do navegador saía sem nada disso.
       if (MQL_FAIXAS.includes(faixa)) {
         // ≥ R$ 10 mil → Assessoria
-        navigate("/obrigadomql");
+        window.location.assign("/obrigadomql");
       } else if (SPRINT_FAIXAS.includes(faixa)) {
         // "Não vendo ainda", até R$ 5 mil ou R$ 5-10 mil → Sprint
-        navigate("/obrigadosprint");
+        window.location.assign("/obrigadosprint");
       } else {
-        // Faixa não reconhecida (dado legado/inesperado) — fallback de segurança
-        window.location.href = "https://sprint.championadstudio.com";
+        // Faixa não reconhecida (dado legado/inesperado) — fallback de segurança.
+        // Já apontou para sprint.championadstudio.com, que NÃO EXISTE (NXDOMAIN):
+        // o lead era gravado e depois via uma tela de erro de DNS. A página
+        // interna faz o mesmo trabalho e não depende de domínio nenhum.
+        window.location.assign("/obrigadosprint");
       }
     } catch (error) {
       console.error("Error submitting lead:", error);
@@ -733,6 +969,8 @@ export default function Quiz() {
         case 9: fieldData.dor_desejo = formData.dor_desejo; break;
         case 10: fieldData.nps_score = String(formData.nps_score ?? ""); break;
         case 11: fieldData.aceita_call_diagnostico = formData.aceita_call_diagnostico; break;
+        case 12: fieldData.compromisso_whatsapp = formData.compromisso_whatsapp; break;
+        case 13: fieldData.trafego_faixa = formData.trafego_faixa; break;
       }
 
       try {
@@ -747,7 +985,7 @@ export default function Quiz() {
   };
 
   const prevStep = async () => {
-    if (step > 1 && step < totalSteps) {
+    if (step > primeiroPasso && step < totalSteps) {
       const fromStepId = STEP_IDS[step - 1];
       const toStepId = STEP_IDS[step - 2];
       try {
@@ -867,8 +1105,20 @@ export default function Quiz() {
       case 2:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
+            {variante.provaNoMercado && (
+              // A prova entra ACIMA da pergunta: 90% do tráfego é celular e
+              // abaixo do seletor ninguém rola para ver.
+              <img
+                src="/prova-mercado.jpg"
+                alt="Cliente da Champion com R$ 27.540 investidos e 81 compras no mês"
+                width={600}
+                height={785}
+                loading="eager"
+                className="w-full rounded-xl border border-border/60"
+              />
+            )}
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
-              Se você quer vender mais, então qual o seu mercado hoje?
+              {variante.perguntaMercado}
             </label>
             <Select
               value={formData.mercado}
@@ -918,32 +1168,97 @@ export default function Quiz() {
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
-              Quanto de faturamento você tem hoje no seu ecossistema?
+              Quanto de faturamento total em todas as suas operações hoje?
             </label>
-            <Select
-              value={formData.investimento_faixa}
-              onValueChange={(value) => updateField("investimento_faixa", value)}>
-              <SelectTrigger className={selectClasses}>
-                <SelectValue placeholder="Selecione o faturamento" />
-              </SelectTrigger>
-              <SelectContent className="bg-card border-border rounded-xl max-h-[280px]">
-                {INVESTIMENTO_OPTIONS.map((option) =>
-                <SelectItem
-                  key={option}
-                  value={option}
-                  className="text-foreground hover:bg-muted focus:bg-muted text-sm sm:text-base py-2.5 sm:py-3">
-                    {option}
-                  </SelectItem>
-                )}
-              </SelectContent>
-            </Select>
+
+            {/* Número digitado, não faixa escolhida. A lista de faixas ensinava
+                a resposta: quem faturava 9 mil via "De R$ 10 mil a R$ 20 mil"
+                logo abaixo e arredondava para cima — em cima da régua de MQL.
+                A faixa continua existindo, derivada do número. */}
+            <div>
+              <Input
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                placeholder="R$ 0"
+                value={formData.faturamento_valor}
+                onChange={(e) => {
+                  const valor = digitosParaValor(e.target.value);
+                  updateField("faturamento_valor", valor === null ? "" : formatarReais(valor));
+                  updateField("investimento_faixa", faixaDoFaturamento(valor));
+                  // Trocar o valor invalida a confirmação anterior: quem
+                  // corrigiu de 50 mil para 500 mil precisa dizer de novo se é
+                  // caixa ou expectativa.
+                  updateField("faturamento_confirmado", "");
+                }}
+                className="h-12 sm:h-14 text-lg sm:text-xl font-semibold bg-input border-2 border-border/60 rounded-xl focus:border-primary tabular-nums"
+              />
+              <p className="mt-2 text-xs sm:text-sm text-muted-foreground">
+                Some todas as operações e informe o valor real do mês. É por este
+                número que a Champion define se consegue ajudar sua operação.
+              </p>
+            </div>
+
+            {/* Conferência de ordem de grandeza. Digitar "50" querendo dizer
+                "50 mil" é o erro mais comum de campo livre de dinheiro, e ele
+                derruba um MQL para fora da régua sem ninguém perceber. */}
+            {suspeitaFaturamento === "baixo_demais" && (
+              <p className="flex gap-2 text-xs sm:text-sm text-amber-400 border border-amber-500/25 bg-amber-500/5 rounded-xl p-3 animate-fade-in">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>
+                  Confirma que é <strong>{formData.faturamento_valor}</strong> por mês? Se
+                  quis dizer mil, escreva o número inteiro (50 mil = 50000).
+                </span>
+              </p>
+            )}
+            {suspeitaFaturamento === "alto_demais" && (
+              <p className="flex gap-2 text-xs sm:text-sm text-amber-400 border border-amber-500/25 bg-amber-500/5 rounded-xl p-3 animate-fade-in">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>
+                  Confirma que é <strong>{formData.faturamento_valor}</strong> por mês?
+                  Parece ter um dígito a mais.
+                </span>
+              </p>
+            )}
+
+            {/* Confirmação do faturamento — só para faixa alta. Separa quem
+                tem o caixa de quem tem a expectativa. */}
+            {FAIXAS_CONFIRMACAO.has(formData.investimento_faixa) && (
+              <div className="space-y-3 animate-fade-in pt-1">
+                <label className="block text-sm sm:text-base font-medium text-foreground leading-snug">
+                  Esse valor é o que você já fatura, ou o que espera faturar?
+                </label>
+                <div className="grid gap-2">
+                  {[
+                    { v: "faturei", t: "Foi o que faturei no mês passado" },
+                    { v: "media", t: "É a minha média dos últimos meses" },
+                    { v: "espera", t: "É o que eu espero faturar" },
+                  ].map((opt) => {
+                    const selected = formData.faturamento_confirmado === opt.v;
+                    return (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => updateField("faturamento_confirmado", opt.v)}
+                        className={`h-11 sm:h-12 rounded-xl border-2 text-sm sm:text-base font-medium px-3 text-left transition-colors duration-200 ${
+                          selected
+                            ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25"
+                            : "bg-input text-foreground border-border/60 hover:border-primary/60"
+                        }`}>
+                        {opt.t}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>);
 
       case 1:
         return (
           <div className="space-y-4 sm:space-y-5 animate-fade-in">
             <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
-              Você quer vender mais?
+              {variante.perguntaEngajamento}
             </label>
             <div className="grid grid-cols-2 gap-3">
               {["Sim", "Não"].map((opt) => {
@@ -1083,9 +1398,98 @@ export default function Quiz() {
 
       case 12:
         return (
+          <div className="space-y-4 sm:space-y-5 animate-fade-in">
+            <div className="bg-secondary/10 border border-secondary/20 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-secondary shrink-0" />
+                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
+                  Última pergunta, de verdade agora.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
+                Nosso time vai te chamar no WhatsApp hoje. Você se compromete a responder?
+              </label>
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                Quem responde rápido entra na frente da fila do diagnóstico.
+              </p>
+            </div>
+
+            <div className="grid gap-2.5">
+              {[
+                { v: "Sim", t: "Sim, respondo assim que chegar" },
+                { v: "Talvez", t: "Talvez, posso demorar um pouco" },
+                { v: "Não", t: "Não" },
+              ].map((opt) => {
+                const selected = formData.compromisso_whatsapp === opt.v;
+                return (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => {
+                      // Sem avanco automatico: o lead precisa poder trocar um clique errado.
+                      // Quem avanca e o Continuar do rodape, que ja dispara o trackStepNext
+                      // com o mesmo par de STEP_IDS e o mesmo fieldData.
+                      updateField("compromisso_whatsapp", opt.v);
+                    }}
+                    className={`h-12 sm:h-14 rounded-xl border-2 text-sm sm:text-base font-semibold px-4 text-left transition-colors duration-200 ${
+                      selected
+                        ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25"
+                        : "bg-input text-foreground border-border/60 hover:border-primary/60"
+                    }`}>
+                    {opt.t}
+                  </button>
+                );
+              })}
+            </div>
+          </div>);
+
+      // ── EXPERIMENTO 07/09/2026: investimento em trafego ──────────────────
+      // Nao pontua, nao decide MQL, nao muda roteamento. So grava.
+      case 13:
+        return (
+          <div className="space-y-4 sm:space-y-5 animate-fade-in">
+            <div className="space-y-3">
+              <label className="block text-[17px] sm:text-lg md:text-xl font-semibold text-foreground leading-snug">
+                Quanto voce investe em trafego pago por mes hoje?
+              </label>
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                E so pra entender o tamanho da operacao. Nao muda nada no seu diagnostico.
+              </p>
+            </div>
+
+            <div className="grid gap-2.5">
+              {TRAFEGO_OPTIONS.map((opt) => {
+                const selected = formData.trafego_faixa === opt;
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => {
+                      // Sem avanco automatico: o lead precisa poder trocar um clique errado.
+                      // Quem avanca e o Continuar do rodape, que ja dispara o trackStepNext
+                      // com o mesmo par de STEP_IDS e o mesmo fieldData.
+                      updateField("trafego_faixa", opt);
+                    }}
+                    className={`h-12 sm:h-14 rounded-xl border-2 text-sm sm:text-base font-semibold px-4 text-left transition-colors duration-200 ${
+                      selected
+                        ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25"
+                        : "bg-input text-foreground border-border/60 hover:border-primary/60"
+                    }`}>
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+          </div>);
+
+      case 14:
+        return (
           <LoadingCommitStep
             onFinish={handleSubmit}
-            onCommit={(v) => updateField("compromisso_whatsapp", v)}
+            onStart={() => { loadingStartedAtRef.current = Date.now(); }}
             submitFailed={submitFailed}
             onRetry={retrySubmit}
           />);
@@ -1104,14 +1508,39 @@ export default function Quiz() {
           <div className="max-w-md w-full text-center space-y-6">
             <Loader2 className="w-12 h-12 text-primary mx-auto animate-spin" strokeWidth={2.5} />
             <div className="space-y-3">
-              <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug">
-                Atenção antes de continuar
+              <h2 className={`font-bold text-white leading-snug ${
+                variante.introCredito
+                  ? "text-lg sm:text-xl italic"
+                  : "text-xl sm:text-2xl"
+              }`}>
+                {variante.introDestaque
+                  ? (() => {
+                      // O destaque é sempre o final da frase, como na landing:
+                      // o texto corre normal e a última parte vem em dourado.
+                      const corte = variante.introTitulo.lastIndexOf(variante.introDestaque);
+                      return (
+                        <>
+                          {variante.introTitulo.slice(0, corte)}
+                          <span className="text-secondary not-italic">{variante.introDestaque}</span>
+                        </>
+                      );
+                    })()
+                  : variante.introTitulo}
               </h2>
+              {variante.introCredito && (
+                <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
+                  {variante.introCredito}
+                </p>
+              )}
               <p className="text-base sm:text-lg text-white/95 leading-relaxed font-medium">
                 Ao preencher esta aplicação, você concorda que{" "}
                 <span className="text-secondary font-bold">trabalha com o digital</span>.
-                {" "}Se você não trabalha com o digital, e não quer vender mais,{" "}
-                <span className="text-secondary font-bold">saia desta aplicação imediatamente</span>.
+                {variante.introAviso === "completo" && (
+                  <>
+                    {" "}Se você não trabalha com o digital, e não quer vender mais,{" "}
+                    <span className="text-secondary font-bold">saia desta aplicação imediatamente</span>.
+                  </>
+                )}
               </p>
             </div>
             <div className="h-1.5 w-full bg-white/15 rounded-full overflow-hidden">
@@ -1123,7 +1552,7 @@ export default function Quiz() {
             {introCanSkip && (
               <button
                 type="button"
-                onClick={() => setShowIntro(false)}
+                onClick={() => fecharIntro("pulou")}
                 className="text-sm text-white/80 hover:text-white underline underline-offset-4 transition-colors animate-fade-in">
                 Continuar agora
               </button>
@@ -1169,8 +1598,8 @@ export default function Quiz() {
 
               {/* Navigation Buttons - Hidden on loading step (11) and step 1 (auto-advance) */}
               {step !== totalSteps && step !== 1 &&
-                <div className={`mt-6 sm:mt-8 ${step > 1 ? 'flex flex-col-reverse sm:flex-row gap-3' : ''}`}>
-                  {step > 1 &&
+                <div className={`mt-6 sm:mt-8 ${step > primeiroPasso ? 'flex flex-col-reverse sm:flex-row gap-3' : ''}`}>
+                  {step > primeiroPasso &&
                   <Button
                     variant="outline"
                     size="lg"

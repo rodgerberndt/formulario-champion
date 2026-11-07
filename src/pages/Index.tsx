@@ -1,79 +1,114 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
-import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
-import { SuccessCases } from "@/components/landing/SuccessCases";
+import { CasesSucesso } from "@/components/landing/CasesSucesso";
 import { PainSection } from "@/components/landing/PainSection";
 
 import { VturbCreatives } from "@/components/landing/VturbCreatives";
 import { MetodoChampion } from "@/components/landing/MetodoChampion";
+import { ClientFeedbacks } from "@/components/landing/ClientFeedbacks";
 
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { Botao } from "@/components/landing/Botao";
+import { MotionConfig } from "framer-motion";
+import type { Json } from "@/integrations/supabase/types";
 import { useTracking } from "@/hooks/useTracking";
 import { useUtmCapture } from "@/hooks/useUtmCapture";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import { useSectionThemes } from "@/hooks/useSectionThemes";
 import { useLandingTracking } from "@/hooks/useLandingTracking";
-import { useLandingHit, generateClickId } from "@/hooks/useLandingHit";
-import { Loader2 } from "lucide-react";
+import { useLandingHit } from "@/hooks/useLandingHit";
 import { HEADLINE_VARIANTS, type HeadlineVariant } from "@/config/headlineVariants";
+import { type SubheadlineVariant } from "@/config/subheadlineVariants";
+import { NichoContext, COPY_POR_NICHO, type Nicho } from "@/config/nichoLanding";
+import { GarantiaSection } from "@/components/landing/GarantiaSection";
+import { QuemAtende } from "@/components/landing/QuemAtende";
+import { FORMULARIO_TOPO_ID, rolarAteFormulario } from "@/lib/formularioTopo";
 
 interface IndexProps {
   /** Variante de headline. Ausente = página original ("/"). */
   variant?: HeadlineVariant;
+  /** Variante de subheadline (teste SH). A headline fica travada na vencedora. */
+  subheadline?: SubheadlineVariant;
+  /**
+   * Mercado com quem a página fala. Muda só o TEXTO das seções (ver
+   * `nichoLanding.ts`); a estrutura, a ordem e o tracking são os mesmos em
+   * todos os nichos. Ausente = "geral", a copy que já estava no ar.
+   */
+  nicho?: Nicho;
 }
 
-const Index = ({ variant }: IndexProps) => {
-  const navigate = useNavigate();
-  const { trackStartClick } = useTracking();
+const Index = ({ variant, subheadline, nicho = "geral" }: IndexProps) => {
+  const { trackEvent } = useTracking();
   const headline = variant ?? HEADLINE_VARIANTS[0];
+  const copy = COPY_POR_NICHO[nicho];
   useUtmCapture();
   useSmoothScroll();
   useSectionThemes();
   // O path da variante vira o `page` de todo evento de tracking — é o que
   // separa o funil de cada headline no admin.
-  useLandingTracking(headline.path);
+  // No teste de subheadline o funil precisa se separar por SH, não pela
+  // headline — que é a mesma em todas as variantes.
+  useLandingTracking(subheadline?.path ?? headline.path);
   useLandingHit();
 
-  // Prefetch the Quiz chunk so navigation to /quiz is instant.
+  /**
+   * CTA da página. Desde 17/09/2026 NÃO abre mais o quiz: rola até o
+   * formulário do topo e foca o primeiro campo. O teste Q1–Q5 foi encerrado,
+   * então nada aqui sorteia célula (caminhoDoQuiz saiu da landing).
+   *
+   * Continua gravando `start_click` com o id do botão, para o painel seguir
+   * contando cliques por CTA. NÃO usa `trackStartClick`: ele dispara o aviso
+   * de saída da landing (que para o relógio de leitura das seções) e marca a
+   * sessão como iniciada no quiz, e aqui a pessoa continua na página.
+   */
+  const handleStartClick = useCallback((buttonId: string) => {
+    trackEvent("start_click", {
+      buttonId,
+      metadata: { destination: `#${FORMULARIO_TOPO_ID}`, source: "landing_cta" } as Json,
+    }).catch(() => { /* ignore */ });
+    rolarAteFormulario();
+  }, [trackEvent]);
+
+  // O CTA fixo do mobile some enquanto o formulário está na tela: ele levaria
+  // para onde a pessoa já está e cobriria os últimos campos e o botão de envio.
+  //
+  // Some também sobre o CTA final (17/09/2026): era ali que os dois botões
+  // dourados quase idênticos apareciam empilhados, um em cima do outro, sem
+  // hierarquia nenhuma. Quem já chegou no CTA final tem o botão da seção na
+  // frente; a barra fixa volta assim que ele sai da tela.
+  const [ctaFixoOculto, setCtaFixoOculto] = useState(true);
   useEffect(() => {
-    const prefetch = () => {
-      import("./Quiz").catch(() => { /* ignore */ });
-    };
-    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
-    if (typeof w.requestIdleCallback === "function") {
-      w.requestIdleCallback(prefetch);
-    } else {
-      setTimeout(prefetch, 800);
-    }
+    if (typeof IntersectionObserver === "undefined") return;
+    const alvos = [
+      document.getElementById(FORMULARIO_TOPO_ID),
+      document.getElementById("cta-final"),
+    ].filter((el): el is HTMLElement => !!el);
+    if (alvos.length === 0) return;
+
+    const naTela = new Set<Element>();
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) naTela.add(entry.target);
+          else naTela.delete(entry.target);
+        }
+        setCtaFixoOculto(naTela.size > 0);
+      },
+      { threshold: 0 },
+    );
+    alvos.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
   }, []);
 
-  const [loadingBtn, setLoadingBtn] = useState<string | null>(null);
-  const lastClickRef = useRef<number>(0);
-  const DEBOUNCE_MS = 1500;
-
-
-  const handleStartClick = async (buttonId: string) => {
-    const now = Date.now();
-    if (loadingBtn) return;
-    if (now - lastClickRef.current < DEBOUNCE_MS) return;
-    lastClickRef.current = now;
-    setLoadingBtn(buttonId);
-    try { generateClickId(); } catch { /* ignore */ }
-    try { await trackStartClick(buttonId); } catch (error) {
-      console.error("Error tracking start click:", error);
-    }
-    await new Promise((r) => setTimeout(r, 50));
-    navigate("/quiz");
-  };
-
   return (
+    // `reducedMotion="user"` desliga as animações do framer-motion para quem
+    // pediu menos movimento no sistema. O CSS já tem o corte equivalente.
+    <MotionConfig reducedMotion="user">
+    <NichoContext.Provider value={nicho}>
     <div className="min-h-screen relative bg-background">
       {/* Cinematic background layers */}
       <div className="cinematic-bg" />
@@ -81,18 +116,29 @@ const Index = ({ variant }: IndexProps) => {
       <div className="cinematic-vignette" />
       <div className="cinematic-grid" />
 
-      <LandingNavbar />
+      <LandingNavbar onCtaClick={() => handleStartClick("header_cta")} />
 
       <main>
         <section data-theme="cave" data-track-id="hero" data-track-order="10">
-          <Hero variant={headline} onStartClick={() => handleStartClick("start_btn_1")} />
+          <Hero variant={headline} subheadline={subheadline} />
         </section>
 
-        <section data-theme="void" data-track-id="social_proof" data-track-order="20">
-          <SocialProofCarousel />
+        {/* Cases logo abaixo do topo (pedido do Rodger, 17/09). A ordem 20 vale
+            também em landingSections.ts e no admin-data, para o funil de seções. */}
+        <section id="resultados" data-theme="void" data-track-id="success_cases" data-track-order="20">
+          <CasesSucesso onCtaClick={handleStartClick} />
         </section>
 
-        <section data-theme="ember" data-track-id="dor" data-track-order="30">
+        {/* Garantia do primeiro mês (28/09/2026), só na versão "prova". Logo
+            depois dos cases: é onde o cético acabou de ver os números e
+            pensa "sei, tá bom". A ordem 25 vale também em landingSections.ts. */}
+        {copy.garantia && (
+          <section id="garantia" data-theme="cave" data-track-id="garantia" data-track-order="25">
+            <GarantiaSection />
+          </section>
+        )}
+
+        <section id="problema" data-theme="ember" data-track-id="dor" data-track-order="30">
           <PainSection />
         </section>
 
@@ -100,79 +146,76 @@ const Index = ({ variant }: IndexProps) => {
           <MetodoChampion />
         </section>
 
-        <section data-theme="void" data-track-id="success_cases" data-track-order="50">
-          <SuccessCases />
+        {/* Os prints de WhatsApp de cliente. A ordem 50 estava vaga desde que a
+            seção saiu, em 17/09/2026: é o lugar dela, entre o método e o
+            portfólio. Quem acabou de ler COMO a Champion trabalha encontra aqui
+            a prova de que funciona, antes de ver o volume de criativo. */}
+        <section id="feedbacks" data-theme="void" data-track-id="social_proof" data-track-order="50">
+          <ClientFeedbacks />
         </section>
-
 
         <section data-theme="blue-temple" data-track-id="criativos" data-track-order="60">
           <VturbCreatives />
         </section>
 
-        <section data-theme="cave" data-track-id="cta_intermediario" data-track-order="70" className="py-10 md:py-16">
-          <div className="container mx-auto px-5 text-center max-w-md">
-            <p className="text-sm md:text-base text-muted-foreground mb-6">
-              Preencha a aplicação rápida para que o próximo feedback seja você!
-            </p>
-            <Button
-              size="lg"
-              onClick={() => handleStartClick("start_btn_2")}
-              disabled={loadingBtn === "start_btn_2"}
-              data-track-click="cta_primary"
-              data-track-id="cta_intermediario_btn"
-              className="group h-12 md:h-14 px-6 md:px-10 text-sm md:text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/35 transition-all duration-200 active:scale-[0.98]"
-            >
-              {loadingBtn === "start_btn_2" ? (
-                <>
-                  <Loader2 className="w-4 h-4 md:w-5 md:h-5 mr-2 animate-spin" />
-                  CARREGANDO...
-                </>
-              ) : (
-                <>
-                  PREENCHER APLICAÇÃO (2 MIN)
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </Button>
+        {/* CTA intermediário no padrão `cta-section` do mattered: hairline em
+            cima, uma frase e um único botão primário. */}
+        <section data-theme="cave" data-track-id="cta_intermediario" data-track-order="70" className="py-14 md:py-20">
+          <div className="container mx-auto px-5 max-w-2xl">
+            <div className="border-t border-white/10 pt-12 md:pt-16 text-center">
+              <p className="text-base md:text-xl text-foreground/90 leading-snug max-w-md mx-auto mb-7 md:mb-8">
+                {copy.ctaIntermediario.texto}
+              </p>
+              <Botao
+                rotulo={copy.ctaIntermediario.rotulo}
+                tamanho="lg"
+                onClick={() => handleStartClick("start_btn_2")}
+                data-track-click="cta_primary"
+                data-track-id="cta_intermediario_btn"
+              />
+            </div>
           </div>
         </section>
+
+        {/* Quem atende (28/09/2026), só na versão "prova". Antes do "como
+            funciona": quem vai ler os passos já sabe o nome de quem chama. */}
+        {copy.quemAtende && (
+          <section id="quem-atende" data-theme="void" data-track-id="quem_atende" data-track-order="75">
+            <QuemAtende />
+          </section>
+        )}
 
         <section data-theme="blue-temple" data-track-id="como_funciona" data-track-order="80">
           <HowItWorks />
         </section>
 
-        <section data-theme="cave" data-track-id="faq" data-track-order="90">
+        <section id="faq" data-theme="cave" data-track-id="faq" data-track-order="90">
           <FAQSection />
         </section>
 
         <section data-theme="gold-haze" data-track-id="cta_final" data-track-order="100">
-          <FinalCTA />
+          <FinalCTA onStartClick={handleStartClick} />
         </section>
       </main>
 
       <Footer />
 
-      {/* Sticky bottom CTA - mobile only */}
-      <div className="fixed bottom-4 left-5 right-5 z-50 animate-fade-in md:hidden">
-        <Button
-          onClick={() => handleStartClick("sticky_cta")}
-          disabled={loadingBtn === "sticky_cta"}
-          className="w-full md:w-auto min-h-12 md:min-h-14 h-auto py-3 md:py-4 px-5 md:px-10 text-[13px] md:text-base font-bold leading-tight whitespace-normal text-center bg-primary/95 hover:bg-primary text-primary-foreground rounded-2xl shadow-xl shadow-primary/30 backdrop-blur-sm transition-all active:scale-[0.98]"
-        >
-          {loadingBtn === "sticky_cta" ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin shrink-0" />
-              CARREGANDO...
-            </>
-          ) : (
-            <>
-              <span className="flex-1">PREENCHER APLICAÇÃO GRATUITA</span>
-              <ArrowRight className="w-4 h-4 ml-2 shrink-0" />
-            </>
-          )}
-        </Button>
-      </div>
+      {/* CTA fixo, só no celular. O rótulo é o mesmo dos cases ("Preencher
+          aplicação"): "PREENCHER APLICAÇÃO GRATUITA" saiu porque era a segunda
+          metade da dupla quase idêntica que aparecia sobre o CTA final. */}
+      {!ctaFixoOculto && (
+        <div className="cta-fixo fixed bottom-4 left-5 right-5 z-50 md:hidden">
+          <Botao
+            rotulo="Preencher aplicação"
+            tamanho="lg"
+            bloco
+            onClick={() => handleStartClick("sticky_cta")}
+          />
+        </div>
+      )}
     </div>
+    </NichoContext.Provider>
+    </MotionConfig>
   );
 };
 

@@ -1,0 +1,17 @@
+{
+  "consultado_em": "2026-09-10T21:45:16.128Z",
+  "path": "act_1107952820265255/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-08-01\",\"until\":\"2026-08-31\"}",
+    "level": "campaign",
+    "fields": "campaign_id,campaign_name,spend,impressions,clicks,actions,action_values,date_start,objective",
+    "limit": "500"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 0,
+    "data": []
+  }
+}

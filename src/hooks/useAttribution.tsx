@@ -20,7 +20,13 @@ export interface AttributionData {
   adset_id: string | null;
   ad_id: string | null;
   creative_id: string | null;
-  
+
+  // ONDE o anúncio foi visto. Estava faltando aqui desde sempre, e a ausência
+  // era o que zerava `leads.placement`: a recuperação por bio reconstrói o
+  // sessionStorage a partir DESTE objeto, e o que não existe aqui vira null lá.
+  placement: string | null;
+  site_source_name: string | null;
+
   // Metadata
   captured_at: string;
   landing_page: string;
@@ -48,7 +54,18 @@ function getQueryParams(): Record<string, string | null> {
     adset_id: params.get("adset_id"),
     ad_id: params.get("ad_id") || (isNumericId(utm_content) ? utm_content : null),
     creative_id: params.get("creative_id"),
+    // As URLs dos anúncios entregam `utm_placement`; `placement` continua
+    // aceito por causa de link antigo montado à mão. Macro não expandida
+    // (`{{placement}}`) é descartada: dado desconhecido continua desconhecido.
+    placement: semMacro(params.get("utm_placement") || params.get("placement")),
+    site_source_name: semMacro(params.get("site_source_name")),
   };
+}
+
+/** Descarta placeholder da Meta que chegou sem ser substituído. */
+function semMacro(v: string | null): string | null {
+  if (!v) return null;
+  return /\{\{.*\}\}/.test(v) ? null : v;
 }
 
 function hasAnyValue(data: Record<string, string | null>): boolean {
@@ -95,6 +112,10 @@ export function useAttribution() {
         adset_id: urlParams.adset_id || existingData?.adset_id || null,
         ad_id: urlParams.ad_id || existingData?.ad_id || null,
         creative_id: urlParams.creative_id || existingData?.creative_id || null,
+        // Mesma regra dos demais: o valor novo manda, o antigo sobrevive, e
+        // nulo nunca sobrescreve o que já estava guardado.
+        placement: urlParams.placement || existingData?.placement || null,
+        site_source_name: urlParams.site_source_name || existingData?.site_source_name || null,
         captured_at: existingData?.captured_at || new Date().toISOString(),
         landing_page: existingData?.landing_page || window.location.pathname,
       };

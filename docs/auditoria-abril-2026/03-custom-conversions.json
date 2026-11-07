@@ -1,0 +1,35 @@
+{
+  "consultado_em": "2026-09-10T21:42:24.455Z",
+  "path": "act_1107952820265255/customconversions",
+  "params": {
+    "fields": "id,name,custom_event_type,rule,pixel,creation_time,is_archived,description,default_conversion_value,data_sources",
+    "limit": "200"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 1,
+    "data": [
+      {
+        "id": "1233019062334320",
+        "name": "MQL",
+        "custom_event_type": "OTHER",
+        "rule": "{\"and\":[{\"event\":{\"eq\":\"MQL\"}},{\"or\":[{\"URL\":{\"i_contains\":\"obrigadomql\"}}]}]}",
+        "pixel": {
+          "id": "2171667863227042"
+        },
+        "creation_time": "2026-03-27T16:46:11+0000",
+        "is_archived": false,
+        "default_conversion_value": 0,
+        "data_sources": [
+          {
+            "id": "2171667863227042",
+            "source_type": "PIXEL",
+            "name": "Champion Ad Studio"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "consultado_em": "2026-09-10T22:10:38.953Z",
+  "path": "act_1592493385874898/campaigns",
+  "params": {
+    "fields": "id,name,objective,status,effective_status,bid_strategy,daily_budget,lifetime_budget,created_time",
+    "limit": "300"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 1,
+    "data": [
+      {
+        "id": "120252040734020116",
+        "name": "CA 05 - Validados - Leads",
+        "objective": "OUTCOME_LEADS",
+        "status": "ACTIVE",
+        "effective_status": "ACTIVE",
+        "created_time": "2026-09-07T15:13:11+0000"
+      }
+    ]
+  }
+}

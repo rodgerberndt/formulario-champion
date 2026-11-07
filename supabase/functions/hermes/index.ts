@@ -13,6 +13,7 @@
  *   approve  ativa os anúncios de um criativo (ou de uma variação só)
  *   reject   descarta as variações e deixa os anúncios pausados
  *   setup    lista BMs, contas, páginas e conjuntos que o token enxerga
+ *   destinos para onde cada anúncio de uma campanha manda a pessoa
  *   config   grava a config de uma conta (POST)
  *
  * Auth: header `x-hermes-key` (secret HERMES_KEY) ou `x-admin-token` (JWT do painel).
@@ -21,21 +22,30 @@
 import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
 import { verify } from "https://deno.land/x/djwt@v2.9.1/mod.ts";
 import {
+  deleteCreative,
+  listAdImages,
   adsetNames,
+  adsetsDaCampanha,
+  anunciosDaCampanha,
+  campanhaInfo,
+  insightsCrus,
   checkAccount,
+  moedaDaConta,
   copyAdset,
   createAd,
   createAdCreative,
   listAdsets,
   listBusinesses,
+  setAdsetDailyBudget,
   setAdsetStatus,
   setAdStatus,
   uploadImage,
   uploadVideo,
   videoThumbnail,
   waitVideoReady,
+  duplicarComoVendas,
 } from "./meta.ts";
-import { generateCopies, referenceAds } from "./copy.ts";
+import { generateCopies, parseManualCopies, referenceAds } from "./copy.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -43,6 +53,21 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-admin-token, x-hermes-key",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
+
+/**
+ * Só o caminho da URL, minúsculo e sem barra final.
+ *
+ * É o caminho que identifica a variante de página; a query string carrega as
+ * etiquetas de campanha e muda a cada anúncio, então comparar a URL inteira
+ * acusaria diferença em todo lugar e não serviria de alarme para nada.
+ */
+function caminhoDaUrl(u: string): string {
+  try {
+    return (new URL(u).pathname.replace(/\/+$/, "") || "/").toLowerCase();
+  } catch {
+    return (u.replace(/\/+$/, "") || "/").toLowerCase();
+  }
+}
 
 const BUCKET = "hermes-criativos";
 const VIDEO_EXT = ["mp4", "mov", "m4v", "webm"];
@@ -53,6 +78,23 @@ const IMAGE_EXT = ["jpg", "jpeg", "png", "webp"];
 // e o trabalho já feito no primeiro se perde.
 const MAX_PER_RUN = 1;
 const MAX_ATTEMPTS = 3;
+
+// ── Travas do rebalance ──────────────────────────────────────────────────────
+//
+// Redistribuir verba é a única coisa que o Hermes faz que mexe em dinheiro já
+// rodando. As regras abaixo existem para que um erro de digitação ou uma
+// resposta estranha do Meta não consigam parar a operação inteira nem estourar
+// o gasto. Elas são checadas SEMPRE, inclusive no plano, e qualquer uma que
+// falhe aborta a chamada sem tocar em nada.
+
+/** Nunca deixar a campanha com menos que isso rodando. */
+const REBALANCE_MIN_ATIVOS = 2;
+/** Nunca pausar mais que esta fração dos conjuntos ativos de uma vez. */
+const REBALANCE_MAX_FRACAO_PAUSADA = 0.6;
+/** Nunca multiplicar o orçamento de um conjunto além disso numa só operação. */
+const REBALANCE_MAX_FATOR = 3;
+/** Teto absoluto por conjunto, em centavos. R$ 1.000/dia. */
+const REBALANCE_TETO_DIARIO_CENTAVOS = 100_000;
 
 type Json = Record<string, unknown>;
 
@@ -66,6 +108,17 @@ function json(body: Json, status = 200): Response {
 async function isAuthorized(req: Request): Promise<boolean> {
   const key = Deno.env.get("HERMES_KEY");
   if (key && req.headers.get("x-hermes-key") === key) return true;
+
+  // Segunda chave, para operar sem ter a primeira em mãos.
+  //
+  // A HERMES_KEY não é recuperável: o painel do Supabase mostra só o SHA256 do
+  // secret. E trocá-la quebraria o cron `hermes-run`, que carrega a chave
+  // dentro do header do próprio `cron.schedule`. Então em vez de girar a chave
+  // existente, o Hermes aceita uma segunda, criada para um operador específico
+  // e removível sozinha (`supabase secrets unset HERMES_KEY_ALT`) sem mexer em
+  // nada do que já roda.
+  const alt = Deno.env.get("HERMES_KEY_ALT");
+  if (alt && req.headers.get("x-hermes-key") === alt) return true;
 
   const adminToken = req.headers.get("x-admin-token");
   if (!adminToken) return false;
@@ -316,14 +369,24 @@ async function processOne(supabase: SupabaseClient, creative: Json, config: Conf
   let copies = existing ?? [];
 
   if (copies.length === 0) {
-    const refs = await referenceAds(supabase, adAccountId);
-    const variants = await generateCopies({
-      count: config.copies_per_creative,
-      angle: creative.angle as string | null,
-      briefing: creative.briefing as string | null,
-      fileName,
-      references: refs,
-    });
+    // Copy escrita à mão no .txt tem precedência: se alguém já decidiu o que
+    // dizer, não há por que um modelo reescrever nem por que exigir chave.
+    const briefing = creative.briefing as string | null;
+    const manuais = parseManualCopies(briefing);
+    let variants;
+    if (manuais) {
+      variants = manuais;
+      await log(supabase, id, "copy_manual", true, `${manuais.length} variações lidas do .txt`);
+    } else {
+      const refs = await referenceAds(supabase, adAccountId);
+      variants = await generateCopies({
+        count: config.copies_per_creative,
+        angle: creative.angle as string | null,
+        briefing,
+        fileName,
+        references: refs,
+      });
+    }
     if (!variants.length) throw new Error("nenhuma variação de copy utilizável");
 
     // O pedaço do id entra no slug porque dois criativos do mesmo ângulo
@@ -372,7 +435,6 @@ async function processOne(supabase: SupabaseClient, creative: Json, config: Conf
       noAr.push({ variant: copy.variant, headline: copy.headline, adset: copy.adset_name });
       continue;
     }
-    const utm = String(copy.ad_name).match(/utm_content=([^\s|,]+)/)?.[1] ?? `hermes-v${copy.variant}`;
     try {
       // Destino desta variação: conjunto clonado só dela, ou o conjunto fixo.
       let destino = adsetId;
@@ -409,9 +471,18 @@ async function processOne(supabase: SupabaseClient, creative: Json, config: Conf
         videoId: videoId ?? undefined,
         thumbnailUrl,
         imageHash: imageHash ?? undefined,
+        // Mesmas macros dos anúncios que já rodam na conta, para os relatórios
+        // não terem duas convenções de UTM convivendo. O `utm_content` legível
+        // vem do nome do anúncio, que é de onde o meta-ads-cron o extrai.
         urlTags:
-          `utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}` +
-          `&utm_content=${utm}&utm_term={{adset.name}}`,
+          `utm_source={{site_source_name}}&utm_medium=paid_social` +
+          `&utm_campaign={{campaign.name}}&utm_content={{ad.name}}` +
+          `&utm_term={{adset.name}}&utm_placement={{placement}}` +
+          // IDs crus do Meta em parâmetros dedicados (o front lê campaign_id,
+          // adset_id e ad_id direto). É a chave de cruzamento que o método
+          // Allan Tracker usa (ad.id) sem mexer na convenção de utm_* que o
+          // painel já consome.
+          `&campaign_id={{campaign.id}}&adset_id={{adset.id}}&ad_id={{ad.id}}`,
       });
       const adId = await createAd(adAccountId, destino, copy.ad_name, creativeMetaId, status);
       await supabase.from("hermes_copies").update({
@@ -608,6 +679,415 @@ Deno.serve(async (req) => {
         return json({ ok: true, ativados });
       }
 
+      /**
+       * Corta conjuntos perdedores de um teste e devolve o orçamento deles aos
+       * que ficam.
+       *
+       * Num teste A/B por conjunto (as headlines HD0..HD4 e as subheadlines
+       * SH0..SH6 da casa), matar variante é metade do trabalho: se a verba do
+       * perdedor não voltar para os outros, o teste inteiro desacelera e a
+       * decisão demora mais. Aqui as duas coisas acontecem juntas.
+       *
+       * Chamada:
+       *   ?action=rebalance&campaign_id=<id>&pause=SH1,SH3,SH5
+       *   ...&confirm=1   para executar de verdade
+       *
+       * Sem `confirm=1` devolve só o plano. Isso mexe em dinheiro que está
+       * rodando: o padrão é mostrar o que vai fazer, nunca fazer.
+       */
+      /**
+       * Volta conjuntos ao ar e reparte o orçamento da campanha por igual
+       * entre todos os que ficam ativos.
+       *
+       * É o desfazer do `rebalance`. Existe porque pausar variante é decisão
+       * que às vezes se toma com dado faltando, e voltar atrás precisa ser tão
+       * fácil quanto cortar — senão o custo de errar vira motivo para não
+       * mexer em nada.
+       *
+       *   ?action=resume&campaign_id=<id>&adsets=SH5[&confirm=1]
+       */
+      /**
+       * Lista os anúncios de uma campanha, agrupados por conjunto.
+       *
+       *   ?action=ads&campaign_id=<id>
+       */
+      /** ?action=insights&ad_id=<id>&date=YYYY-MM-DD — o que o Meta devolve, sem filtro. */
+      case "insights": {
+        const adId = url.searchParams.get("ad_id");
+        const dia = url.searchParams.get("date");
+        if (!adId || !dia) return json({ ok: false, error: "informe ad_id e date" }, 400);
+        return json({ ok: true, data: await insightsCrus(adId, dia) } as Json);
+      }
+
+      /**
+       * Para onde cada anúncio da campanha manda a pessoa.
+       *
+       *   ?action=destinos&campaign_id=<id>[&esperado=/HD3]
+       *
+       * Existe porque o painel só sabe a variante que o site RECEBEU. Quando um
+       * anúncio aponta para a página errada, o resultado dele aparece somado à
+       * variante errada, e o teste de copy decide a favor de quem não foi
+       * testado — sem nada no painel denunciando a troca.
+       */
+      case "destinos": {
+        const campaignId = url.searchParams.get("campaign_id");
+        if (!campaignId) return json({ ok: false, error: "informe campaign_id" }, 400);
+        const esperado = caminhoDaUrl(url.searchParams.get("esperado") || "/HD3");
+        const ads = await anunciosDaCampanha(campaignId);
+
+        const linhas = ads.map((a) => {
+          const caminhos = a.destinos.map(caminhoDaUrl);
+          const fora = caminhos.filter((c) => c !== esperado);
+          return {
+            id: a.id,
+            anuncio: a.name,
+            conjunto: a.adset_name,
+            status: a.status,
+            entrega: a.effective_status,
+            destino: a.destinos.join(" | "),
+            caminho: caminhos.join(" | "),
+            url_tags: a.url_tags,
+            origem_do_link: a.origem_do_link,
+            // Três estados, não dois: anúncio sem link legível não é anúncio
+            // certo. Tratar o desconhecido como "ok" é o jeito de nunca achar
+            // o que se foi procurar.
+            situacao: a.destinos.length === 0
+              ? "sem link legível"
+              : (fora.length ? "fora do esperado" : "ok"),
+          };
+        });
+
+        return json({
+          ok: true,
+          total: linhas.length,
+          esperado,
+          fora_do_esperado: linhas.filter((l) => l.situacao === "fora do esperado"),
+          sem_link: linhas.filter((l) => l.situacao === "sem link legível"),
+          anuncios: linhas,
+        } as Json);
+      }
+
+      /**
+       * Duplica uma campanha inteira como campanha de VENDAS.
+       *
+       *   ?action=duplicar_vendas&origem=<campaign_id>&modelo=<id ou nome>&nome=<nome novo>[&executar=1]
+       *
+       * Sem `executar=1` só devolve o plano (o que seria criado) e não toca na
+       * conta. A campanha nova nasce PAUSADA; conjuntos e anúncios herdam o
+       * status da origem, então ligar a campanha basta para ela rodar igual.
+       */
+      case "duplicar_vendas": {
+        const origem = url.searchParams.get("origem");
+        const modelo = url.searchParams.get("modelo");
+        const nome = url.searchParams.get("nome");
+        if (!origem || !modelo || !nome) return json({ ok: false, error: "informe origem, modelo e nome" }, 400);
+        // Sem ad_account_id, a conta vem da própria campanha de origem.
+        const adAccountId = url.searchParams.get("ad_account_id") ?? "";
+        const r = await duplicarComoVendas({
+          adAccountId,
+          origemCampaignId: origem,
+          modelo,
+          nomeNovo: nome,
+          executar: url.searchParams.get("executar") === "1",
+          campanhaExistente: url.searchParams.get("campanha_id") ?? undefined,
+          telefone: url.searchParams.get("telefone") ?? undefined,
+        });
+        return json(r as Json, r.ok ? 200 : 500);
+      }
+
+      case "ads": {
+        const campaignId = url.searchParams.get("campaign_id");
+        if (!campaignId) return json({ ok: false, error: "informe campaign_id" }, 400);
+        const ads = await anunciosDaCampanha(campaignId);
+        const porConjunto: Record<string, Array<Record<string, string>>> = {};
+        for (const a of ads) {
+          (porConjunto[a.adset_name] ??= []).push({
+            id: a.id, nome: a.name, status: a.status, entrega: a.effective_status,
+          });
+        }
+        return json({ ok: true, total: ads.length, conjuntos: porConjunto } as Json);
+      }
+
+      /**
+       * Tira um criativo do ar em TODOS os conjuntos de uma campanha.
+       *
+       * Num teste de copy de página, o criativo é a variável que precisa ficar
+       * constante — e o Meta distribui a verba entre criativos como quer, o que
+       * transforma o teste numa mistura. Cortar para um criativo só é o que
+       * torna o resultado legível.
+       *
+       *   ?action=cut_creative&campaign_id=<id>&creative=Arthur[&confirm=1]
+       *
+       * A trava principal: nenhum conjunto pode ficar sem anúncio ativo. Um
+       * conjunto ligado e vazio não entrega nada e não avisa ninguém.
+       */
+      case "cut_creative": {
+        const campaignId = url.searchParams.get("campaign_id");
+        const alvoNome = (url.searchParams.get("creative") || "").trim().toLowerCase();
+        const confirmar = url.searchParams.get("confirm") === "1";
+        if (!campaignId) return json({ ok: false, error: "informe campaign_id" }, 400);
+        if (!alvoNome) return json({ ok: false, error: "informe creative=<trecho do nome>" }, 400);
+
+        const ads = await anunciosDaCampanha(campaignId);
+        if (!ads.length) return json({ ok: false, error: "campanha sem anúncios" }, 404);
+
+        const bate = (a: { name: string }) => a.name.toLowerCase().includes(alvoNome);
+        const cortar = ads.filter((a) => bate(a) && a.status !== "PAUSED");
+        if (!cortar.length) {
+          return json({
+            ok: false,
+            error: "nenhum anúncio ativo bate com esse nome",
+            nomes: [...new Set(ads.map((a) => a.name))],
+          }, 404);
+        }
+
+        // Por conjunto: quem sobra ativo depois do corte.
+        const sobra: Record<string, number> = {};
+        const vazios: string[] = [];
+        for (const a of ads) {
+          if (a.status === "PAUSED" || bate(a)) continue;
+          sobra[a.adset_name] = (sobra[a.adset_name] ?? 0) + 1;
+        }
+        for (const a of cortar) {
+          if (!sobra[a.adset_name]) vazios.push(a.adset_name);
+        }
+        if (vazios.length) {
+          return json({
+            ok: false,
+            error: "o corte deixaria conjunto sem nenhum anúncio ativo",
+            conjuntos_que_ficariam_vazios: [...new Set(vazios)],
+            sugestao: "pause o conjunto inteiro, ou ative outro criativo nele antes",
+          }, 400);
+        }
+
+        const plano = {
+          criativo: alvoNome,
+          cortar: cortar.map((a) => ({ id: a.id, nome: a.name, conjunto: a.adset_name })),
+          sobram_ativos_por_conjunto: sobra,
+        };
+        if (!confirmar) return json({ ok: true, dry_run: true, plano } as Json);
+
+        const feito: string[] = [];
+        for (const a of cortar) {
+          await setAdStatus(a.id, "PAUSED");
+          feito.push(`${a.adset_name}: pausou "${a.name}"`);
+        }
+        await log(supabase, null, "cut_creative", true, feito.join(" | "));
+        await notify(`HERMES tirou "${alvoNome}" do ar em ${cortar.length} anúncios da campanha.`);
+        return json({ ok: true, executado: true, plano, feito } as Json);
+      }
+
+      case "resume": {
+        const campaignId = url.searchParams.get("campaign_id");
+        const voltar = (url.searchParams.get("adsets") || "")
+          .split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
+        const confirmar = url.searchParams.get("confirm") === "1";
+        if (!campaignId) return json({ ok: false, error: "informe campaign_id" }, 400);
+        if (!voltar.length) return json({ ok: false, error: "informe adsets=NOME,NOME" }, 400);
+
+        const todos = await adsetsDaCampanha(campaignId);
+        const chaveR = (n: string) => n.toLowerCase().replace(/\s+/g, "");
+        const reativar = todos.filter((a) => voltar.includes(chaveR(a.name)));
+        if (!reativar.length) {
+          return json({ ok: false, error: "nenhum conjunto bateu", nomes: todos.map((a) => a.name) }, 404);
+        }
+        // O total da campanha não muda: o que estava concentrado em poucos
+        // volta a ser dividido entre todos os que passam a rodar.
+        const ativosDepois = todos.filter(
+          (a) => a.status !== "PAUSED" || voltar.includes(chaveR(a.name)),
+        );
+        const totalAtual = todos
+          .filter((a) => a.status !== "PAUSED")
+          .reduce((t, a) => t + a.daily_budget_cents, 0);
+        const porUm = Math.floor(totalAtual / ativosDepois.length);
+        if (porUm < 100) {
+          return json({ ok: false, error: "a divisão daria menos de 1 na moeda da conta por conjunto" }, 400);
+        }
+        const planoR = {
+          reativar: reativar.map((a) => ({ id: a.id, nome: a.name, status: a.status })),
+          ficam_todos: ativosDepois.map((a) => ({
+            id: a.id, nome: a.name,
+            budget_atual: a.daily_budget_cents / 100,
+            budget_novo: porUm / 100,
+          })),
+          total_dia: totalAtual / 100,
+        };
+        if (!confirmar) return json({ ok: true, dry_run: true, plano: planoR } as Json);
+
+        const feitoR: string[] = [];
+        // Ajusta o orçamento ANTES de ligar: ligar primeiro deixaria o conjunto
+        // reativado gastando o valor cheio de quando foi pausado.
+        for (const a of ativosDepois) {
+          await setAdsetDailyBudget(a.id, porUm);
+        }
+        for (const a of reativar) {
+          await setAdsetStatus(a.id, "ACTIVE");
+          feitoR.push(`reativou ${a.name}`);
+        }
+        feitoR.push(`todos os ${ativosDepois.length} ativos em ${(porUm / 100).toFixed(2)}/dia`);
+        await log(supabase, null, "resume", true, feitoR.join(" | "));
+        return json({ ok: true, executado: true, plano: planoR, feito: feitoR } as Json);
+      }
+
+      case "rebalance": {
+        const campaignId = url.searchParams.get("campaign_id");
+        const pausar = (url.searchParams.get("pause") || "")
+          .split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
+        const confirmar = url.searchParams.get("confirm") === "1";
+        if (!campaignId) return json({ ok: false, error: "informe campaign_id" }, 400);
+        if (!pausar.length) return json({ ok: false, error: "informe pause=NOME,NOME" }, 400);
+
+        const conjuntos = await adsetsDaCampanha(campaignId);
+        if (!conjuntos.length) return json({ ok: false, error: "campanha sem conjuntos" }, 404);
+
+        // Campanha com orçamento própria (CBO) não tem verba para redistribuir:
+        // o Meta já reparte sozinho entre os conjuntos ativos, e o
+        // `daily_budget` que os conjuntos devolvem é um número morto. Nesse
+        // caso pausar basta, e mexer em orçamento de conjunto seria trabalho
+        // que não faz efeito nenhum.
+        const camp = await campanhaInfo(campaignId);
+        // A conta é em USD: todo valor daqui para baixo é na moeda da conta,
+        // nunca em reais, e o plano diz isso em voz alta.
+        const { data: cfgMoeda } = await supabase.from("hermes_config")
+          .select("ad_account_id").eq("active", true).limit(1);
+        const moeda = cfgMoeda?.[0]?.ad_account_id
+          ? await moedaDaConta(cfgMoeda[0].ad_account_id as string).catch(() => "")
+          : "";
+        if (camp.usa_cbo) {
+          const alvoCbo = conjuntos.filter((a) =>
+            pausar.includes(a.name.toLowerCase().replace(/\s+/g, ""))
+          );
+          const ficamCbo = conjuntos.filter(
+            (a) => !pausar.includes(a.name.toLowerCase().replace(/\s+/g, "")) && a.status !== "PAUSED"
+          );
+          const planoCbo = {
+            campanha: { nome: camp.name, orcamento_dia: camp.daily_budget_cents / 100, cbo: true },
+            pausar: alvoCbo.map((a) => ({ id: a.id, nome: a.name, status: a.status })),
+            ficam: ficamCbo.map((a) => ({ id: a.id, nome: a.name })),
+            observacao: "campanha com orçamento no nível da campanha (CBO): a verba dos pausados " +
+              "é redistribuída pelo próprio Meta entre os que ficam. Nenhum orçamento de conjunto é alterado.",
+          };
+          if (ficamCbo.length < REBALANCE_MIN_ATIVOS) {
+            return json({ ok: false, error: `deixaria só ${ficamCbo.length} conjunto(s) rodando` }, 400);
+          }
+          const ativosCbo = conjuntos.filter((a) => a.status !== "PAUSED").length;
+          const pausarAtivosCbo = alvoCbo.filter((a) => a.status !== "PAUSED").length;
+          if (pausarAtivosCbo > Math.floor(ativosCbo * REBALANCE_MAX_FRACAO_PAUSADA)) {
+            return json({ ok: false, error: `pausar ${pausarAtivosCbo} de ${ativosCbo} passa do limite de ${Math.round(REBALANCE_MAX_FRACAO_PAUSADA * 100)}%` }, 400);
+          }
+          if (!confirmar) return json({ ok: true, dry_run: true, plano: planoCbo } as Json);
+          const feitoCbo: string[] = [];
+          for (const a of alvoCbo) {
+            await setAdsetStatus(a.id, "PAUSED");
+            feitoCbo.push(`pausou ${a.name}`);
+          }
+          await log(supabase, null, "rebalance", true, feitoCbo.join(" | "));
+          await notify(`HERMES pausou ${alvoCbo.map((a) => a.name).join(", ")} em "${camp.name}". A campanha tem CBO, então o Meta redistribui a verba sozinho.`);
+          return json({ ok: true, executado: true, plano: planoCbo, feito: feitoCbo } as Json);
+        }
+
+        // O nome no Meta às vezes tem espaço ("SH 2") e às vezes não ("SH0"),
+        // então a comparação ignora espaço e caixa.
+        const chave = (n: string) => n.toLowerCase().replace(/\s+/g, "");
+        const alvo = conjuntos.filter((a) => pausar.includes(chave(a.name)));
+        const ficam = conjuntos.filter(
+          (a) => !pausar.includes(chave(a.name)) && a.status !== "PAUSED" && a.daily_budget_cents > 0,
+        );
+        const naoAchados = pausar.filter((n) => !conjuntos.some((a) => chave(a.name) === n));
+        if (!alvo.length) {
+          return json({ ok: false, error: "nenhum conjunto bateu com os nomes", nomes: conjuntos.map((a) => a.name) }, 404);
+        }
+        if (!ficam.length) {
+          return json({ ok: false, error: "nenhum conjunto sobraria ativo para receber a verba" }, 400);
+        }
+        // Só conta a verba de quem ainda está rodando: somar o orçamento de um
+        // conjunto já pausado inventaria dinheiro que não estava sendo gasto.
+        const aPausarAtivos = alvo.filter((a) => a.status !== "PAUSED");
+        const liberado = aPausarAtivos.reduce((t, a) => t + a.daily_budget_cents, 0);
+        const fatia = Math.floor(liberado / ficam.length);
+
+        // ── As travas ────────────────────────────────────────────────────────
+        const ativosAntes = conjuntos.filter((a) => a.status !== "PAUSED").length;
+        const totalAntes = conjuntos
+          .filter((a) => a.status !== "PAUSED")
+          .reduce((t, a) => t + a.daily_budget_cents, 0);
+        const totalDepois = ficam.reduce((t, a) => t + a.daily_budget_cents + fatia, 0);
+        const recusa = (motivo: string, extra: Json = {}) =>
+          json({ ok: false, error: motivo, ...extra }, 400);
+
+        if (ficam.length < REBALANCE_MIN_ATIVOS) {
+          return recusa(
+            `a operação deixaria só ${ficam.length} conjunto(s) rodando; o mínimo é ${REBALANCE_MIN_ATIVOS}`,
+          );
+        }
+        if (aPausarAtivos.length > Math.floor(ativosAntes * REBALANCE_MAX_FRACAO_PAUSADA)) {
+          return recusa(
+            `pausar ${aPausarAtivos.length} de ${ativosAntes} conjuntos ativos passa do limite de ` +
+            `${Math.round(REBALANCE_MAX_FRACAO_PAUSADA * 100)}% por operação`,
+          );
+        }
+        // A soma tem que se conservar: o rebalance MOVE verba, nunca cria. Uma
+        // diferença aqui significa conta errada, e conta errada em orçamento
+        // aparece na fatura antes de aparecer no painel.
+        const sobra = totalAntes - totalDepois;
+        if (sobra < 0 || sobra > ficam.length) {
+          return recusa("a soma dos orçamentos não bate; nada foi alterado", {
+            total_antes: totalAntes / 100, total_depois: totalDepois / 100,
+          });
+        }
+        for (const a of ficam) {
+          const novo = a.daily_budget_cents + fatia;
+          if (novo > REBALANCE_TETO_DIARIO_CENTAVOS) {
+            return recusa(
+              `${a.name} passaria de R$ ${(novo / 100).toFixed(2)}/dia, acima do teto de ` +
+              `R$ ${(REBALANCE_TETO_DIARIO_CENTAVOS / 100).toFixed(2)}`,
+            );
+          }
+          if (a.daily_budget_cents > 0 && novo > a.daily_budget_cents * REBALANCE_MAX_FATOR) {
+            return recusa(
+              `${a.name} multiplicaria por ${(novo / a.daily_budget_cents).toFixed(1)}x, ` +
+              `acima do limite de ${REBALANCE_MAX_FATOR}x por operação`,
+            );
+          }
+        }
+        const plano = {
+          pausar: alvo.map((a) => ({ id: a.id, nome: a.name, status: a.status, budget: a.daily_budget_cents / 100 })),
+          receber: ficam.map((a) => ({
+            id: a.id, nome: a.name,
+            budget_atual: a.daily_budget_cents / 100,
+            budget_novo: (a.daily_budget_cents + fatia) / 100,
+          })),
+          verba_liberada: liberado / 100,
+          por_conjunto: fatia / 100,
+          nao_encontrados: naoAchados,
+          total_dia_antes: totalAntes / 100,
+          total_dia_depois: totalDepois / 100,
+          moeda: moeda || "moeda da conta",
+          travas_ok: true,
+        };
+        if (!confirmar) return json({ ok: true, dry_run: true, plano } as Json);
+
+        // Pausa ANTES de aumentar. Se a chamada morrer no meio, a campanha
+        // fica gastando menos do que devia, nunca mais. O contrário deixaria os
+        // sobreviventes já aumentados e os perdedores ainda rodando, que é
+        // gastar o dobro sem ninguém saber.
+        const feito: string[] = [];
+        for (const a of alvo) {
+          await setAdsetStatus(a.id, "PAUSED");
+          feito.push(`pausou ${a.name}`);
+        }
+        for (const a of ficam) {
+          await setAdsetDailyBudget(a.id, a.daily_budget_cents + fatia);
+          feito.push(`${a.name} -> ${moeda || "$"} ${((a.daily_budget_cents + fatia) / 100).toFixed(2)}/dia`);
+        }
+        await log(supabase, null, "rebalance", true, feito.join(" | "));
+        await notify(
+          `HERMES rebalanceou a campanha: pausou ${alvo.map((a) => a.name).join(", ")} e ` +
+          `dividiu ${moeda || "$"} ${(liberado / 100).toFixed(2)}/dia entre ${ficam.map((a) => a.name).join(", ")}.`,
+        );
+        return json({ ok: true, executado: true, plano, feito } as Json);
+      }
+
       case "reject": {
         const creativeId = url.searchParams.get("creative_id");
         const copyId = url.searchParams.get("copy_id");
@@ -626,6 +1106,51 @@ Deno.serve(async (req) => {
           await supabase.from("hermes_creatives").update({ status: "ignorado" }).eq("id", creativeId);
         }
         return json({ ok: true });
+      }
+
+      /**
+       * Diagnóstico de escrita: tenta criar um creative com uma imagem que já
+       * está na biblioteca da conta, e apaga em seguida. Separa duas causas que
+       * dão a mesma mensagem: o app não poder criar creative nenhum, ou só não
+       * poder usar mídia que ele mesmo subiu.
+       */
+      case "diag": {
+        const { data: cfgs } = await supabase.from("hermes_config")
+          .select("*").eq("active", true).limit(1);
+        const cfg = cfgs?.[0] as Config | undefined;
+        if (!cfg) return json({ ok: false, error: "nenhuma config ativa" }, 400);
+
+        const imagens = await listAdImages(cfg.ad_account_id) as Array<{ hash?: string; name?: string }>;
+        if (!imagens.length) return json({ ok: false, error: "conta sem imagens na biblioteca" }, 400);
+
+        const resultados: Json[] = [];
+        for (const img of imagens.slice(0, 2)) {
+          if (!img.hash) continue;
+          try {
+            const cid = await createAdCreative({
+              adAccountId: cfg.ad_account_id,
+              name: `hermes-diag-${img.hash.slice(0, 8)}`,
+              pageId: cfg.page_id,
+              instagramActorId: cfg.instagram_actor_id,
+              linkUrl: cfg.link_url.replace("{slot}", "HD3"),
+              ctaType: cfg.cta_type,
+              primaryText: "Diagnóstico do Hermes. Este creative é apagado em seguida.",
+              headline: "Diagnóstico",
+              description: null,
+              imageHash: img.hash,
+              urlTags: "utm_source=diag",
+            });
+            await deleteCreative(cid).catch(() => {});
+            resultados.push({ imagem: img.name ?? img.hash, criou: true, apagado: true });
+          } catch (e) {
+            resultados.push({
+              imagem: img.name ?? img.hash,
+              criou: false,
+              erro: (e instanceof Error ? e.message : String(e)).slice(0, 400),
+            });
+          }
+        }
+        return json({ ok: true, conta: cfg.ad_account_id, resultados });
       }
 
       case "setup": {

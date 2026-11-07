@@ -2,6 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Fontes de reserva com as métricas casadas (17/09/2026) ──────────────────
+ *
+ * O problema medido: CLS de 0,18 no desktop, todo ele de troca de fonte. O
+ * Google Fonts entra com `display=swap`, então o texto pinta na fonte do
+ * sistema e é REDESENHADO quando o woff2 chega. Arial e Montserrat têm largura
+ * média e altura de linha diferentes, então o bloco inteiro muda de tamanho e
+ * empurra o que vem depois.
+ *
+ * A correção: uma família de reserva que É o Arial local, com as métricas
+ * reescritas para ocupar o mesmo espaço da fonte definitiva. `size-adjust`
+ * iguala a largura média; `ascent-override`/`descent-override` igualam a caixa
+ * da linha. Com isso o primeiro pintar já tem o tamanho certo e a troca não
+ * move nada.
+ *
+ * Os números NÃO são chutados. Foram calculados dos arquivos reais servidos
+ * pelo Google (Montserrat v31, Oswald v57) contra o arial.ttf do Windows:
+ *   size-adjust   = largura média do webfont ÷ largura média do Arial
+ *                   (média ponderada pela frequência das letras, incluindo o
+ *                   espaço — a mesma conta do capsize/fontaine)
+ *   ascent/descent = métrica hhea do webfont ÷ size-adjust
+ * Ao trocar de família ou de peso, refazer a conta: valores de outra fonte
+ * pioram o CLS em vez de corrigir.
+ *
+ * `local()` e nada mais: nenhum download novo. Onde o Arial não existe (Android
+ * resolve o nome para Roboto), a reserva ainda é melhor que a métrica crua.
+ */
+@font-face {
+  font-family: 'Montserrat Fallback';
+  src: local('Arial'), local('Helvetica'), local('Roboto');
+  font-weight: 400 500;
+  size-adjust: 114.32%;
+  ascent-override: 84.68%;
+  descent-override: 21.96%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Montserrat Fallback';
+  src: local('Arial Bold'), local('Arial'), local('Helvetica'), local('Roboto');
+  font-weight: 600 900;
+  size-adjust: 118.05%;
+  ascent-override: 82.00%;
+  descent-override: 21.26%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Oswald Fallback';
+  src: local('Arial'), local('Helvetica'), local('Roboto');
+  font-weight: 400 500;
+  size-adjust: 82.07%;
+  ascent-override: 145.36%;
+  descent-override: 35.21%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Oswald Fallback';
+  src: local('Arial Bold'), local('Arial'), local('Helvetica'), local('Roboto');
+  font-weight: 600 900;
+  size-adjust: 90.82%;
+  ascent-override: 131.36%;
+  descent-override: 31.82%;
+  line-gap-override: 0%;
+}
+
 @layer base {
   :root {
     /* Champion Dark Theme — Deep Blue + Gold */
@@ -66,6 +129,129 @@
   }
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Tema claro — estilo iOS, com a identidade da Champion
+   ─────────────────────────────────────────────────────────────────────────────
+   O escuro continua sendo o padrão em `:root`: é o tema da landing, do quiz e
+   de tudo que o cliente vê. O claro é ativado por `data-tema="claro"` no <html>,
+   e só o painel liga isso — a landing tem gradiente, brilho e sobreposição
+   desenhados para fundo escuro, e virar os tokens ali quebraria a arte, não
+   trocaria o tema.
+
+   A régua é o iOS: o fundo NÃO é branco puro, é um cinza levíssimo e frio; os
+   cartões é que são brancos e ficam por cima. Essa inversão é o que dá a
+   sensação de camada. Branco em cima de branco vira uma folha chapada.
+
+   O azul Champion clareia e o dourado escurece. Os dois foram escolhidos para o
+   fundo preto: o azul 20% de luminosidade some contra o cinza claro, e o
+   dourado 58% em cima de branco não tem contraste para texto.
+   ───────────────────────────────────────────────────────────────────────────── */
+@layer base {
+  :root[data-tema="claro"] {
+    color-scheme: light;
+
+    /* Fundo cinza-gelo e cartões brancos: a camada do iOS. */
+    --background: 220 24% 97%;
+    --foreground: 235 32% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 235 32% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 235 32% 12%;
+
+    /* Azul Champion clareado para viver em fundo claro. */
+    --primary: 238 82% 34%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Dourado Champion escurecido: 58% de luminosidade em branco é ilegível. */
+    --secondary: 42 88% 44%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 20% 93%;
+    --muted-foreground: 232 12% 40%;
+
+    --accent: 238 84% 52%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 46%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 226 20% 88%;
+    --input: 0 0% 100%;
+    --ring: 42 88% 44%;
+
+    --champion-blue: 238 82% 34%;
+    --champion-blue-deep: 238 90% 24%;
+    --champion-gold: 42 88% 44%;
+    --champion-gold-light: 42 82% 54%;
+    --champion-gold-dim: 42 40% 70%;
+
+    --theme-bgA: hsl(220 24% 97%);
+    --theme-bgB: hsl(224 30% 95%);
+    --theme-glow: hsl(42 88% 44%);
+    --theme-glow-opacity: 0.05;
+    --theme-noise-opacity: 0;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 235 32% 12%;
+    --sidebar-primary: 238 82% 34%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 93%;
+    --sidebar-accent-foreground: 235 32% 12%;
+    --sidebar-border: 226 20% 88%;
+    --sidebar-ring: 238 82% 34%;
+  }
+
+  /* Cartão branco com sombra suave em vez de borda dura — é o que faz o iOS
+     parecer leve. No escuro a borda basta; no claro, borda sem sombra deixa
+     tudo com cara de tabela de planilha. */
+  :root[data-tema="claro"] .bg-card {
+    box-shadow: 0 1px 2px hsl(235 30% 12% / 0.04), 0 1px 3px hsl(235 30% 12% / 0.06);
+  }
+
+  /* ── Contraste das cores semânticas ────────────────────────────────────────
+     O painel inteiro usa os tons 300/400 do Tailwind (text-emerald-400,
+     text-sky-400 …). Eles foram escolhidos para brilhar no preto e ficam
+     lavados, quase ilegíveis, sobre branco. Aqui cada um desce para o tom
+     600/700 equivalente, só no tema claro.
+
+     A especificidade de `:root[data-tema] .classe` já vence a da classe
+     sozinha, então isto não precisa de `!important` e continua sendo possível
+     sobrescrever pontualmente. */
+  :root[data-tema="claro"] .text-emerald-400,
+  :root[data-tema="claro"] .text-emerald-300 { color: hsl(160 84% 26%); }
+  :root[data-tema="claro"] .text-green-400,
+  :root[data-tema="claro"] .text-green-300,
+  :root[data-tema="claro"] .text-green-500 { color: hsl(142 72% 27%); }
+  :root[data-tema="claro"] .text-sky-400,
+  :root[data-tema="claro"] .text-sky-300 { color: hsl(201 90% 32%); }
+  :root[data-tema="claro"] .text-cyan-400,
+  :root[data-tema="claro"] .text-cyan-300 { color: hsl(192 82% 28%); }
+  :root[data-tema="claro"] .text-blue-400 { color: hsl(221 83% 45%); }
+  :root[data-tema="claro"] .text-amber-400,
+  :root[data-tema="claro"] .text-amber-300 { color: hsl(32 90% 34%); }
+  :root[data-tema="claro"] .text-yellow-400 { color: hsl(41 90% 32%); }
+  :root[data-tema="claro"] .text-orange-400 { color: hsl(27 88% 38%); }
+  :root[data-tema="claro"] .text-violet-400,
+  :root[data-tema="claro"] .text-violet-300 { color: hsl(263 70% 45%); }
+  :root[data-tema="claro"] .text-purple-400 { color: hsl(272 68% 44%); }
+  :root[data-tema="claro"] .text-teal-400,
+  :root[data-tema="claro"] .text-teal-300 { color: hsl(175 78% 25%); }
+  :root[data-tema="claro"] .text-rose-400,
+  :root[data-tema="claro"] .text-rose-300 { color: hsl(348 78% 42%); }
+  :root[data-tema="claro"] .text-red-400 { color: hsl(0 74% 44%); }
+  :root[data-tema="claro"] .text-pink-400 { color: hsl(330 76% 43%); }
+
+  /* Os fundos translucidos de 5 por cento somem no branco. Um cinza suave
+     devolve o bloco sem virar cor chapada. */
+  :root[data-tema="claro"] [class*="bg-amber-500/5"],
+  :root[data-tema="claro"] [class*="bg-emerald-500/5"],
+  :root[data-tema="claro"] [class*="bg-rose-500/5"],
+  :root[data-tema="claro"] [class*="bg-green-500/5"],
+  :root[data-tema="claro"] [class*="bg-sky-500/5"] { background-color: hsl(220 20% 96%); }
+}
+
 @layer base {
   *, *::before, *::after {
     @apply border-border;
@@ -74,22 +260,31 @@
 
   html {
     color-scheme: dark;
-    overflow-x: hidden;
+    /* `clip` e não `hidden`.
+       `overflow-x: hidden` transforma o elemento em contêiner de rolagem, e
+       isso quebra `position: sticky` em TODOS os descendentes: eles passam a
+       grudar num scrollport que não rola, ou seja, nunca grudam. Foi o que
+       segurou a barra fixa do /admin de funcionar.
+       `clip` corta o transbordo horizontal do mesmo jeito e NÃO cria contêiner
+       de rolagem, que é exatamente o que se queria aqui desde o começo. */
+    overflow-x: clip;
   }
 
   #lovable-badge { display: none !important; }
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    overflow-x: hidden;
+    /* 'Montserrat Fallback' logo depois da definitiva: é ela que pinta no
+       primeiro frame, com a caixa já do tamanho certo (ver @font-face no topo). */
+    font-family: 'Montserrat', 'Montserrat Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: clip;
     width: 100%;
     max-width: 100vw;
     text-rendering: optimizeSpeed;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Oswald', 'Oswald Fallback', sans-serif;
     @apply font-semibold tracking-wide;
     letter-spacing: 0.02em;
     text-transform: uppercase;
@@ -172,16 +367,51 @@
     }
   }
 
-  /* Gold border card */
+  /* Cartão de conteúdo.
+     Era uma borda dourada em TODO bloco da página (10 dores, 3 passos, 10
+     perguntas do FAQ, os cards do método): o dourado deixava de ser destaque e
+     virava fundo. Agora a borda é uma hairline neutra de 1 px e o dourado só
+     aparece no hover, com o cartão subindo 2 px. O nome da classe fica: são 40
+     usos espalhados e renomear não muda nada na tela. */
   .gold-card {
     @apply rounded-2xl p-6;
     background: hsl(235 60% 6% / 0.95);
-    border: 1px solid hsl(42 60% 35% / 0.3);
-    box-shadow: 0 0 40px -12px hsl(42 90% 58% / 0.08);
+    border: 1px solid hsl(0 0% 100% / 0.11);
+    transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .gold-card:hover {
-    border-color: hsl(42 90% 58% / 0.4);
-    box-shadow: 0 0 50px -10px hsl(42 90% 58% / 0.15);
+  @media (hover: hover) {
+    .gold-card:hover {
+      border-color: hsl(42 90% 58% / 0.35);
+      box-shadow: 0 18px 40px -28px hsl(235 90% 2% / 0.9);
+      transform: translateY(-2px);
+    }
+  }
+
+  /* Microcaixa-alta: eyebrows, rótulos de número, índices, labels.
+     11 px, peso 600, tracking 0,14em. É a régua tipográfica de apoio da página
+     inteira, a mesma dos botões. */
+  .rotulo-micro {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+
+  /* CTA fixo do celular: entra subindo 16 px, uma vez, e carrega a sombra
+     escura que o separa do conteúdo (o botão sozinho só tem o halo dourado). */
+  .cta-fixo {
+    animation: cta-fixo-entra 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cta-fixo .btn {
+    box-shadow: 0 10px 34px -10px hsl(235 90% 2% / 0.85),
+                inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  }
+  @keyframes cta-fixo-entra {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
   }
 
   /* Champion input */
@@ -245,19 +475,60 @@
     border-top: 1px solid hsl(var(--border) / 0.5);
   }
 
-  /* Reveal animations */
+  /* Entrada padrão de bloco: aparece e sobe, UMA vez.
+     Três decisões aqui, nenhuma estética:
+
+     1. O estado VISÍVEL é o padrão, e o estado escondido só existe dentro de
+        `@media (prefers-reduced-motion: no-preference)`. É o padrão do
+        openai.com: se o CSS de movimento não se aplicar, se o observador não
+        rodar ou se o navegador travar o scroll, a página aparece pronta em vez
+        de ficar em branco. No webview do Instagram esse é o modo de falha mais
+        comum de landing com reveal.
+     2. `filter: blur()` animado saiu: é o efeito mais caro da lista no celular
+        (repinta o bloco inteiro a cada quadro) e some antes de alguém notar.
+     3. Distância 24 px: o mattered usa 40, o openai usa de 6 a 22. Quarenta
+        pixels no celular lê como tranco quando o quadro atrasa. */
   .reveal-up {
-    opacity: 0;
-    transform: translateY(16px);
-    filter: blur(2px);
-    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-                filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .reveal-up.visible {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
+    transform: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger curto por filho, sem JS: o segundo bloco entra 60 ms depois do
+     primeiro e assim por diante. Teto de 360 ms para a lista inteira não virar
+     uma fila que a pessoa espera terminar. */
+  .reveal-stagger > *:nth-child(1) { transition-delay: 0ms; }
+  .reveal-stagger > *:nth-child(2) { transition-delay: 60ms; }
+  .reveal-stagger > *:nth-child(3) { transition-delay: 120ms; }
+  .reveal-stagger > *:nth-child(4) { transition-delay: 180ms; }
+  .reveal-stagger > *:nth-child(5) { transition-delay: 240ms; }
+  .reveal-stagger > *:nth-child(6) { transition-delay: 300ms; }
+  .reveal-stagger > *:nth-child(n + 7) { transition-delay: 360ms; }
+
+  /* Cartão que TAMBÉM é bloco de entrada (itens do FAQ).
+     `transition` é atalho: a última declaração apaga a outra, e como
+     `.reveal-up` vem depois de `.gold-card` o hover do cartão perderia a
+     transição. Aqui as duas listas são somadas, e o salto de 2 px do hover sai
+     — o `transform` já é da revelação e as duas durações brigariam. */
+  .gold-card.reveal-up {
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (hover: hover) {
+    .gold-card.reveal-up:hover { transform: none; }
   }
 
   /* Stroke draw animation */
@@ -299,12 +570,9 @@
   }
 
   /* Keyword glow — gold outline + soft glow */
+  /* Destaque em dourado liso, sem brilho (direção da referência mattered). */
   .keyword-glow {
-    background: linear-gradient(135deg, hsl(42 90% 58%), hsl(42 80% 72%), hsl(42 90% 58%));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 0 8px hsl(42 90% 58% / 0.35));
+    color: #e8b93c;
     position: relative;
   }
 
@@ -404,9 +672,20 @@
   }
 }
 
-/* Reduced motion */
+/* Reduced motion.
+   Primeiro o corte geral (qualquer animação ou transição que escape das regras
+   nomeadas abaixo morre aqui), depois os casos que precisam voltar a ficar
+   VISÍVEIS e não só parados — `.reveal-up` nasce em opacity 0 e sem isto o
+   conteúdo sumiria para quem pediu menos movimento. */
 @media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
   .reveal-up { opacity: 1; transform: none; filter: none; transition: none; }
+  .reveal-stagger > * { transition-delay: 0ms !important; }
   .marquee-track { animation: none; }
   .btn-shine::after { animation: none; }
   .glow-breathe { animation: none; }
@@ -497,7 +776,17 @@
 ::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.3); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.5); }
 
-html, body { overflow-x: hidden; }
+/* Repetido aqui fora do @layer para vencer especificidade. Mesmo motivo do
+   bloco acima: `clip` corta sem virar contêiner de rolagem, e é o que mantém a
+   barra fixa do painel grudada no topo. */
+html, body { overflow-x: clip; }
+
+/* Navegador antigo sem `clip` (Safari 15 e anteriores) volta ao `hidden`:
+   perde a barra fixa, mas continua sem rolagem horizontal. Entre as duas
+   quebras, essa é a menos grave. */
+@supports not (overflow-x: clip) {
+  html, body { overflow-x: hidden; }
+}
 
 /* Hide scrollbar utility */
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

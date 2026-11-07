@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { caminhoDoQuiz } from "@/config/quizVariants";
 import { motion } from "framer-motion";
 import { ArrowRight, ClipboardCheck, BarChart3, PhoneCall, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ export function HeroSection() {
   const handleCTA = async () => {
     try { await trackStartClick("hero_cta"); } catch {}
     await new Promise(r => setTimeout(r, 50));
-    navigate("/quiz");
+    navigate(caminhoDoQuiz());
   };
 
   return (

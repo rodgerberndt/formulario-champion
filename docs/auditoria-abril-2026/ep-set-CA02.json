@@ -1,0 +1,18 @@
+{
+  "consultado_em": "2026-09-11T00:39:35.487Z",
+  "path": "act_1733204057869041/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-08-25\",\"until\":\"2026-09-10\"}",
+    "level": "account",
+    "time_increment": "1",
+    "fields": "spend,impressions,actions,date_start",
+    "limit": "100"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 0,
+    "data": []
+  }
+}

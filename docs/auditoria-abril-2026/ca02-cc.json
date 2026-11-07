@@ -1,0 +1,15 @@
+{
+  "consultado_em": "2026-09-11T00:03:16.920Z",
+  "path": "act_1733204057869041/customconversions",
+  "params": {
+    "fields": "id,name,custom_event_type,rule,is_archived,data_sources",
+    "limit": "100"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 0,
+    "data": []
+  }
+}

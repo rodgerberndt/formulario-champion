@@ -1,0 +1,3344 @@
+{
+  "consultado_em": "2026-09-11T00:58:06.586Z",
+  "path": "act_1965417164121284/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-08-30\",\"until\":\"2026-09-10\"}",
+    "level": "ad",
+    "fields": "campaign_name,adset_id,adset_name,ad_id,ad_name,spend,impressions,clicks,actions,date_start",
+    "limit": "500"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 57,
+    "data": [
+      {
+        "campaign_name": "CA 03 - Leads - Ads Novos Caio",
+        "adset_id": "52595874691093",
+        "adset_name": "Ads",
+        "ad_id": "52595874691293",
+        "ad_name": "Caio Case #1",
+        "spend": "0.27",
+        "impressions": "20",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "4"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "4"
+          },
+          {
+            "action_type": "video_view",
+            "value": "4"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads Novos Caio",
+        "adset_id": "52595874691093",
+        "adset_name": "Ads",
+        "ad_id": "52595879589293",
+        "ad_name": "Caio Case #2",
+        "spend": "23.12",
+        "impressions": "1084",
+        "clicks": "36",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "26"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "16"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "16"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "328"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "328"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "301"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads Novos Caio",
+        "adset_id": "52595874691093",
+        "adset_name": "Ads",
+        "ad_id": "52595879589493",
+        "ad_name": "Caio Case #3",
+        "spend": "1.3",
+        "impressions": "62",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "15"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "15"
+          },
+          {
+            "action_type": "video_view",
+            "value": "15"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads Novos Caio",
+        "adset_id": "52595874691093",
+        "adset_name": "Ads",
+        "ad_id": "52595879589693",
+        "ad_name": "Caio Case #4",
+        "spend": "42.11",
+        "impressions": "2506",
+        "clicks": "26",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "11"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "7"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "11"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "650"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "8"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "650"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "9"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "6"
+          },
+          {
+            "action_type": "video_view",
+            "value": "631"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183893",
+        "adset_name": "HD3",
+        "ad_id": "52596227183293",
+        "ad_name": "T04 - C1- CL",
+        "spend": "32.47",
+        "impressions": "2122",
+        "clicks": "61",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "3"
+          },
+          {
+            "action_type": "link_click",
+            "value": "41"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "12"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "36"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "3"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "36"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "916"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "17"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "916"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "17"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "12"
+          },
+          {
+            "action_type": "lead",
+            "value": "3"
+          },
+          {
+            "action_type": "video_view",
+            "value": "858"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "3"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183893",
+        "adset_name": "HD3",
+        "ad_id": "52596227184893",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "1.22",
+        "impressions": "87",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "29"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "29"
+          },
+          {
+            "action_type": "video_view",
+            "value": "29"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183893",
+        "adset_name": "HD3",
+        "ad_id": "52596227185693",
+        "ad_name": "Arthur Case #1",
+        "spend": "0.88",
+        "impressions": "65",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "26"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "26"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "25"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183893",
+        "adset_name": "HD3",
+        "ad_id": "52596227186493",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0.2",
+        "impressions": "21",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "7"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "7"
+          },
+          {
+            "action_type": "video_view",
+            "value": "7"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598800743493",
+        "adset_name": "SH0",
+        "ad_id": "52598800739893",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "115.55",
+        "impressions": "6803",
+        "clicks": "199",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "8"
+          },
+          {
+            "action_type": "link_click",
+            "value": "151"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "8"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "8"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "22"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "147"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "7"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "147"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "2456"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "38"
+          },
+          {
+            "action_type": "comment",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "2456"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "8"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "39"
+          },
+          {
+            "action_type": "post_uncomment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "22"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "lead",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "2267"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "7"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "7"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698493",
+        "adset_name": "SH 3",
+        "ad_id": "52598801700293",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "12.37",
+        "impressions": "947",
+        "clicks": "28",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "20"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "6"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "17"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "17"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "357"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "8"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "357"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "6"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "329"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "1"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698293",
+        "adset_name": "SH 2",
+        "ad_id": "52598801700493",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "110.96",
+        "impressions": "6497",
+        "clicks": "179",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "3"
+          },
+          {
+            "action_type": "link_click",
+            "value": "136"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "14"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "118"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "3"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "118"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "3"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "2336"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "21"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "2336"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "24"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "2"
+          },
+          {
+            "action_type": "post",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "lead",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "4"
+          },
+          {
+            "action_type": "video_view",
+            "value": "2179"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "3"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698693",
+        "adset_name": "SH 4",
+        "ad_id": "52598801700693",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "103.99",
+        "impressions": "5954",
+        "clicks": "153",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "6"
+          },
+          {
+            "action_type": "link_click",
+            "value": "99"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "6"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "14"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "79"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "6"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "79"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "2123"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "25"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "2123"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "6"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "27"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_conversion.post_unsave",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "13"
+          },
+          {
+            "action_type": "lead",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1999"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "6"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698893",
+        "adset_name": "SH 5",
+        "ad_id": "52598801700893",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "110.41",
+        "impressions": "6721",
+        "clicks": "170",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "8"
+          },
+          {
+            "action_type": "link_click",
+            "value": "116"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "8"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "8"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "16"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "99"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "8"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "99"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "4"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "2346"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "19"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "2346"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "8"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "23"
+          },
+          {
+            "action_type": "post",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "12"
+          },
+          {
+            "action_type": "lead",
+            "value": "8"
+          },
+          {
+            "action_type": "video_view",
+            "value": "2211"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "8"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "8"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801818293",
+        "adset_name": "SH 6",
+        "ad_id": "52598801818093",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "113.41",
+        "impressions": "6095",
+        "clicks": "164",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "10"
+          },
+          {
+            "action_type": "link_click",
+            "value": "104"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "10"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "10"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "17"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "89"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "10"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "89"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "2271"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "27"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "2271"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "10"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "28"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "10"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "16"
+          },
+          {
+            "action_type": "lead",
+            "value": "10"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "2140"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "10"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "10"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Vendas - Ads validados (Teste Objetivo de campanha)",
+        "adset_id": "52598802364493",
+        "adset_name": "Ads Validados",
+        "ad_id": "52598802362893",
+        "ad_name": "Arthur Case #1",
+        "spend": "13.33",
+        "impressions": "735",
+        "clicks": "34",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "25"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "8"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "18"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "18"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "360"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "10"
+          },
+          {
+            "action_type": "comment",
+            "value": "2"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "360"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "10"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "8"
+          },
+          {
+            "action_type": "video_view",
+            "value": "325"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Vendas - Ads validados (Teste Objetivo de campanha)",
+        "adset_id": "52598802364493",
+        "adset_name": "Ads Validados",
+        "ad_id": "52598802363093",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "2.16",
+        "impressions": "123",
+        "clicks": "4",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "2"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "2"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "38"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "38"
+          },
+          {
+            "action_type": "video_view",
+            "value": "36"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Vendas - Ads validados (Teste Objetivo de campanha)",
+        "adset_id": "52598802364493",
+        "adset_name": "Ads Validados",
+        "ad_id": "52598803373093",
+        "ad_name": "Caio Case #4",
+        "spend": "0.26",
+        "impressions": "30",
+        "clicks": "1",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "5"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "5"
+          },
+          {
+            "action_type": "video_view",
+            "value": "5"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732082293",
+        "ad_name": "H11 - Arthur Case #1",
+        "spend": "1.75",
+        "impressions": "287",
+        "clicks": "54",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "54"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "40"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "40"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "334"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "334"
+          },
+          {
+            "action_type": "video_view",
+            "value": "280"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732082493",
+        "ad_name": "H5 Arthur Case #1",
+        "spend": "0.29",
+        "impressions": "7",
+        "clicks": "3",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "3"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "3"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "3"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "9"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "9"
+          },
+          {
+            "action_type": "video_view",
+            "value": "6"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732082693",
+        "ad_name": "H11- Arthur Case #1",
+        "spend": "0.16",
+        "impressions": "21",
+        "clicks": "1",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "22"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "22"
+          },
+          {
+            "action_type": "video_view",
+            "value": "21"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732082893",
+        "ad_name": "H3 - Arthur Case #1",
+        "spend": "12.64",
+        "impressions": "175",
+        "clicks": "6",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "5"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "6"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "6"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "71"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "71"
+          },
+          {
+            "action_type": "video_view",
+            "value": "66"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732083093",
+        "ad_name": "H9 - Arthur Case #1",
+        "spend": "0.15",
+        "impressions": "3",
+        "clicks": "0",
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732083293",
+        "ad_name": "H7 - Arthur Case #1",
+        "spend": "0.02",
+        "impressions": "1",
+        "clicks": "0",
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732083493",
+        "ad_name": "H10 - Arthur Case #1",
+        "spend": "0.03",
+        "impressions": "3",
+        "clicks": "0",
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732083893",
+        "ad_name": "H2- Arthur Case #1",
+        "spend": "3.67",
+        "impressions": "95",
+        "clicks": "10",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "9"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "2"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "74"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "74"
+          },
+          {
+            "action_type": "video_view",
+            "value": "65"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732084093",
+        "ad_name": "H1 - Arthur Case #1",
+        "spend": "0.13",
+        "impressions": "1",
+        "clicks": "0",
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732084293",
+        "ad_name": "H12 -  Luis-Nathan Case #2",
+        "spend": "0.07",
+        "impressions": "1",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732084493",
+        "ad_name": "H2-  Luis-Nathan Case #2",
+        "spend": "7.72",
+        "impressions": "145",
+        "clicks": "14",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "13"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "10"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "10"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "99"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "99"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "86"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "1"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732084893",
+        "ad_name": "H3 -  Luis-Nathan Case #2",
+        "spend": "5.14",
+        "impressions": "96",
+        "clicks": "1",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "55"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "55"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "51"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732085093",
+        "ad_name": "H11 -  Luis-Nathan Case #2",
+        "spend": "0.25",
+        "impressions": "46",
+        "clicks": "6",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "6"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "7"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "7"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "49"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "49"
+          },
+          {
+            "action_type": "video_view",
+            "value": "43"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732085293",
+        "ad_name": "H5  Luis-Nathan Case #2",
+        "spend": "1.52",
+        "impressions": "18",
+        "clicks": "1",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "7"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "7"
+          },
+          {
+            "action_type": "video_view",
+            "value": "6"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732085493",
+        "ad_name": "H7 -  Luis-Nathan Case #2",
+        "spend": "3.71",
+        "impressions": "89",
+        "clicks": "5",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "5"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "5"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "5"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "58"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "58"
+          },
+          {
+            "action_type": "video_view",
+            "value": "53"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732085693",
+        "ad_name": "H8 - Luis-Nathan Case #2",
+        "spend": "0.32",
+        "impressions": "26",
+        "clicks": "3",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "3"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "27"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "27"
+          },
+          {
+            "action_type": "video_view",
+            "value": "24"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732085893",
+        "ad_name": "H9 -  Luis-Nathan Case #2",
+        "spend": "0.95",
+        "impressions": "10",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "5"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "5"
+          },
+          {
+            "action_type": "video_view",
+            "value": "5"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732086093",
+        "ad_name": "H13 -  Luis-Nathan Case #2",
+        "spend": "0.05",
+        "impressions": "8",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "8"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "8"
+          },
+          {
+            "action_type": "video_view",
+            "value": "8"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732086293",
+        "ad_name": "H1 - Luis-Nathan Case #2",
+        "spend": "0.06",
+        "impressions": "4",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "3"
+          },
+          {
+            "action_type": "video_view",
+            "value": "3"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087293",
+        "adset_name": "Case Ricardo",
+        "ad_id": "52599732086493",
+        "ad_name": "Case Ricardo #2",
+        "spend": "18.87",
+        "impressions": "523",
+        "clicks": "54",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "52"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "34"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "34"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "394"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "394"
+          },
+          {
+            "action_type": "video_view",
+            "value": "342"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087293",
+        "adset_name": "Case Ricardo",
+        "ad_id": "52599732086693",
+        "ad_name": "Case Ricardo #1",
+        "spend": "0.01",
+        "impressions": "1",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508858893",
+        "adset_name": "Case Ighor #1 (30-08)",
+        "ad_id": "52600508944693",
+        "ad_name": "Case Ighor #1 (30-08)",
+        "spend": "59.87",
+        "impressions": "3844",
+        "clicks": "89",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "75"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "41"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "41"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1217"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "9"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1217"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "9"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "8"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1133"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "1"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508864893",
+        "adset_name": "Case Ighor #2 (30-08)",
+        "ad_id": "52600508946293",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "88.14",
+        "impressions": "4577",
+        "clicks": "106",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "88"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "10"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "53"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "53"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "2"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1105"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "13"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1105"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "13"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "10"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1004"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "1"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508872893",
+        "adset_name": "Case Ighor #3 (30-08)",
+        "ad_id": "52600508947293",
+        "ad_name": "Case Ighor #3 (30-08)",
+        "spend": "60.76",
+        "impressions": "3416",
+        "clicks": "108",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "2"
+          },
+          {
+            "action_type": "link_click",
+            "value": "91"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "4"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "52"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "52"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "2"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1147"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "7"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1147"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "4"
+          },
+          {
+            "action_type": "lead",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1049"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508884293",
+        "adset_name": "Case Ighor #4 (30-08)",
+        "ad_id": "52600508951293",
+        "ad_name": "Case Ighor #4 (30-08)",
+        "spend": "108.55",
+        "impressions": "7883",
+        "clicks": "162",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "11"
+          },
+          {
+            "action_type": "link_click",
+            "value": "127"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "11"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "11"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "11"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "18"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "104"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "11"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "104"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "3"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "2931"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "21"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "2931"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "11"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "24"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "15"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "lead",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "2783"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "11"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "11"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508895893",
+        "adset_name": "Case Ighor #5 (30-08)",
+        "ad_id": "52600508957093",
+        "ad_name": "Case Ighor #5 (30-08)",
+        "spend": "62.2",
+        "impressions": "4444",
+        "clicks": "139",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "5"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "112"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "5"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "5"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "78"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "4"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "78"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1250"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1250"
+          },
+          {
+            "action_type": "purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "5"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "5"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "5"
+          },
+          {
+            "action_type": "lead",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1133"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "4"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "4"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508907293",
+        "adset_name": "Case Ighor #6 (30-08)",
+        "ad_id": "52600508958893",
+        "ad_name": "Case Ighor #6 (30-08)",
+        "spend": "61.15",
+        "impressions": "3440",
+        "clicks": "107",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "2"
+          },
+          {
+            "action_type": "link_click",
+            "value": "96"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "9"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "61"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "61"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "954"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "10"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "954"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "lead",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "848"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508919093",
+        "adset_name": "Case Ighor #7 (30-08)",
+        "ad_id": "52600508961493",
+        "ad_name": "Case Ighor #7 (30-08)",
+        "spend": "59.23",
+        "impressions": "6047",
+        "clicks": "149",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "3"
+          },
+          {
+            "action_type": "link_click",
+            "value": "87"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "14"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "56"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "56"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "2414"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "20"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "2414"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "21"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "13"
+          },
+          {
+            "action_type": "lead",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "2307"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508925893",
+        "adset_name": "Case Ighor #8 (30-08)",
+        "ad_id": "52600508963893",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "88.98",
+        "impressions": "5441",
+        "clicks": "213",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "5"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "210"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "5"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "91"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "5"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "91"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "2"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1705"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1705"
+          },
+          {
+            "action_type": "purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "5"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "lead",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "3"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1487"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "5"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Quiz)",
+        "adset_id": "52600695293893",
+        "adset_name": "Luis-Nathan Case #2 - V3 (Quiz)",
+        "ad_id": "52600695312493",
+        "ad_name": "Luis-Nathan Case #2 - V3 (Quiz)",
+        "spend": "36.62",
+        "impressions": "2389",
+        "clicks": "89",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "60"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "8"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "58"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "58"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "909"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "15"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "909"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "16"
+          },
+          {
+            "action_type": "post",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "834"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598800743493",
+        "adset_name": "SH0",
+        "ad_id": "52601101042693",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "0.12",
+        "impressions": "11",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "3"
+          },
+          {
+            "action_type": "video_view",
+            "value": "3"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698293",
+        "adset_name": "SH 2",
+        "ad_id": "52601101045493",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "0.16",
+        "impressions": "17",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "3"
+          },
+          {
+            "action_type": "video_view",
+            "value": "3"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698693",
+        "adset_name": "SH 4",
+        "ad_id": "52601101052093",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "0.02",
+        "impressions": "4",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698893",
+        "adset_name": "SH 5",
+        "ad_id": "52601101054693",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "0.09",
+        "impressions": "12",
+        "clicks": "1",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "4"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "4"
+          },
+          {
+            "action_type": "video_view",
+            "value": "3"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801818293",
+        "adset_name": "SH 6",
+        "ad_id": "52601101057093",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "0.05",
+        "impressions": "8",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "4"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "4"
+          },
+          {
+            "action_type": "video_view",
+            "value": "4"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598800743493",
+        "adset_name": "SH0",
+        "ad_id": "52601101083293",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "0.25",
+        "impressions": "23",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "7"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "7"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698293",
+        "adset_name": "SH 2",
+        "ad_id": "52601101088893",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "0.1",
+        "impressions": "15",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "5"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "5"
+          },
+          {
+            "action_type": "video_view",
+            "value": "5"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698693",
+        "adset_name": "SH 4",
+        "ad_id": "52601101103293",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "0.02",
+        "impressions": "7",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "3"
+          },
+          {
+            "action_type": "video_view",
+            "value": "3"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698893",
+        "adset_name": "SH 5",
+        "ad_id": "52601101108293",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "0",
+        "impressions": "4",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801818293",
+        "adset_name": "SH 6",
+        "ad_id": "52601101109693",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "0.27",
+        "impressions": "15",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "5"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "5"
+          },
+          {
+            "action_type": "video_view",
+            "value": "5"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10"
+      }
+    ]
+  }
+}

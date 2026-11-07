@@ -113,6 +113,27 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // MACRO LITERAL DA META NÃO É ID (18/09/2026).
+    //
+    // Clique em PRÉVIA de anúncio dentro do Gerenciador entrega a macro CRUA na
+    // URL (`ad_id={{ad.id}}`), e ela chegava até aqui: esta rota fazia upsert em
+    // `meta_ads_cache` com `ad_id = "{{ad.id}}"`, criando no cache um "anúncio"
+    // que não existe e que casa por igualdade com qualquer leitura que faça
+    // join por ad_id. Recusar é mais barato que limpar depois.
+    const ehMacro = (v: unknown) =>
+      typeof v === 'string' && (v.includes('{{') || v.includes('}}'));
+    if (ehMacro(ad_id) || ehMacro(campaign_id) || ehMacro(adset_id)) {
+      console.warn('[meta-ads-resolve] macro literal recusada:', { ad_id, campaign_id, adset_id });
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: 'identificador e macro nao substituida da Meta (previa do Gerenciador), nao um anuncio',
+          macro_literal: true,
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Check if Meta API is configured
     if (!META_ENABLE_RESOLVE || !META_ACCESS_TOKEN) {
       return new Response(

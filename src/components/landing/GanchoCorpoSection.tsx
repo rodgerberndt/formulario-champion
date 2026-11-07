@@ -5,6 +5,7 @@ import { ShimmerText, KeywordGlow, LineReveal } from "./TextEffects";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { caminhoDoQuiz } from "@/config/quizVariants";
 import { useTracking } from "@/hooks/useTracking";
 
 /* ── narrative lines with keyword markup ── */
@@ -200,7 +201,7 @@ export function GanchoCorpoSection() {
   const handleCTA = async () => {
     try { await trackStartClick("gancho_corpo_cta"); } catch {}
     await new Promise((r) => setTimeout(r, 50));
-    navigate("/quiz");
+    navigate(caminhoDoQuiz());
   };
 
   return (

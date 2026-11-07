@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 // SDR routing: Miguel atende TODOS os leads com SDR (14/08/2026 — Gustavo saiu).
 // A faixa continua decidindo a PÁGINA de obrigado (Sprint x MQL), porque isso é
 // produto, não pessoa; só o atendimento passou a ser sempre do Miguel.
-const MIGUEL_WHATSAPP_NUMBER = "5511934025412";
+const MIGUEL_WHATSAPP_NUMBER = "5548996631376";
 const SUPPORT_WHATSAPP_NUMBER = "5548996560104";
 const SUBMISSION_TS_KEY = "champion_submit_ts";
 interface QuizResultProps {
@@ -139,7 +139,6 @@ export function QuizResult({
   const assignedSdr = getAssignedSdr(investimento_faixa);
   const sdrNumber = assignedSdr.phone;
   const waLink = `https://wa.me/${sdrNumber}?text=${encodeURIComponent("Oi! Acabei de concluir meu cadastro. ✅")}`;
-  const skipLink = `https://wa.me/${sdrNumber}?text=${encodeURIComponent("Falaa, furei a fila pra falar com você, como funciona?")}`;
   const supportLink = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Já se passaram 6 horas e não recebi contato.")}`;
   return <div className="max-w-lg mx-auto animate-fade-in space-y-6">
       {/* ── HERO ── */}
@@ -259,57 +258,6 @@ export function QuizResult({
 
 
       {/* ── SKIP THE LINE ── */}
-      <div className="bg-card/70 backdrop-blur-xl border border-border/50 rounded-2xl p-5 md:p-6 space-y-4">
-        <h2 className="text-lg md:text-xl font-bold text-foreground leading-tight">
-          Pule a fila, caso precise
-        </h2>
-
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          Somente aqui nessa seção da página quero liberar uma função inédita, somente se você <strong className="text-foreground">realmente quer ter os mesmos resultados</strong> dos clientes que implementaram a Champion na sua operação.
-        </p>
-
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          Ao invés de esperar nosso time entrar em contato e marcar a call, você pode <strong className="text-secondary">pular a fila</strong> e conseguir entrar em contato com o nosso time, caso ainda não entramos em contato com você.
-        </p>
-
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          Para pular a fila, basta apertar o botão abaixo desse texto.
-        </p>
-
-        <Button variant="championOutline" size="lg" className="w-full text-base" asChild>
-          <a
-            href={skipLink}
-            target="_blank"
-            rel="noopener noreferrer"
-              onClick={() => {
-              try {
-                const leadId = localStorage.getItem('champion_lead_id');
-                if (leadId) {
-                  const now = new Date().toISOString();
-                  supabase
-                    .from('leads')
-                    .update({
-                      skipped_queue: true,
-                      skipped_queue_at: now,
-                      clicked_whatsapp: true,
-                      clicked_whatsapp_at: now,
-                    })
-                    .eq('id', leadId)
-                    .then(({ error }) => {
-                      if (error) console.warn('[skip-queue] update failed:', error);
-                    });
-                }
-              } catch (e) {
-                console.warn('[skip-queue] error:', e);
-              }
-            }}
-          >
-            <MessageCircle className="w-5 h-5" />
-            Pular a fila agora
-          </a>
-        </Button>
-      </div>
-
       {/* ── MOTIVATIONAL HEADLINE ── */}
       
 

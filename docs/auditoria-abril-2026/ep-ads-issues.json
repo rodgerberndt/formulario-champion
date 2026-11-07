@@ -1,0 +1,56 @@
+{
+  "consultado_em": "2026-09-11T00:40:20.284Z",
+  "path": "52600508857293/ads",
+  "params": {
+    "fields": "id,name,effective_status,issues_info",
+    "limit": "50"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 8,
+    "data": [
+      {
+        "id": "52600508957093",
+        "name": "Case Ighor #5 (30-08)",
+        "effective_status": "ACTIVE"
+      },
+      {
+        "id": "52600508951293",
+        "name": "Case Ighor #4 (30-08)",
+        "effective_status": "ACTIVE"
+      },
+      {
+        "id": "52600508958893",
+        "name": "Case Ighor #6 (30-08)",
+        "effective_status": "ACTIVE"
+      },
+      {
+        "id": "52600508946293",
+        "name": "Case Ighor #2 (30-08)",
+        "effective_status": "ACTIVE"
+      },
+      {
+        "id": "52600508944693",
+        "name": "Case Ighor #1 (30-08)",
+        "effective_status": "ACTIVE"
+      },
+      {
+        "id": "52600508947293",
+        "name": "Case Ighor #3 (30-08)",
+        "effective_status": "ACTIVE"
+      },
+      {
+        "id": "52600508963893",
+        "name": "Case Ighor #8 (30-08)",
+        "effective_status": "ACTIVE"
+      },
+      {
+        "id": "52600508961493",
+        "name": "Case Ighor #7 (30-08)",
+        "effective_status": "ACTIVE"
+      }
+    ]
+  }
+}

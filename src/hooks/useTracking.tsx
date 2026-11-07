@@ -1,7 +1,12 @@
+import { getFbc, ensureIndexCookie, lembrarSessionId, esquecerSessionId, getSessionId } from "@/lib/metaTracking";
+import { temIdentificadorPago, type CamposAtribuicao } from "@/lib/atribuicaoPaga";
 import { createContext, useContext, useEffect, useRef, useCallback, ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
+
+/** Disparado quando o visitante clica no CTA e sai da landing para o quiz. */
+export const LEAVING_LANDING_EVENT = "champion:leaving-landing";
 
 const SESSION_KEY = "champion_session_id";
 
@@ -14,7 +19,13 @@ interface TrackingContextType {
     metadata?: Json;
   }) => Promise<void>;
   trackStartClick: (buttonId: string) => Promise<void>;
-  trackQuizPageView: () => Promise<void>;
+  trackQuizPageView: (variante?: { codigo: string; path: string }) => Promise<void>;
+  /**
+   * Fim da tela de abertura do quiz. Sem este evento não dá para saber se a
+   * pessoa desistiu no aviso de 10s ou na primeira pergunta: as duas coisas
+   * moram na mesma tela e nenhum evento era emitido entre uma e outra.
+   */
+  trackIntroEnd: (comoFechou: "pulou" | "esperou", segundos: number) => Promise<void>;
   trackStepView: (stepId: string) => Promise<void>;
   trackStepNext: (fromStep: string, toStep: string, fieldData?: Record<string, string>) => Promise<void>;
   trackStepBack: (fromStep: string, toStep: string) => Promise<void>;
@@ -45,7 +56,9 @@ function getDeviceType(): string {
 
 function sanitizeParam(val: string | null): string | null {
   if (!val) return null;
-  if (/\{\{.*\}\}/.test(val)) return null;
+  // As duas pontas testadas SEPARADAMENTE desde 18/09/2026: valor truncado no
+  // caminho chega com só `{{` ou só `}}` e continua não sendo dado.
+  if (/\{\{|\}\}/.test(val)) return null;
   // Parte dos anúncios monta a URL com o valor JÁ codificado, então o
   // URLSearchParams devolve "Luis-Nathan+Case+%232+-+V3" (uma volta de encoding
   // sobrando) e o mesmo criativo virava dois nomes diferentes no relatório.
@@ -85,46 +98,161 @@ function getUTMParams(): Record<string, string | null> {
     fbclid: sanitizeParam(params.get("fbclid")),
     gclid: sanitizeParam(params.get("gclid")),
     ttclid: sanitizeParam(params.get("ttclid")),
-    // Meta Ads IDs (numeric IDs, keep as-is)
-    campaign_id: params.get("campaign_id") || (isNumericId(utm_campaign) ? utm_campaign : null),
-    adset_id: params.get("adset_id"),
-    ad_id: params.get("ad_id") || (isNumericId(utm_content) ? utm_content : null),
-    creative_id: params.get("creative_id"),
+    // Meta Ads IDs.
+    //
+    // `sanitizeParam` entra aqui em 18/09/2026. Estes quatro eram lidos CRUS —
+    // eram os únicos do objeto que não passavam por ele — e foi por esta porta
+    // que a macro literal entrou no banco: duas sessões de 16/09 nasceram com
+    // `ad_id = "{{ad.id}}"` (clique em PRÉVIA de anúncio dentro do
+    // Gerenciador), o lead herdou os três IDs como macro e virou uma linha de
+    // "tráfego" no painel de criativos. Um ID que não identifica nada é pior
+    // que nenhum ID: ele CASA, por igualdade, com um anúncio inexistente em
+    // toda leitura que fizer join por ad_id.
+    campaign_id: sanitizeParam(params.get("campaign_id")) || (isNumericId(utm_campaign) ? utm_campaign : null),
+    adset_id: sanitizeParam(params.get("adset_id")),
+    ad_id: sanitizeParam(params.get("ad_id")) || (isNumericId(utm_content) ? utm_content : null),
+    creative_id: sanitizeParam(params.get("creative_id")),
+    // ONDE o anúncio foi visto, no mesmo toque que trouxe campanha e anúncio.
+    // `sanitizeParam` já descarta `{{placement}}` não expandido.
+    placement: sanitizeParam(params.get("utm_placement") || params.get("placement")),
   };
 }
 
+/**
+ * O TOQUE PAGO MAIS RECENTE MANDA NA SESSÃO (18/09/2026).
+ *
+ * ── O defeito ──────────────────────────────────────────────────────────────
+ * A linha de `lead_sessions` nascia no PRIMEIRO toque e nunca mais era
+ * atualizada nos campos de anúncio: o insert acima devolve 409 quando a sessão
+ * já existe (o `session_id` mora no localStorage e sobrevive a aba nova, a
+ * reabertura do app e dias inteiros), e nada além do progresso era gravado
+ * depois. Quem clicou em dois anúncios diferentes ficava, na tabela, com o
+ * primeiro — e o resgate do gatilho, que lê JUSTAMENTE essa linha, então
+ * carimbava no lead o anúncio errado.
+ *
+ * Casos medidos em 18/09: Tiago clicou em Nulle #5 às 13:29 e em Nulle #6 às
+ * 15:24 e virou lead como Nulle #5, com conjunto e placement do toque velho;
+ * Emerson clicou em Case Ighor #7 e ficou com Nulle #7.
+ *
+ * ── A regra ────────────────────────────────────────────────────────────────
+ * `reference_atribuicao_meta`: vale o ÚLTIMO clique ATÉ o lead nascer. Então
+ * todo toque com identificador PAGO novo reescreve o bloco de anúncio da
+ * sessão. Toque orgânico (bio, direto) não reescreve nada — quem decide isso é
+ * `temIdentificadorPago`, a MESMA função que o front usa para a atribuição da
+ * aba, e não uma segunda régua.
+ *
+ * O primeiro toque não se perde: a RPC guarda o bloco anterior em
+ * `lead_sessions.primeiro_toque_pago` (jsonb) na primeira troca.
+ */
+async function atualizarAnuncioDaSessao(sessionId: string, utm: Record<string, string | null>) {
+  if (!temIdentificadorPago(utm as Partial<CamposAtribuicao>)) return;
+  try {
+    const r = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/rpc/atualizar_anuncio_da_sessao`,
+      {
+        method: "POST",
+        headers: {
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          p_session_id: sessionId,
+          p_campaign_id: utm.campaign_id,
+          p_adset_id: utm.adset_id,
+          p_ad_id: utm.ad_id,
+          p_creative_id: utm.creative_id ?? null,
+          p_utm_source: utm.utm_source,
+          p_utm_medium: utm.utm_medium,
+          p_utm_campaign: utm.utm_campaign,
+          p_utm_content: utm.utm_content,
+          p_utm_term: utm.utm_term,
+          p_placement_raw: utm.placement,
+          p_fbclid: utm.fbclid,
+          p_gclid: utm.gclid,
+        }),
+      },
+    );
+    // 404 = migration ainda não aplicada. Não é erro do visitante e não pode
+    // virar ruído no console de quem está na página.
+    if (r.status === 404) return;
+    if (!r.ok) {
+      console.warn("[sessao] não atualizou o anúncio:", r.status, await r.text());
+      return;
+    }
+    const trocou = await r.json().catch(() => null);
+    if (trocou === true) console.log("[sessao] anúncio da sessão atualizado para o toque pago desta visita");
+  } catch (e) {
+    // Telemetria nunca derruba a visita.
+    console.warn("[sessao] erro ao atualizar o anúncio:", e);
+  }
+}
+
 // Helper to update session via Supabase client
+/**
+ * Colunas de progresso que o navegador pode gravar, e o parâmetro correspondente
+ * na RPC. Lista fechada de propósito: a chamada sai do cliente com a chave
+ * anônima, então nada fora daqui deve ser escrito por ela.
+ */
+const SESSION_RPC_PARAMS: Record<string, string> = {
+  fbc: "p_fbc",
+  started_quiz: "p_started_quiz",
+  completed: "p_completed",
+  current_step_id: "p_current_step_id",
+  entered_quiz_page: "p_entered_quiz_page",
+  start_button_id: "p_start_button_id",
+  last_page: "p_last_page",
+  lead_name: "p_lead_name",
+  lead_whatsapp: "p_lead_whatsapp",
+  lead_instagram: "p_lead_instagram",
+  lead_market: "p_lead_market",
+  lead_stage: "p_lead_stage",
+  fbp: "p_fbp",
+  quiz_variant: "p_quiz_variant",
+};
+
+/**
+ * Grava o progresso da sessão via RPC.
+ *
+ * O UPDATE direto do PostgREST NÃO funciona nesta tabela: `lead_sessions` tem
+ * policy de INSERT e de UPDATE, mas nenhuma de SELECT, e sem SELECT o Postgres
+ * não localiza a linha para avaliar o WHERE — o update afeta zero linhas e
+ * responde 204, sem erro nenhum. Foi assim que `started_quiz`, `completed` e
+ * `lead_whatsapp` ficaram vazios em TODAS as sessões desde julho, levando junto
+ * a atribuição do Meta e a recuperação de criativo no admin.
+ *
+ * A RPC `update_lead_session` é SECURITY DEFINER e não passa pela RLS. Mesmo
+ * remédio já usado em `increment_section_time` pelo mesmo motivo.
+ */
 async function updateSessionDirect(sessionId: string, data: Record<string, unknown>) {
   try {
-    const payload: Record<string, unknown> = {
-      ...data,
-      last_seen_at: new Date().toISOString(),
-    };
-    
-    // Remove undefined values to prevent issues
-    Object.keys(payload).forEach(key => {
-      if (payload[key] === undefined) {
-        delete payload[key];
-      }
-    });
-    
-    console.log("Updating session:", sessionId, payload);
-    
-    // Use update without .single()/.maybeSingle() to avoid 406 errors
-    const { data: result, error } = await supabase
-      .from("lead_sessions")
-      .update(payload)
-      .eq("id", sessionId)
-      .select("id");
-    
+    // O tipo dos argumentos é montado dinamicamente a partir do mapa acima, e o
+    // tipo gerado do banco exige o objeto literal — daí o cast, restrito a esta
+    // linha. As chaves possíveis são as de SESSION_RPC_PARAMS, todas válidas.
+    const args: Record<string, unknown> = { p_session_id: sessionId };
+    for (const [column, value] of Object.entries(data)) {
+      const param = SESSION_RPC_PARAMS[column];
+      if (!param || value === undefined || value === null) continue;
+      args[param] = value;
+    }
+    if (Object.keys(args).length === 1) return; // nada a gravar
+
+    const { data: found, error } = await supabase.rpc(
+      "update_lead_session",
+      args as Parameters<typeof supabase.rpc<"update_lead_session">>[1],
+    );
+
     if (error) {
       console.error("Error updating session:", error.message, error.code);
-      if (error.code === 'PGRST116' || error.code === '406') {
-        console.warn("Session not found in DB, clearing stale session ID");
-        localStorage.removeItem(SESSION_KEY);
-      }
-    } else if (!result || result.length === 0) {
-      console.warn("Session update returned 0 rows for:", sessionId);
+      return;
+    }
+    if (found === false) {
+      // A sessão guardada no localStorage não existe mais no banco.
+      // Limpa as TRÊS camadas: memória, localStorage e cookie de domínio.
+      // Limpar só o localStorage deixaria o cookie ressuscitar o id morto na
+      // próxima leitura (ver `esquecerSessionId` em src/lib/metaTracking.ts).
+      console.warn("Session not found in DB, clearing stale session ID");
+      esquecerSessionId();
     }
   } catch (error) {
     console.error("Error updating session:", error);
@@ -142,11 +270,28 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
       return sessionIdRef.current;
     }
 
-    let sessionId = localStorage.getItem(SESSION_KEY);
+    // Ordem de resolução: localStorage → cookie de domínio → id novo.
+    // O cookie entra aqui porque o script inline do index.html já o grava no
+    // primeiro byte: sem ele, um armazenamento que esvazia no meio da visita
+    // faria esta função cunhar um id NOVO e partir a jornada em duas.
+    let sessionId: string | null = null;
+    try {
+      sessionId = localStorage.getItem(SESSION_KEY);
+    } catch { /* storage indisponível */ }
+    if (!sessionId) sessionId = getSessionId();
     if (!sessionId) {
       sessionId = generateUUID();
     }
-    localStorage.setItem(SESSION_KEY, sessionId);
+    // O `setItem` PRECISA ser tolerante a falha: em navegador embutido com
+    // armazenamento bloqueado ele levanta exceção, e uma exceção aqui derrubaria
+    // a criação da sessão inteira — sem sessão, sem funil e sem atribuição.
+    try {
+      localStorage.setItem(SESSION_KEY, sessionId);
+    } catch { /* ignore */ }
+    // Memória e cookie ANTES de qualquer ida à rede. É isto que garante que o
+    // insert do lead enxergue o mesmo id que os eventos, mesmo que o
+    // armazenamento evapore no meio do quiz.
+    lembrarSessionId(sessionId);
 
     // Garante que a linha exista em lead_sessions mesmo quando o id já veio
     // do localStorage: o script inline de landing-hit em index.html roda
@@ -167,7 +312,8 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
 
     try {
       const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/lead_sessions`;
-      const response = await fetch(url, {
+      let bodySessao = "";
+      let response = await fetch(url, {
         method: 'POST',
         headers: {
           'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
@@ -175,7 +321,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal',
         },
-        body: JSON.stringify({
+        body: (bodySessao = JSON.stringify({
           id: sessionId,
           first_page: currentPage,
           last_page: currentPage,
@@ -195,16 +341,49 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
           adset_id: utmParams.adset_id,
           ad_id: utmParams.ad_id,
           creative_id: utmParams.creative_id,
+          // Posicionamento do MESMO toque que criou a sessão. Guardado cru,
+          // sem derivar plataforma nem posição — a URL não manda essas duas.
+          placement_raw: utmParams.placement,
           // Device info
           device_type: getDeviceType(),
           user_agent: navigator.userAgent,
           // Facebook browser params for CAPI matching
           fbp: getCookie('_fbp') || null,
-        }),
+          // Cookie do clique de anúncio. É o que liga a conversão ao anúncio
+          // no Meta; nunca tinha sido lido (ver src/lib/metaTracking.ts).
+          fbc: getFbc(),
+        })),
       });
 
+      // Se a coluna `fbc` ainda não existir no banco (migration de 06/09
+      // pendente), a sessão NÃO pode se perder: tenta de novo sem ela.
+      if (response.status === 400) {
+        const txt = await response.clone().text().catch(() => "");
+        if (/fbc/.test(txt) && /column|schema cache|PGRST204/i.test(txt)) {
+          const semFbc = JSON.parse(bodySessao);
+          delete semFbc.fbc;
+          const retry = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal',
+            },
+            body: JSON.stringify(semFbc),
+          });
+          response = retry;
+        }
+      }
       // 409 = sessão já existe (unique violation na PK) — normal quando o
       // id já veio do localStorage, não é um erro real.
+      //
+      // E é EXATAMENTE aqui que o anúncio se perdia: no 409 a sessão seguia
+      // com os campos do primeiro toque para sempre. A chamada abaixo roda nos
+      // dois casos (na criação ela é no-op, porque a linha já nasceu com estes
+      // mesmos valores) e é o que faz valer o último clique pago.
+      void atualizarAnuncioDaSessao(sessionId!, utmParams);
+
       if (!response.ok && response.status !== 409) {
         console.error("Error creating session:", await response.text());
       } else {
@@ -229,22 +408,29 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
           console.error("Error capturing IP:", ipError);
         }
 
-        // Retry fbp capture after Meta Pixel has time to set the cookie
-        const retryFbp = (attempt: number) => {
+        // Retry fbp/fbc capture after Meta Pixel has time to set the cookies
+        const faltouFbp = !getCookie('_fbp');
+        const faltouFbc = !getCookie('_fbc') && !!utmParams.fbclid;
+        const retryCookies = (attempt: number) => {
           if (attempt > 5) return;
           setTimeout(() => {
             const fbpVal = getCookie('_fbp');
-            if (fbpVal) {
-              console.log("fbp captured on retry", attempt, fbpVal);
-              updateSessionDirect(sessionId!, { fbp: fbpVal });
+            const fbcVal = getCookie('_fbc');
+            const patch: Record<string, string> = {};
+            if (faltouFbp && fbpVal) patch.fbp = fbpVal;
+            if (faltouFbc && fbcVal) patch.fbc = fbcVal;
+            if (Object.keys(patch).length) {
+              console.log("meta cookies captured on retry", attempt, patch);
+              updateSessionDirect(sessionId!, patch);
             } else if (attempt < 5) {
-              retryFbp(attempt + 1);
+              retryCookies(attempt + 1);
             }
           }, attempt * 1500); // 1.5s, 3s, 4.5s, 6s, 7.5s
         };
-        if (!getCookie('_fbp')) {
-          retryFbp(1);
+        if (faltouFbp || faltouFbc) {
+          retryCookies(1);
         }
+        ensureIndexCookie(sessionId);
       }
     } catch (error) {
       console.error("Error creating session:", error);
@@ -291,6 +477,13 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     // Dispara dois eventos semânticos:
     // - "start_click": legado (mantido para compatibilidade do funil atual)
     // - "click_outbound": clique no CTA que sai da landing (fonte da verdade de cliques internos)
+    // A leitura da landing termina AQUI. O medidor de tempo por seção vive em
+    // outro hook (useLandingTracking) e não tem como saber do clique sozinho:
+    // a navegação para o quiz é SPA, então nem `pagehide` nem
+    // `visibilitychange` disparam. Sem este aviso, o relógio da seção continua
+    // correndo enquanto a pessoa responde o quiz — foi o que fez uma headline
+    // aparecer com 2min32 de leitura num visitante que clicou em 22 segundos.
+    window.dispatchEvent(new CustomEvent(LEAVING_LANDING_EVENT));
     await Promise.allSettled([
       trackEvent("start_click", { buttonId }),
       trackEvent("click_outbound", { buttonId, metadata: { destination: "/quiz", source: "landing_cta" } as Json }),
@@ -302,10 +495,23 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
   }, [trackEvent, updateSession]);
 
   // Track quiz page view - marks both entered_quiz_page AND started_quiz
-  const trackQuizPageView = useCallback(async () => {
-    await trackEvent("quiz_view", { page: "/quiz" });
-    await updateSession({ entered_quiz_page: true, started_quiz: true });
+  const trackQuizPageView = useCallback(async (variante?: { codigo: string; path: string }) => {
+    await trackEvent("quiz_view", {
+      page: variante?.path ?? "/quiz",
+      metadata: (variante ? { quiz_variant: variante.codigo } : null) as Json,
+    });
+    await updateSession({
+      entered_quiz_page: true,
+      started_quiz: true,
+      ...(variante ? { quiz_variant: variante.codigo } : {}),
+    });
   }, [trackEvent, updateSession]);
+
+  const trackIntroEnd = useCallback(async (comoFechou: "pulou" | "esperou", segundos: number) => {
+    await trackEvent("intro_end", {
+      metadata: { como: comoFechou, segundos } as Json,
+    });
+  }, [trackEvent]);
 
   // Track step view
   const trackStepView = useCallback(async (stepId: string) => {
@@ -346,9 +552,10 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
   }) => {
     const sessionId = await getOrCreateSessionId();
     
-    // Capture fbp one last time before submit (pixel should have set it by now)
+    // Capture fbp/fbc one last time before submit (pixel should have set them by now)
     const fbpVal = getCookie('_fbp');
-    
+    const fbcVal = getFbc();
+
     await trackEvent("submit");
     await updateSession({
       completed: true,
@@ -358,6 +565,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
       lead_market: leadData.market,
       lead_stage: leadData.stage,
       ...(fbpVal ? { fbp: fbpVal } : {}),
+      ...(fbcVal ? { fbc: fbcVal } : {}),
     });
     
     // Trigger server-side notification (Kommo + WhatsApp)
@@ -366,6 +574,10 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
       const notifyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notify-lead`;
       fetch(notifyUrl, {
         method: 'POST',
+        // keepalive: o formulário curto do topo da landing (17/09/2026) troca de
+        // página logo após o envio, sem os 10 s de animação do quiz. Sem isto a
+        // navegação completa cancelaria o aviso do lead no meio do caminho.
+        keepalive: true,
         headers: {
           'Content-Type': 'application/json',
           'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
@@ -428,6 +640,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
         trackStartClick,
         trackQuizPageView,
         trackStepView,
+        trackIntroEnd,
         trackStepNext,
         trackStepBack,
         trackSubmit,

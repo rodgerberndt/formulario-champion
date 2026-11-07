@@ -21,6 +21,14 @@ interface FunnelMetricsInput {
   }>;
   quiz_v2_empty?: boolean;
   quiz_v1_present?: boolean;
+  /**
+   * Qual formulário o período viu (17/09/2026). "form_curto" não tem funil por
+   * etapa por construção — é um formulário de uma tela só —, e isso não é a
+   * mesma coisa que "sem dados".
+   */
+  quiz_flow?: "form_curto" | "quiz_v2" | "misto" | "desconhecido";
+  sessoes_form_curto?: number;
+  sessoes_outro_quiz?: number;
 }
 
 interface FunnelMetricsTabProps {
@@ -100,35 +108,59 @@ export default function FunnelMetricsTab({ fetchAdminData, funnelMetrics }: Funn
       {/* Análise Semanal — performance por dia da semana */}
       <WeeklyAnalysisSection fetchAdminData={fetchAdminData} />
 
-      {/* Funil do Quiz — drop-off etapa por etapa (apenas quiz v2) */}
-      {funnelMetrics && funnelMetrics.quiz_v2_empty && (
-        <Card className="border-primary/30">
-          <CardContent className="pt-4">
-            <div className="flex items-center justify-between mb-3 border-b border-border/50 pb-2">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Funil do Quiz — drop-off por etapa (período selecionado)
-              </p>
-            </div>
-            <div className="py-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                Sem dados do quiz novo para este período.
-              </p>
-              {funnelMetrics.quiz_v1_present && (
-                <p className="text-[11px] text-muted-foreground/70 mt-2">
-                  Este período contém apenas o quiz antigo (v1), que foi descontinuado e não é exibido aqui.
+      {/* Funil do Quiz — drop-off etapa por etapa (apenas quiz v2).
+          Sem etapas, a tela precisa dizer POR QUE não há etapas. "Sem dados do
+          quiz novo" servia para tudo, e desde 17/09/2026 a causa quase sempre é
+          outra: o formulário curto não tem etapas por construção. */}
+      {funnelMetrics && funnelMetrics.quiz_v2_empty && (() => {
+        const ehFormCurto = funnelMetrics.quiz_flow === "form_curto";
+        return (
+          <Card className="border-primary/30">
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between mb-3 border-b border-border/50 pb-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Funil do Quiz — drop-off por etapa (período selecionado)
                 </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              </div>
+              <div className="py-8 text-center">
+                {ehFormCurto ? (
+                  <>
+                    <p className="text-sm text-muted-foreground">
+                      Formulário curto: não há funil por etapa.
+                    </p>
+                    <p className="text-[11px] text-muted-foreground/70 mt-2 max-w-md mx-auto">
+                      Desde 17/09/2026 a landing usa um formulário de uma tela só, sem passos — nada
+                      para medir entre etapas. A perda que existe está no bloco acima: visitante →
+                      tocou no formulário → enviou.
+                      {typeof funnelMetrics.sessoes_form_curto === "number" && (
+                        <> ({funnelMetrics.sessoes_form_curto} sessões do formulário curto no período.)</>
+                      )}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-muted-foreground">
+                      Sem dados do quiz novo para este período.
+                    </p>
+                    {funnelMetrics.quiz_v1_present && (
+                      <p className="text-[11px] text-muted-foreground/70 mt-2">
+                        Este período contém apenas o quiz antigo (v1), que foi descontinuado e não é exibido aqui.
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {funnelMetrics && !funnelMetrics.quiz_v2_empty && funnelMetrics.step_funnel && funnelMetrics.step_funnel.length > 0 && (() => {
         const STEP_LABELS_LOCAL: Record<string, string> = {
           q1_quer_vender: "Quer vender mais?",
           q2_mercado: "Mercado",
           q3_operacoes: "Operações ativas",
-          q4_faturamento: "Faturamento atual",
+          q4_faturamento: "Faturamento total das operações",
           q5_nome: "Nome completo",
           q6_whats: "WhatsApp",
           q7_insta: "Instagram",
@@ -136,6 +168,11 @@ export default function FunnelMetricsTab({ fetchAdminData, funnelMetrics }: Funn
           q9_dor: "Dor / Desejo",
           q10_nps: "Nota NPS",
           q11_aceita_call: "Aceita call de diagnóstico",
+          // Entraram no quiz em 25/08/2026 e ficaram sem rótulo aqui: os dois
+          // últimos passos do funil apareciam com o id cru, e o passo onde mais
+          // gente desiste é justamente o último antes do envio.
+          q12_compromisso_whats: "Compromisso no WhatsApp",
+          q13_loading: "Envio da aplicação",
           // Labels antigas (quiz v1, descontinuado, mantidas por compat de dados históricos)
           q1_nome: "Nome",
           q2_whats: "WhatsApp",
@@ -260,6 +297,15 @@ export default function FunnelMetricsTab({ fetchAdminData, funnelMetrics }: Funn
               {funnelMetrics.quiz_v1_present && (
                 <p className="text-[10px] text-amber-300/90 mb-3 -mt-2">
                   Parte do período contém quiz antigo (v1) e foi ignorada no funil.
+                </p>
+              )}
+              {/* Período que pega a virada de 17/09/2026. As etapas abaixo são
+                  só do quiz; as sessões do formulário curto não têm etapa e não
+                  estão aqui — sem este aviso, o funil parece ter encolhido. */}
+              {funnelMetrics.quiz_flow === "misto" && (funnelMetrics.sessoes_form_curto ?? 0) > 0 && (
+                <p className="text-[10px] text-cyan-300/90 mb-3 -mt-2">
+                  {funnelMetrics.sessoes_form_curto} sessões deste período usaram o formulário curto,
+                  que não tem etapas, e ficaram de fora deste funil. As etapas abaixo são só do quiz.
                 </p>
               )}
 

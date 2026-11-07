@@ -1,0 +1,1468 @@
+{
+  "consultado_em": "2026-09-10T22:11:02.046Z",
+  "path": "act_1733204057869041/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-08-12\",\"until\":\"2026-09-10\"}",
+    "level": "ad",
+    "fields": "campaign_id,campaign_name,adset_id,adset_name,ad_id,ad_name,spend,impressions,clicks,inline_link_clicks,actions,action_values,objective,optimization_goal,attribution_setting,account_currency,date_start,date_stop",
+    "limit": "500"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 63,
+    "data": [
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252321639790054",
+        "adset_name": "C1 - CF",
+        "ad_id": "120252321639780054",
+        "ad_name": "C1 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252321812520054",
+        "adset_name": "C2 - CF",
+        "ad_id": "120252321812510054",
+        "ad_name": "C2 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252584280290054",
+        "adset_name": "C4 - CF",
+        "ad_id": "120252584280320054",
+        "ad_name": "C4 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252584280300054",
+        "adset_name": "C5 - CF",
+        "ad_id": "120252584280330054",
+        "ad_name": "C5 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252584280310054",
+        "adset_name": "C3 - CF",
+        "ad_id": "120252584280340054",
+        "ad_name": "C3 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252843116060054",
+        "adset_name": "C6G1 - CF",
+        "ad_id": "120252843116070054",
+        "ad_name": "C6G1 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252843116040054",
+        "adset_name": "C6G3 - CF",
+        "ad_id": "120252843116080054",
+        "ad_name": "C6G3 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252843116050054",
+        "adset_name": "C6G2 - CF",
+        "ad_id": "120252843116090054",
+        "ad_name": "C6G2 - CF",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252877176340054",
+        "adset_name": "C8",
+        "ad_id": "120252877176330054",
+        "ad_name": "C8",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252877176360054",
+        "adset_name": "C9",
+        "ad_id": "120252877176350054",
+        "ad_name": "C9",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252877176320054",
+        "adset_name": "C7",
+        "ad_id": "120252877176380054",
+        "ad_name": "C7",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252877176370054",
+        "adset_name": "C10",
+        "ad_id": "120252877176390054",
+        "ad_name": "C10",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252883108020054",
+        "adset_name": "C11",
+        "ad_id": "120252883108010054",
+        "ad_name": "C11",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252928760170054",
+        "adset_name": "C12",
+        "ad_id": "120252928760180054",
+        "ad_name": "C12",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252928806850054",
+        "adset_name": "C13",
+        "ad_id": "120252928806840054",
+        "ad_name": "C13",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252929579480054",
+        "adset_name": "C14",
+        "ad_id": "120252929579490054",
+        "ad_name": "C14",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252930038480054",
+        "adset_name": "C15",
+        "ad_id": "120252930038490054",
+        "ad_name": "C15",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "adset_id": "120252932304260054",
+        "adset_name": "C16",
+        "ad_id": "120252932304270054",
+        "ad_name": "C16",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253392582620054",
+        "adset_name": "(C01) - reaproveitado",
+        "ad_id": "120253392582610054",
+        "ad_name": "C01",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479109940054",
+        "adset_name": "B4H3",
+        "ad_id": "120253479109950054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130570054",
+        "adset_name": "B2H4",
+        "ad_id": "120253479130350054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130520054",
+        "adset_name": "B2H1",
+        "ad_id": "120253479130410054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130560054",
+        "adset_name": "B2H3",
+        "ad_id": "120253479130420054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130550054",
+        "adset_name": "B2H2",
+        "ad_id": "120253479130430054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130590054",
+        "adset_name": "B3H5",
+        "ad_id": "120253479130440054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130380054",
+        "adset_name": "B4H1",
+        "ad_id": "120253479130450054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130400054",
+        "adset_name": "B1H4",
+        "ad_id": "120253479130460054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130580054",
+        "adset_name": "B3H2",
+        "ad_id": "120253479130470054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130390054",
+        "adset_name": "B4H2",
+        "ad_id": "120253479130480054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130600054",
+        "adset_name": "B1H1",
+        "ad_id": "120253479130490054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130370054",
+        "adset_name": "B3H3",
+        "ad_id": "120253479130500054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130360054",
+        "adset_name": "B3H1",
+        "ad_id": "120253479130510054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130610054",
+        "adset_name": "B1H2",
+        "ad_id": "120253479130530054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253479130620054",
+        "adset_name": "B1H 3",
+        "ad_id": "120253479130540054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "adset_id": "120253522383330054",
+        "adset_name": "B2",
+        "ad_id": "120253522383340054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253582381350054",
+        "adset_name": "C1G1",
+        "ad_id": "120253582381320054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253582433580054",
+        "adset_name": "C1G2",
+        "ad_id": "120253582433560054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253582433570054",
+        "adset_name": "C1G3",
+        "ad_id": "120253582433590054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253623846330054",
+        "adset_name": "C1",
+        "ad_id": "120253623846320054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253624622180054",
+        "adset_name": "C2",
+        "ad_id": "120253624622190054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253624867270054",
+        "adset_name": "C3",
+        "ad_id": "120253624867260054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253624990380054",
+        "adset_name": "C4",
+        "ad_id": "120253624990390054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "adset_id": "120253664793600054",
+        "adset_name": "C5",
+        "ad_id": "120253664793590054",
+        "ad_name": "BH",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253702643260054",
+        "adset_name": "Luis-nathan Case #2",
+        "ad_id": "120253702643280054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253702643240054",
+        "adset_name": "Luis-nathan Case #2 - V3",
+        "ad_id": "120253702643290054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253702643330054",
+        "adset_name": "Luis-nathan Case #2 - C1",
+        "ad_id": "120253728646220054",
+        "ad_name": "Ad — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253695740110054",
+        "adset_name": "Luis-nathan Case #3",
+        "ad_id": "120253732835920054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253702643320054",
+        "adset_name": "Luis-nathan Case #1",
+        "ad_id": "120253732902850054",
+        "ad_name": "AD",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120253702643330054",
+        "adset_name": "Luis-nathan Case #2 - C1",
+        "ad_id": "120253770210790054",
+        "ad_name": "Ad — Cópia — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407460054",
+        "adset_name": "Luis-nathan Case #1",
+        "ad_id": "120253841407330054",
+        "ad_name": "AD",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407400054",
+        "adset_name": "Luis-nathan Case #3",
+        "ad_id": "120253841407350054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407390054",
+        "adset_name": "Luis-nathan Case #2 - C1",
+        "ad_id": "120253841407360054",
+        "ad_name": "Ad — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407430054",
+        "adset_name": "Luis-nathan Case #2",
+        "ad_id": "120253841407380054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407340054",
+        "adset_name": "Luis-nathan Case #2 - V3",
+        "ad_id": "120253841407410054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "adset_id": "120253841407390054",
+        "adset_name": "Luis-nathan Case #2 - C1",
+        "ad_id": "120253841407420054",
+        "ad_name": "Ad — Cópia — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254417309080054",
+        "adset_name": "Luis-Nathan Case #2 - V5",
+        "ad_id": "120254417309060054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254417309050054",
+        "adset_name": "Luis-Nathan Case #2 - V1",
+        "ad_id": "120254417309070054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254417309110054",
+        "adset_name": "Luis-Nathan Case #2 - V2",
+        "ad_id": "120254417309090054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254417309100054",
+        "adset_name": "Luis-Nathan Case #2 - V4",
+        "ad_id": "120254417309120054",
+        "ad_name": "Ad",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254534758990054",
+        "adset_name": "Case Caio rainha #1",
+        "ad_id": "120254534758980054",
+        "ad_name": "Case Caio Rainha #1",
+        "spend": "13.73",
+        "impressions": "1012",
+        "clicks": "75",
+        "inline_link_clicks": "62",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "62"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "3"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "53"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "53"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "98"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "5"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "98"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "3"
+          },
+          {
+            "action_type": "video_view",
+            "value": "31"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "1"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "1"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254605219930054",
+        "adset_name": "Case Caio rainha #4",
+        "ad_id": "120254605219900054",
+        "ad_name": "Case Caio Rainha #4",
+        "spend": "13.57",
+        "impressions": "676",
+        "clicks": "63",
+        "inline_link_clicks": "51",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "51"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "5"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "39"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "39"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "111"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "111"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          },
+          {
+            "action_type": "click_to_call_native_20s_call_connect",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_add_to_cart_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "57"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "7"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "7"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "1"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254605219910054",
+        "adset_name": "Case Caio rainha #2",
+        "ad_id": "120254605219950054",
+        "ad_name": "Case Caio Rainha #2",
+        "spend": "14.42",
+        "impressions": "670",
+        "clicks": "54",
+        "inline_link_clicks": "47",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "47"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "3"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "30"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "30"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "243"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "8"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "243"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "8"
+          },
+          {
+            "action_type": "post",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "3"
+          },
+          {
+            "action_type": "video_view",
+            "value": "188"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "3"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "3"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "adset_id": "120254605219920054",
+        "adset_name": "Case Caio rainha #3",
+        "ad_id": "120254605219960054",
+        "ad_name": "Case Caio Rainha #3",
+        "spend": "13.42",
+        "impressions": "1125",
+        "clicks": "81",
+        "inline_link_clicks": "65",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "65"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "15"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "52"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "52"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "85"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "4"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "85"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "4"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "3"
+          },
+          {
+            "action_type": "click_to_call_native_20s_call_connect",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_add_to_cart_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "click_to_call_native_60s_call_connect",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "16"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "23"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "23"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      }
+    ]
+  }
+}

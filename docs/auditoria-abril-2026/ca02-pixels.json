@@ -1,0 +1,26 @@
+{
+  "consultado_em": "2026-09-11T00:03:16.469Z",
+  "path": "act_1733204057869041/adspixels",
+  "params": {
+    "fields": "id,name,last_fired_time,creation_time,owner_business",
+    "limit": "50"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 1,
+    "data": [
+      {
+        "id": "2171667863227042",
+        "name": "Champion Ad Studio",
+        "last_fired_time": "2026-09-10T23:28:33+0000",
+        "creation_time": "2024-11-27T13:13:46+0000",
+        "owner_business": {
+          "id": "929214544923703",
+          "name": "Ozell Hych"
+        }
+      }
+    ]
+  }
+}

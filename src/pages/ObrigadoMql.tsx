@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { QuizResult } from "@/components/landing/QuizResult";
-import { SuccessCasesCompact } from "@/components/landing/SuccessCasesCompact";
-import { SocialProofCarousel } from "@/components/landing/SocialProofCarousel";
+import { ObrigadoDiagnostico } from "@/components/landing/ObrigadoDiagnostico";
+import { dispararConversaoDoLead } from "@/lib/conversaoPixel";
+import { lerReuniaoConfirmada } from "@/lib/agendamento";
 
 declare global {
   interface Window {
@@ -75,86 +75,42 @@ function PageBackground() {
   );
 }
 
-// Faixas that qualify as MQL for Pixel/CAPI (>= R$ 10k)
-const MQL_PIXEL_FAIXAS = [
-  "De R$ 10 mil a R$ 20 mil",
-  "De R$ 20 mil a R$ 30 mil",
-  "De R$ 30 mil a R$ 50 mil",
-  "De R$ 50 mil a R$ 75 mil",
-  "De R$ 75 mil a R$ 100 mil",
-  "De R$ 100 mil a R$ 150 mil",
-  "De R$ 150 mil a R$ 200 mil",
-  "De R$ 200 mil a R$ 300 mil",
-  "De R$ 300 mil a R$ 500 mil",
-  "De R$ 500 mil a R$ 750 mil",
-  "De R$ 750 mil a R$ 1 milhão",
-  "De R$ 1 milhão a R$ 2 milhões",
-  "De R$ 2 milhões a R$ 3 milhões",
-  "De R$ 3 milhões a R$ 5 milhões",
-  "De R$ 5 milhões a R$ 10 milhões",
-  "Acima de R$ 10 milhões",
-  "R$ 20k – 50k",
-  "R$ 50k – 100k",
-];
-
 export default function ObrigadoMql() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<QuizFormData | null>(null);
   const conversionEventFired = useRef(false);
 
-  // Fire PageView so Meta sees conversions from this URL
-  useEffect(() => {
-    if (typeof window.fbq === 'function') {
-      window.fbq('track', 'PageView');
-      console.log('Facebook Pixel: PageView fired on /obrigadomql');
-    }
-  }, []);
+  // PageView: a página é aberta com navegação completa a partir do quiz (ver
+  // Quiz.tsx), então o index.html já disparou o PageView desta URL com
+  // event_id. Disparar de novo aqui contava duas visitas.
 
+  // Eventos do pixel por FAIXA, não por página (src/lib/conversaoPixel.ts):
+  // desde 17/09/2026 todo lead do formulário cai aqui, inclusive o abaixo de
+  // R$ 10 mil (que antes ia para /obrigadosprint). >= R$ 10 mil: CR, Lead, MQL.
+  // Abaixo: CR, Lead, Sprint. O lead >= R$ 100 mil que passou por /agendar já
+  // disparou lá, e aqui não repete.
   useEffect(() => {
     if (formData && !conversionEventFired.current) {
       if (typeof window.fbq === 'function') {
-        // Read shared event_ids for CAPI deduplication
-        let crEventID: string | undefined;
-        let leadEventID: string | undefined;
-        let mqlEventID: string | undefined;
-        try {
-          const stored = localStorage.getItem('champion_event_ids');
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            crEventID = parsed.event_ids?.CompleteRegistration;
-            leadEventID = parsed.event_ids?.Lead;
-            mqlEventID = parsed.event_ids?.MQL;
-          }
-        } catch { /* ignore */ }
-
-        // Fire CompleteRegistration with matching event_id
-        window.fbq('track', 'CompleteRegistration', {}, { eventID: crEventID });
-        console.log('Facebook Pixel: CompleteRegistration fired with eventID:', crEventID);
-
-        // Standard Lead event (must use 'track', not 'trackCustom', so Meta
-        // counts it toward the Lead objective/column campaigns optimize for)
-        window.fbq('track', 'Lead', {
-          content_name: 'Lead',
-          investimento_faixa: formData.investimento_faixa || 'unknown',
-        }, { eventID: leadEventID });
-        console.log('Facebook Pixel: Lead fired with eventID:', leadEventID);
-
-        // Only fire MQL for leads with faturamento >= R$ 10k
-        const isMqlEligible = formData.investimento_faixa && MQL_PIXEL_FAIXAS.includes(formData.investimento_faixa);
-        if (isMqlEligible) {
-          window.fbq('trackCustom', 'MQL', {
-            content_name: 'MQL Lead',
-            investimento_faixa: formData.investimento_faixa || 'unknown',
-          }, { eventID: mqlEventID });
-          console.log('Facebook Pixel: MQL fired with eventID:', mqlEventID);
-        } else {
-          console.log('Facebook Pixel: MQL NOT fired - faixa not eligible:', formData.investimento_faixa);
-        }
-
+        dispararConversaoDoLead(formData.investimento_faixa, '/obrigadomql');
         conversionEventFired.current = true;
       }
     }
   }, [formData]);
+
+  // Reunião que o próprio lead marcou em /agendar, se houver (e se for DESTE lead).
+  const reuniao = useMemo(() => {
+    let leadId: string | null = null;
+    try { leadId = localStorage.getItem('champion_lead_id'); } catch { /* ignore */ }
+    // Só em dev: /obrigadomql?previa_reuniao=1 mostra a variação "call confirmada"
+    // sem precisar passar por /agendar.
+    if (import.meta.env.DEV && new URLSearchParams(window.location.search).get('previa_reuniao') === '1') {
+      const amanha14h = new Date(Date.now() + 24 * 3600 * 1000);
+      amanha14h.setUTCHours(17, 0, 0, 0);
+      return { lead_id: leadId || 'previa', meeting_id: null, inicio: amanha14h.toISOString(), duracao_minutos: 45, meet_link: null, previa: true };
+    }
+    return lerReuniaoConfirmada(leadId);
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem(RESULT_STORAGE_KEY);
@@ -179,7 +135,7 @@ export default function ObrigadoMql() {
       <PageBackground />
       
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/50">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-xl">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-5xl">
           <Button
             variant="ghost"
             size="sm"
@@ -193,19 +149,10 @@ export default function ObrigadoMql() {
       </header>
 
       <main className="pt-20 pb-12 px-4 min-h-[100svh]" style={{ paddingBottom: 'calc(48px + env(safe-area-inset-bottom))' }}>
-        <div className="container mx-auto max-w-lg">
-          <QuizResult
-            nome={formData.nome_completo}
-            estagio_negocio={formData.estagio_negocio}
-            investimento_faixa={formData.investimento_faixa}
-            forceSdr
-            casesSlot={
-              <div className="-mx-4 space-y-2 obrigadomql-cases">
-                <SuccessCasesCompact />
-                <SocialProofCarousel />
-              </div>
-            }
-          />
+        {/* Redesenho de 17/09/2026: a versão anterior (QuizResult) terminava no
+            card de progresso e deixava um vão vazio embaixo. */}
+        <div className="container mx-auto max-w-5xl">
+          <ObrigadoDiagnostico nome={formData.nome_completo} reuniao={reuniao} />
         </div>
       </main>
     </div>

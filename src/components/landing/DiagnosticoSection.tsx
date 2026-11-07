@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { caminhoDoQuiz } from "@/config/quizVariants";
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -54,7 +55,7 @@ export function DiagnosticoSection() {
     try { generateClickId(); } catch { /* ignore */ }
     try { await trackStartClick("diagnostico_section_cta"); } catch { /* ignore */ }
     await new Promise((r) => setTimeout(r, 50));
-    navigate("/quiz");
+    navigate(caminhoDoQuiz());
   };
 
   return (

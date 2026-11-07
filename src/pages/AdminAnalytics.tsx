@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveUsers } from "@/hooks/usePresence";
 import UniversalDateRangePicker from "@/components/UniversalDateRangePicker";
+import { assinarAoVivo, assinarStatusAoVivo, avisarAoVivo, type EventoAoVivo } from "@/lib/aoVivo";
+import { aplicarTema, guardarTema, lerTema, soltarTema, type Tema } from "@/lib/tema";
+import GoogleCalendarCard from "@/components/admin/GoogleCalendarCard";
 import PageVariantFilter, { ALL_PAGES } from "@/components/admin/PageVariantFilter";
 import CreativeFilter, { ALL_CREATIVES, type CreativeOption } from "@/components/admin/CreativeFilter";
 
@@ -29,6 +32,9 @@ import {
   TrendingUp,
   Eye,
   LogOut,
+  Sun,
+  Moon,
+  CalendarDays,
   Download,
   Search,
   ChevronLeft,
@@ -52,23 +58,45 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { useLeadNotifications } from "@/hooks/useLeadNotifications";
-import { computeLeadScore100, bandColorClass } from "@/lib/leadScoring";
+import { bandColorClass } from "@/lib/leadScoring";
+import { calcularNotaPorVersao, linhasDoBreakdown } from "@/lib/leadScore";
+import { ehHighQualityLead, limiarHql } from "@/lib/hql";
+import { DECISAO_OPCOES } from "@/lib/funis";
+import { QualificacaoProspeccao } from "@/components/admin/QualificacaoProspeccao";
+import { variantShortLabel } from "@/config/subheadlineVariants";
 import { NotificationsPopover } from "@/components/admin/NotificationsPopover";
+import { AvisoNotificacoes, ReinstalarAppDialog } from "@/components/admin/AvisoNotificacoes";
+import { useAtualizacaoSistema } from "@/hooks/useAtualizacaoSistema";
 import { DailyReportReminder } from "@/components/admin/DailyReportReminder";
+import { AcoesRapidasCrm } from "@/components/admin/AcoesRapidasCrm";
+import { FiltroFilaCrm } from "@/components/admin/FiltroFilaCrm";
+import { ShellAdmin } from "@/components/admin/ShellAdmin";
 import { ResponseTimer } from "@/components/admin/ResponseTimer";
 
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ADMIN_AUTH_EXPIRED_EVENT, ADMIN_TOKEN_KEY, clearAdminToken, fetchAdmin, getAdminToken, isAdminTokenExpired } from "@/lib/adminAuth";
+import { runPooled, type RequestPriority } from "@/lib/requestPool";
+import { cacheKey, getCached, getInFlight, invalidateAdminCache, setCached, trackInFlight, ttlFor, whenIdle, recordTiming, peekCached, clearPersistedCache, CACHE_REVALIDATED_EVENT } from "@/lib/adminCache";
+import { resolverOrigemAnuncio } from "@/lib/origemAnuncio";
+import { useCrmAcoes } from "@/hooks/useCrmAcoes";
+import { CelulaCrm } from "@/components/admin/CelulaCrm";
 
 const KommoLogsPanel = lazy(() => import("@/components/admin/KommoLogsPanel"));
 
+const AquisicaoTab = lazy(() => import("@/components/admin/AquisicaoTab"));
 const CreativesTab = lazy(() => import("@/components/admin/CreativesTab"));
 const FunnelMetricsTab = lazy(() => import("@/components/admin/FunnelMetricsTab"));
 const LeadReportsTab = lazy(() => import("@/components/admin/LeadReportsTab"));
 const DailyReportsTab = lazy(() => import("@/components/admin/DailyReportsTab"));
 const InsightsTab = lazy(() => import("@/components/admin/InsightsTab"));
 const AiProposalsTab = lazy(() => import("@/components/admin/AiProposalsTab"));
+const DirectTab = lazy(() => import("@/components/admin/DirectTab"));
+const WhatsAppTab = lazy(() => import("@/components/admin/WhatsAppTab"));
+const AgentesTab = lazy(() => import("@/components/admin/AgentesTab"));
+const EsteiraTab = lazy(() => import("@/pages/Esteira"));
+const CommercialGoalsTab = lazy(() => import("@/components/admin/CommercialGoalsTab"));
+const LeadJourneyPanel = lazy(() => import("@/components/admin/LeadJourneyPanel"));
 import {
   Dialog,
   DialogContent,
@@ -103,6 +131,15 @@ interface Metrics {
   drop_offs: Record<string, number>;
   quiz_v2_empty?: boolean;
   quiz_v1_present?: boolean;
+  /** Existe algum sinal real de início (evento quiz_view ou a flag da sessão). */
+  started_quiz_known?: boolean;
+  /**
+   * Qual formulário o período viu (17/09/2026). "form_curto" é uma tela só e
+   * não tem funil por etapa — estado diferente de "sem dados".
+   */
+  quiz_flow?: "form_curto" | "quiz_v2" | "misto" | "desconhecido";
+  sessoes_form_curto?: number;
+  sessoes_outro_quiz?: number;
   /** Criativos do período (utm_content normalizado) — alimenta o filtro global. */
   creatives_available?: { content: string; sessions: number }[];
 }
@@ -166,6 +203,19 @@ interface Lead {
   instagram: string;
   mercado: string;
   operacoes_ativas?: number | null;
+  /* Estado do CRM, vindo da view `lead_fila` pela rota /leads. É a MESMA fonte
+     que a fila comercial usa — a lista e a fila nunca podem discordar sobre o
+     que fazer com o mesmo lead. */
+  crm_estado?: string | null;
+  crm_bucket?: string | null;
+  crm_tentativas?: number | null;
+  crm_ultima_interacao_at?: string | null;
+  crm_ultima_direcao?: string | null;
+  crm_proxima_acao_at?: string | null;
+  crm_proxima_acao_owner?: string | null;
+  crm_sla_estourado?: boolean | null;
+  crm_desfecho_pendente?: boolean | null;
+  crm_teve_no_show?: boolean | null;
   estagio_negocio: string;
   investimento_faixa: string | null;
   dor_desejo: string;
@@ -183,6 +233,12 @@ interface Lead {
   orcamento_faixa: string | null;
   tier: string | null;
   score: number | null;
+  /**
+   * Qual formula gerou o `score`. Manda no corte de HQL: 73 no quiz (v2.3, e
+   * em todo lead historico, onde a coluna e nula), 67 no formulario curto
+   * (v3-form). Ver `src/lib/hql.ts`.
+   */
+  score_version?: string | null;
   ip_address: string | null;
   is_duplicate_ip: boolean;
   utm_source: string | null;
@@ -198,18 +254,45 @@ interface Lead {
   campaign_name_resolved?: string | null;
   ad_name_resolved?: string | null;
   creative_name_resolved?: string | null;
+  // O backend já manda estes quatro (admin-data/index.ts:590-594), resolvidos
+  // por `ad_id` no cache da Meta. Faltava só declará-los para a tela poder usar.
+  adset_id_resolved?: string | null;
+  adset_name_resolved?: string | null;
+  ad_account_id_resolved?: string | null;
+  account_name_resolved?: string | null;
+  // Origem resolvida pela sessão (ver `attribution.ts` no backend): a página de
+  // entrada — que é a variante do teste A/B — e por qual método o lead foi
+  // casado com a navegação dele.
+  entry_page?: string | null;
+  attribution_method?: "submit" | "fbp" | "ip" | null;
+  /** O criativo não veio no link: foi recuperado da sessão. */
+  utm_content_recovered?: boolean;
+  utm_campaign_recovered?: boolean;
   creative_thumbnail_url_resolved?: string | null;
   placement: string | null;
   site_source_name: string | null;
   sdr_override: string | null;
+  /**
+   * Quem mais participa da decisão de contratar (experimento de 07/09/2026).
+   * Perguntado pelo SDR na conversa, ANTES de existir reunião. Não pontua, não
+   * define MQL, não desqualifica: é coleta para testar se a ausência do segundo
+   * decisor explica a faixa que agenda bem e fecha mal.
+   */
+  decisao_processo?: string | null;
   decisor: boolean | null;
   raw_answers_json: Record<string, unknown> | null;
   attribution_source: string | null;
+  /** site, direct ou prospeccao (garimpo do Instagram, 24/10/2026). */
+  origem_lead?: string | null;
   first_opened_at: string | null;
   skipped_queue?: boolean | null;
   skipped_queue_at?: string | null;
   clicked_whatsapp?: boolean | null;
   clicked_whatsapp_at?: string | null;
+  /** Quando o lead foi CHAMADO. Para o relógio do SLA de 5 minutos. */
+  contacted_at?: string | null;
+  contacted_by?: string | null;
+  sla_breached_at?: string | null;
   nps_score?: number | null;
 }
 
@@ -358,11 +441,63 @@ export default function AdminAnalytics() {
 
 
   // Lead notifications (realtime)
-  const { notificationsEnabled, pushSubscribed, subscriberCount, toggleNotifications, testNotifications, sendWebPush } = useLeadNotifications(
+  const {
+    notificationsEnabled, pushSubscribed, subscriberCount, toggleNotifications,
+    testNotifications, sendWebPush,
+    pessoa: pessoaDoPush, definirPessoa: definirPessoaDoPush,
+    instalado: appInstalado, ios: ehIphone,
+    permissionState, dispositivos, atualizarDispositivos, podeInstalar, instalarApp, removerDispositivo,
+  } = useLeadNotifications(
     isAuthenticated,
     handleNewLead,
     handleAuthError
   );
+  // Versão nova do sistema: recarrega sozinho ou avisa no topo.
+  const atualizacao = useAtualizacaoSistema(isAuthenticated);
+
+  /**
+   * Tema do painel.
+   *
+   * Aplicado ao entrar e SOLTO ao sair: a landing e o quiz são escuros por
+   * desenho, e deixar o atributo no <html> os levaria junto.
+   */
+  const [tema, setTema] = useState<Tema>(() => lerTema());
+  useEffect(() => {
+    aplicarTema(tema);
+    return () => soltarTema();
+  }, [tema]);
+  const alternarTema = useCallback(() => {
+    setTema((t) => {
+      const proximo: Tema = t === "claro" ? "escuro" : "claro";
+      guardarTema(proximo);
+      return proximo;
+    });
+  }, []);
+
+  // Agenda do Google: o diálogo de configuração e a bolinha de status no botão.
+  const [agendaAberta, setAgendaAberta] = useState(false);
+  const [agendaConectada, setAgendaConectada] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let vivo = true;
+    (async () => {
+      try {
+        const res = await fetchAdmin(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/google-calendar/status`);
+        const j = await res.json();
+        if (vivo) setAgendaConectada(j?.integracao?.status === "connected");
+      } catch {
+        if (vivo) setAgendaConectada(null);
+      }
+    })();
+    return () => { vivo = false; };
+    // Reconsulta ao fechar o diálogo: é lá que a pessoa conecta ou desconecta.
+  }, [isAuthenticated, agendaAberta]);
+
+  // Conexão do tempo real, visível na tela. Sem isto, "não atualizou para o
+  // outro" é indistinguível de "o canal caiu" — e as duas coisas pedem ações
+  // diferentes: uma é bug, a outra é dar F5.
+  const [aoVivoOk, setAoVivoOk] = useState(false);
+  useEffect(() => assinarStatusAoVivo(setAoVivoOk), []);
 
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -384,8 +519,23 @@ export default function AdminAnalytics() {
 
   // Leads state (from legacy leads table)
   const [leads, setLeads] = useState<Lead[]>([]);
+  /**
+   * Balde da fila comercial escolhido nos chips, e a ORDEM dele.
+   *
+   * Moram aqui em cima, e não junto da função que os preenche, porque
+   * `filteredLeads` os lê bem antes — e no React uma const declarada depois do
+   * uso é erro de execução, não aviso do editor.
+   */
+  const [filaBalde, setFilaBalde] = useState<string | null>(null);
+  const [filaOrdem, setFilaOrdem] = useState<Map<string, number> | null>(null);
+  /** Muda a cada ação de CRM: só as contagens dos chips são refeitas. */
+  const [filaVersao, setFilaVersao] = useState(0);
   const [leadsLoading, setLeadsLoading] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  /** Id do lead cujo detalhe está sendo buscado. O modal abre com ele, antes de
+   *  a resposta chegar — clique que não pinta nada parece clique quebrado. */
+  const [leadCarregando, setLeadCarregando] = useState<string | null>(null);
+  const [erroDetalhe, setErroDetalhe] = useState<string | null>(null);
   const [leadsUnreadCount, setLeadsUnreadCount] = useState(0);
   const [leadsSearchQuery, setLeadsSearchQuery] = useState("");
   
@@ -471,6 +621,33 @@ export default function AdminAnalytics() {
     return "Miguel";
   };
 
+  /**
+   * Grava "quem mais decide" no lead. Clicar de novo na mesma opção limpa.
+   *
+   * Mora aqui, e não no registro da reunião, porque o time registra a reunião
+   * quase sempre DEPOIS que ela aconteceu (27 das 32 sem data de call), e a
+   * informação precisa existir antes, para o SDR saber que a call pede o sócio.
+   */
+  const setDecisaoLead = async (lead: Lead, valor: string) => {
+    const anterior = lead.decisao_processo ?? null;
+    const novo = anterior === valor ? null : valor;
+    setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, decisao_processo: novo } : l));
+    setSelectedLead(prev => (prev && prev.id === lead.id ? { ...prev, decisao_processo: novo } : prev));
+    try {
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${lead.id}`;
+      const res = await fetchAdmin(url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ decisao_processo: novo }),
+      });
+      if (!res.ok) throw new Error("Failed");
+    } catch {
+      setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, decisao_processo: anterior } : l));
+      setSelectedLead(prev => (prev && prev.id === lead.id ? { ...prev, decisao_processo: anterior } : prev));
+      toast({ title: "Erro ao salvar quem decide", variant: "destructive" });
+    }
+  };
+
   // Com um SDR só, não há entre quem alternar. Mantido para reatribuir lead
   // histórico do Gustavo pro Miguel com um clique.
   const toggleSdr = async (lead: Lead) => {
@@ -513,6 +690,19 @@ export default function AdminAnalytics() {
   const [activeTab, setActiveTab] = useState<string>(() => {
     return localStorage.getItem("admin_active_tab") || "leads";
   });
+
+  /**
+   * Aquecimento das abas.
+   *
+   * Cada aba só montava quando era clicada, e aí começava a baixar o chunk e a
+   * buscar os dados — segundos olhando um spinner, toda vez. Com o prewarm, as
+   * abas pesadas ficam montadas (escondidas) assim que a tela principal
+   * termina: quando o clique vem, o conteúdo já está pronto.
+   *
+   * Espera a ociosidade de propósito — a fila de requisições do admin é serial,
+   * e aquecer cedo demais atrasaria a aba que o usuário está olhando.
+   */
+  const [prewarmTabs, setPrewarmTabs] = useState(false);
 
   // Completed leads modal
   const [showCompletedModal, setShowCompletedModal] = useState(false);
@@ -633,12 +823,26 @@ export default function AdminAnalytics() {
     return () => window.clearInterval(id);
   }, [isAuthenticated, startISO, endISO]);
 
-  // Soft "tick" every 5s while there are MQL leads still waiting to be called.
-  // Apenas leads com faturamento >= R$ 5 mil disparam o bip.
-  // Leads <5k (Dara/Desqualificado) NÃO devem apitar, independente de sdr_override.
-  const pendingLeadsCount = leads.filter(
-    (l) => !l.first_opened_at && !!l.investimento_faixa && SDR_CAIO_FAT.includes(l.investimento_faixa)
-  ).length;
+  // Tique suave a cada 5s enquanto houver lead esperando ser CHAMADO.
+  //
+  // Era este o "plim" sem lead nenhum para chamar (03/09/2026). O tique olhava
+  // a lista FILTRADA e o `first_opened_at`: com o filtro em "últimos 14 dias",
+  // qualquer lead antigo cujo card ninguém abriu mantinha o som ligado para
+  // sempre, a cada cinco segundos, sem que existisse nada para fazer.
+  //
+  // Duas mudanças, e as duas são a mesma ideia: o tique só pode falar do que
+  // precisa de ação AGORA.
+  //   1. Só lead de HOJE. O filtro de data é para análise; a fila de chamada
+  //      não muda porque alguém abriu o relatório da quinzena.
+  //   2. `contacted_at`, não `first_opened_at`. Abrir o card não é chamar. É o
+  //      botão "Chamei" que para o som, do mesmo jeito que para o relógio do SLA.
+  const inicioDeHoje = (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); })();
+  const pendingLeadsCount = leads.filter((l) => {
+    if (l.contacted_at) return false;
+    if (!l.investimento_faixa || !SDR_CAIO_FAT.includes(l.investimento_faixa)) return false;
+    const t = Date.parse(l.created_at);
+    return Number.isFinite(t) && t >= inicioDeHoje;
+  }).length;
   useEffect(() => {
     if (!isAuthenticated || pendingLeadsCount === 0) return;
     let ctx: AudioContext | null = null;
@@ -703,12 +907,21 @@ export default function AdminAnalytics() {
           "Content-Type": "application/json",
           "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ lido }),
+        // Ler o lead É chamar o lead. Decisão do Rodger em 04/09/2026: o botão
+        // "Chamei" separado saiu, e o carimbo de contato vai junto com o de
+        // lido. É esse carimbo que para o relógio do SLA e o tique do painel.
+        body: JSON.stringify(lido
+          ? { lido, mark_contacted: true, contacted_by: pessoaDoPush || "Painel" }
+          : { lido }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to update lead");
       }
+      // Avisa os outros painéis DEPOIS de o banco confirmar. Avisar antes faria
+      // a tela do Caio mostrar como lido um lead que a gravação recusou.
+      avisarAoVivo({ tipo: "lead_lido", lead_id: id, lido, por: pessoaDoPush || "alguém" });
+      if (lido) avisarAoVivo({ tipo: "lead_contato", lead_id: id, por: pessoaDoPush || "alguém" });
     } catch (error) {
       console.error("Error updating lead lido:", error);
     }
@@ -717,13 +930,47 @@ export default function AdminAnalytics() {
   const toggleLeadLido = (lead: Lead, e: React.MouseEvent) => {
     e.stopPropagation();
     const newLido = !lead.lido;
-    // Optimistic update
+    const agora = new Date().toISOString();
+    // Optimistic update — lido para true carrega o contato junto.
     setLeads((prev) =>
-      prev.map((l) => (l.id === lead.id ? { ...l, lido: newLido } : l))
+      prev.map((l) => (l.id === lead.id
+        ? { ...l, lido: newLido, ...(newLido && !l.contacted_at ? { contacted_at: agora, contacted_by: pessoaDoPush || "Painel" } : {}) }
+        : l))
     );
     setLeadsUnreadCount((prev) => newLido ? Math.max(0, prev - 1) : prev + 1);
     // Update backend
     updateLeadLido(lead.id, newLido);
+  };
+
+
+  /**
+   * Abre o detalhe de um lead vindo da FILA.
+   *
+   * A fila é global no tempo e a lista `leads` é filtrada pelo período do
+   * cabeçalho, então o lead da fila muitas vezes não está na lista. O modal abre
+   * NA HORA, com esqueleto, e o conteúdo entra quando a resposta chega — a
+   * espera existe de qualquer jeito, e o que não pode existir é o clique que não
+   * pinta nada.
+   */
+  const abrirLeadPorId = async (id: string) => {
+    const naLista = leads.find((l) => l.id === id);
+    if (naLista) { openLeadDetail(naLista); return; }
+
+    setErroDetalhe(null);
+    setSelectedLead(null);
+    setLeadCarregando(id);
+    try {
+      const data = await fetchAdminData("/leads", { ids: id });
+      const achado = (data as Lead[] | null)?.[0];
+      if (!achado) { setErroDetalhe("Lead não encontrado."); return; }
+      // Entra na lista para o próximo clique não buscar de novo e para o modal
+      // receber as atualizações locais (lido, contacted_at) como qualquer outro.
+      setLeads((prev) => (prev.some((l) => l.id === achado.id) ? prev : [achado, ...prev]));
+      setLeadCarregando(null);
+      openLeadDetail(achado);
+    } catch (e) {
+      setErroDetalhe(e instanceof Error ? e.message : "Não foi possível carregar o lead.");
+    }
   };
 
   const openLeadDetail = (lead: Lead) => {
@@ -754,11 +1001,33 @@ export default function AdminAnalytics() {
       })();
     }
 
+    // Lead já lido antes desta regra existir, mas nunca carimbado como
+    // chamado: abrir agora carimba, senão ele ficaria escalando no SLA para
+    // sempre mesmo depois de atendido.
+    if (lead.lido && !lead.contacted_at) {
+      const agora = new Date().toISOString();
+      setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, contacted_at: agora, contacted_by: pessoaDoPush || "Painel" } : l)));
+      (async () => {
+        try {
+          await fetchAdmin(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-data/leads/${lead.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mark_contacted: true, contacted_by: pessoaDoPush || "Painel" }),
+          });
+          avisarAoVivo({ tipo: "lead_contato", lead_id: lead.id, por: pessoaDoPush || "alguém" });
+        } catch (e) {
+          console.error("[contato] falha ao carimbar:", e);
+        }
+      })();
+    }
+
     // Mark as read and update immediately in the list
     if (!lead.lido) {
       // Update the leads list immediately (optimistic update)
       setLeads((prev) =>
-        prev.map((l) => (l.id === lead.id ? { ...l, lido: true, first_opened_at: l.first_opened_at || new Date().toISOString() } : l))
+        prev.map((l) => (l.id === lead.id
+          ? { ...l, lido: true, first_opened_at: l.first_opened_at || new Date().toISOString(), contacted_at: l.contacted_at || new Date().toISOString(), contacted_by: l.contacted_by || pessoaDoPush || "Painel" }
+          : l))
       );
       setLeadsUnreadCount((prev) => Math.max(0, prev - 1));
       
@@ -788,12 +1057,22 @@ export default function AdminAnalytics() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete leads");
+        // O corpo do 422 traz a recusa da guarda de histórico comercial, com
+        // quantos registros cada lead tem. Antes isto era engolido e a tela
+        // dizia só "Erro ao excluir leads" — o vendedor não descobria que o
+        // caminho é marcar como perdido, e tentava de novo.
+        const corpo = await response.json().catch(() => null);
+        throw new Error(corpo?.error || "Não foi possível excluir os leads.");
       }
 
       return true;
     } catch (error) {
       console.error("Error deleting leads:", error);
+      toast({
+        title: "Exclusão recusada",
+        description: error instanceof Error ? error.message : "Erro desconhecido",
+        variant: "destructive",
+      });
       return false;
     }
   };
@@ -809,6 +1088,12 @@ export default function AdminAnalytics() {
     const success = await deleteLeads(ids);
     
     if (success) {
+      // O DELETE é um fetch direto, fora do fetchAdminData, então nada limpava o
+      // cache: a lista guardada (memória + sessionStorage) ainda tinha os leads
+      // e eles voltavam na próxima leitura de /leads. O banco já tinha apagado;
+      // era a tela ressuscitando o que não existe mais (14/09/2026).
+      invalidateAdminCache();
+      avisarAoVivo({ tipo: "lead_excluido", lead_ids: ids, por: pessoaDoPush || "alguém" });
       // Remove from local state
       setLeads((prev) => prev.filter((l) => !selectedLeadIds.has(l.id)));
       setLeadsUnreadCount((prev) => {
@@ -819,9 +1104,9 @@ export default function AdminAnalytics() {
       toast({ title: `${ids.length} lead(s) excluído(s) com sucesso!` });
       // Reload metrics
       loadMetrics();
-    } else {
-      toast({ title: "Erro ao excluir leads", variant: "destructive" });
     }
+    // O toast de falha sai do próprio `deleteLeads`, com o motivo real vindo do
+    // backend. Um segundo aviso genérico aqui só escondia o primeiro.
     setIsDeleting(false);
   };
 
@@ -853,7 +1138,10 @@ export default function AdminAnalytics() {
   const uniqueTiers = TIER_ORDER.filter(t => leads.some(l => getLeadTier(l) === t));
   const uniqueAdsets = [...new Set(leads.map(l => l.utm_content).filter(Boolean) as string[])].sort();
 
-  const filteredLeads = leads.filter((lead) => {
+  const filteredLeadsBase = leads.filter((lead) => {
+    // Balde da fila escolhido nos chips: manda em tudo, inclusive no período.
+    if (filaOrdem && !filaOrdem.has(lead.id)) return false;
+
     // Search filter
     if (leadsSearchQuery) {
       const q = leadsSearchQuery.toLowerCase();
@@ -891,7 +1179,9 @@ export default function AdminAnalytics() {
 
     // Caminho de atribuição: veio direto do anúncio, recuperado (mesmo IP, ex.
     // Instagram/bio) ou orgânico sem nenhum sinal de anúncio
-    if (leadsAttributionFilter !== "all" && (lead.attribution_source || "organic") !== leadsAttributionFilter) return false;
+    if (leadsAttributionFilter === "prospeccao") {
+      if (lead.origem_lead !== "prospeccao") return false;
+    } else if (leadsAttributionFilter !== "all" && (lead.attribution_source || "organic") !== leadsAttributionFilter) return false;
 
     // Conversion filter (reunião agendada / venda)
     if (leadsConversionFilter === "with_meeting" && !meetingLeadIds.has(lead.id)) return false;
@@ -903,6 +1193,17 @@ export default function AdminAnalytics() {
     
     return true;
   });
+
+  /**
+   * Com um balde ativo a ordem é a DA FILA — mais antigo primeiro, que é o
+   * critério da view `lead_fila`. A nota aparece na linha e não muda posição
+   * nenhuma: fila ordenada por score é fila que nunca chega no lead antigo.
+   */
+  const filteredLeads = filaOrdem
+    ? [...filteredLeadsBase].sort(
+        (a, b) => (filaOrdem.get(a.id) ?? 0) - (filaOrdem.get(b.id) ?? 0),
+      )
+    : filteredLeadsBase;
 
   const getToken = () => sessionStorage.getItem(ADMIN_TOKEN_KEY);
 
@@ -939,6 +1240,10 @@ export default function AdminAnalytics() {
 
   const handleLogout = useCallback(() => {
     clearAdminToken();
+    // O cache guarda WhatsApp, e-mail e faturamento de lead. Sair do painel tem
+    // que levar isso junto, senão o dado fica na aba para o próximo que sentar.
+    clearPersistedCache();
+    invalidateAdminCache();
     setIsAuthenticated(false);
     setMetrics(null);
     setSessions([]);
@@ -954,7 +1259,6 @@ export default function AdminAnalytics() {
   };
 
   const logoutFiredRef = useRef(false);
-  const adminRequestQueueRef = useRef<Promise<void>>(Promise.resolve());
 
   // Filtro global de variante de headline. Persistido em localStorage pra
   // sobreviver ao reload, como o filtro de datas.
@@ -984,15 +1288,51 @@ export default function AdminAnalytics() {
   // a cada render do AdminAnalytics dispara refetch em loop (ex: lista de
   // reuniões piscando "abre/carrega/fecha"). Como ela só usa refs e helpers
   // estáveis, é seguro memoizar com deps vazias.
-  const fetchAdminData = useCallback(async (path: string, params?: Record<string, string>) => {
-    const previousRequest = adminRequestQueueRef.current;
-    let releaseQueue: () => void = () => undefined;
-    adminRequestQueueRef.current = new Promise<void>((resolve) => {
-      releaseQueue = resolve;
+  const fetchAdminData = useCallback(async (
+    path: string,
+    params?: Record<string, string>,
+    priority: RequestPriority = "user",
+  ) => {
+    // Escrita (POST/DELETE via _method) nunca é cacheada, e derruba o cache
+    // inteiro: registrar uma venda muda métrica, funil, margem e meta de uma vez.
+    const isWrite = !!params?._method;
+    if (isWrite) {
+      // Registrar venda ou reunião muda métrica, funil, margem e meta de uma
+      // vez — aí o cache inteiro tem que cair. Já salvar as PREMISSAS do plano
+      // não muda dado nenhum do banco: é configuração da própria aba. Derrubar
+      // tudo a cada tecla digitada faria o autosave recarregar o painel
+      // inteiro, o oposto do que se quer.
+      const SO_AFETA_A_SI = ["/commercial-plan"];
+      if (SO_AFETA_A_SI.includes(path)) invalidateAdminCache(path);
+      else invalidateAdminCache();
+    }
+
+    // Chave estável para leitura, já com os filtros globais aplicados — dois
+    // pedidos com a mesma página e criativo têm que bater na mesma entrada.
+    const readKey = isWrite ? null : cacheKey(path, {
+      ...(params || {}),
+      ...(!params?.page && pageFilterRef.current !== ALL_PAGES ? { page: pageFilterRef.current } : {}),
+      ...(!params?.creative && creativeFilterRef.current !== ALL_CREATIVES ? { creative: creativeFilterRef.current } : {}),
     });
+    // O cache tem duas bordas. Aqui trata-se só a primeira, porque a segunda
+    // (servir dado velho e revalidar) precisa de `run`, declarado abaixo.
+    const hit = readKey ? peekCached(readKey) : undefined;
+    if (readKey) {
+      if (hit?.state === "fresco") {
+        recordTiming({ path, ms: 0, bytes: 0, cached: true, at: Date.now() });
+        return hit.value;
+      }
+      // Mesma requisição já em voo (a lista pediu e o prefetch também): espera
+      // a que existe em vez de abrir uma segunda.
+      const flying = getInFlight(readKey);
+      if (flying) return flying;
+    }
 
-    await previousRequest.catch(() => undefined);
-
+    // Antes daqui havia uma fila de UM lugar só: toda requisição do admin
+    // esperava a anterior terminar, então uma tela com quatro rotas custava a
+    // soma das quatro. Agora são quatro vagas simultâneas com prioridade, e a
+    // tela custa a rota mais lenta. Ver `runPooled`.
+    const run = async () => runPooled(async () => {
     try {
       if (logoutFiredRef.current) {
         throw new Error("Sessão expirada");
@@ -1029,6 +1369,7 @@ export default function AdminAnalytics() {
 
       for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
         try {
+          const t0 = performance.now();
           const fetchResponse = await fetchAdmin(url, { headers });
 
           // Retry on transient errors (cold-start boot errors, gateway timeouts)
@@ -1041,12 +1382,32 @@ export default function AdminAnalytics() {
 
           if (!fetchResponse.ok) {
             const error = await fetchResponse.json().catch(() => ({ error: "Erro desconhecido" }));
-            throw new Error(error.error || "Erro ao carregar dados");
+            const msg = error.error || "Erro ao carregar dados";
+            // Recusa do servidor (400–499) é decisão, não falha de rede.
+            // Repetir três vezes um Abóbora incompleto só atrasa o aviso de que
+            // falta preencher, e é isso que a tela precisa mostrar na hora.
+            if (fetchResponse.status >= 400 && fetchResponse.status < 500) {
+              const recusa = new Error(msg);
+              recusa.name = "RecusadoPeloServidor";
+              throw recusa;
+            }
+            throw new Error(msg);
           }
 
-          return fetchResponse.json();
+          const corpo = await fetchResponse.text();
+          recordTiming({
+            path,
+            ms: performance.now() - t0,
+            bytes: corpo.length,
+            cached: false,
+            at: Date.now(),
+          });
+          return corpo ? JSON.parse(corpo) : null;
         } catch (error) {
           if (error instanceof Error && error.message === "Sessão expirada") {
+            throw error;
+          }
+          if (error instanceof Error && error.name === "RecusadoPeloServidor") {
             throw error;
           }
           // Retry on network errors too
@@ -1063,11 +1424,169 @@ export default function AdminAnalytics() {
       }
       throw lastError || new Error("Falha após múltiplas tentativas");
     } finally {
-      releaseQueue();
+      // nada a liberar: o pool devolve a vaga sozinho ao terminar
     }
+    }, priority);
+
+    if (!readKey) return run();
+
+    // Velho mas ainda utilizável: devolve JÁ o que se tem e busca o novo por
+    // baixo. A tela pinta instantânea com o dado da visita anterior e se
+    // corrige sozinha quando a resposta chega — é daqui que vem quase todo o
+    // ganho percebido depois de um F5.
+    if (hit?.state === "velho") {
+      recordTiming({ path, ms: 0, bytes: 0, cached: true, at: Date.now() });
+      const revalidando = run()
+        .then((data) => {
+          // `true` avisa a tela: quem estiver mostrando esta rota se atualiza.
+          setCached(readKey, data, ttlFor(path), true);
+          return data;
+        })
+        .catch(() => hit.value);
+      trackInFlight(readKey, revalidando);
+      return hit.value;
+    }
+
+    const promise = run().then((data) => {
+      setCached(readKey, data, ttlFor(path));
+      return data;
+    });
+    return trackInFlight(readKey, promise);
     // pageFilter entra nas deps de propósito: trocar a variante muda a
     // identidade de fetchAdminData e faz todo componente que a usa recarregar.
   }, [pageFilter, creativeFilter]);
+
+  // Aba visível no momento, lida no instante da requisição (não nas deps).
+  const activeTabRef = useRef(activeTab);
+  useEffect(() => { activeTabRef.current = activeTab; }, [activeTab]);
+
+  /**
+   * Fetch dedicado a uma aba: prioridade de usuário quando ela está na frente,
+   * prioridade de prefetch enquanto está só aquecendo por baixo.
+   */
+  const tabFetchers = useMemo(() => {
+    const make = (tab: string) =>
+      (path: string, params?: Record<string, string>) =>
+        fetchAdminData(path, params, activeTabRef.current === tab ? "user" : "prefetch");
+    return {
+      aquisicao: make("aquisicao"),
+      creatives: make("creatives"),
+      funnelMetrics: make("funnel-metrics"),
+      commercialGoals: make("commercial-goals"),
+    };
+  }, [fetchAdminData]);
+
+  /**
+   * Busca em segundo plano o que o usuário provavelmente vai abrir.
+   *
+   * Entra no pool com prioridade "prefetch": nunca ocupa as vagas reservadas ao
+   * usuário e cede a frente da fila para qualquer clique. O resultado cai no
+   * mesmo cache, então quando o clique vem não há requisição para esperar.
+   */
+  const prefetchAdminData = useCallback((path: string, params?: Record<string, string>) => {
+    whenIdle(() => {
+      void fetchAdminData(path, params, "prefetch").catch(() => undefined);
+    });
+  }, [fetchAdminData]);
+
+  /** Busca a jornada de um lead antes de ele ser aberto (hover na linha). */
+  const prefetchLeadJourney = useCallback((leadId: string) => {
+    prefetchAdminData("/lead-journey", { lead_id: leadId });
+  }, [prefetchAdminData]);
+
+  // UMA instância do CRM para a tabela inteira. O hook foi escrito para isso —
+  // cada função recebe `leadId` — e instanciar por linha faria cada célula
+  // buscar `/crm/contas` sozinha.
+  //
+  // FICA AQUI EM CIMA, junto dos outros hooks, e NÃO desce para perto do
+  // `return`: mais abaixo esta página tem três saídas antecipadas (isLoading,
+  // !isAuthenticated, selectedSession). Um hook depois delas roda em uns
+  // renders e não roda em outros, e o React derruba a página inteira com o
+  // erro #310 ("Rendered more hooks than during the previous render").
+  // Foi exatamente o que aconteceu no deploy 72561be6 de 22/09/2026.
+  const crmDaLista = useCrmAcoes(fetchAdminData, pessoaDoPush ?? null, isAuthenticated);
+
+  /**
+   * Depois de uma ação de CRM, recarrega SÓ o lead que mudou.
+   *
+   * Antes isto chamava `loadLeads()`, que refaz a lista inteira: a tabela
+   * some atrás de um spinner, o scroll volta ao topo e os filtros aplicados
+   * são recalculados — tudo por causa de um follow-up numa linha. Numa fila de
+   * 60 leads isso torna o CRM impraticável, que é exatamente o atrito que ele
+   * existe para eliminar.
+   *
+   * A rota `/leads` com `ids` devolve o MESMO objeto enriquecido com
+   * `lead_fila` (o enriquecimento no `admin-data` vale para qualquer consulta
+   * de leads), então dá para trocar uma linha e deixar o resto parado.
+   */
+  /**
+   * Balde da fila escolhido nos chips, e a ORDEM dele.
+   *
+   * A fila não conhece o filtro de período do painel: ela é "quem precisa de
+   * ação agora", venha de hoje ou de agosto. Por isso o balde traz os ids da
+   * rota `/crm/fila` e a lista passa a mostrar exatamente esses leads —
+   * buscando os que ainda não estavam carregados —, na ordem em que a fila os
+   * devolveu (mais antigo primeiro, nunca por nota).
+   */
+  const escolherBaldeDaFila = useCallback(async (balde: string | null, ids: string[]) => {
+    if (!balde || ids.length === 0) {
+      setFilaBalde(balde);
+      setFilaOrdem(balde ? new Map() : null);
+      return;
+    }
+    setFilaBalde(balde);
+    setFilaOrdem(new Map(ids.map((id, i) => [id, i])));
+
+    // Os leads do balde que estão fora do período carregado precisam entrar na
+    // lista, senão o chip mostraria "52" e a tabela, três linhas.
+    setLeads((prev) => {
+      const faltando = ids.filter((id) => !prev.some((l) => l.id === id));
+      if (faltando.length === 0) return prev;
+      void (async () => {
+        try {
+          const data = await fetchAdminData("/leads", { ids: faltando.join(",") });
+          const novos = (data as Lead[] | null) ?? [];
+          if (novos.length) setLeads((atual) => {
+            const jaTem = new Set(atual.map((l) => l.id));
+            return [...atual, ...novos.filter((n) => !jaTem.has(n.id))];
+          });
+        } catch (e) {
+          console.error("[fila] leads do balde:", e);
+        }
+      })();
+      return prev;
+    });
+  }, [fetchAdminData]);
+
+  const atualizarCrmDoLead = useCallback(async (leadId: string) => {
+    try {
+      const data = await fetchAdminData("/leads", { ids: leadId });
+      const novo = (data as Lead[] | null)?.[0];
+      if (!novo) return;
+      setLeads((prev) => prev.map((l) => (l.id === novo.id ? { ...l, ...novo } : l)));
+      // As contagens mudam de balde; a LISTA não é refiltrada de propósito, para
+      // o lead não sumir de baixo do cursor no instante em que foi trabalhado.
+      setFilaVersao((v) => v + 1);
+    } catch {
+      // A linha fica com o estado anterior. O erro da ação em si já apareceu
+      // em toast; um segundo aviso aqui só diria a mesma coisa duas vezes.
+    }
+  }, [fetchAdminData]);
+
+  // Liga o aquecimento depois que a lista principal chega: a partir daí a fila
+  // de requisições está livre e as outras abas podem se montar por baixo.
+  useEffect(() => {
+    if (!isAuthenticated || leadsLoading || prewarmTabs) return;
+    whenIdle(() => setPrewarmTabs(true), 3000);
+  }, [isAuthenticated, leadsLoading, prewarmTabs]);
+
+  // As jornadas dos primeiros leads da lista são as mais prováveis de serem
+  // abertas. O hover cobre o resto.
+  useEffect(() => {
+    if (!prewarmTabs || leads.length === 0) return;
+    leads.slice(0, 8).forEach((lead) => prefetchLeadJourney(lead.id));
+  }, [prewarmTabs, leads, prefetchLeadJourney]);
+
 
   const loadMetrics = async () => {
     try {
@@ -1100,6 +1619,59 @@ export default function AdminAnalytics() {
       console.warn("[AdminAnalytics] Failed to load conversions:", e);
     }
   }, [fetchAdminData]);
+
+  /**
+   * Recebe o que os outros painéis fizeram.
+   *
+   * Lead lido e lead contatado são aplicados NA HORA no estado local, sem
+   * refetch: o evento já traz tudo que muda, e ir ao servidor buscar uma linha
+   * inteira para virar um booleano seria desperdício e piscada na tela.
+   *
+   * Reunião e venda derrubam o cache e recarregam, porque elas mexem em métrica,
+   * funil, margem e meta ao mesmo tempo — não dá para remendar isso na mão.
+   */
+  useEffect(() => {
+    return assinarAoVivo((e: EventoAoVivo) => {
+      if (e.tipo === "lead_lido") {
+        setLeads((prev) => {
+          const alvo = prev.find((l) => l.id === e.lead_id);
+          if (!alvo || alvo.lido === e.lido) return prev;
+          setLeadsUnreadCount((n) => (e.lido ? Math.max(0, n - 1) : n + 1));
+          return prev.map((l) => (l.id === e.lead_id ? { ...l, lido: e.lido } : l));
+        });
+        return;
+      }
+      if (e.tipo === "lead_contato") {
+        setLeads((prev) => prev.map((l) => (
+          l.id === e.lead_id && !l.contacted_at
+            ? { ...l, contacted_at: new Date().toISOString(), contacted_by: e.por }
+            : l
+        )));
+        return;
+      }
+      if (e.tipo === "lead_excluido") {
+        // Outro painel apagou: sai da lista e do cache aqui também, senão o lead
+        // continua na tela do Miguel e volta a cada recarga.
+        const apagados = new Set(e.lead_ids);
+        invalidateAdminCache();
+        setLeads((prev) => {
+          const sumindo = prev.filter((l) => apagados.has(l.id));
+          if (sumindo.length === 0) return prev;
+          const naoLidos = sumindo.filter((l) => !l.lido).length;
+          if (naoLidos) setLeadsUnreadCount((n) => Math.max(0, n - naoLidos));
+          return prev.filter((l) => !apagados.has(l.id));
+        });
+        return;
+      }
+      // Reunião ou venda: o número mudou para todo mundo.
+      invalidateAdminCache();
+      loadConversions();
+      toast({
+        title: e.tipo === "venda" ? "Venda registrada por outra pessoa" : "Reunião atualizada por outra pessoa",
+        description: `${e.por} acabou de mexer. Os números foram atualizados.`,
+      });
+    });
+  }, [loadConversions]);
 
   const loadCampaignMetrics = async () => {
     setCampaignMetricsLoading(true);
@@ -1140,6 +1712,35 @@ export default function AdminAnalytics() {
       setSessionsLoading(false);
     }
   };
+
+  // ── Atualização silenciosa depois de servir dado velho ─────────────────
+  //
+  // Quando `fetchAdminData` devolve o valor da visita anterior para pintar a
+  // tela na hora, ele revalida por baixo. Ao chegar a resposta nova, o cache
+  // avisa por evento e o carregador daquela rota roda de novo — agora achando
+  // o cache fresco, então é instantâneo e sem nova requisição.
+  //
+  // Os carregadores vivem num ref porque são funções recriadas a cada render:
+  // colocá-los nas dependências registraria e removeria o ouvinte sem parar.
+  const loadersRef = useRef<Record<string, () => void>>({});
+  loadersRef.current = {
+    "/metrics": loadMetrics,
+    "/leads": loadLeads,
+    "/campaigns": loadCampaignMetrics,
+    "/sessions": loadSessions,
+    "/meetings": loadConversions,
+    "/manual-sales": loadConversions,
+  };
+
+  useEffect(() => {
+    const aoRevalidar = (e: Event) => {
+      const rota = (e as CustomEvent<{ path?: string }>).detail?.path;
+      if (!rota) return;
+      loadersRef.current[rota]?.();
+    };
+    window.addEventListener(CACHE_REVALIDATED_EVENT, aoRevalidar);
+    return () => window.removeEventListener(CACHE_REVALIDATED_EVENT, aoRevalidar);
+  }, []);
 
   const loadSessionEvents = async (sessionId: string) => {
     setEventsLoading(true);
@@ -1672,21 +2273,147 @@ export default function AdminAnalytics() {
   }
 
   // Dashboard
+  //
+  // Nota de deploy (03/09/2026): os chunks deste app têm cache imutável no
+  // Cloudflare. Pedir um chunk pelo www ANTES de a publicação propagar faz o
+  // Pages responder com o index.html (fallback de SPA) e o Cloudflare guardar
+  // esse HTML sob o nome do .js por um ano — e o admin quebra ao carregar.
+  // Aconteceu com o chunk desta página. A verificação pós-deploy tem que ser
+  // feita pela URL da publicação (*.pages.dev), nunca pelo www.
+
   return (
     <>
       <meta name="robots" content="noindex, nofollow" />
-      <div className="min-h-screen bg-background p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-            <h1 className="text-xl sm:text-2xl font-bold">Analytics do Funil</h1>
+      <Dialog open={agendaAberta} onOpenChange={setAgendaAberta}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Agenda das reuniões</DialogTitle>
+          </DialogHeader>
+          <GoogleCalendarCard />
+        </DialogContent>
+      </Dialog>
+      <div className="min-h-screen bg-background">
+      {/* A navegação principal saiu do topo para a barra lateral. `activeTab`
+          continua sendo a ÚNICA fonte de verdade da seção — a barra só lê e
+          escreve nele, exatamente como as abas faziam. */}
+      <ShellAdmin
+        secaoAtiva={activeTab}
+        onSelecionar={handleTabChange}
+        onIrParaFila={() => {
+          // A fila vive no topo da seção de Leads. Rolar até ela (depois do
+          // React pintar a troca de seção) é o que torna o item de menu útil sem
+          // duplicar a implementação numa tela própria.
+          requestAnimationFrame(() => {
+            document.getElementById("fila-comercial")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        }}
+      >
+        {/* Barra fixa de vidro.
+            Ela acompanha a rolagem porque tudo que está aqui é decisão de
+            contexto — o período, a página, o criativo — e o painel é longo. Ter
+            que voltar ao topo para trocar o filtro e descer de novo era o
+            caminho normal de uso, e é o que isto elimina.
+
+            O fundo translúcido com blur não é enfeite: o conteúdo desliza por
+            baixo, e sem o desfoque os números da tabela apareceriam através do
+            cabeçalho, ilegíveis. `supports-[backdrop-filter]` dá um fundo mais
+            sólido em navegador sem blur, senão a barra fica transparente demais. */}
+        {/* `z-30`, e não `z-40`: a barra lateral é `fixed z-40` e é renderizada
+            ANTES deste header no DOM. Com o mesmo z-index, quem vem depois
+            pinta por cima — então o header cobria a barra quando ela abria no
+            hover. E como este header vive dentro do `md:pl-16`, a caixa dele
+            começa em x=64px: a faixa de 64px a 224px ficava pintada com
+            `bg-background/80`, que sobre `--background: 235 80% 3%` é preto.
+            Era esse o bloco preto. O header continua acima do conteúdo (z-10 e
+            z-20) e abaixo dos menus e modais do Radix (z-50). */}
+        <div className="sticky top-0 z-30 border-b border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+          <AvisoNotificacoes
+            permissionState={permissionState}
+            ios={ehIphone}
+            instalado={appInstalado}
+            pessoa={pessoaDoPush}
+            novaVersao={atualizacao.novaVersao}
+            onAtualizar={atualizacao.atualizarAgora}
+            podeInstalar={podeInstalar}
+            onInstalar={() => void instalarApp()}
+            onAtivar={() => void toggleNotifications(pessoaDoPush)}
+          />
+          <ReinstalarAppDialog open={atualizacao.pedidoReinstalar} onClose={atualizacao.fecharReinstalar} ios={ehIphone} />
+          {/* LARGURA DO PAINEL.
+
+              Aqui havia `max-w-7xl`, que são 1280px. Num monitor de 1920 isso
+              deixava um terço da tela vazio enquanto a tabela de criativos, com
+              23 colunas, rolava na horizontal dentro dos 1280 — espaço morto e
+              conteúdo espremido ao mesmo tempo.
+
+              O teto de 1800px não é a mesma restrição com outro número: em 1920
+              a largura real vira ~1792 (viewport menos o trilho e as margens), ou
+              seja, o teto nem chega a valer e não sobra espaço morto. Ele só
+              entra em cena em ultrawide e 4K, onde linha de texto atravessando
+              3000px deixa de ser legível.
+
+              O cabeçalho e o corpo usam o MESMO container: se divergirem, o
+              filtro do topo desalinha da coluna da tabela logo abaixo. */}
+          <div className="mx-auto w-full max-w-[1800px] px-4 md:px-8 py-3 space-y-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              Analytics do Funil
+              <span
+                className="inline-flex items-center gap-1 text-[10px] font-normal text-muted-foreground"
+                title={aoVivoOk
+                  ? "Tempo real ligado: o que outra pessoa marcar aparece aqui na hora, sem recarregar."
+                  : "Tempo real desconectado. As mudanças de outras pessoas só aparecem no próximo carregamento (F5)."}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${aoVivoOk ? "bg-emerald-400 animate-pulse" : "bg-muted-foreground/40"}`} />
+                {aoVivoOk ? "ao vivo" : "sem conexão"}
+              </span>
+            </h1>
             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <div
+                id="admin-header-actions-slot"
+                className="flex flex-wrap items-center gap-1.5 sm:gap-2"
+              />
+              <div className="hidden sm:block w-px h-5 bg-border/70" />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 relative"
+                onClick={() => setAgendaAberta(true)}
+                title={agendaConectada ? "Agenda das reuniões: conectada" : "Agenda das reuniões: desconectada"}
+              >
+                <CalendarDays className="w-4 h-4" />
+                {agendaConectada !== null && (
+                  <span className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${agendaConectada ? "bg-emerald-400" : "bg-rose-400"}`} />
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={alternarTema}
+                title={tema === "claro" ? "Mudar para o tema escuro" : "Mudar para o tema claro"}
+              >
+                {tema === "claro"
+                  ? <Moon className="w-4 h-4" />
+                  : <Sun className="w-4 h-4 text-amber-400" />}
+              </Button>
               <NotificationsPopover
                 notificationsEnabled={notificationsEnabled}
+                permissionState={permissionState}
                 pushSubscribed={pushSubscribed}
                 subscriberCount={subscriberCount}
+                dispositivos={dispositivos}
+                atualizarDispositivos={atualizarDispositivos}
+                podeInstalar={podeInstalar}
+                instalarApp={instalarApp}
+                removerDispositivo={removerDispositivo}
                 toggleNotifications={toggleNotifications}
                 testNotifications={testNotifications}
                 sendWebPush={sendWebPush}
+                pessoa={pessoaDoPush}
+                definirPessoa={definirPessoaDoPush}
+                instalado={appInstalado}
+                ios={ehIphone}
               />
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Sair</span>
@@ -1694,8 +2421,10 @@ export default function AdminAnalytics() {
             </div>
           </div>
 
-          {/* Global Date Filter + slot para ações contextuais (ex: Sync Meta Ads / Gasto / Reunião / Venda / Atualizar) */}
-          <div className="flex flex-wrap items-center gap-4 mb-6">
+          {/* Filtros de contexto. As ações (Reunião, Venda, Atualizar) subiram
+              para a linha do título: elas são comando, não filtro, e ficavam
+              caindo sozinhas numa terceira linha por causa do wrap. */}
+          <div className="flex flex-wrap items-center gap-2">
             <UniversalDateRangePicker />
             <PageVariantFilter value={pageFilter} onChange={changePageFilter} />
             <CreativeFilter
@@ -1703,11 +2432,35 @@ export default function AdminAnalytics() {
               onChange={changeCreativeFilter}
               creatives={(metrics?.creatives_available as CreativeOption[]) || []}
             />
+            {/* Slot dos filtros de recorte de mídia (conta → campanha →
+                conjunto → anúncio), preenchido por portal pelo bloco
+                "Desempenho por conta" em 16/09/2026. Eles viviam dentro do
+                card, no meio da aba: para trocar de conta era preciso rolar
+                até lá e depois rolar de volta para ler o resto. Aqui ficam na
+                mesma linha dos outros filtros de contexto, que é o que eles
+                são. */}
             <div
-              id="admin-header-actions-slot"
-              className="ml-auto flex flex-wrap items-center gap-2"
+              id="admin-header-filters-slot"
+              className="flex flex-wrap items-center gap-2"
             />
           </div>
+          </div>
+        </div>
+
+        <div className="mx-auto w-full max-w-[1800px] px-4 md:px-8 pb-8 pt-4">
+
+          {/* O motivo do tique, visível. Som sem causa na tela é o que faz
+              alguém desligar a notificação inteira; com o número e a saída
+              ("clique em Chamei") ao lado, o som vira instrução. */}
+          {pendingLeadsCount > 0 && (
+            <div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+              <span>
+                <strong>{pendingLeadsCount}</strong> lead{pendingLeadsCount === 1 ? "" : "s"} de hoje
+                esperando chamada. O tique para quando você clicar em <strong>Chamei</strong>.
+              </span>
+            </div>
+          )}
 
           {/* Alerta de relatório diário pendente (Caio/Dara) — após 9h */}
           <DailyReportReminder enabled={isAuthenticated} />
@@ -1842,8 +2595,18 @@ export default function AdminAnalytics() {
 
 
           <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+            {/* A navegação virou a barra lateral. Este seletor sobrevive SÓ no
+                celular, como rede de segurança enquanto a gaveta não for
+                validada em aparelho real. Os dois escrevem no mesmo
+                `activeTab`, então não há estado duplicado. */}
+            <div className="md:hidden overflow-x-auto -mx-4 px-4 scrollbar-hide">
               <TabsList className="w-max md:w-auto h-12 md:h-16 p-1.5 md:p-2 bg-card border-2 border-primary/30 rounded-xl md:rounded-2xl gap-1 md:gap-2 shadow-lg shadow-primary/10">
+                <TabsTrigger
+                  value="aquisicao"
+                  className="h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
+                >
+                  Aquisição
+                </TabsTrigger>
                 <TabsTrigger 
                   value="leads" 
                   className="relative h-9 md:h-12 px-3 md:px-8 text-sm md:text-lg font-bold rounded-lg md:rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted transition-all duration-200"
@@ -1878,6 +2641,21 @@ export default function AdminAnalytics() {
 
             {/* Leads Tab */}
             <TabsContent value="leads">
+              {/* A fila não é mais um bloco separado com cards: os baldes são
+                  filtros DESTA tabela, e a tabela é a fila. Duas listas do mesmo
+                  assunto na mesma tela faziam o vendedor agir num lugar e
+                  conferir no outro. Decisão do Rodger em 22/09/2026. */}
+              <div id="fila-comercial" className="scroll-mt-40">
+              <FiltroFilaCrm
+                fetchAdminData={fetchAdminData}
+                pessoa={pessoaDoPush}
+                definirPessoa={definirPessoaDoPush as (p: string) => void | Promise<void>}
+                baldeAtivo={filaBalde}
+                onEscolherBalde={escolherBaldeDaFila}
+                versao={filaVersao}
+              />
+              </div>
+
               {/* Filters */}
               <div className="grid grid-cols-2 md:flex md:flex-wrap gap-2 md:gap-4 mb-4">
                 <div className="flex items-center gap-2 col-span-2">
@@ -1963,7 +2741,13 @@ export default function AdminAnalytics() {
                     <SelectItem value="all">Todos os caminhos</SelectItem>
                     <SelectItem value="direct_ad">📢 Direto do anúncio</SelectItem>
                     <SelectItem value="bio_recovery">🔗 Recuperado (Instagram/bio)</SelectItem>
+                    {/* Veio de plataforma paga e NÃO dá para dizer qual anúncio.
+                        Chamar isso de orgânico esconderia a mídia; chamar de
+                        "direto do anúncio" inventaria um criativo. */}
+                    <SelectItem value="paid_unknown">💸 Pago, anúncio não identificado</SelectItem>
                     <SelectItem value="organic">🌿 Orgânico (sem anúncio)</SelectItem>
+                    <SelectItem value="instagram_dm">📩 Direct do Instagram (iscas)</SelectItem>
+                    <SelectItem value="prospeccao">🎯 Prospecção (garimpo do Instagram)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -2037,8 +2821,14 @@ export default function AdminAnalytics() {
               {/* Leads Table - Desktop */}
               <Card className="hidden md:block">
                 <CardContent className="p-0">
-                  <div>
-                    <table className="w-full text-sm table-fixed">
+                  {/* `table-fixed` distribui as larguras declaradas e ESPREME o
+                      resto: com as colunas de origem (campanha, criativo,
+                      variante) a soma passou da largura da tela e "Nome" foi
+                      parar em cima de "WhatsApp". A tabela ganha uma largura
+                      mínima e o container rola na horizontal, em vez de as
+                      colunas se sobreporem. */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm table-fixed min-w-[1580px]">
                       <thead className="border-b bg-muted/50">
                         <tr>
                           <th className="text-left p-2 w-10">
@@ -2052,12 +2842,21 @@ export default function AdminAnalytics() {
                           <th className="text-left p-2 w-8">#</th>
                           <th className="text-left p-2 w-20">Status</th>
                           <th className="text-left p-2 w-20">Tier</th>
-                          <th className="text-left p-2">Nome</th>
+                          {/* Score veio do bloco "Desempenho por conta" em
+                              16/09/2026. Lá ele era média por anúncio, o que não
+                              ajuda ninguém a decidir quem chamar; aqui é a nota
+                              do lead, ao lado do nome dele. */}
+                          <th className="text-left p-2 w-20" title="Taxa de Qualificação gravada no lead (0–100). Lead qualificado (HQL) = 73 ou mais no quiz, 67 ou mais no formulário curto — réguas diferentes, ver src/lib/hql.ts.">Score</th>
+                          <th className="text-left p-2 w-48">Nome</th>
                           <th className="text-left p-2 w-28">WhatsApp</th>
-                          <th className="text-left p-2">Instagram</th>
+                          <th className="text-left p-2 w-36">Instagram</th>
                           <th className="text-left p-2 w-24">Mercado</th>
-                          <th className="text-left p-2 w-24" title="Operações ativas ou em fase de construção">Operações</th>
+                          <th className="text-left p-2 w-32" title="Situação comercial e próxima ação — mesma fonte da fila comercial">CRM</th>
                           <th className="text-left p-2 w-28">Faturamento</th>
+                          {/* Campanha, criativo e variante numa coluna só: em três
+                              colunas separadas a soma das larguras estourava a tela
+                              e o nome do lead ia parar em cima do WhatsApp. */}
+                          <th className="text-left p-2 w-44" title="De onde o lead veio: variante da página, campanha e criativo">Origem</th>
                           <th className="text-left p-2 w-20">SDR</th>
                           <th className="text-left p-2 w-24">Data</th>
                           <th className="text-left p-2 w-24" title="Tempo entre chegada do lead e clique para abrir/ler">Tempo p/ chamar</th>
@@ -2067,13 +2866,13 @@ export default function AdminAnalytics() {
                       <tbody>
                         {leadsLoading ? (
                           <tr>
-                              <td colSpan={14} className="p-8 text-center">
+                              <td colSpan={16} className="p-8 text-center">
                               <Loader2 className="w-6 h-6 animate-spin mx-auto" />
                             </td>
                           </tr>
                         ) : filteredLeads.length === 0 ? (
                           <tr>
-                            <td colSpan={14} className="p-8 text-center text-muted-foreground">
+                            <td colSpan={16} className="p-8 text-center text-muted-foreground">
                               Nenhum lead encontrado
                             </td>
                           </tr>
@@ -2083,6 +2882,7 @@ export default function AdminAnalytics() {
                               key={lead.id} 
                               className={`border-b hover:bg-muted/30 cursor-pointer ${!lead.lido ? "bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "!bg-secondary/20 ring-1 ring-inset ring-secondary/60" : ""}`}
                               onClick={() => openLeadDetail(lead)}
+                              onMouseEnter={() => prefetchLeadJourney(lead.id)}
                             >
                               <td
                                 className="p-2 cursor-pointer"
@@ -2127,6 +2927,11 @@ export default function AdminAnalytics() {
                                       🔗 Bio
                                     </Badge>
                                   )}
+                                  {lead.attribution_source === "paid_unknown" && (
+                                    <Badge variant="outline" className="border-amber-500 text-amber-400 bg-amber-500/10 w-fit text-[10px] px-1.5 py-0" title="Veio de plataforma paga, mas nao da para dizer qual anuncio">
+                                      💸 Pago (s/ anúncio)
+                                    </Badge>
+                                  )}
                                   {lead.attribution_source === "organic" && (
                                     <Badge variant="outline" className="border-emerald-600 text-emerald-400 bg-emerald-500/10 w-fit text-[10px] px-1.5 py-0">
                                       🌿 Org
@@ -2135,6 +2940,18 @@ export default function AdminAnalytics() {
                                   {lead.attribution_source === "direct_ad" && (
                                     <Badge variant="outline" className="border-sky-600 text-sky-400 bg-sky-500/10 w-fit text-[10px] px-1.5 py-0">
                                       📢 Ad
+                                    </Badge>
+                                  )}
+                                  {/* Lead criado pelo Champion Direct (funil de DM do Instagram).
+                                      utm_campaign = automação/isca; utm_content = de onde veio. */}
+                                  {lead.attribution_source === "instagram_dm" && (
+                                    <Badge variant="outline" className="border-pink-500 text-pink-400 bg-pink-500/10 w-fit text-[10px] px-1.5 py-0" title={(lead as { utm_content?: string | null }).utm_content ?? ""}>
+                                      📩 {(lead as { utm_campaign?: string | null }).utm_campaign || "Direct"}{(lead as { utm_medium?: string | null }).utm_medium ? ` · ${(lead as { utm_medium?: string | null }).utm_medium}` : ""}
+                                    </Badge>
+                                  )}
+                                  {lead.origem_lead === "prospeccao" && (
+                                    <Badge variant="outline" className="border-orange-500 text-orange-400 bg-orange-500/10 w-fit text-[10px] px-1.5 py-0" title="Lead do garimpo do Instagram: abordagem pelo direct">
+                                      🎯 Prospecção
                                     </Badge>
                                   )}
                                   {lead.skipped_queue && (
@@ -2179,9 +2996,53 @@ export default function AdminAnalytics() {
                                   );
                                 })()}
                               </td>
-                              <td className="p-2 font-medium max-w-[140px]" title={lead.nome_completo}>
-                                <div className="flex items-center gap-1.5">
-                                  <span className="truncate">{lead.nome_completo}</span>
+                              {/* A NOTA GRAVADA NO LEAD (leads.score), não uma
+                                  recalculada aqui.
+
+                                  É o mesmo número que dispara o evento
+                                  HighQualityLead na Meta. Existe um cálculo de
+                                  score no front (usado no modal) e um
+                                  `recalcLeadScore` que devolve 0 a 5 — nenhum
+                                  dos dois é esta nota. Usar outro aqui criaria
+                                  um lead "74" na tela que a Meta nunca viu como
+                                  HQL.
+
+                                  O CORTE É POR VERSÃO (17/09/2026): 73 para o
+                                  quiz, 67 para o formulário curto, que só
+                                  pergunta faturamento e mercado. A cor vira no
+                                  corte porque o score é PORTÃO, não régua:
+                                  abaixo dele, 68 não vale mais que 41. */}
+                              <td className="p-2">
+                                {typeof lead.score === "number" ? (
+                                  <span
+                                    className={`inline-flex items-center gap-1 text-xs font-bold tabular-nums ${
+                                      ehHighQualityLead(lead.score, lead.score_version)
+                                        ? "text-emerald-400"
+                                        : lead.score >= 50
+                                          ? "text-amber-400"
+                                          : "text-muted-foreground"
+                                    }`}
+                                    title={ehHighQualityLead(lead.score, lead.score_version)
+                                      ? `Lead qualificado: score ≥ ${limiarHql(lead.score_version)} (${lead.score_version || "v2.3"}), o corte que concentra a receita`
+                                      : `Abaixo do corte de ${limiarHql(lead.score_version)} (${lead.score_version || "v2.3"})`}
+                                  >
+                                    {lead.score}
+                                    {ehHighQualityLead(lead.score, lead.score_version) && (
+                                      <span className="rounded-sm bg-emerald-500/15 px-1 text-[9px] font-semibold">HQL</span>
+                                    )}
+                                  </span>
+                                ) : (
+                                  <span className="text-xs text-muted-foreground" title="Lead sem score gravado">—</span>
+                                )}
+                              </td>
+                              {/* `truncate` dentro de flex só funciona com `min-w-0`:
+                                  sem isso o item não encolhe abaixo do próprio
+                                  conteúdo e o nome vaza por cima do WhatsApp,
+                                  levando o badge da nota junto. O `max-w` fixo
+                                  também saiu — quem manda na largura é a coluna. */}
+                              <td className="p-2 font-medium overflow-hidden" title={lead.nome_completo}>
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <span className="truncate min-w-0">{lead.nome_completo}</span>
                                   {typeof lead.nps_score === "number" && (
                                     <span
                                       title={`Nota IA: ${lead.nps_score}/10`}
@@ -2194,19 +3055,24 @@ export default function AdminAnalytics() {
                                 </div>
                               </td>
                               <td className="p-2">
-                                <button
-                                  type="button"
-                                  className="text-green-500 hover:underline text-xs truncate block max-w-full"
-                                  title="Copiar WhatsApp"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    void copyWhatsappToClipboard(lead.whatsapp);
-                                  }}
-                                >
-                                  {lead.whatsapp}
-                                </button>
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <button
+                                    type="button"
+                                    className="text-green-500 hover:underline text-xs truncate min-w-0"
+                                    title="Copiar WhatsApp"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      void copyWhatsappToClipboard(lead.whatsapp);
+                                    }}
+                                  >
+                                    {lead.whatsapp}
+                                  </button>
+                                  {/* O botão "Chamei" saiu em 04/09/2026: ler o
+                                      lead passou a valer como chamado, e o
+                                      carimbo vai junto com o de lido. */}
+                                </div>
                               </td>
-                              <td className="p-2">
+                              <td className="p-2 overflow-hidden">
                                 <button
                                   type="button"
                                   className="text-pink-400 hover:underline text-xs truncate block max-w-full"
@@ -2220,8 +3086,90 @@ export default function AdminAnalytics() {
                                 </button>
                               </td>
                               <td className="p-2 text-muted-foreground text-xs truncate" title={lead.mercado}>{lead.mercado}</td>
-                              <td className="p-2 text-muted-foreground text-xs truncate" title={getOperacoesAtivas(lead)}>{getOperacoesAtivas(lead)}</td>
+                              {/* CRM no lugar de "Operações": a fila separada não
+                                  estava sendo usada porque trocar de tela para
+                                  decidir o que fazer com o lead é atrito. O número
+                                  de operações continua no modal de detalhe. */}
+                              <td className="p-2" onClick={(e) => e.stopPropagation()}>
+                                <CelulaCrm
+                                  lead={lead}
+                                  crm={crmDaLista}
+                                  pessoa={pessoaDoPush ?? null}
+                                  aoMudar={() => { void atualizarCrmDoLead(lead.id); }}
+                                />
+                              </td>
                               <td className="p-2 text-muted-foreground text-xs truncate" title={lead.investimento_faixa || "-"}>{lead.investimento_faixa || "-"}</td>
+                              {/* ORIGEM: campanha em cima, ANÚNCIO embaixo.
+
+                                  Até 11/09/2026 a segunda linha era
+                                  `creative_name_resolved || ad_name_resolved || utm_content`,
+                                  e `creative_name` é a COPY — a Meta o gera a
+                                  partir do texto do post. Um lead da CA 05
+                                  aparecia como "Não adianta nada fazer tudo n…"
+                                  enquanto o nome oficial do anúncio,
+                                  "Luis-Nathan Case #2 – V3", estava no banco,
+                                  resolvido por `ad_id`, o tempo todo.
+
+                                  E `creative_name` NÃO identifica anúncio: essa
+                                  mesma copy pertence a DOIS anúncios distintos
+                                  na base — `Arthur Case #1` (120239380042020044)
+                                  e `Luis-Nathan Case #2 – V3` (120252040734010116).
+
+                                  `resolverOrigemAnuncio` já implementa a ordem
+                                  certa (nome por ad_id → utm_content → não
+                                  identificado) e existe desde o caso anterior;
+                                  o painel de detalhe já a usava. Aqui era o
+                                  único lugar que ainda não tinha migrado. */}
+                              {(() => {
+                                const v = variantShortLabel(lead.entry_page);
+                                const origem = resolverOrigemAnuncio(lead as never);
+                                const campanha = origem.campanha.evidencia === "ausente" ? null : origem.campanha.exibicao;
+                                const temAnuncio = origem.anuncio.evidencia !== "ausente";
+                                const comoVeio = lead.attribution_method === "submit" ? "envio do quiz (exato)"
+                                  : lead.attribution_method === "fbp" ? "cookie do navegador"
+                                  : lead.attribution_method === "ip" ? "IP (pode misturar pessoas da mesma rede)"
+                                  : null;
+                                // O detalhe fica no tooltip para a célula não
+                                // virar parágrafo. O essencial de bater o olho
+                                // continua sendo campanha + anúncio.
+                                const detalhe = [
+                                  temAnuncio ? origem.anuncio.exibicao : "Anúncio não identificado",
+                                  origem.conjunto.evidencia !== "ausente" ? `Conjunto: ${origem.conjunto.exibicao}` : null,
+                                  origem.placement.evidencia !== "ausente" ? `Posicionamento: ${origem.placement.exibicao}` : null,
+                                  origem.anuncio.id ? `Ad ID: ${origem.anuncio.id}` : null,
+                                  origem.anuncio.evidencia === "observado" ? "nome veio da URL do clique, não confirmado na Meta" : null,
+                                  lead.utm_content_recovered && comoVeio ? `Recuperado da sessão por ${comoVeio}` : null,
+                                ].filter(Boolean).join("\n");
+                                return (
+                                  <td className="p-2 text-xs overflow-hidden">
+                                    <div className="flex items-center gap-1 min-w-0">
+                                      <Badge
+                                        variant="outline"
+                                        className={`text-[9px] px-1 py-0 shrink-0 ${v.inTest
+                                          ? "border-cyan-500/40 text-cyan-300 bg-cyan-500/10"
+                                          : "border-muted-foreground/30 text-muted-foreground"}`}
+                                        title={v.full}
+                                      >
+                                        {v.short}
+                                      </Badge>
+                                      <span className="truncate text-muted-foreground" title={campanha || "Sem campanha"}>
+                                        {campanha || "—"}
+                                      </span>
+                                    </div>
+                                    <div
+                                      className={`truncate mt-0.5 ${lead.utm_content_recovered ? "text-amber-300/90" : ""}`}
+                                      title={detalhe}
+                                    >
+                                      {temAnuncio
+                                        ? origem.anuncio.exibicao
+                                        : origem.ehTrafegoPago
+                                          ? <span className="text-muted-foreground/60">Anúncio não identificado</span>
+                                          : <span className="text-muted-foreground/50">—</span>}
+                                      {lead.utm_content_recovered && <span className="ml-1 opacity-60">↻</span>}
+                                    </div>
+                                  </td>
+                                );
+                              })()}
                               <td className="p-2">
                                 {(() => {
                                   const sdr = getLeadSdr(lead);
@@ -2291,6 +3239,7 @@ export default function AdminAnalytics() {
                         key={lead.id}
                         className={`cursor-pointer ${!lead.lido ? "border-primary/30 bg-primary/5" : ""} ${selectedLeadIds.has(lead.id) ? "!bg-secondary/20 !border-secondary ring-2 ring-secondary/60" : ""}`}
                         onClick={() => openLeadDetail(lead)}
+                        onMouseEnter={() => prefetchLeadJourney(lead.id)}
                       >
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between gap-2">
@@ -2315,10 +3264,10 @@ export default function AdminAnalytics() {
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <p className="font-semibold truncate">{lead.nome_completo}</p>
-                                  <Badge 
+                                  <Badge
                                     variant="outline"
                                     className={`text-[10px] ${
-                                      !lead.lido 
+                                      !lead.lido
                                         ? "bg-green-500 text-white border-green-500" 
                                         : "border-muted-foreground text-muted-foreground"
                                     }`}
@@ -2344,7 +3293,22 @@ export default function AdminAnalytics() {
                                   >
                                     {tierShortLabel(tier)}
                                   </Badge>
-                                  <Badge 
+                                  {/* Mesma nota do banco que a tabela do desktop. */}
+                                  {typeof lead.score === "number" && (
+                                    <Badge
+                                      variant="outline"
+                                      className={`text-[10px] ${
+                                        ehHighQualityLead(lead.score, lead.score_version)
+                                          ? "border-emerald-500 text-emerald-400 bg-emerald-500/10"
+                                          : lead.score >= 50
+                                            ? "border-amber-500 text-amber-400 bg-amber-500/10"
+                                            : "border-muted-foreground/40 text-muted-foreground"
+                                      }`}
+                                    >
+                                      {lead.score}{ehHighQualityLead(lead.score, lead.score_version) ? " · HQL" : ""}
+                                    </Badge>
+                                  )}
+                                  <Badge
                                     className={`text-[10px] ${sdr === "Direct" ? "bg-muted/40 text-muted-foreground border-border" : "cursor-pointer"} ${sdr === "Gustavo" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : sdr === "Miguel" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : ""}`}
                                     onClick={(e) => { e.stopPropagation(); if (sdr !== "Direct") toggleSdr(lead); }}
                                   >
@@ -2356,11 +3320,26 @@ export default function AdminAnalytics() {
                                   {lead.attribution_source === "bio_recovery" && (
                                     <Badge variant="outline" className="border-violet-400 text-violet-300 bg-violet-500/15 text-[10px] px-1.5 py-0">🔗 Bio</Badge>
                                   )}
+                                  {lead.attribution_source === "paid_unknown" && (
+                                    <Badge variant="outline" className="border-amber-500 text-amber-400 bg-amber-500/10 w-fit text-[10px] px-1.5 py-0" title="Veio de plataforma paga, mas nao da para dizer qual anuncio">
+                                      💸 Pago (s/ anúncio)
+                                    </Badge>
+                                  )}
                                   {lead.attribution_source === "organic" && (
                                     <Badge variant="outline" className="border-emerald-600 text-emerald-400 bg-emerald-500/10 text-[10px] px-1.5 py-0">🌿 Org</Badge>
                                   )}
                                   {lead.attribution_source === "direct_ad" && (
                                     <Badge variant="outline" className="border-sky-600 text-sky-400 bg-sky-500/10 text-[10px] px-1.5 py-0">📢 Ad</Badge>
+                                  )}
+                                  {lead.attribution_source === "instagram_dm" && (
+                                    <Badge variant="outline" className="border-pink-500 text-pink-400 bg-pink-500/10 text-[10px] px-1.5 py-0" title={(lead as { utm_content?: string | null }).utm_content ?? ""}>
+                                      📩 {(lead as { utm_campaign?: string | null }).utm_campaign || "Direct"}{(lead as { utm_medium?: string | null }).utm_medium ? ` · ${(lead as { utm_medium?: string | null }).utm_medium}` : ""}
+                                    </Badge>
+                                  )}
+                                  {lead.origem_lead === "prospeccao" && (
+                                    <Badge variant="outline" className="border-orange-500 text-orange-400 bg-orange-500/10 w-fit text-[10px] px-1.5 py-0" title="Lead do garimpo do Instagram: abordagem pelo direct">
+                                      🎯 Prospecção
+                                    </Badge>
                                   )}
                                   {lead.skipped_queue && (
                                     <Badge variant="outline" className="border-secondary text-secondary bg-secondary/10 text-[10px] px-1.5 py-0">
@@ -2418,94 +3397,146 @@ export default function AdminAnalytics() {
               </div>
 
               {/* Lead Detail Dialog */}
-              <Dialog open={!!selectedLead} onOpenChange={() => setSelectedLead(null)}>
+              <Dialog
+                open={!!selectedLead || !!leadCarregando}
+                onOpenChange={() => { setSelectedLead(null); setLeadCarregando(null); setErroDetalhe(null); }}
+              >
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle className="text-xl">Detalhes do Lead</DialogTitle>
                   </DialogHeader>
+
+                  {/* Esqueleto enquanto o lead vem. É o MESMO modal — nada aqui
+                      duplica a tela de detalhe; só ocupa o lugar dela por um
+                      instante, para o clique ter resposta imediata. */}
+                  {!selectedLead && leadCarregando && !erroDetalhe && (
+                    <div className="space-y-4 mt-4 animate-pulse" aria-busy="true">
+                      <div className="h-24 rounded-lg bg-muted/40" />
+                      <div className="h-20 rounded-lg bg-muted/30" />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="h-16 rounded-lg bg-muted/30" />
+                        <div className="h-16 rounded-lg bg-muted/30" />
+                        <div className="h-16 rounded-lg bg-muted/30" />
+                        <div className="h-16 rounded-lg bg-muted/30" />
+                      </div>
+                      <p className="text-xs text-muted-foreground text-center">Carregando o lead…</p>
+                    </div>
+                  )}
+
+                  {!selectedLead && erroDetalhe && (
+                    <div className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm">
+                      <p className="font-semibold text-destructive-foreground mb-1">Não deu para abrir o lead</p>
+                      <p className="text-muted-foreground mb-3">{erroDetalhe}</p>
+                      <Button size="sm" variant="outline"
+                        onClick={() => { const id = leadCarregando; if (id) void abrirLeadPorId(id); }}>
+                        Tentar de novo
+                      </Button>
+                    </div>
+                  )}
+
                   {selectedLead && (
                     <div className="space-y-6 mt-4">
-                      {/* Campaign & Ad Attribution - Always visible at top */}
-                      <div className="p-4 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg border border-purple-500/30">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                          <TrendingUp className="w-4 h-4 text-purple-400" />
-                          Origem do Anúncio
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {/* CRM: estado, próxima ação e as ações rápidas.
+                          Fica no TOPO porque é a única parte deste modal que
+                          serve para AGIR — o resto é consulta. */}
+                      <AcoesRapidasCrm
+                        leadId={selectedLead.id}
+                        leadWhatsapp={selectedLead.whatsapp}
+                        leadInstagram={selectedLead.instagram}
+                        pessoa={pessoaDoPush}
+                        definirPessoa={definirPessoaDoPush as (p: string) => void | Promise<void>}
+                        fetchAdminData={fetchAdminData}
+                      />
+
+                      {/* ORIGEM DO ANÚNCIO — hierarquia CONTA → CAMPANHA → CONJUNTO → ANÚNCIO.
+                          A regra de resolução mora em src/lib/origemAnuncio.ts e é testada
+                          por scripts/testar-origem-anuncio.mjs. Aqui só se desenha. */}
+                      {(() => {
+                        const origem = resolverOrigemAnuncio(selectedLead as never);
+                        const selo = (e: string) =>
+                          e === "resolvido_por_id"
+                            ? <span className="text-[9px] text-emerald-400/80 uppercase tracking-wide">✓ por ID</span>
+                            : e === "observado"
+                              ? <span className="text-[9px] text-amber-400/70 uppercase tracking-wide">observado no clique</span>
+                              : <span className="text-[9px] text-muted-foreground/60 uppercase tracking-wide">sem dado</span>;
+
+                        const Nivel = ({ rotulo, campo, cor }: { rotulo: string; campo: typeof origem.conta; cor: string }) => (
                           <div className="p-3 bg-background/50 rounded-lg">
-                            <p className="text-muted-foreground text-[10px] uppercase mb-1">Campanha</p>
-                            <p className="font-semibold text-purple-400 text-lg">
-                              {(() => {
-                                const raw = selectedLead.utm_campaign;
-                                const isPlaceholder = raw && /\{\{.*\}\}/.test(raw);
-                                // utm_campaign às vezes vem com o ID numérico cru do Meta
-                                // (utm_campaign={{campaign.id}}) em vez do nome — nesse caso
-                                // prioriza o nome resolvido via ad_spend (campaign_name_resolved).
-                                const isNumericId = raw && /^\d+$/.test(raw);
-                                if (!isPlaceholder && raw && !isNumericId) return raw;
-                                if (selectedLead.campaign_name_resolved) return selectedLead.campaign_name_resolved;
-                                if (!isPlaceholder && raw) return raw;
-                                return selectedLead.campaign_id
-                                  ? `ID: ${selectedLead.campaign_id}`
-                                  : "Tráfego Direto";
-                              })()}
+                            <div className="flex items-baseline justify-between gap-2 mb-1">
+                              <p className="text-muted-foreground text-[10px] uppercase tracking-wider">{rotulo}</p>
+                              {selo(campo.evidencia)}
+                            </div>
+                            <p className={`font-semibold ${cor} text-base leading-snug break-words`}>{campo.exibicao}</p>
+                            {campo.id && <p className="text-[10px] text-muted-foreground/70 mt-1 font-mono">{campo.id}</p>}
+                            {campo.nota && <p className="text-[10px] text-muted-foreground/70 mt-1">{campo.nota}</p>}
+                          </div>
+                        );
+
+                        return (
+                          <div className="p-4 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg border border-purple-500/30">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                              <TrendingUp className="w-4 h-4 text-purple-400" />
+                              Origem do Anúncio
                             </p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <Nivel rotulo="Conta" campo={origem.conta} cor="text-purple-300" />
+                              <Nivel rotulo="Campanha" campo={origem.campanha} cor="text-purple-400" />
+                              <Nivel rotulo="Conjunto" campo={origem.conjunto} cor="text-blue-300" />
+                              <Nivel rotulo="Anúncio" campo={origem.anuncio} cor="text-blue-400" />
+                            </div>
+
+                            {/* Três dimensões distintas. Fonte não é placement, e
+                                device nunca serve para inferir placement. */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3">
+                              {([
+                                ["Plataforma", origem.plataforma],
+                                ["Placement", origem.placement],
+                                ["Dispositivo", origem.device],
+                              ] as const).map(([rotulo, campo]) => (
+                                <div key={rotulo} className="p-2 bg-background/30 rounded">
+                                  <p className="text-muted-foreground text-[10px] uppercase tracking-wider">{rotulo}</p>
+                                  <p className="font-medium text-sm leading-snug">{campo.exibicao}</p>
+                                  {campo.bruto && campo.bruto !== campo.exibicao && (
+                                    <p className="text-[10px] text-muted-foreground/60 font-mono mt-0.5">{campo.bruto.slice(0, 40)}</p>
+                                  )}
+                                  {campo.nota && <p className="text-[10px] text-muted-foreground/70 mt-0.5">{campo.nota}</p>}
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* CRIATIVO é entidade separada do ANÚNCIO. A Meta nomeia o
+                                criativo com o texto da copy quando ele nasce de um post,
+                                então isto aqui costuma ser a copy — e é rotulado como tal. */}
+                            {(origem.criativo.evidencia !== "ausente" || selectedLead.creative_thumbnail_url_resolved) && (
+                              <div className="mt-3 flex items-start gap-3 p-2 bg-background/30 rounded-lg">
+                                {selectedLead.creative_thumbnail_url_resolved && (
+                                  <img
+                                    src={selectedLead.creative_thumbnail_url_resolved}
+                                    alt="Miniatura do criativo"
+                                    className="w-12 h-12 rounded object-cover border border-purple-500/30 shrink-0"
+                                  />
+                                )}
+                                <div className="min-w-0">
+                                  <p className="text-muted-foreground text-[10px] uppercase tracking-wider">Criativo · texto do anúncio</p>
+                                  <p className="text-xs text-muted-foreground/90 leading-snug line-clamp-3 break-words">
+                                    {origem.criativo.exibicao}
+                                  </p>
+                                  {origem.criativo.id && (
+                                    <p className="text-[10px] text-muted-foreground/60 font-mono mt-0.5">{origem.criativo.id}</p>
+                                  )}
+                                </div>
+                              </div>
+                            )}
                           </div>
-                          <div className="p-3 bg-background/50 rounded-lg">
-                            <p className="text-muted-foreground text-[10px] uppercase mb-1">Anúncio / Criativo</p>
-                            <p className="font-semibold text-blue-400 text-lg">
-                              {(() => {
-                                const raw = selectedLead.utm_content;
-                                const isPlaceholder = raw && /\{\{.*\}\}/.test(raw);
-                                const isNumericId = raw && /^\d+$/.test(raw);
-                                // creative_name identifica o criativo de verdade — ad_name
-                                // geralmente fica com o nome padrão "Ad" (não renomeado).
-                                if (selectedLead.creative_name_resolved) return selectedLead.creative_name_resolved;
-                                if (!isPlaceholder && raw && !isNumericId) return raw;
-                                if (selectedLead.ad_name_resolved) return selectedLead.ad_name_resolved;
-                                if (!isPlaceholder && raw) return raw;
-                                return selectedLead.ad_id
-                                  ? `ID: ${selectedLead.ad_id}`
-                                  : "Não identificado";
-                              })()}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 mt-3">
-                          <div className="p-2 bg-background/30 rounded text-center">
-                            <p className="text-muted-foreground text-[10px] uppercase">Fonte</p>
-                            <p className="font-medium text-sm">
-                              {(() => {
-                                const raw = selectedLead.utm_source;
-                                const isPlaceholder = raw && /\{\{.*\}\}/.test(raw);
-                                if (!isPlaceholder && raw) return raw;
-                                return "direct";
-                              })()}
-                            </p>
-                          </div>
-                          <div className="p-2 bg-background/30 rounded text-center">
-                            <p className="text-muted-foreground text-[10px] uppercase">Placement</p>
-                            <p className="font-medium text-sm">
-                              {(() => {
-                                const raw = selectedLead.placement;
-                                const isPlaceholder = raw && /\{\{.*\}\}/.test(raw);
-                                if (!isPlaceholder && raw) return raw;
-                                return "-";
-                              })()}
-                            </p>
-                          </div>
-                        </div>
-                        {selectedLead.creative_thumbnail_url_resolved && (
-                          <div className="mt-3 flex items-center gap-3 p-2 bg-background/30 rounded-lg">
-                            <img
-                              src={selectedLead.creative_thumbnail_url_resolved}
-                              alt="Miniatura do criativo"
-                              className="w-12 h-12 rounded object-cover border border-purple-500/30"
-                            />
-                            <p className="text-xs text-muted-foreground">Miniatura do criativo que gerou o lead</p>
-                          </div>
-                        )}
-                      </div>
+                        );
+                      })()}
+
+                      {/* Comportamento no site — headline de entrada, tempo de
+                          leitura, tempo no quiz e visitas anteriores. */}
+                      <Suspense fallback={<div className="p-4 text-sm text-muted-foreground">Carregando jornada...</div>}>
+                        <LeadJourneyPanel leadId={selectedLead.id} fetchAdminData={fetchAdminData} />
+                      </Suspense>
 
                       {/* Basic Info */}
                       <div className="grid grid-cols-2 gap-4">
@@ -2534,6 +3565,27 @@ export default function AdminAnalytics() {
                           >
                             {selectedLead.instagram}
                           </button>
+                        </div>
+                        {/* E-mail: o quiz pergunta (q8_email) e o banco guarda, mas
+                            o modal nunca mostrou — quem atendia o lead tinha que ir
+                            no CSV para achar. */}
+                        <div className="p-4 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">E-mail</p>
+                          {selectedLead.email ? (
+                            <button
+                              type="button"
+                              className="text-lg font-semibold text-primary hover:underline text-left break-all"
+                              title="Copiar e-mail"
+                              onClick={() => {
+                                void navigator.clipboard.writeText(selectedLead.email || "");
+                                toast({ title: "E-mail copiado" });
+                              }}
+                            >
+                              {selectedLead.email}
+                            </button>
+                          ) : (
+                            <p className="text-lg font-semibold text-muted-foreground">—</p>
+                          )}
                         </div>
                         <div className="p-4 bg-muted/30 rounded-lg">
                           <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Data de Cadastro</p>
@@ -2619,16 +3671,33 @@ export default function AdminAnalytics() {
                         <p className="whitespace-pre-wrap">{selectedLead.dor_desejo}</p>
                       </div>
 
-                      {/* Compromisso WhatsApp */}
+                      {/* Compromisso no WhatsApp — a última pergunta do quiz.
+                          Ela tem TRÊS respostas ("Sim", "Talvez", "Não") desde
+                          25/08/2026, e este bloco lia o valor como booleano:
+                          string não vazia é truthy, então "Não" aparecia como
+                          "✅ Sim, se comprometeu". O SDR via o oposto do que o
+                          lead respondeu, justamente na pergunta que diz se vale
+                          a pena ligar primeiro para ele. */}
                       {(() => {
-                        const raw = selectedLead.raw_answers_json;
-                        const committed = raw?.compromisso_whatsapp;
-                        if (committed === undefined) return null;
+                        const resposta = selectedLead.raw_answers_json?.compromisso_whatsapp;
+                        if (resposta === undefined || resposta === null || resposta === "") return null;
+                        const v = String(resposta);
+                        const estilo = v === "Sim"
+                          ? { caixa: "bg-green-500/10 border-green-500/30", texto: "text-green-400", icone: "✅", frase: "Sim, responde assim que chegar" }
+                          : v === "Talvez"
+                            ? { caixa: "bg-amber-500/10 border-amber-500/30", texto: "text-amber-400", icone: "⏳", frase: "Talvez, pode demorar um pouco" }
+                            : v === "Não" || v === "Nao"
+                              ? { caixa: "bg-red-500/10 border-red-500/30", texto: "text-red-400", icone: "❌", frase: "Não se comprometeu a responder" }
+                              // Leads anteriores a 25/08 têm `true` gravado pela
+                              // tela de loading, não uma resposta de verdade.
+                              : { caixa: "bg-muted/40 border-border", texto: "text-muted-foreground", icone: "•", frase: "Presumido (lead anterior à pergunta)" };
                         return (
-                          <div className={`p-4 rounded-lg border ${committed ? "bg-green-500/10 border-green-500/30" : "bg-red-500/10 border-red-500/30"}`}>
-                            <p className="text-xs text-foreground/60 uppercase tracking-wider mb-1">Compromisso de Resposta (WhatsApp)</p>
-                            <p className={`font-semibold text-lg ${committed ? "text-green-400" : "text-red-400"}`}>
-                              {committed ? "✅ Sim, se comprometeu" : "❌ Não se comprometeu"}
+                          <div className={`p-4 rounded-lg border ${estilo.caixa}`}>
+                            <p className="text-xs text-foreground/60 uppercase tracking-wider mb-1">
+                              Nosso time vai te chamar no WhatsApp hoje. Você se compromete a responder?
+                            </p>
+                            <p className={`font-semibold text-lg ${estilo.texto}`}>
+                              {estilo.icone} {estilo.frase}
                             </p>
                           </div>
                         );
@@ -2652,18 +3721,75 @@ export default function AdminAnalytics() {
                         );
                       })()}
 
+                      {selectedLead && selectedLead.origem_lead === "prospeccao" && (
+                        <QualificacaoProspeccao
+                          lead={selectedLead}
+                          onSalvo={(l) => {
+                            setLeads(prev => prev.map(x => x.id === l.id ? l : x));
+                            setSelectedLead(prev => (prev && prev.id === l.id ? l : prev));
+                          }}
+                        />
+                      )}
+
+                      {/* ── Como a empresa decide (EXPERIMENTO 07/09/2026) ─────
+                          Perguntado pelo SDR na conversa, antes de existir
+                          reunião: "Hoje, quando vocês tomam decisões estratégicas
+                          na empresa, normalmente quem participa?".
+
+                          A copy é de diagnóstico, não de qualificação: nada de
+                          "contratar", "comprar" ou "decisor" na tela. Quem
+                          responde está descrevendo como a empresa funciona, e
+                          não sendo triado — é o que faz a resposta ser honesta.
+
+                          Opcional, não pontua, não define MQL, não desqualifica.
+                          Serve para testar se a ausência de quem aprova explica
+                          a faixa que agenda bem e fecha mal. */}
+                      {selectedLead && (
+                        <div className="pt-2 border-t space-y-2">
+                          <div>
+                            <p className="text-xs font-semibold text-foreground">Como a empresa decide</p>
+                            <p className="text-[11px] text-muted-foreground leading-snug">
+                              "Hoje, quando vocês tomam decisões estratégicas na empresa, normalmente quem participa?" Opcional.
+                            </p>
+                          </div>
+                          <div className="grid gap-1.5">
+                            {DECISAO_OPCOES.map((o) => {
+                              const ativo = selectedLead.decisao_processo === o.value;
+                              return (
+                                <button
+                                  key={o.value}
+                                  type="button"
+                                  title={o.ajuda}
+                                  onClick={() => setDecisaoLead(selectedLead, o.value)}
+                                  className={`h-9 rounded-md border text-xs font-medium px-3 text-left transition-colors ${
+                                    ativo
+                                      ? "bg-primary text-primary-foreground border-primary"
+                                      : "bg-background border-border hover:border-primary/60"
+                                  }`}
+                                >
+                                  {o.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Tier + Lead Score 0–100 (mesmo cálculo usado em Performance por Criativo) */}
                       {selectedLead && (
                         (() => {
                           const { tier: calcTier } = recalcLeadScore(selectedLead);
-                          const sr = computeLeadScore100({
+                          // Recalculado NA RÉGUA DA VERSÃO do lead. Rodar a
+                          // fórmula do quiz num lead do formulário mostraria
+                          // "Compromisso WA 13/13" e "Aceita call 0/12" para
+                          // perguntas que ele nunca viu.
+                          const sr = calcularNotaPorVersao({
                             investimento_faixa: selectedLead.investimento_faixa,
                             mercado: selectedLead.mercado,
-                            operacoes_ativas: selectedLead.operacoes_ativas,
                             nps_score: selectedLead.nps_score,
                             dor_desejo: selectedLead.dor_desejo,
                             raw_answers_json: selectedLead.raw_answers_json,
-                          });
+                          }, selectedLead.score_version);
                           return (
                             <div className="pt-2 border-t space-y-3">
                               <div className="flex items-center gap-2">
@@ -2695,16 +3821,20 @@ export default function AdminAnalytics() {
                                 />
                               </div>
                               <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-muted-foreground">
-                                <span>Faturamento: {sr.breakdown.faturamento}/25</span>
-                                <span>Entendimento do site: {sr.breakdown.nps}/30</span>
-                                <span>Compromisso WA: {sr.breakdown.compromisso_whatsapp}/10</span>
-                                <span>Aceita call: {sr.breakdown.aceita_call}/8</span>
-                                <span>Mercado: {sr.breakdown.mercado}/8</span>
-                                <span>Operações: {sr.breakdown.operacoes}/6</span>
-                                <span>Quer vender mais: {sr.breakdown.quer_vender_mais}/5</span>
-                                <span>Dor/desejo: {sr.breakdown.dor_desejo}/5</span>
-                                <span>LGPD: {sr.breakdown.lgpd}/3</span>
+                                {linhasDoBreakdown(sr).map((l) => (
+                                  <span key={l.rotulo}>{l.rotulo}: {l.valor}/{l.max}</span>
+                                ))}
+                                <span className="col-span-2 opacity-70">
+                                  {sr.version} · corte de lead qualificado: {limiarHql(sr.version)}
+                                </span>
                               </div>
+                              {sr.flags.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                  {sr.flags.map((f) => (
+                                    <Badge key={f} variant="outline" className="text-[9px] text-amber-500 border-amber-500/40">{f}</Badge>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           );
                         })()
@@ -3162,11 +4292,24 @@ export default function AdminAnalytics() {
               )}
             </TabsContent>
 
+            {/* Aquisição Tab — a cascata de mídia, de sessão a venda */}
+            <TabsContent value="aquisicao" forceMount={prewarmTabs || undefined} className="data-[state=inactive]:hidden">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <AquisicaoTab
+                  fetchAdminData={tabFetchers.aquisicao}
+                  startDateOnly={startDateOnly}
+                  endDateOnly={endDateOnly}
+                  startISO={startISO}
+                  endISO={endISO}
+                />
+              </Suspense>
+            </TabsContent>
+
             {/* Criativos Tab */}
-            <TabsContent value="creatives">
+            <TabsContent value="creatives" forceMount={prewarmTabs || undefined} className="data-[state=inactive]:hidden">
               <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
                 <CreativesTab 
-                  fetchAdminData={fetchAdminData}
+                  fetchAdminData={tabFetchers.creatives}
                   startDateOnly={startDateOnly}
                   endDateOnly={endDateOnly}
                   startISO={startISO}
@@ -3188,10 +4331,10 @@ export default function AdminAnalytics() {
             </TabsContent>
 
             {/* Métricas Funil Tab */}
-            <TabsContent value="funnel-metrics">
+            <TabsContent value="funnel-metrics" forceMount={prewarmTabs || undefined} className="data-[state=inactive]:hidden">
               <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
                 <FunnelMetricsTab
-                  fetchAdminData={fetchAdminData}
+                  fetchAdminData={tabFetchers.funnelMetrics}
                   funnelMetrics={metrics ? {
                     visitors: metrics.visitors_known
                       ? (metrics.has_reliable_ip_data ? metrics.unique_visitors : metrics.total_visitors)
@@ -3203,8 +4346,20 @@ export default function AdminAnalytics() {
                     step_funnel: metrics.step_funnel || [],
                     quiz_v2_empty: metrics.quiz_v2_empty,
                     quiz_v1_present: metrics.quiz_v1_present,
+                    // Qual formulário o período viu. É isto que separa "sem
+                    // dados" de "formulário curto, que não tem etapas".
+                    quiz_flow: metrics.quiz_flow,
+                    sessoes_form_curto: metrics.sessoes_form_curto,
+                    sessoes_outro_quiz: metrics.sessoes_outro_quiz,
                   } : null}
                 />
+              </Suspense>
+            </TabsContent>
+
+            {/* Metas Comercial Tab — forecast de 6 meses sobre o histórico real */}
+            <TabsContent value="commercial-goals" forceMount={prewarmTabs || undefined} className="data-[state=inactive]:hidden">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <CommercialGoalsTab fetchAdminData={tabFetchers.commercialGoals} />
               </Suspense>
             </TabsContent>
 
@@ -3212,6 +4367,34 @@ export default function AdminAnalytics() {
             <TabsContent value="reports">
               <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
                 <LeadReportsTab leads={leads} loading={leadsLoading} />
+              </Suspense>
+            </TabsContent>
+
+            {/* Direct (Instagram) Tab */}
+            <TabsContent value="direct">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <DirectTab />
+              </Suspense>
+            </TabsContent>
+
+            {/* WhatsApp Tab */}
+            <TabsContent value="whatsapp">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <WhatsAppTab />
+              </Suspense>
+            </TabsContent>
+
+            {/* Esteira do orgânico (17/10/2026): a mesma tela de /esteira, com o login do admin */}
+            <TabsContent value="esteira">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <EsteiraTab embutida />
+              </Suspense>
+            </TabsContent>
+
+            {/* Agentes Tab */}
+            <TabsContent value="agentes">
+              <Suspense fallback={<div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
+                <AgentesTab />
               </Suspense>
             </TabsContent>
 
@@ -3331,6 +4514,7 @@ export default function AdminAnalytics() {
             </DialogContent>
           </Dialog>
         </div>
+      </ShellAdmin>
       </div>
     </>
   );

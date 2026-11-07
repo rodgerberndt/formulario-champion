@@ -1,0 +1,5 @@
+<!-- Existe para que um arquivo inexistente em /assets responda 404 de verdade.
+     Sem ele o Pages trata o site como SPA e devolve o index.html com status 200;
+     como /assets/* leva cache immutable de 1 ano, o navegador guardava o HTML no
+     nome do .js e o painel quebrava até o nome do arquivo mudar (14/09/2026). -->
+<!doctype html><title>404</title>

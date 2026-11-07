@@ -1,0 +1,194 @@
+{
+  "consultado_em": "2026-09-10T21:54:48.188Z",
+  "path": "act_1592493385874898/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-07-01\",\"until\":\"2026-09-09\"}",
+    "level": "adset",
+    "fields": "adset_id,adset_name,campaign_name,spend,impressions,actions,account_currency",
+    "limit": "300"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 3,
+    "data": [
+      {
+        "adset_id": "120252040734030116",
+        "adset_name": "Luis-Nathan Case #2 – V3",
+        "campaign_name": "CA 05 - Validados - Leads",
+        "spend": "5.86",
+        "impressions": "425",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "5"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "3"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "3"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "3"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "108"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "108"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "3"
+          },
+          {
+            "action_type": "video_view",
+            "value": "100"
+          }
+        ],
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "date_stop": "2026-09-09"
+      },
+      {
+        "adset_id": "120252041120300116",
+        "adset_name": "Case Ighor #4",
+        "campaign_name": "CA 05 - Validados - Leads",
+        "spend": "3.88",
+        "impressions": "486",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "79"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "59"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "59"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "389"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "389"
+          },
+          {
+            "action_type": "video_view",
+            "value": "310"
+          }
+        ],
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "date_stop": "2026-09-09"
+      },
+      {
+        "adset_id": "120252041120310116",
+        "adset_name": "Case Ighor #2",
+        "campaign_name": "CA 05 - Validados - Leads",
+        "spend": "6.29",
+        "impressions": "470",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "14"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "7"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "164"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "164"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "149"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "1"
+          }
+        ],
+        "account_currency": "USD",
+        "date_start": "2026-07-01",
+        "date_stop": "2026-09-09"
+      }
+    ]
+  }
+}

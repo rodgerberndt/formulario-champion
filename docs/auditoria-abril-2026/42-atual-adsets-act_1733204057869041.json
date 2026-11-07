@@ -1,0 +1,1570 @@
+{
+  "consultado_em": "2026-09-10T21:51:24.377Z",
+  "path": "act_1733204057869041/adsets",
+  "params": {
+    "fields": "id,name,campaign_id,optimization_goal,bid_strategy,bid_amount,daily_budget,promoted_object,effective_status,attribution_spec",
+    "limit": "300"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 61,
+    "data": [
+      {
+        "id": "120254605219930054",
+        "name": "Case Caio rainha #4",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120254605219920054",
+        "name": "Case Caio rainha #3",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120254605219910054",
+        "name": "Case Caio rainha #2",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120254534758990054",
+        "name": "Case Caio rainha #1",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120254417309110054",
+        "name": "Luis-Nathan Case #2 - V2",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120254417309100054",
+        "name": "Luis-Nathan Case #2 - V4",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120254417309080054",
+        "name": "Luis-Nathan Case #2 - V5",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120254417309050054",
+        "name": "Luis-Nathan Case #2 - V1",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253841407460054",
+        "name": "Luis-nathan Case #1",
+        "campaign_id": "120253841407370054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253841407430054",
+        "name": "Luis-nathan Case #2",
+        "campaign_id": "120253841407370054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253841407400054",
+        "name": "Luis-nathan Case #3",
+        "campaign_id": "120253841407370054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253841407390054",
+        "name": "Luis-nathan Case #2 - C1",
+        "campaign_id": "120253841407370054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "700",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253841407340054",
+        "name": "Luis-nathan Case #2 - V3",
+        "campaign_id": "120253841407370054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253702643330054",
+        "name": "Luis-nathan Case #2 - C1",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "700",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253702643320054",
+        "name": "Luis-nathan Case #1",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253702643260054",
+        "name": "Luis-nathan Case #2",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "700",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253702643240054",
+        "name": "Luis-nathan Case #2 - V3",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "700",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253695740110054",
+        "name": "Luis-nathan Case #3",
+        "campaign_id": "120253695740100054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "OTHER",
+          "custom_event_str": "MQL",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253664793600054",
+        "name": "C5",
+        "campaign_id": "120253582381090054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "2000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253624990380054",
+        "name": "C4",
+        "campaign_id": "120253582381090054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253624867270054",
+        "name": "C3",
+        "campaign_id": "120253582381090054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253624622180054",
+        "name": "C2",
+        "campaign_id": "120253582381090054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253623846330054",
+        "name": "C1",
+        "campaign_id": "120253582381090054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253582433580054",
+        "name": "C1G2",
+        "campaign_id": "120253582381090054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253582433570054",
+        "name": "C1G3",
+        "campaign_id": "120253582381090054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253582381350054",
+        "name": "C1G1",
+        "campaign_id": "120253582381090054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253522383330054",
+        "name": "B2",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130620054",
+        "name": "B1H 3",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130610054",
+        "name": "B1H2",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130600054",
+        "name": "B1H1",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130590054",
+        "name": "B3H5",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130580054",
+        "name": "B3H2",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130570054",
+        "name": "B2H4",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130560054",
+        "name": "B2H3",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130550054",
+        "name": "B2H2",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130520054",
+        "name": "B2H1",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130400054",
+        "name": "B1H4",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130390054",
+        "name": "B4H2",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130380054",
+        "name": "B4H1",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130370054",
+        "name": "B3H3",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479130360054",
+        "name": "B3H1",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253479109940054",
+        "name": "B4H3",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120253392582620054",
+        "name": "(C01) - reaproveitado",
+        "campaign_id": "120253392582600054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "300",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252932304260054",
+        "name": "C16",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252930038480054",
+        "name": "C15",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252929579480054",
+        "name": "C14",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252928806850054",
+        "name": "C13",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252928760170054",
+        "name": "C12",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252883108020054",
+        "name": "C11",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252877176370054",
+        "name": "C10",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1500",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252877176360054",
+        "name": "C9",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252877176340054",
+        "name": "C8",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252877176320054",
+        "name": "C7",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252843116060054",
+        "name": "C6G1 - CF",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252843116050054",
+        "name": "C6G2 - CF",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252843116040054",
+        "name": "C6G3 - CF",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252584280310054",
+        "name": "C3 - CF",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "CAMPAIGN_PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252584280300054",
+        "name": "C5 - CF",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252584280290054",
+        "name": "C4 - CF",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252321812520054",
+        "name": "C2 - CF",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      },
+      {
+        "id": "120252321639790054",
+        "name": "C1 - CF",
+        "campaign_id": "120252321639770054",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+        "daily_budget": "1000",
+        "promoted_object": {
+          "pixel_id": "2171667863227042",
+          "custom_event_type": "PURCHASE",
+          "smart_pse_enabled": false
+        },
+        "effective_status": "PAUSED",
+        "attribution_spec": [
+          {
+            "event_type": "CLICK_THROUGH",
+            "window_days": 7
+          },
+          {
+            "event_type": "VIEW_THROUGH",
+            "window_days": 1
+          },
+          {
+            "event_type": "ENGAGED_VIDEO_VIEW",
+            "window_days": 1
+          }
+        ]
+      }
+    ]
+  }
+}

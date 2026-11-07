@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
 import { ShimmerText, KeywordGlow } from "./TextEffects";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useCopyNicho } from "@/config/nichoLanding";
 import {
   Sparkles,
   ClipboardList,
@@ -31,13 +32,6 @@ const esteiraSteps = [
 /* ────────────────────────────────────────────────────────── */
 /*  4-Pilares overview data                                   */
 /* ────────────────────────────────────────────────────────── */
-const fourPillars = [
-  { n: "01", title: "Plano de Ação Personalizado", icon: ClipboardList },
-  { n: "02", title: "Estratégia ANDRÔMEDA", icon: Brain },
-  { n: "03", title: "Volume: Esteira Semanal", icon: Layers },
-  { n: "04", title: "Comunicação", icon: MessagesSquare },
-];
-
 /* Hook cards (Pilar 2 – Andromeda) */
 const hookCards = [
   { id: 1, roas: "0.31", winner: false },
@@ -130,8 +124,36 @@ function CurvedArrow({ angle1, angle2, radius, isActive }: { angle1: number; ang
   );
 }
 
+/** Ícone de cada pilar, na ordem. O texto vem do nicho; o ícone não muda. */
+const ICONES_PILARES = [ClipboardList, Brain, Layers, MessagesSquare];
+
+/**
+ * Texto do nicho com trechos em negrito marcados por **assim**.
+ *
+ * O negrito é parte do argumento (é ele que diz onde está a virada da frase),
+ * então mora no texto, junto com a frase, e não numa regra do componente que
+ * quebraria assim que a frase mudasse de nicho.
+ */
+function Realce({ texto }: { texto: string }) {
+  return (
+    <>
+      {texto.split("**").map((parte, i) =>
+        i % 2 === 1 ? (
+          <span key={i} className="text-foreground font-semibold">
+            {parte}
+          </span>
+        ) : (
+          parte
+        ),
+      )}
+    </>
+  );
+}
+
 export function MetodoChampion() {
   const { ref, isVisible } = useReveal(0.1);
+  const { metodo } = useCopyNicho();
+  const fourPillars = metodo.pilares.map((p, i) => ({ ...p, icon: ICONES_PILARES[i] }));
   const mobileRef = useRef<HTMLDivElement>(null);
   const [activePillars] = useState(6);
   const isMobile = useIsMobile();
@@ -207,18 +229,16 @@ export function MetodoChampion() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-secondary/40 bg-secondary/[0.06] mb-5">
             <Sparkles className="w-3.5 h-3.5 text-secondary" />
             <span className="text-[11px] md:text-xs font-bold tracking-[0.2em] text-secondary uppercase">
-              Método Champion · 4 Pilares
+              {metodo.selo}
             </span>
           </div>
           <h2 className="text-foreground mb-3 max-w-3xl mx-auto">
-            <ShimmerText isVisible={isVisible}>
-              Como traduzimos o{" "}
-            </ShimmerText>
-            <KeywordGlow>&nbsp;ANDRÔMEDA</KeywordGlow>
-            <ShimmerText isVisible={isVisible}> em resultado.</ShimmerText>
+            <ShimmerText isVisible={isVisible}>{metodo.tituloInicio}</ShimmerText>
+            <KeywordGlow>{metodo.tituloDestaque}</KeywordGlow>
+            <ShimmerText isVisible={isVisible}>{metodo.tituloFim}</ShimmerText>
           </h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-            O novo motor de IA do Meta exige <span className="text-foreground font-semibold">mais formatos, ângulos e personas</span>. Nossa operação foi desenhada para alimentar exatamente isso.
+            <Realce texto={metodo.sub} />
           </p>
         </div>
 
@@ -227,9 +247,9 @@ export function MetodoChampion() {
           {/* Input: Meta IA Andromeda */}
           <div className="rounded-2xl p-6 md:p-7 border border-primary/40 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent text-center flex flex-col items-center justify-center min-h-[220px]">
             <Sparkles className="w-8 h-8 text-secondary mb-3" />
-            <p className="text-[10px] font-bold tracking-[0.2em] text-secondary/80 mb-1">META IA</p>
-            <p className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: "'Oswald', sans-serif" }}>&nbsp;ANDRÔMEDA</p>
-            <p className="text-xs text-muted-foreground">pede variedade em escala</p>
+            <p className="text-[10px] font-bold tracking-[0.2em] text-secondary/80 mb-1">{metodo.entradaRotulo}</p>
+            <p className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: "'Oswald', sans-serif" }}>{metodo.entradaNome}</p>
+            <p className="text-xs text-muted-foreground">{metodo.entradaDesc}</p>
           </div>
 
           {/* 4 pillars list */}
@@ -249,7 +269,7 @@ export function MetodoChampion() {
                 </div>
                 <div className="text-left">
                   <p className="text-[10px] font-bold tracking-[0.2em] text-secondary/70">PILAR {p.n}</p>
-                  <p className="text-sm md:text-base font-bold text-foreground">{p.title}</p>
+                  <p className="text-sm md:text-base font-bold text-foreground">{p.titulo}</p>
                 </div>
               </motion.a>
             ))}
@@ -257,56 +277,64 @@ export function MetodoChampion() {
 
           {/* Output: ROI */}
           <div className="rounded-2xl p-6 md:p-7 border border-secondary/40 bg-gradient-to-br from-secondary/15 via-secondary/5 to-transparent text-center flex flex-col items-center justify-center min-h-[220px]">
-            <p className="text-[10px] font-bold tracking-[0.2em] text-secondary/80 mb-2">OUTPUT</p>
-            <p className="text-4xl font-black text-secondary mb-2" style={{ fontFamily: "'Oswald', sans-serif" }}>ROI</p>
-            <p className="text-xs text-muted-foreground">escala previsível e<br />CPA controlado</p>
+            <p className="text-[10px] font-bold tracking-[0.2em] text-secondary/80 mb-2">{metodo.saidaRotulo}</p>
+            <p className="text-4xl font-black text-secondary mb-2" style={{ fontFamily: "'Oswald', sans-serif" }}>{metodo.saidaNome}</p>
+            <p className="text-xs text-muted-foreground whitespace-pre-line">{metodo.saidaDesc}</p>
           </div>
         </div>
 
         {/* ───────── PILAR 01 · PLANO DE AÇÃO PERSONALIZADO ───────── */}
-        <PillarBlock n="01" title="Plano de Ação Personalizado" icon={ClipboardList} subtitle="O mapa completo da sua operação antes de qualquer criativo sair">
+        <PillarBlock n="01" title={metodo.pilares[0].titulo} icon={ClipboardList} subtitle={metodo.pilares[0].subtitulo}>
           <div className="grid md:grid-cols-2 gap-5">
             <div className="gold-card">
               <Target className="w-5 h-5 text-secondary mb-2" />
-              <h4 className="text-base font-bold text-foreground mb-1.5">Mapa da oferta, produto e operação</h4>
+              <h4 className="text-base font-bold text-foreground mb-1.5">{metodo.pilar1.mapa.titulo}</h4>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Metas de faturamento, faturamento atual, personas, dores, desejos, para quem você vende e <span className="text-foreground font-semibold">como</span> vende. Sem isso, criativo é tiro no escuro.
+                <Realce texto={metodo.pilar1.mapa.desc} />
               </p>
             </div>
             <div className="gold-card">
               <Film className="w-5 h-5 text-secondary mb-2" />
-              <h4 className="text-base font-bold text-foreground mb-1.5">Briefing cirúrgico de criativos</h4>
+              <h4 className="text-base font-bold text-foreground mb-1.5">{metodo.pilar1.briefing.titulo}</h4>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                Classificamos cada criativo seu em 4 categorias antes de produzir um único frame novo:
+                {metodo.pilar1.briefing.desc}
               </p>
+              {/* A cor do check é a semântica da categoria (verde = escalando,
+                  vermelho = não performou), por isso ela fica aqui e não no
+                  texto do nicho. */}
               <ul className="space-y-1.5 text-xs text-foreground/80">
-                <li className="flex gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-green-500 mt-0.5 shrink-0" /> Validados que estão escalando</li>
-                <li className="flex gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-secondary mt-0.5 shrink-0" /> Saturados (precisam ser substituídos)</li>
-                <li className="flex gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-secondary mt-0.5 shrink-0" /> Venderam, mas não escalaram</li>
-                <li className="flex gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-destructive/80 mt-0.5 shrink-0" /> Não performaram (e por quê)</li>
+                {metodo.pilar1.categorias.map((cat, i) => (
+                  <li key={cat} className="flex gap-2">
+                    <CheckCircle2
+                      className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${
+                        i === 0 ? "text-green-500" : i === 3 ? "text-destructive/80" : "text-secondary"
+                      }`}
+                    />{" "}
+                    {cat}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
         </PillarBlock>
 
         {/* ───────── PILAR 02 · ESTRATÉGIA ANDRÔMEDA ───────── */}
-        <PillarBlock n="02" title="Estratégia ANDRÔMEDA" icon={Brain} subtitle="Mesmo corpo, múltiplas entradas: é isso que faz a Meta IA escalar.">
+        <PillarBlock n="02" title={metodo.pilares[1].titulo} icon={Brain} subtitle={metodo.pilares[1].subtitulo}>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
-            {[
-              { icon: Users, title: "Personas", desc: "Cada criativo é construído para uma fatia de público diferente. Mais personas = mais portas de entrada." },
-              { icon: Film, title: "Formatos", desc: "A mesma mensagem embalada de várias formas: UGC, VSL curta, depoimento, demonstração, captura." },
-              { icon: Target, title: "Ângulos", desc: "Formas diferentes de contar a mesma história para impactar públicos distintos no mesmo público." },
-            ].map((b) => (
-              <div key={b.title} className="gold-card">
-                <b.icon className="w-5 h-5 text-secondary mb-2" />
-                <h4 className="text-base font-bold text-foreground mb-1.5">{b.title}</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{b.desc}</p>
-              </div>
-            ))}
+            {metodo.pilar2.blocos.map((b, i) => {
+              const Icone = [Users, Film, Target][i];
+              return (
+                <div key={b.titulo} className="gold-card">
+                  <Icone className="w-5 h-5 text-secondary mb-2" />
+                  <h4 className="text-base font-bold text-foreground mb-1.5">{b.titulo}</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{b.desc}</p>
+                </div>
+              );
+            })}
           </div>
 
           <p className="text-center text-xs font-bold tracking-[0.2em] text-secondary/70 mb-4">
-            MESMO CORPO · 4 GANCHOS · 4 RESULTADOS
+            {metodo.pilar2.rotuloGanchos}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 pt-4">
             {hookCards.map((c) => (
@@ -314,12 +342,12 @@ export function MetodoChampion() {
             ))}
           </div>
           <p className="text-center text-sm md:text-base text-foreground/85 mt-6 max-w-2xl mx-auto">
-            Não é sobre fazer <span className="line-through opacity-60">mais</span> criativos. É sobre falar com mais <KeywordGlow>personas</KeywordGlow>, do jeito certo.
+            {metodo.pilar2.fechoInicio}<span className="line-through opacity-60">mais</span> criativos. É sobre falar com mais <KeywordGlow>{metodo.pilar2.fechoDestaque}</KeywordGlow>{metodo.pilar2.fechoFim}
           </p>
         </PillarBlock>
 
         {/* ───────── PILAR 03 · VOLUME · ESTEIRA SEMANAL ───────── */}
-        <PillarBlock n="03" title="Volume: Esteira Semanal" icon={Layers} subtitle="Um ciclo completo, toda semana. É assim que a oxigenação acontece.">
+        <PillarBlock n="03" title={metodo.pilares[2].titulo} icon={Layers} subtitle={metodo.pilares[2].subtitulo}>
           <div className={`reveal-up ${isVisible ? "visible" : ""}`} style={{ transitionDelay: "200ms" }}>
             {/* Esteira label */}
             <div className="flex items-center justify-center gap-3 mb-4">
@@ -423,30 +451,26 @@ export function MetodoChampion() {
                 })}
               </div>
               <p className="text-center text-sm md:text-base text-foreground/85 max-w-2xl mx-auto mt-6">
-                A cada ciclo, mais aprendizado, mais dados e mais{" "}
-                <KeywordGlow>assertividade</KeywordGlow> nos criativos seguintes.
+                {metodo.pilar3.fechoInicio}
+                <KeywordGlow>{metodo.pilar3.fechoDestaque}</KeywordGlow>{metodo.pilar3.fechoFim}
               </p>
             </div>
           </div>
         </PillarBlock>
 
         {/* ───────── PILAR 04 · COMUNICAÇÃO ───────── */}
-        <PillarBlock n="04" title="Comunicação" icon={MessagesSquare} subtitle="Você nunca fica no escuro. A operação inteira é transparente." last>
+        <PillarBlock n="04" title={metodo.pilares[3].titulo} icon={MessagesSquare} subtitle={metodo.pilares[3].subtitulo} last>
           <div className="grid md:grid-cols-2 gap-5">
-            <div className="gold-card">
-              <PhoneCall className="w-5 h-5 text-secondary mb-2" />
-              <h4 className="text-base font-bold text-foreground mb-1.5">Calls de checkpoint a cada 2 semanas</h4>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Onboarding na 1ª semana e checkpoint nas semanas 3, 5 e 7. Cada ciclo: mais aprendizado, mais refinamento, mais assertividade.
-              </p>
-            </div>
-            <div className="gold-card">
-              <MessagesSquare className="w-5 h-5 text-secondary mb-2" />
-              <h4 className="text-base font-bold text-foreground mb-1.5">Acompanhamento direto na operação</h4>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Canal direto com a equipe responsável. Você sabe o que está acontecendo, o porquê, e o próximo passo — sempre.
-              </p>
-            </div>
+            {metodo.pilar4.cards.map((card, i) => {
+              const Icone = [PhoneCall, MessagesSquare][i];
+              return (
+                <div key={card.titulo} className="gold-card">
+                  <Icone className="w-5 h-5 text-secondary mb-2" />
+                  <h4 className="text-base font-bold text-foreground mb-1.5">{card.titulo}</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{card.desc}</p>
+                </div>
+              );
+            })}
           </div>
         </PillarBlock>
       </div>

@@ -27,10 +27,16 @@ export interface HeadlineVariant {
 
 export const HEADLINE_VARIANTS: HeadlineVariant[] = [
   {
+    // A raiz serve a HD3, vencedora do teste de headline encerrado em 21/08/2026
+    // (única venda e as três reuniões realizadas). Em 31/08 ela foi trocada por
+    // engano para a HD4: "a vencedora foi a 5" se referia à SH5 do teste de
+    // subheadline. Voltou para a HD3 em 17/09/2026, a mesma que os anúncios usam.
+    // Os slugs /HD0 a /HD4 seguem no ar: há anúncios apontando para eles.
     path: "/",
-    label: "HD original",
-    lead: "APLIQUE CRIATIVOS ANDRÔMEDA NA SUA OPERAÇÃO E TENHA ATÉ ",
-    highlight: "3X MAIS LUCRO.",
+    label: "HD vencedora (HD3 · 3MI em 1 mês)",
+    lead: "Como a Champion gerou ",
+    highlight: "+ de 3MI em faturamento",
+    tail: " para nossos clientes em apenas 1 mês",
   },
   {
     // Mesma headline da raiz, com slug próprio. Existe para o controle do teste

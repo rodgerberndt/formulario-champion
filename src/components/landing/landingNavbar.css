@@ -1,0 +1,196 @@
+/*
+ * Header fixo da landing (LandingNavbar).
+ *
+ * Retângulo de vidro centralizado. O vidro (blur + navy translúcido) mora numa
+ * camada própria que só aparece depois de rolar: no topo não há backdrop-filter
+ * nenhum, e o blur nunca é animado (só a opacidade da camada), porque o
+ * navegador do Instagram engasga com blur em transição contínua.
+ */
+
+.lnav-shell {
+  position: relative;
+  border-radius: 18px;
+  border: 1px solid hsl(0 0% 100% / 0.06);
+  background: hsl(235 80% 4% / 0.18);
+  transition: border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lnav-glass {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: hsl(236 70% 6% / 0.72);
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lnav-scrolled .lnav-shell {
+  border-color: hsl(0 0% 100% / 0.12);
+  background: transparent;
+  box-shadow: 0 10px 30px -12px hsl(235 90% 2% / 0.7), inset 0 1px 0 hsl(0 0% 100% / 0.05);
+}
+
+.lnav-scrolled .lnav-glass,
+.lnav-open .lnav-glass {
+  opacity: 1;
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+}
+
+/* Painel do mobile: mesmo vidro, um pouco mais opaco para ler os links. */
+.lnav-panel {
+  border-radius: 18px;
+  border: 1px solid hsl(0 0% 100% / 0.12);
+  background: hsl(236 70% 6% / 0.82);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: 0 18px 40px -16px hsl(235 90% 2% / 0.8);
+  transform-origin: top center;
+  animation: lnav-panel-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes lnav-panel-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Links ----------
+   O marcador do link ativo era um ponto dourado. Virou uma hairline de 1 px que
+   DESENHA da esquerda para a direita: no hover ela cresce, e no item ativo ela
+   fica. Mesma linguagem das hairlines do resto da página. */
+.lnav-link {
+  position: relative;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lnav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 1px;
+  background: hsl(var(--secondary));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lnav-link[aria-current="true"] { color: hsl(var(--secondary)); }
+.lnav-link[aria-current="true"]::after { transform: scaleX(1); }
+.lnav-link:focus-visible,
+.lnav-toggle:focus-visible,
+.lnav-panel-link:focus-visible {
+  outline: 2px solid hsl(var(--secondary) / 0.8);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.lnav-panel-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 4px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: hsl(var(--foreground) / 0.85);
+  border-bottom: 1px solid hsl(0 0% 100% / 0.07);
+}
+.lnav-panel-link[aria-current="true"] { color: hsl(var(--secondary)); }
+
+/* O CTA do header agora é o <Botao variante="secundario" tamanho="sm">
+   (src/components/landing/botao.css). As regras .lnav-cta* saíram junto: o
+   flip, a seta e o foco vêm do sistema de botões da página. */
+
+@media (hover: hover) {
+  .lnav-link:hover { color: hsl(var(--foreground)); }
+  .lnav-link:hover::after { transform: scaleX(1); }
+  .lnav-link[aria-current="true"]:hover { color: hsl(var(--secondary)); }
+  .lnav-panel-link:hover { color: hsl(var(--foreground)); }
+}
+
+/* ---------- Logo: brilho dourado + float leve ---------- */
+.lnav-logo {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  animation: lnav-logo-float 5.5s ease-in-out infinite;
+  will-change: transform;
+}
+.lnav-logo img {
+  display: block;
+  filter: drop-shadow(0 0 6px hsl(42 90% 58% / 0.35));
+}
+/* Halo que respira atrás do emblema (só opacidade: roda no compositor). */
+.lnav-logo::before {
+  content: "";
+  position: absolute;
+  inset: -35%;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, hsl(42 90% 58% / 0.28), transparent 70%);
+  opacity: 0.35;
+  animation: lnav-logo-breathe 5.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+/* Faixa de luz que passa sobre o dourado de vez em quando, recortada pelo
+   próprio desenho do logo (mask), então não pinta o fundo. */
+.lnav-logo-shine {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask: url("/champion-logo-transparente.webp") center / contain no-repeat;
+  mask: url("/champion-logo-transparente.webp") center / contain no-repeat;
+}
+.lnav-logo-shine::after {
+  content: "";
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  left: 0;
+  width: 60%;
+  background: linear-gradient(105deg, transparent 20%, hsl(48 100% 92% / 0.85) 50%, transparent 80%);
+  transform: translateX(-160%);
+  animation: lnav-logo-shine 7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: 1.2s;
+}
+@keyframes lnav-logo-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-1.5px); }
+}
+@keyframes lnav-logo-breathe {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 0.75; }
+}
+@keyframes lnav-logo-shine {
+  0%   { transform: translateX(-160%); }
+  18%  { transform: translateX(260%); }
+  100% { transform: translateX(260%); }
+}
+
+/* No celular o emblema fica parado. As três animações do logo (flutuar, halo
+   que respira e a faixa de luz recortada por `mask`) são contínuas e a do
+   `mask` repinta uma camada a cada quadro: no navegador do Instagram isso é
+   bateria e INP em troca de um detalhe que ninguém vê. Ficam no desktop. */
+@media (max-width: 767px) {
+  .lnav-logo,
+  .lnav-logo::before { animation: none; }
+  .lnav-logo-shine { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lnav-logo,
+  .lnav-logo::before,
+  .lnav-logo-shine::after,
+  .lnav-panel { animation: none; }
+  .lnav-logo-shine { display: none; }
+  .lnav-shell, .lnav-glass, .lnav-link, .lnav-link::after { transition: none; }
+}

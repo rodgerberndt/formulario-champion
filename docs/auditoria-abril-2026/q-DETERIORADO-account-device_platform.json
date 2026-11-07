@@ -1,0 +1,303 @@
+{
+  "consultado_em": "2026-09-11T00:58:07.195Z",
+  "path": "act_1965417164121284/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-08-30\",\"until\":\"2026-09-10\"}",
+    "level": "account",
+    "fields": "campaign_name,adset_id,adset_name,ad_id,ad_name,spend,impressions,clicks,actions,date_start",
+    "limit": "500",
+    "breakdowns": "device_platform"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 4,
+    "data": [
+      {
+        "spend": "13.02",
+        "impressions": "801",
+        "clicks": "14",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "10"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "8"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "8"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "222"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "222"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "211"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10",
+        "device_platform": "desktop"
+      },
+      {
+        "spend": "1354.38",
+        "impressions": "82140",
+        "clicks": "2362",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "70"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "2"
+          },
+          {
+            "action_type": "link_click",
+            "value": "1821"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "70"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "44"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "70"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "199"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "12"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "1328"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "67"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "1328"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "19"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "16"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "28909"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "285"
+          },
+          {
+            "action_type": "comment",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "2"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "28909"
+          },
+          {
+            "action_type": "purchase",
+            "value": "2"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "70"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "303"
+          },
+          {
+            "action_type": "post_uncomment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "12"
+          },
+          {
+            "action_type": "post",
+            "value": "41"
+          },
+          {
+            "action_type": "onsite_conversion.post_unsave",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "70"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "34"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "12"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "8"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "33"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "183"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "7"
+          },
+          {
+            "action_type": "lead",
+            "value": "67"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "22"
+          },
+          {
+            "action_type": "video_view",
+            "value": "26803"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "67"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "67"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10",
+        "device_platform": "mobile_app"
+      },
+      {
+        "spend": "0.7",
+        "impressions": "88",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "20"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "20"
+          },
+          {
+            "action_type": "video_view",
+            "value": "20"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10",
+        "device_platform": "mobile_web"
+      },
+      {
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "actions": [
+          {
+            "action_type": "landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1"
+          }
+        ],
+        "date_start": "2026-08-30",
+        "date_stop": "2026-09-10",
+        "device_platform": "unknown"
+      }
+    ]
+  }
+}

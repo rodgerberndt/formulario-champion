@@ -1,0 +1,52 @@
+{
+  "consultado_em": "2026-09-10T23:42:32.553Z",
+  "path": "act_1592493385874898/ads",
+  "params": {
+    "fields": "id,name,adset_id,campaign_id,effective_status,creative{id,name,url_tags,object_story_spec{link_data{link,child_attachments}},asset_feed_spec{link_urls}}",
+    "limit": "300"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 3,
+    "data": [
+      {
+        "id": "120252041120320116",
+        "name": "Case Ighor #2",
+        "adset_id": "120252041120310116",
+        "campaign_id": "120252040734020116",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "2088614528418174",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-09-c9f1fc27db2e30b62be77e2102675686",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}&campaign_id={{campaign.id}}&adset_id={{adset.id}}&ad_id={{ad.id}}"
+        }
+      },
+      {
+        "id": "120252040734010116",
+        "name": "Luis-Nathan Case #2 – V3",
+        "adset_id": "120252040734030116",
+        "campaign_id": "120252040734020116",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "965531359163204",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-09-00552b7c4b52d450385e12687bf24964",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}&campaign_id={{campaign.id}}&adset_id={{adset.id}}&ad_id={{ad.id}}"
+        }
+      },
+      {
+        "id": "120252041120330116",
+        "name": "Case Ighor #4",
+        "adset_id": "120252041120300116",
+        "campaign_id": "120252040734020116",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "915776631606500",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-09-71c727f45aa3e1e0f987825862ced1fb",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}&campaign_id={{campaign.id}}&adset_id={{adset.id}}&ad_id={{ad.id}}"
+        }
+      }
+    ]
+  }
+}

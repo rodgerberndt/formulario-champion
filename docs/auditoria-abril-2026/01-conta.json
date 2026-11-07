@@ -1,0 +1,66 @@
+{
+  "consultado_em": "2026-09-10T21:41:50.118Z",
+  "path": "act_1107952820265255",
+  "params": {
+    "fields": "id,account_id,name,currency,account_status,timezone_name,timezone_offset_hours_utc,created_time,amount_spent,spend_cap,business_name,business,disable_reason,funding_source_details"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "objeto": {
+      "id": "act_1107952820265255",
+      "account_id": "1107952820265255",
+      "name": "CA03 BM NOVA",
+      "currency": "BRL",
+      "account_status": 3,
+      "timezone_name": "America/Sao_Paulo",
+      "timezone_offset_hours_utc": -3,
+      "created_time": "2024-05-17T18:15:36-0300",
+      "amount_spent": "12858665",
+      "spend_cap": "0",
+      "business_name": "CHAMPION ADVERTISING STUDIO LTDA",
+      "business": {
+        "id": "929214544923703",
+        "name": "Ozell Hych"
+      },
+      "disable_reason": 0,
+      "funding_source_details": {
+        "id": "9216234285157700",
+        "coupons": [
+          {
+            "amount": 0,
+            "currency": "BRL",
+            "display_amount": "R$0,00 BRL",
+            "expiration": "2026-11-07T08:31:09+0000",
+            "start_date": "2026-05-08T20:31:09+0000",
+            "coupon_id": "27054203120934210",
+            "original_amount": 116,
+            "original_display_amount": "R$1,16 BRL"
+          },
+          {
+            "amount": 0,
+            "currency": "BRL",
+            "display_amount": "R$0,00 BRL",
+            "expiration": "2026-11-27T08:05:26+0000",
+            "start_date": "2026-05-28T20:05:26+0000",
+            "coupon_id": "27751620231192493",
+            "original_amount": 23299,
+            "original_display_amount": "R$232,99 BRL"
+          },
+          {
+            "amount": 0,
+            "currency": "BRL",
+            "display_amount": "R$0,00 BRL",
+            "expiration": "2026-12-11T06:05:44+0000",
+            "start_date": "2026-06-11T18:05:44+0000",
+            "coupon_id": "27514446594909858",
+            "original_amount": 134,
+            "original_display_amount": "R$1,34 BRL"
+          }
+        ],
+        "display_string": "VISA *9890",
+        "type": 1
+      }
+    }
+  }
+}

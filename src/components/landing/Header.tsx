@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { caminhoDoQuiz } from "@/config/quizVariants";
 
 export function Header() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <Button
             size="sm"
-            onClick={() => navigate("/quiz")}
+            onClick={() => navigate(caminhoDoQuiz())}
             className="text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/25 transition-all duration-200"
           >
             PREENCHER APLICAÇÃO

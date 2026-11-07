@@ -1,0 +1,1081 @@
+{
+  "consultado_em": "2026-09-11T00:03:15.918Z",
+  "path": "act_1733204057869041/ads",
+  "params": {
+    "fields": "id,name,adset_id,campaign_id,status,effective_status,created_time,updated_time,creative{id,name,url_tags,effective_object_story_id,object_type}",
+    "limit": "300"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 63,
+    "data": [
+      {
+        "id": "120254605219900054",
+        "name": "Case Caio Rainha #4",
+        "adset_id": "120254605219930054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-08-12T10:56:01-0300",
+        "updated_time": "2026-08-14T07:29:12-0300",
+        "creative": {
+          "id": "1601312848315627",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-14-53bf14db93b1da9138184a8a934ebc10",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122179563194624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120254605219950054",
+        "name": "Case Caio Rainha #2",
+        "adset_id": "120254605219910054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-08-12T10:56:12-0300",
+        "updated_time": "2026-08-12T19:38:43-0300",
+        "creative": {
+          "id": "1530143838417137",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-12-dcda3ac620cfd00b13a5e1c11bdeefe5",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122179453796624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120254605219960054",
+        "name": "Case Caio Rainha #3",
+        "adset_id": "120254605219920054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-08-12T10:55:58-0300",
+        "updated_time": "2026-08-12T11:01:14-0300",
+        "creative": {
+          "id": "1586940976361176",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-12-570ac1582cccbb36a6f21bd95d3850d3",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122179427258624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120254534758980054",
+        "name": "Case Caio Rainha #1",
+        "adset_id": "120254534758990054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-08-09T14:29:34-0300",
+        "updated_time": "2026-08-11T21:28:10-0300",
+        "creative": {
+          "id": "1345201227776441",
+          "name": "Anúncio de um post da Página 2026-08-11-634bfee45f6bd85442c49019a2a95c5d",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122179384940624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120254417309120054",
+        "name": "Ad",
+        "adset_id": "120254417309100054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-08-04T19:47:58-0300",
+        "updated_time": "2026-08-04T19:57:50-0300",
+        "creative": {
+          "id": "1077697528270801",
+          "name": "Anúncio de um post da Página 2026-08-04-7d974bad3f7101b2b87392634562120a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122178854474624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120254417309070054",
+        "name": "Ad",
+        "adset_id": "120254417309050054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-08-04T19:47:58-0300",
+        "updated_time": "2026-08-04T19:52:18-0300",
+        "creative": {
+          "id": "2078722956328175",
+          "name": "Anúncio de um post da Página 2026-08-04-f5d370f951a933d134721f9a34ec40ec",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122178854468624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120254417309060054",
+        "name": "Ad",
+        "adset_id": "120254417309080054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-08-04T19:47:52-0300",
+        "updated_time": "2026-08-04T19:52:17-0300",
+        "creative": {
+          "id": "1000151883070873",
+          "name": "Anúncio de um post da Página 2026-08-04-1c53f63dd195710ba4b41c0c7519b201",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122178854444624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120254417309090054",
+        "name": "Ad",
+        "adset_id": "120254417309110054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-08-04T19:47:52-0300",
+        "updated_time": "2026-08-04T19:52:07-0300",
+        "creative": {
+          "id": "1723293585659197",
+          "name": "Anúncio de um post da Página 2026-08-04-889770487bbde8dc1a47a9495c4232af",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122178854450624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253841407350054",
+        "name": "Ad",
+        "adset_id": "120253841407400054",
+        "campaign_id": "120253841407370054",
+        "status": "PAUSED",
+        "effective_status": "PAUSED",
+        "created_time": "2026-07-13T11:18:29-0300",
+        "updated_time": "2026-08-01T22:36:15-0300",
+        "creative": {
+          "id": "1540988557036983",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-07-27-e74d99330a6a3cbf4c8b09fb7c2a5ac9",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122178244454624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253702643290054",
+        "name": "Ad",
+        "adset_id": "120253702643240054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-08T19:26:04-0300",
+        "updated_time": "2026-07-27T15:39:21-0300",
+        "creative": {
+          "id": "1328792392752112",
+          "name": "Anúncio de um post da Página 2026-07-27-0e9b79a0473be039c287834a755fe5e8",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122178248060624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253841407360054",
+        "name": "Ad — Cópia",
+        "adset_id": "120253841407390054",
+        "campaign_id": "120253841407370054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-13T11:18:24-0300",
+        "updated_time": "2026-07-27T11:17:43-0300",
+        "creative": {
+          "id": "2213253512864733",
+          "name": "Anúncio de um post da Página 2026-07-27-df9f0c45d6677e2cd1a2ba9dda1a7fab",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122178244442624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253841407330054",
+        "name": "AD",
+        "adset_id": "120253841407460054",
+        "campaign_id": "120253841407370054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-13T11:18:29-0300",
+        "updated_time": "2026-07-27T11:17:41-0300",
+        "creative": {
+          "id": "1719270625984854",
+          "name": "Tenha a maior Assessoria de Criativos do Brasil aplicando criativos Andrômeda na sua operação.\n\nCli 2026-07-27-b1d7d042e4167770623b20b3c8f337ed",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122178244436624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253841407380054",
+        "name": "Ad",
+        "adset_id": "120253841407430054",
+        "campaign_id": "120253841407370054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-13T11:18:23-0300",
+        "updated_time": "2026-07-27T11:17:36-0300",
+        "creative": {
+          "id": "1032313726178270",
+          "name": "Anúncio de um post da Página 2026-07-27-8428b71fb63982035dd1e46c7a6ef17a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122178244472624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253841407420054",
+        "name": "Ad — Cópia — Cópia",
+        "adset_id": "120253841407390054",
+        "campaign_id": "120253841407370054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-13T11:18:24-0300",
+        "updated_time": "2026-07-27T11:12:31-0300",
+        "creative": {
+          "id": "1066671802562912",
+          "name": "Anúncio de um post da Página 2026-07-27-ad9a3a6e0605a9bafee4fd2f92a1452e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122178244478624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253841407410054",
+        "name": "Ad",
+        "adset_id": "120253841407340054",
+        "campaign_id": "120253841407370054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-13T11:18:35-0300",
+        "updated_time": "2026-07-13T11:20:34-0300",
+        "creative": {
+          "id": "3476710949159501",
+          "name": "Anúncio de um post da Página 2026-07-13-4339e15436e60e2a45ae64fc04744c3c",
+          "effective_object_story_id": "516497034872440_122177176952624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253770210790054",
+        "name": "Ad — Cópia — Cópia",
+        "adset_id": "120253702643330054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "DISAPPROVED",
+        "created_time": "2026-07-10T14:32:00-0300",
+        "updated_time": "2026-07-10T14:36:32-0300",
+        "creative": {
+          "id": "1509395380241142",
+          "name": "Anúncio de um post da Página 2026-07-09-1b832141b1e142fda84d17f0297789cb",
+          "effective_object_story_id": "516497034872440_122176848056624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253732835920054",
+        "name": "Ad",
+        "adset_id": "120253695740110054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "DISAPPROVED",
+        "created_time": "2026-07-09T13:40:51-0300",
+        "updated_time": "2026-07-09T13:53:52-0300",
+        "creative": {
+          "id": "2531576723961239",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-07-09-fa963b27aea9cf396f6bcfe21192b732",
+          "effective_object_story_id": "516497034872440_122176856774624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253732902850054",
+        "name": "AD",
+        "adset_id": "120253702643320054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "DISAPPROVED",
+        "created_time": "2026-07-09T13:42:54-0300",
+        "updated_time": "2026-07-09T13:45:26-0300",
+        "creative": {
+          "id": "1030354362722949",
+          "name": "Tenha a maior Assessoria de Criativos do Brasil aplicando criativos Andrômeda na sua operação.\n\nCli 2026-07-09-c119961fdc5fbdb9fe06e59387ea4104",
+          "effective_object_story_id": "516497034872440_122176856336624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253728646220054",
+        "name": "Ad — Cópia",
+        "adset_id": "120253702643330054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-09T11:26:25-0300",
+        "updated_time": "2026-07-09T11:28:22-0300",
+        "creative": {
+          "id": "1509395380241142",
+          "name": "Anúncio de um post da Página 2026-07-09-1b832141b1e142fda84d17f0297789cb",
+          "effective_object_story_id": "516497034872440_122176848056624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253702643280054",
+        "name": "Ad",
+        "adset_id": "120253702643260054",
+        "campaign_id": "120253695740100054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-08T19:26:04-0300",
+        "updated_time": "2026-07-08T19:29:20-0300",
+        "creative": {
+          "id": "1988061875181633",
+          "name": "Anúncio de um post da Página 2026-07-08-5710469d9f3b3f92da87e635b817caf0",
+          "effective_object_story_id": "516497034872440_122176798586624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253664793590054",
+        "name": "BH",
+        "adset_id": "120253664793600054",
+        "campaign_id": "120253582381090054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-07T16:14:16-0300",
+        "updated_time": "2026-07-07T16:21:28-0300",
+        "creative": {
+          "id": "1765094011520038",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-07-a0bcdfae2928b773e3adfdaa7f4ac8bc",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176688642624529",
+          "object_type": "SHARE"
+        }
+      },
+      {
+        "id": "120253624867260054",
+        "name": "BH",
+        "adset_id": "120253624867270054",
+        "campaign_id": "120253582381090054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-06T14:49:40-0300",
+        "updated_time": "2026-07-06T21:05:32-0300",
+        "creative": {
+          "id": "1031877192684413",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-06-b9559ac199d2a4c22e50351655c38430",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176634624624529",
+          "object_type": "SHARE"
+        }
+      },
+      {
+        "id": "120253624990390054",
+        "name": "BH",
+        "adset_id": "120253624990380054",
+        "campaign_id": "120253582381090054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-06T14:58:40-0300",
+        "updated_time": "2026-07-06T21:03:48-0300",
+        "creative": {
+          "id": "1343435003878556",
+          "name": "{{product.name}} 2026-07-06-9c52f740b84d499084f3bc2efac56c9b",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176634594624529",
+          "object_type": "SHARE"
+        }
+      },
+      {
+        "id": "120253624622190054",
+        "name": "BH",
+        "adset_id": "120253624622180054",
+        "campaign_id": "120253582381090054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-06T14:25:22-0300",
+        "updated_time": "2026-07-06T14:29:56-0300",
+        "creative": {
+          "id": "1720255062432450",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-06-b07c03a57b6e1352d6112872706b862a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176614338624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253623846320054",
+        "name": "BH",
+        "adset_id": "120253623846330054",
+        "campaign_id": "120253582381090054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-06T13:58:52-0300",
+        "updated_time": "2026-07-06T14:04:09-0300",
+        "creative": {
+          "id": "1708405807146830",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-06-e8d225e9cf3bdd88a8b05081f589691c",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176612802624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253582381320054",
+        "name": "BH",
+        "adset_id": "120253582381350054",
+        "campaign_id": "120253582381090054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-04T22:00:14-0300",
+        "updated_time": "2026-07-04T22:10:17-0300",
+        "creative": {
+          "id": "1362927959311442",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-04-819fb6be375b05cef5504b985270cb2b",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176444508624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253582433590054",
+        "name": "BH",
+        "adset_id": "120253582433570054",
+        "campaign_id": "120253582381090054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-04T22:00:19-0300",
+        "updated_time": "2026-07-04T22:05:45-0300",
+        "creative": {
+          "id": "1392029366088885",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-04-094ee41534269d2a3051e198db25a129",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176444556624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253582433560054",
+        "name": "BH",
+        "adset_id": "120253582433580054",
+        "campaign_id": "120253582381090054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-04T22:00:14-0300",
+        "updated_time": "2026-07-04T22:04:51-0300",
+        "creative": {
+          "id": "2254502321961330",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-04-f01e87de494d0c5da1a84fa06232e5c5",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176444496624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253522383340054",
+        "name": "BH",
+        "adset_id": "120253522383330054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-02T16:57:57-0300",
+        "updated_time": "2026-07-02T17:02:30-0300",
+        "creative": {
+          "id": "3606046402896071",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-02-6984c896830fae14137618abb27f6e9b",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176271630624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253392582610054",
+        "name": "C01",
+        "adset_id": "120253392582620054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "DISAPPROVED",
+        "created_time": "2026-06-29T22:11:40-0300",
+        "updated_time": "2026-07-01T20:04:15-0300",
+        "creative": {
+          "id": "1538253547974790",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-d1bc6c39ef2ca69c066d2d3597a3b25c",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176188788624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130450054",
+        "name": "BH",
+        "adset_id": "120253479130380054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-01T14:38:24-0300",
+        "updated_time": "2026-07-01T14:52:39-0300",
+        "creative": {
+          "id": "4386059501609752",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-538d43c150178d525c9b6c3cd9da2c0f",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172162624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130500054",
+        "name": "BH",
+        "adset_id": "120253479130370054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-01T14:38:24-0300",
+        "updated_time": "2026-07-01T14:51:33-0300",
+        "creative": {
+          "id": "1688442322466139",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-71bea2089ea88adc2b5a4c844cfc0c02",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172168624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130410054",
+        "name": "BH",
+        "adset_id": "120253479130520054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-01T14:38:20-0300",
+        "updated_time": "2026-07-01T14:51:30-0300",
+        "creative": {
+          "id": "1582025720195973",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-93b79706f22a15c458bf758c52ae6730",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172126624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130540054",
+        "name": "BH",
+        "adset_id": "120253479130620054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-01T14:38:10-0300",
+        "updated_time": "2026-07-01T14:51:24-0300",
+        "creative": {
+          "id": "1018907024447145",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-149af385221e80b8cdf0c92dd8078f04",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172072624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130350054",
+        "name": "BH",
+        "adset_id": "120253479130570054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-01T14:37:59-0300",
+        "updated_time": "2026-07-01T14:47:10-0300",
+        "creative": {
+          "id": "2472909159874685",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-42e96a15bbbd114a469395e8fcc54aed",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176171988624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130470054",
+        "name": "BH",
+        "adset_id": "120253479130580054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-01T14:38:15-0300",
+        "updated_time": "2026-07-01T14:47:09-0300",
+        "creative": {
+          "id": "2099161054349402",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-0e1127808849155f929fcc6cfda378a6",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172102624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130430054",
+        "name": "BH",
+        "adset_id": "120253479130550054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-01T14:38:20-0300",
+        "updated_time": "2026-07-01T14:46:48-0300",
+        "creative": {
+          "id": "759020197294194",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-255d4418058d7e2f6a6908ba39439ce2",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172138624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130510054",
+        "name": "BH",
+        "adset_id": "120253479130360054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-01T14:38:29-0300",
+        "updated_time": "2026-07-01T14:46:41-0300",
+        "creative": {
+          "id": "1402852115061539",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-bfd28067d0d39aab706c98888351ada1",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172258624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130460054",
+        "name": "BH",
+        "adset_id": "120253479130400054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-01T14:38:04-0300",
+        "updated_time": "2026-07-01T14:46:22-0300",
+        "creative": {
+          "id": "1064617632658192",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-baff750adba43a5c2dfad560cad996af",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172024624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130490054",
+        "name": "BH",
+        "adset_id": "120253479130600054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-01T14:38:29-0300",
+        "updated_time": "2026-07-01T14:46:16-0300",
+        "creative": {
+          "id": "1692464505307460",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-a69b3f27279d0425310439df7c30542f",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172234624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130420054",
+        "name": "BH",
+        "adset_id": "120253479130560054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-01T14:38:04-0300",
+        "updated_time": "2026-07-01T14:45:43-0300",
+        "creative": {
+          "id": "1002722239329896",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-ff1aea23eaa78ff9eb9d37334b218da1",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172012624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130440054",
+        "name": "BH",
+        "adset_id": "120253479130590054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-01T14:37:59-0300",
+        "updated_time": "2026-07-01T14:45:40-0300",
+        "creative": {
+          "id": "1348516330747518",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-09b820a0ce3f724e62e4338e0454159d",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176171982624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130480054",
+        "name": "BH",
+        "adset_id": "120253479130390054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-01T14:38:10-0300",
+        "updated_time": "2026-07-01T14:45:19-0300",
+        "creative": {
+          "id": "2924739367875680",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-1abf27aa4d74726d1cea3e563fdb6966",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172060624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479130530054",
+        "name": "BH",
+        "adset_id": "120253479130610054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-07-01T14:38:35-0300",
+        "updated_time": "2026-07-01T14:45:17-0300",
+        "creative": {
+          "id": "857403130422290",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-8ae391f9965deaac0ae9484480c1d1b6",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172288624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120253479109950054",
+        "name": "BH",
+        "adset_id": "120253479109940054",
+        "campaign_id": "120253392582600054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-07-01T14:38:15-0300",
+        "updated_time": "2026-07-01T14:45:07-0300",
+        "creative": {
+          "id": "863367173115399",
+          "name": "Descubra porque seus criativos vendem no teste mas não escalam, através dessa ferramenta. 2026-07-01-b77338dc122ab22120973d8e1beb65cf",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122176172096624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252932304270054",
+        "name": "C16",
+        "adset_id": "120252932304260054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-06-24T09:57:08-0300",
+        "updated_time": "2026-06-24T10:03:13-0300",
+        "creative": {
+          "id": "1909907439547536",
+          "name": "Treinamento Criativos Andrômeda 2026-06-24-6abe39c32100ea0696fddc8070f58605",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175615188624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252928760180054",
+        "name": "C12",
+        "adset_id": "120252928760170054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-06-23T14:06:05-0300",
+        "updated_time": "2026-06-24T10:00:25-0300",
+        "creative": {
+          "id": "2036927146909671",
+          "name": "Treinamento Criativos Andrômeda 2026-06-24-3a404d81241279135918dc27b4e16478",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175615152624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252843116090054",
+        "name": "C6G2 - CF",
+        "adset_id": "120252843116050054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-06-22T16:30:55-0300",
+        "updated_time": "2026-06-24T10:00:22-0300",
+        "creative": {
+          "id": "4386925231577358",
+          "name": "Treinamento Criativos Andrômeda 2026-06-24-d3262b39b769c5ca152d3420e8e9893c",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175615158624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252584280340054",
+        "name": "C3 - CF",
+        "adset_id": "120252584280310054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-06-19T15:22:19-0300",
+        "updated_time": "2026-06-24T10:00:17-0300",
+        "creative": {
+          "id": "4915488298736565",
+          "name": "Treinamento Criativos Andrômeda 2026-06-24-560d9ab39d613776c519950fd090b92e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175615176624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252930038490054",
+        "name": "C15",
+        "adset_id": "120252930038480054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-06-23T14:34:23-0300",
+        "updated_time": "2026-06-23T14:38:39-0300",
+        "creative": {
+          "id": "2511694332633045",
+          "name": "Treinamento Criativos Andrômeda 2026-06-23-b8d614094dcbe128afa2791d90a6fea0",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175561158624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252929579490054",
+        "name": "C14",
+        "adset_id": "120252929579480054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-06-23T14:22:46-0300",
+        "updated_time": "2026-06-23T14:27:00-0300",
+        "creative": {
+          "id": "1584415056685998",
+          "name": "Treinamento Criativos Andrômeda 2026-06-23-254a280930ef8659fe8ad41615396047",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175560624624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252928806840054",
+        "name": "C13",
+        "adset_id": "120252928806850054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-06-23T14:06:05-0300",
+        "updated_time": "2026-06-23T14:16:11-0300",
+        "creative": {
+          "id": "1353820203388249",
+          "name": "Treinamento Criativos Andrômeda 2026-06-23-7e6351e5da75876f7886aec047d4241a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175559064624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252877176380054",
+        "name": "C7",
+        "adset_id": "120252877176320054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-06-23T02:05:16-0300",
+        "updated_time": "2026-06-23T05:24:54-0300",
+        "creative": {
+          "id": "3254216561453288",
+          "name": "Treinamento Criativos Andrômeda 2026-06-22-c4517528d502d12eb594fde331135676",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175523226624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252883108010054",
+        "name": "C11",
+        "adset_id": "120252883108020054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-06-23T02:41:55-0300",
+        "updated_time": "2026-06-23T02:45:57-0300",
+        "creative": {
+          "id": "865224936645728",
+          "name": "Treinamento Criativos Andrômeda 2026-06-22-557f8b7f5aba3f7fc81cef98ca78c09e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175525878624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252877176390054",
+        "name": "C10",
+        "adset_id": "120252877176370054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-06-23T02:04:51-0300",
+        "updated_time": "2026-06-23T02:11:48-0300",
+        "creative": {
+          "id": "1623476522050220",
+          "name": "Treinamento Criativos Andrômeda 2026-06-22-fb67d5a4afa9406313a4c97ef5384885",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175523178624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252877176350054",
+        "name": "C9",
+        "adset_id": "120252877176360054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-06-23T02:06:01-0300",
+        "updated_time": "2026-06-23T02:11:47-0300",
+        "creative": {
+          "id": "869782992358613",
+          "name": "Treinamento Criativos Andrômeda 2026-06-22-f7508ec8261160df7489039252f8c998",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175523406624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252877176330054",
+        "name": "C8",
+        "adset_id": "120252877176340054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "DISAPPROVED",
+        "created_time": "2026-06-23T02:05:08-0300",
+        "updated_time": "2026-06-23T02:11:11-0300",
+        "creative": {
+          "id": "1893181864683543",
+          "name": "Treinamento Criativos Andrômeda 2026-06-22-9c80b2186633b265a2dc4a654efcf80e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175523196624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252843116070054",
+        "name": "C6G1 - CF",
+        "adset_id": "120252843116060054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "created_time": "2026-06-22T16:30:46-0300",
+        "updated_time": "2026-06-22T16:35:02-0300",
+        "creative": {
+          "id": "4568947053362267",
+          "name": "Treinamento Criativos Andrômeda 2026-06-22-638f5c49b8ab61894322fe461539e8e6",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175494762624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252843116080054",
+        "name": "C6G3 - CF",
+        "adset_id": "120252843116040054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-06-22T16:30:46-0300",
+        "updated_time": "2026-06-22T16:35:01-0300",
+        "creative": {
+          "id": "837930232502189",
+          "name": "Treinamento Criativos Andrômeda 2026-06-22-015d137d125a2de5177c17a51a8e5c90",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175494756624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252584280330054",
+        "name": "C5 - CF",
+        "adset_id": "120252584280300054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "DISAPPROVED",
+        "created_time": "2026-06-19T15:22:26-0300",
+        "updated_time": "2026-06-21T15:53:03-0300",
+        "creative": {
+          "id": "1086257130624500",
+          "name": "Treinamento Criativos Andrômeda 2026-06-21-e3f5a533ac6d090c37d028841f79412a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175396002624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252321812510054",
+        "name": "C2 - CF",
+        "adset_id": "120252321812520054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-06-16T23:02:57-0300",
+        "updated_time": "2026-06-21T15:49:35-0300",
+        "creative": {
+          "id": "871760308783876",
+          "name": "Treinamento Criativos Andrômeda 2026-06-21-2afc435142181736a24eb0e68a8b65d7",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175395996624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252584280320054",
+        "name": "C4 - CF",
+        "adset_id": "120252584280290054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-06-19T15:22:19-0300",
+        "updated_time": "2026-06-21T15:48:55-0300",
+        "creative": {
+          "id": "2245586956215688",
+          "name": "Treinamento Criativos Andrômeda 2026-06-21-80cad3adbb9a081219c7717464304398",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175396008624529",
+          "object_type": "VIDEO"
+        }
+      },
+      {
+        "id": "120252321639780054",
+        "name": "C1 - CF",
+        "adset_id": "120252321639790054",
+        "campaign_id": "120252321639770054",
+        "status": "ACTIVE",
+        "effective_status": "ADSET_PAUSED",
+        "created_time": "2026-06-16T23:02:57-0300",
+        "updated_time": "2026-06-21T15:48:54-0300",
+        "creative": {
+          "id": "2215614592616957",
+          "name": "Treinamento Criativos Andrômeda 2026-06-21-7d20323b35ffbde8702a0cedeb57b62d",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}",
+          "effective_object_story_id": "516497034872440_122175395990624529",
+          "object_type": "VIDEO"
+        }
+      }
+    ]
+  }
+}

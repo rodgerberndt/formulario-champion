@@ -18,6 +18,45 @@ export const MERCADO_OPTIONS = [
   "Outro",
 ];
 
+/**
+ * Segmentos da página nichada em e-commerce (`/HD3`).
+ *
+ * Aqui não existe "Infoproduto", "SaaS" nem "Agência": a página inteira fala
+ * com quem vende produto, e oferecer o resto é convidar o lead que a operação
+ * não quer. Em troca, os dois mercados que sobram vêm abertos, porque
+ * "Dropshipping" numa linha só empilha um drop nacional de R$ 80 mil e um COD
+ * na LATAM, que não têm o mesmo criativo, a mesma margem nem o mesmo fit.
+ *
+ * O que NÃO está aqui, de propósito: white, gray e black. Isso é regime de
+ * conta, não mercado — um drop nacional pode ser qualquer um dos três. Posto
+ * lado a lado com "COD Brasil", quem marcasse "loja black" deixaria de dizer
+ * de onde opera, e quem marcasse "COD Brasil" deixaria de dizer se aguenta a
+ * política: duas perguntas perdidas de uma vez. Se esse dado for necessário,
+ * ele é um segundo campo, curto, não uma opção desta lista.
+ *
+ * "Só marketplace" existe para FILTRAR: quem vende só dentro de ML/Shopee não
+ * roda criativo em vídeo, e é melhor saber disso no formulário do que na call.
+ *
+ * Toda string nova aqui precisa de uma linha em PONTOS_MERCADO (leadScore.ts),
+ * senão o lead cai nos 3 pontos de mercado desconhecido e perde ~22 pontos de
+ * score sem ninguém perceber.
+ */
+export const MERCADO_OPTIONS_ECOMMERCE = [
+  "E-commerce marca própria (estoque próprio)",
+  "E-commerce nutra / suplemento (Brasil)",
+  "E-commerce de nicho com estoque (moda, pet, casa, beleza)",
+  "E-commerce gringa",
+  "Drop nacional (fornecedor no Brasil)",
+  "Drop global (fornecedor gringa)",
+  "COD Brasil",
+  "COD LATAM",
+  "COD Europa / Oriente Médio",
+  "Réplica",
+  "Print on demand (POD)",
+  "Só marketplace (ML, Shopee, Amazon)",
+  "Outro",
+];
+
 export const ESTAGIO_OPTIONS = [
   "Iniciando do zero",
   "Validação (primeiras vendas)",
@@ -127,184 +166,85 @@ export function getTierFromFaturamento(faturamento: string | null | undefined): 
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Lead Score 0–100 (uses ALL quiz questions)
-// Weights (total = 100):
-//   Faturamento (investimento_faixa): 25
-//   Entendimento do site (NPS 0–10):  30
-//   Aceita call de diagnóstico:        8
-//   Compromisso WhatsApp:             10
-//   Mercado (fit):                     8
-//   Operações ativas:                  6
-//   Quer vender mais:                  5
-//   Dor/desejo (qualidade do texto):   5
-//   LGPD aceito:                       3
-//   Estágio do negócio:                0 (desativado)
+// Lead Score 0–100 — a Taxa de Qualificação
+//
+// A conta em si mudou de casa em 25/08/2026: mora em `leadScore.ts`, que é o
+// mesmo arquivo usado pela edge function do painel. Antes existiam três contas
+// diferentes (esta, a do backend e a coluna leads.score) e elas discordavam em
+// mais de dez pontos no mesmo lead.
+//
+// O que fica aqui é só a casca antiga, para os quatro pontos do app que já
+// importavam daqui não precisarem mudar. Código novo deve importar direto de
+// `@/lib/leadScore`.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const FATURAMENTO_POINTS: Record<string, number> = {
-  "Não vendo ainda (R$0/mês)": 0,
-  "Até R$ 5 mil": 4,
-  "De R$ 5 mil a R$ 10 mil": 11,
-  "De R$ 10 mil a R$ 20 mil": 16,
-  "De R$ 20 mil a R$ 30 mil": 19,
-  "De R$ 30 mil a R$ 50 mil": 21,
-  "De R$ 50 mil a R$ 75 mil": 23,
-  "De R$ 75 mil a R$ 100 mil": 24,
-  "De R$ 100 mil a R$ 150 mil": 25,
-  "De R$ 150 mil a R$ 200 mil": 25,
-  "De R$ 200 mil a R$ 300 mil": 25,
-  "De R$ 300 mil a R$ 500 mil": 25,
-  "De R$ 500 mil a R$ 750 mil": 25,
-  "De R$ 750 mil a R$ 1 milhão": 25,
-  "De R$ 1 milhão a R$ 2 milhões": 25,
-  "De R$ 2 milhões a R$ 3 milhões": 25,
-  "De R$ 3 milhões a R$ 5 milhões": 25,
-  "De R$ 5 milhões a R$ 10 milhões": 25,
-  "Acima de R$ 10 milhões": 25,
-};
+import {
+  calcularNota,
+  calcularNotaFormulario,
+  calcularNotaPorVersao,
+  faixaDaNota,
+  corDaFaixa,
+  type EntradaNota,
+  type FaixaNota,
+  type DetalheNota,
+} from "./leadScore";
 
-const ESTAGIO_POINTS: Record<string, number> = {
-  "Iniciando do zero": 2,
-  "Validação (primeiras vendas)": 6,
-  "Pré-escala (vendas constantes)": 10,
-  "Escala (buscando otimização)": 12,
-};
+// O corte de HQL mora em `hql.ts` e é POR VERSÃO de score (73 no quiz, 67 no
+// formulário curto). Reexportado aqui só para quem já importava desta casca —
+// código novo importa de `@/lib/hql`.
+export {
+  ehHighQualityLead,
+  limiarHql,
+  ehScoreDeFormulario,
+  LIMIARES_HQL,
+  SCORE_VERSION_FORM,
+  SCORE_VERSION_QUIZ,
+} from "./hql";
+export {
+  calcularNotaFormulario,
+  calcularNotaPorVersao,
+  linhasDoBreakdown,
+  faixaDaNotaPorVersao,
+  type ResultadoNotaFormulario,
+  type ResultadoNotaQualquer,
+} from "./leadScore";
 
-const MERCADO_FIT_ALTO = new Set([
-  "Infoproduto", "E-commerce", "SaaS / Software",
-  "Serviços / Consultoria", "Agência", "Nutra / Encapsulado Produtor",
-]);
-const MERCADO_FIT_MEDIO = new Set([
-  "Dropshipping", "Afiliado BR", "Afiliado Nutra Gringa", "Lowticket",
-]);
-
-function pointsMercado(m?: string | null): number {
-  if (!m) return 0;
-  if (MERCADO_FIT_ALTO.has(m)) return 8;
-  if (MERCADO_FIT_MEDIO.has(m)) return 5;
-  return 3; // Igaming, X1, Hot, Outro
-}
-
-function pointsOperacoes(n?: number | null): number {
-  if (n == null) return 0;
-  if (n <= 0) return 1;
-  if (n === 1) return 4;
-  if (n === 2) return 5;
-  return 6; // 3+
-}
-
-function pointsDor(text?: string | null): number {
-  const len = (text || "").trim().length;
-  if (len < 10) return 0;
-  if (len < 30) return 2;
-  if (len < 80) return 4;
-  return 5;
-}
-
-function pointsNps(n?: number | null): number {
-  if (n == null || isNaN(n)) return 0;
-  // 0 = não leu, 10 = leu e entendeu → vale até 30 pontos
-  return Math.round(Math.max(0, Math.min(10, n)) * 3);
-}
-
-function asBool(v: unknown): boolean {
-  if (v === true) return true;
-  if (typeof v === "string") return v.trim().toLowerCase() === "sim";
-  return false;
-}
-
-export interface LeadScoreBreakdown {
-  faturamento: number;
-  estagio: number;
-  mercado: number;
-  operacoes: number;
-  quer_vender_mais: number;
-  compromisso_whatsapp: number;
-  aceita_call: number;
-  dor_desejo: number;
-  nps: number;
-  lgpd: number;
-}
-
-export type LeadScoreBand = "Frio" | "Morno" | "Quente" | "Hot";
+export type LeadScoreBand = FaixaNota;
+export type LeadScoreBreakdown = DetalheNota;
+export type LeadScoreInput = EntradaNota;
 
 export interface LeadScore100Result {
   score: number;
   band: LeadScoreBand;
   breakdown: LeadScoreBreakdown;
-}
-
-export interface LeadScoreInput {
-  investimento_faixa?: string | null;
-  estagio_negocio?: string | null;
-  mercado?: string | null;
-  operacoes_ativas?: number | null;
-  quer_vender_mais?: string | boolean | null;
-  compromisso_whatsapp?: string | boolean | null;
-  aceita_call_diagnostico?: string | boolean | null;
-  dor_desejo?: string | null;
-  nps_score?: number | null;
-  lgpd?: string | boolean | null;
-  raw_answers_json?: Record<string, unknown> | null;
+  /** Motivos que limitaram a nota. Novo na v2.2. */
+  flags: string[];
+  version: string;
 }
 
 export function bandFromScore(score: number): LeadScoreBand {
-  if (score >= 75) return "Hot";
-  if (score >= 50) return "Quente";
-  if (score >= 25) return "Morno";
-  return "Frio";
+  return faixaDaNota(score);
+}
+
+export function computeLeadScore100(input: LeadScoreInput): LeadScore100Result {
+  const r = calcularNota(input);
+  return { score: r.score, band: r.band, breakdown: r.breakdown, flags: r.flags, version: r.version };
 }
 
 /**
- * Compute a 0–100 lead score using every quiz answer available on the lead.
- * Missing fields contribute 0 (a lead who didn't answer simply doesn't earn points).
+ * A nota do formulário curto (v3-form): só faturamento + mercado, 0–100.
+ * O breakdown tem DUAS linhas — ver `calcularNotaFormulario`.
  */
-export function computeLeadScore100(input: LeadScoreInput): LeadScore100Result {
-  const raw = (input.raw_answers_json && typeof input.raw_answers_json === "object")
-    ? input.raw_answers_json as Record<string, unknown>
-    : {};
-
-  const pick = <T,>(top: T | null | undefined, key: string): T | undefined => {
-    if (top !== null && top !== undefined && top !== "" as unknown as T) return top;
-    const v = raw[key];
-    return v === undefined ? undefined : (v as T);
-  };
-
-  const faturamento = pick(input.investimento_faixa, "investimento_faixa") as string | undefined;
-  const estagio = pick(input.estagio_negocio, "estagio_negocio") as string | undefined;
-  const mercado = pick(input.mercado, "mercado") as string | undefined;
-  const operacoes = pick<number>(input.operacoes_ativas ?? null, "operacoes_ativas");
-  const quer = pick(input.quer_vender_mais, "quer_vender_mais");
-  const compromisso = pick(input.compromisso_whatsapp, "compromisso_whatsapp");
-  const aceitaCall = pick(input.aceita_call_diagnostico, "aceita_call_diagnostico");
-  const dor = pick(input.dor_desejo, "dor_desejo") as string | undefined;
-  const nps = pick<number>(input.nps_score ?? null, "nps_score");
-  const lgpd = pick(input.lgpd, "lgpd");
-
-  const breakdown: LeadScoreBreakdown = {
-    faturamento: FATURAMENTO_POINTS[faturamento || ""] ?? 0,
-    estagio: 0,
-    mercado: pointsMercado(mercado),
-    operacoes: pointsOperacoes(typeof operacoes === "number" ? operacoes : null),
-    quer_vender_mais: asBool(quer) ? 5 : 0,
-    compromisso_whatsapp: asBool(compromisso) ? 10 : 0,
-    aceita_call: asBool(aceitaCall) ? 8 : 0,
-    dor_desejo: pointsDor(dor),
-    nps: pointsNps(typeof nps === "number" ? nps : null),
-    lgpd: asBool(lgpd) ? 3 : 0,
-  };
-
-  const total = Object.values(breakdown).reduce((s, v) => s + v, 0);
-  const score = Math.max(0, Math.min(100, Math.round(total)));
-  return { score, band: bandFromScore(score), breakdown };
+export function computeLeadScoreFormulario(input: LeadScoreInput) {
+  return calcularNotaFormulario(input);
 }
 
-/** Tailwind text color class for a score band (semantic-friendly). */
+/** Recalcula um lead já gravado na régua da versão dele. */
+export function computeLeadScorePorVersao(input: LeadScoreInput, scoreVersion?: string | null) {
+  return calcularNotaPorVersao(input, scoreVersion);
+}
+
+/** Classe de cor do Tailwind para a faixa da nota. */
 export function bandColorClass(band: LeadScoreBand): string {
-  switch (band) {
-    case "Hot": return "text-emerald-400";
-    case "Quente": return "text-amber-400";
-    case "Morno": return "text-blue-400";
-    default: return "text-muted-foreground";
-  }
+  return corDaFaixa(band);
 }

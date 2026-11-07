@@ -1,0 +1,21 @@
+{
+  "consultado_em": "2026-09-11T00:41:04.475Z",
+  "path": "act_938115981694308",
+  "params": {
+    "fields": "name,account_status,disable_reason,balance,amount_spent,created_time,currency"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "objeto": {
+      "name": "Conta 03",
+      "account_status": 2,
+      "disable_reason": 1,
+      "balance": "0",
+      "amount_spent": "13349522",
+      "created_time": "2024-09-03T18:37:27-0300",
+      "currency": "BRL",
+      "id": "act_938115981694308"
+    }
+  }
+}

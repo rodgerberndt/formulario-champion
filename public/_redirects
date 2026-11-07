@@ -1,0 +1,14 @@
+# O apex manda para o www, sempre.
+#
+# Até 31/08/2026 championadstudio.com respondia 403 e não redirecionava nada:
+# quem digitasse o domínio sem www, ou clicasse num anúncio configurado sem
+# www, batia numa parede. O Rodger pegou isso conferindo a URL da fonte no
+# Gerenciador do Meta.
+#
+# O www é o domínio canônico (é onde o Pages serve, onde o pixel dispara e o
+# que o CAPI declara em event_source_url). Servir o site nos dois endereços
+# resolveria o 403, mas dividiria cookie, localStorage e sessão entre duas
+# origens, e o sorteio do teste de quiz mora justamente no localStorage.
+# Redirect 301 mantém tudo num endereço só.
+https://championadstudio.com/*  https://www.championadstudio.com/:splat  301
+http://championadstudio.com/*   https://www.championadstudio.com/:splat  301

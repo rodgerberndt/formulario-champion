@@ -1,0 +1,134 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Esteira de depoimentos.
+   
+   Os três prints ficavam colados numa imagem só, de 1080 px de largura. No
+   celular ela encolhia para caber, e o texto das conversas virava borrão — era
+   o "bugado" que o Rodger viu em 19/09/2026. Agora cada print é um arquivo, e
+   a esteira mostra dois por vez, passando devagar.
+
+   A animação move a faixa em -50% porque a lista é renderizada DUAS vezes: ao
+   chegar em -50% o quadro está idêntico ao início, e o salto de volta a 0 é
+   invisível. Duas cópias bastam porque são 11 depoimentos — com os 3 prints
+   originais eram precisas quatro.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.dep-esteira {
+  position: relative;
+  overflow: hidden;
+  /* Some por trás das bordas em vez de cortar seco. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.dep-faixa {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  animation: dep-correr 150s linear infinite;
+}
+
+/* Parar quando a pessoa aponta o cursor ou encosta o dedo: o print só serve se
+   der para ler. */
+.dep-esteira:hover .dep-faixa,
+.dep-esteira:focus-within .dep-faixa,
+.dep-esteira.dep-parada .dep-faixa {
+  animation-play-state: paused;
+}
+
+@keyframes dep-correr {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+.dep-item {
+  flex: 0 0 auto;
+  /* Dois por vez no celular: 46vw cada, sobrando o respiro das bordas. */
+  width: 46vw;
+  max-width: 300px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(232, 185, 60, 0.18);
+  background: #02030e;
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+}
+
+.dep-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* A proporção do recorte. Fixa aqui, o navegador reserva o espaço antes de a
+     imagem chegar e a faixa não pula durante o carregamento. */
+  aspect-ratio: 317 / 550;
+  object-fit: cover;
+  object-position: top center;
+}
+
+@media (min-width: 768px) {
+  .dep-faixa { gap: 20px; }
+  .dep-item { width: 240px; max-width: none; }
+}
+
+.dep-dica {
+  margin-top: 14px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  opacity: 0.55;
+}
+
+/* Quem pediu menos movimento no sistema recebe a faixa parada, e rolável na
+   mão. */
+@media (prefers-reduced-motion: reduce) {
+  .dep-faixa { animation: none; }
+  .dep-esteira { overflow-x: auto; }
+}
+
+/* ── Cartão de vídeo ────────────────────────────────────────────────────────
+   Mesma moldura do print. O vídeo entra pausado num quadro de 1 s (quadro 0 de
+   vídeo costuma ser preto) e só vira reprodução quando a pessoa toca. */
+.dep-item--video { position: relative; cursor: pointer; }
+
+.dep-item--video video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 317 / 550;
+  object-fit: cover;
+  background: #02030e;
+}
+
+.dep-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.dep-play span {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: rgba(2, 3, 14, 0.62);
+  border: 1px solid rgba(232, 185, 60, 0.55);
+  box-shadow: 0 0 22px -4px rgba(232, 185, 60, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.dep-play svg { width: 17px; height: 17px; margin-left: 2px; fill: #e8b93c; }
+
+.dep-item--tocando .dep-play { opacity: 0; }
+
+.dep-esqueleto {
+  width: 100%;
+  aspect-ratio: 317 / 550;
+  background: linear-gradient(100deg, #0a0d20 30%, #131735 50%, #0a0d20 70%);
+  background-size: 220% 100%;
+  animation: dep-brilho 1.5s ease-in-out infinite;
+}
+
+@keyframes dep-brilho {
+  from { background-position: 180% 0; }
+  to   { background-position: -80% 0; }
+}

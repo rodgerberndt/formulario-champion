@@ -1,0 +1,4222 @@
+{
+  "consultado_em": "2026-09-10T22:10:43.367Z",
+  "path": "act_1965417164121284/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-09-04\",\"until\":\"2026-09-10\"}",
+    "level": "ad",
+    "fields": "campaign_id,campaign_name,adset_id,adset_name,ad_id,ad_name,spend,impressions,clicks,inline_link_clicks,actions,action_values,objective,optimization_goal,attribution_setting,account_currency,date_start,date_stop",
+    "limit": "500"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 153,
+    "data": [
+      {
+        "campaign_id": "52595874690893",
+        "campaign_name": "CA 03 - Leads - Ads Novos Caio",
+        "adset_id": "52595874691093",
+        "adset_name": "Ads",
+        "ad_id": "52595874691293",
+        "ad_name": "Caio Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595874690893",
+        "campaign_name": "CA 03 - Leads - Ads Novos Caio",
+        "adset_id": "52595874691093",
+        "adset_name": "Ads",
+        "ad_id": "52595879589293",
+        "ad_name": "Caio Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595874690893",
+        "campaign_name": "CA 03 - Leads - Ads Novos Caio",
+        "adset_id": "52595874691093",
+        "adset_name": "Ads",
+        "ad_id": "52595879589493",
+        "ad_name": "Caio Case #3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595874690893",
+        "campaign_name": "CA 03 - Leads - Ads Novos Caio",
+        "adset_id": "52595874691093",
+        "adset_name": "Ads",
+        "ad_id": "52595879589693",
+        "ad_name": "Caio Case #4",
+        "spend": "4.87",
+        "impressions": "278",
+        "clicks": "1",
+        "inline_link_clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "86"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "86"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "85"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595880369093",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD0",
+        "adset_id": "52595880370093",
+        "adset_name": "Ads",
+        "ad_id": "52595880369893",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595880369093",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD0",
+        "adset_id": "52595880370093",
+        "adset_name": "Ads",
+        "ad_id": "52595911053893",
+        "ad_name": "Luis-Nathan Case #2 - C1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911445493",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD1",
+        "adset_id": "52595911447893",
+        "adset_name": "Ads",
+        "ad_id": "52595911446293",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911445693",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD2",
+        "adset_id": "52595911448093",
+        "adset_name": "Ads",
+        "ad_id": "52595911446493",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911445893",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD3",
+        "adset_id": "52595911448293",
+        "adset_name": "Ads",
+        "ad_id": "52595911446693",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911446093",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD4",
+        "adset_id": "52595911448493",
+        "adset_name": "Ads",
+        "ad_id": "52595911446893",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911445493",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD1",
+        "adset_id": "52595911447893",
+        "adset_name": "Ads",
+        "ad_id": "52595911447093",
+        "ad_name": "Luis-Nathan Case #2 - C1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911445893",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD3",
+        "adset_id": "52595911448293",
+        "adset_name": "Ads",
+        "ad_id": "52595911447293",
+        "ad_name": "Luis-Nathan Case #2 - C1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911445693",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD2",
+        "adset_id": "52595911448093",
+        "adset_name": "Ads",
+        "ad_id": "52595911447493",
+        "ad_name": "Luis-Nathan Case #2 - C1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52595911446093",
+        "campaign_name": "CA 03 - Leads - Ads validados + HD4",
+        "adset_id": "52595911448493",
+        "adset_name": "Ads",
+        "ad_id": "52595911447693",
+        "ad_name": "Luis-Nathan Case #2 - C1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596173252293",
+        "adset_name": "HD4",
+        "ad_id": "52596173252093",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596173252293",
+        "adset_name": "HD4",
+        "ad_id": "52596175178693",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596173252293",
+        "adset_name": "HD4",
+        "ad_id": "52596175178893",
+        "ad_name": "T04 - C1- CL",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596173252293",
+        "adset_name": "HD4",
+        "ad_id": "52596175179093",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183893",
+        "adset_name": "HD3",
+        "ad_id": "52596227183293",
+        "ad_name": "T04 - C1- CL",
+        "spend": "1.56",
+        "impressions": "91",
+        "clicks": "5",
+        "inline_link_clicks": "4",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "4"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "5"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "5"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "34"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "34"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "29"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183493",
+        "adset_name": "HD1",
+        "ad_id": "52596227184293",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183693",
+        "adset_name": "HD2",
+        "ad_id": "52596227184493",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227184093",
+        "adset_name": "HD0",
+        "ad_id": "52596227184693",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183893",
+        "adset_name": "HD3",
+        "ad_id": "52596227184893",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183493",
+        "adset_name": "HD1",
+        "ad_id": "52596227185093",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183693",
+        "adset_name": "HD2",
+        "ad_id": "52596227185293",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227184093",
+        "adset_name": "HD0",
+        "ad_id": "52596227185493",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183893",
+        "adset_name": "HD3",
+        "ad_id": "52596227185693",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183693",
+        "adset_name": "HD2",
+        "ad_id": "52596227185893",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183493",
+        "adset_name": "HD1",
+        "ad_id": "52596227186093",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227184093",
+        "adset_name": "HD0",
+        "ad_id": "52596227186293",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183893",
+        "adset_name": "HD3",
+        "ad_id": "52596227186493",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183493",
+        "adset_name": "HD1",
+        "ad_id": "52596227186693",
+        "ad_name": "T04 - C1- CL",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227183693",
+        "adset_name": "HD2",
+        "ad_id": "52596227186893",
+        "ad_name": "T04 - C1- CL",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52596173251893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Headlines)",
+        "adset_id": "52596227184093",
+        "adset_name": "HD0",
+        "ad_id": "52596227187093",
+        "ad_name": "T04 - C1- CL",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598800743493",
+        "adset_name": "SH0",
+        "ad_id": "52598800739493",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598800743493",
+        "adset_name": "SH0",
+        "ad_id": "52598800739693",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598800743493",
+        "adset_name": "SH0",
+        "ad_id": "52598800739893",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "51",
+        "impressions": "2904",
+        "clicks": "68",
+        "inline_link_clicks": "49",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "3"
+          },
+          {
+            "action_type": "link_click",
+            "value": "49"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "12"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "45"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "45"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1052"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "16"
+          },
+          {
+            "action_type": "comment",
+            "value": "2"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1052"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "17"
+          },
+          {
+            "action_type": "post_uncomment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "12"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "lead",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "987"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "232.29"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698893",
+        "adset_name": "SH 5",
+        "ad_id": "52598801697893",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698293",
+        "adset_name": "SH 2",
+        "ad_id": "52598801699093",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698093",
+        "adset_name": "SH1",
+        "ad_id": "52598801699293",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698493",
+        "adset_name": "SH 3",
+        "ad_id": "52598801699493",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698693",
+        "adset_name": "SH 4",
+        "ad_id": "52598801699693",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698893",
+        "adset_name": "SH 5",
+        "ad_id": "52598801699893",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698093",
+        "adset_name": "SH1",
+        "ad_id": "52598801700093",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698493",
+        "adset_name": "SH 3",
+        "ad_id": "52598801700293",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698293",
+        "adset_name": "SH 2",
+        "ad_id": "52598801700493",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "44.07",
+        "impressions": "2701",
+        "clicks": "68",
+        "inline_link_clicks": "50",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "50"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "46"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "46"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "985"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "7"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "985"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "8"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "4"
+          },
+          {
+            "action_type": "video_view",
+            "value": "928"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698693",
+        "adset_name": "SH 4",
+        "ad_id": "52598801700693",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "39.27",
+        "impressions": "2080",
+        "clicks": "46",
+        "inline_link_clicks": "28",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "28"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "4"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "28"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "28"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "747"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "8"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "747"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "9"
+          },
+          {
+            "action_type": "post",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "3"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "711"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "1"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698893",
+        "adset_name": "SH 5",
+        "ad_id": "52598801700893",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "34.01",
+        "impressions": "1893",
+        "clicks": "44",
+        "inline_link_clicks": "30",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "30"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "5"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "25"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "25"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "658"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "5"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "658"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "4"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "623"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "1"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698093",
+        "adset_name": "SH1",
+        "ad_id": "52598801701093",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698293",
+        "adset_name": "SH 2",
+        "ad_id": "52598801701293",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698693",
+        "adset_name": "SH 4",
+        "ad_id": "52598801701493",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698493",
+        "adset_name": "SH 3",
+        "ad_id": "52598801701693",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801818293",
+        "adset_name": "SH 6",
+        "ad_id": "52598801818093",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "48.55",
+        "impressions": "2534",
+        "clicks": "61",
+        "inline_link_clicks": "36",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "2"
+          },
+          {
+            "action_type": "link_click",
+            "value": "36"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "6"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "28"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "28"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "939"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "11"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "939"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "12"
+          },
+          {
+            "action_type": "post",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "5"
+          },
+          {
+            "action_type": "lead",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "892"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801818293",
+        "adset_name": "SH 6",
+        "ad_id": "52598801818493",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801818293",
+        "adset_name": "SH 6",
+        "ad_id": "52598801818693",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598802362693",
+        "campaign_name": "CA 03 - Vendas - Ads validados (Teste Objetivo de campanha)",
+        "adset_id": "52598802364493",
+        "adset_name": "Ads Validados",
+        "ad_id": "52598802362893",
+        "ad_name": "Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598802362693",
+        "campaign_name": "CA 03 - Vendas - Ads validados (Teste Objetivo de campanha)",
+        "adset_id": "52598802364493",
+        "adset_name": "Ads Validados",
+        "ad_id": "52598802363093",
+        "ad_name": "Luis-Nathan Case #2 - V3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598802362693",
+        "campaign_name": "CA 03 - Vendas - Ads validados (Teste Objetivo de campanha)",
+        "adset_id": "52598802364493",
+        "adset_name": "Ads Validados",
+        "ad_id": "52598802365893",
+        "ad_name": "Luis-Nathan Case #2 - Certo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598802362693",
+        "campaign_name": "CA 03 - Vendas - Ads validados (Teste Objetivo de campanha)",
+        "adset_id": "52598802364493",
+        "adset_name": "Ads Validados",
+        "ad_id": "52598803373093",
+        "ad_name": "Caio Case #4",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599056564693",
+        "ad_name": "H1 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599057320693",
+        "ad_name": "H8 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599057320893",
+        "ad_name": "H10 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599057321093",
+        "ad_name": "H2- Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599057321693",
+        "ad_name": "H7 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599057321893",
+        "ad_name": "H9 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599057322093",
+        "ad_name": "H11- Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599057322293",
+        "ad_name": "H3 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599057322493",
+        "ad_name": "H5 Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599057865693",
+        "ad_name": "H11 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599065328293",
+        "ad_name": "H13 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599056565293",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599065328493",
+        "ad_name": "H12 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599065458893",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599065458693",
+        "ad_name": "H13 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599065458893",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599065459093",
+        "ad_name": "H1 - Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599065458893",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599065459293",
+        "ad_name": "H8 - Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599065458893",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599065459493",
+        "ad_name": "H9 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599065458893",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599065459693",
+        "ad_name": "H7 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599065458893",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599065459893",
+        "ad_name": "H5  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599065458893",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599065460093",
+        "ad_name": "H11 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599065458893",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599065460293",
+        "ad_name": "H3 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599065458893",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599065460493",
+        "ad_name": "H10 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599065458893",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599065460693",
+        "ad_name": "H2-  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599065458893",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599065461093",
+        "ad_name": "H12 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599068386693",
+        "adset_name": "Case Ricardo",
+        "ad_id": "52599068386893",
+        "ad_name": "Case Ricardo #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599056564293",
+        "campaign_name": "CA 03 - Vendas - Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599068386693",
+        "adset_name": "Case Ricardo",
+        "ad_id": "52599068387893",
+        "ad_name": "Case Ricardo #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732081893",
+        "ad_name": "H12 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732082093",
+        "ad_name": "H13 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732082293",
+        "ad_name": "H11 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732082493",
+        "ad_name": "H5 Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732082693",
+        "ad_name": "H11- Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732082893",
+        "ad_name": "H3 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732083093",
+        "ad_name": "H9 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732083293",
+        "ad_name": "H7 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732083493",
+        "ad_name": "H10 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732083693",
+        "ad_name": "H8 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732083893",
+        "ad_name": "H2- Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732086893",
+        "adset_name": "Hooks - Arthur Case #1",
+        "ad_id": "52599732084093",
+        "ad_name": "H1 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732084293",
+        "ad_name": "H12 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732084493",
+        "ad_name": "H2-  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732084693",
+        "ad_name": "H10 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732084893",
+        "ad_name": "H3 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732085093",
+        "ad_name": "H11 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732085293",
+        "ad_name": "H5  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732085493",
+        "ad_name": "H7 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732085693",
+        "ad_name": "H8 - Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732085893",
+        "ad_name": "H9 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732086093",
+        "ad_name": "H13 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087093",
+        "adset_name": "Hooks - Luis-Nathan Case #2",
+        "ad_id": "52599732086293",
+        "ad_name": "H1 - Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087293",
+        "adset_name": "Case Ricardo",
+        "ad_id": "52599732086493",
+        "ad_name": "Case Ricardo #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52599732081693",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados)",
+        "adset_id": "52599732087293",
+        "adset_name": "Case Ricardo",
+        "ad_id": "52599732086693",
+        "ad_name": "Case Ricardo #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600508857293",
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508858893",
+        "adset_name": "Case Ighor #1 (30-08)",
+        "ad_id": "52600508944693",
+        "ad_name": "Case Ighor #1 (30-08)",
+        "spend": "23.45",
+        "impressions": "1254",
+        "clicks": "16",
+        "inline_link_clicks": "12",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "12"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "12"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "12"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "333"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "comment",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "333"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "318"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "1"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600508857293",
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508864893",
+        "adset_name": "Case Ighor #2 (30-08)",
+        "ad_id": "52600508946293",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "51.8",
+        "impressions": "2532",
+        "clicks": "35",
+        "inline_link_clicks": "24",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "24"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "20"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "20"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "2"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "471"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "7"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "471"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "6"
+          },
+          {
+            "action_type": "lead",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "440"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "1"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600508857293",
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508872893",
+        "adset_name": "Case Ighor #3 (30-08)",
+        "ad_id": "52600508947293",
+        "ad_name": "Case Ighor #3 (30-08)",
+        "spend": "23.62",
+        "impressions": "1149",
+        "clicks": "15",
+        "inline_link_clicks": "7",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "2"
+          },
+          {
+            "action_type": "link_click",
+            "value": "7"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "7"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "283"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "2"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "283"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "2"
+          },
+          {
+            "action_type": "post",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "lead",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "274"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600508857293",
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508884293",
+        "adset_name": "Case Ighor #4 (30-08)",
+        "ad_id": "52600508951293",
+        "ad_name": "Case Ighor #4 (30-08)",
+        "spend": "71.18",
+        "impressions": "5247",
+        "clicks": "84",
+        "inline_link_clicks": "64",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "6"
+          },
+          {
+            "action_type": "link_click",
+            "value": "64"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "7"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "6"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "64"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "6"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "64"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "2"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1819"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "12"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1819"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "6"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "14"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "9"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "lead",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1743"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "6"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600508857293",
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508895893",
+        "adset_name": "Case Ighor #5 (30-08)",
+        "ad_id": "52600508957093",
+        "ad_name": "Case Ighor #5 (30-08)",
+        "spend": "26",
+        "impressions": "1656",
+        "clicks": "37",
+        "inline_link_clicks": "23",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "3"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "23"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "21"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "21"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "340"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "340"
+          },
+          {
+            "action_type": "purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "3"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          },
+          {
+            "action_type": "lead",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "316"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "973.52"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "973.52"
+          },
+          {
+            "action_type": "purchase",
+            "value": "973.52"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "0.1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "973.52"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "973.52"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "973.52"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600508857293",
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508907293",
+        "adset_name": "Case Ighor #6 (30-08)",
+        "ad_id": "52600508958893",
+        "ad_name": "Case Ighor #6 (30-08)",
+        "spend": "25.49",
+        "impressions": "1362",
+        "clicks": "20",
+        "inline_link_clicks": "13",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "13"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "9"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "9"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "241"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "4"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "241"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "224"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600508857293",
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508919093",
+        "adset_name": "Case Ighor #7 (30-08)",
+        "ad_id": "52600508961493",
+        "ad_name": "Case Ighor #7 (30-08)",
+        "spend": "22.89",
+        "impressions": "2050",
+        "clicks": "29",
+        "inline_link_clicks": "15",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "15"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "11"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "775"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "7"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "775"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "1"
+          },
+          {
+            "action_type": "post",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "6"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "753"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600508857293",
+        "campaign_name": "CA 03 - Leads - Case Ighor (30-08)",
+        "adset_id": "52600508925893",
+        "adset_name": "Case Ighor #8 (30-08)",
+        "ad_id": "52600508963893",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "51.4",
+        "impressions": "2944",
+        "clicks": "36",
+        "inline_link_clicks": "35",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "2"
+          },
+          {
+            "action_type": "link_click",
+            "value": "35"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "5"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "22"
+          },
+          {
+            "action_type": "onsite_web_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "22"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "635"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "6"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "635"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "2"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "6"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "5"
+          },
+          {
+            "action_type": "lead",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "594"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_lead",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "2"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "291.29"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600695284893",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Quiz)",
+        "adset_id": "52600695293893",
+        "adset_name": "Luis-Nathan Case #2 - V3 (Quiz)",
+        "ad_id": "52600695312493",
+        "ad_name": "Luis-Nathan Case #2 - V3 (Quiz)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746364693",
+        "adset_name": "Case Ricardo #2",
+        "ad_id": "52600746373693",
+        "ad_name": "Case Ricardo #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746376693",
+        "adset_name": "H10 - Arthur Case #1",
+        "ad_id": "52600746392493",
+        "ad_name": "H10 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746394493",
+        "adset_name": "H11- Arthur Case #1",
+        "ad_id": "52600746403293",
+        "ad_name": "H11- Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746404693",
+        "adset_name": "H7 - Arthur Case #1",
+        "ad_id": "52600746415493",
+        "ad_name": "H7 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746422893",
+        "adset_name": "H9 - Arthur Case #1",
+        "ad_id": "52600746429493",
+        "ad_name": "H9 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746431693",
+        "adset_name": "H1 - Arthur Case #1",
+        "ad_id": "52600746446293",
+        "ad_name": "H1 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746453893",
+        "adset_name": "H7 -  Luis-Nathan Case #2",
+        "ad_id": "52600746477893",
+        "ad_name": "H7 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746479493",
+        "adset_name": "H2-  Luis-Nathan Case #2",
+        "ad_id": "52600746491293",
+        "ad_name": "H2-  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746525693",
+        "adset_name": "H8 - Arthur Case #1",
+        "ad_id": "52600746556493",
+        "ad_name": "H8 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746559693",
+        "adset_name": "H12 - Arthur Case #1",
+        "ad_id": "52600746602693",
+        "ad_name": "H12 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746654493",
+        "adset_name": "H10 -  Luis-Nathan Case #2",
+        "ad_id": "52600746678293",
+        "ad_name": "H10 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746687293",
+        "adset_name": "H9 -  Luis-Nathan Case #2",
+        "ad_id": "52600746726093",
+        "ad_name": "H9 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746748093",
+        "adset_name": "H13 - Arthur Case #1",
+        "ad_id": "52600746767293",
+        "ad_name": "H13 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746779293",
+        "adset_name": "H11 - Arthur Case #1",
+        "ad_id": "52600746815893",
+        "ad_name": "H11 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746825893",
+        "adset_name": "H3 -  Luis-Nathan Case #2",
+        "ad_id": "52600746843493",
+        "ad_name": "H3 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746850093",
+        "adset_name": "H2- Arthur Case #1",
+        "ad_id": "52600746872693",
+        "ad_name": "H2- Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746883493",
+        "adset_name": "H8 - Luis-Nathan Case #2",
+        "ad_id": "52600746907093",
+        "ad_name": "H8 - Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746909693",
+        "adset_name": "H12 -  Luis-Nathan Case #2",
+        "ad_id": "52600746929093",
+        "ad_name": "H12 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746933893",
+        "adset_name": "H13 -  Luis-Nathan Case #2",
+        "ad_id": "52600746950293",
+        "ad_name": "H13 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600746952893",
+        "adset_name": "H11 -  Luis-Nathan Case #2",
+        "ad_id": "52600746982693",
+        "ad_name": "H11 -  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600747011093",
+        "adset_name": "H5 Arthur Case #1",
+        "ad_id": "52600747023093",
+        "ad_name": "H5 Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600747036093",
+        "adset_name": "H1 - Luis-Nathan Case #2",
+        "ad_id": "52600747059893",
+        "ad_name": "H1 - Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600747070493",
+        "adset_name": "H5  Luis-Nathan Case #2",
+        "ad_id": "52600747095493",
+        "ad_name": "H5  Luis-Nathan Case #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600747110893",
+        "adset_name": "H3 - Arthur Case #1",
+        "ad_id": "52600747147493",
+        "ad_name": "H3 - Arthur Case #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52600745887093",
+        "campaign_name": "CA 03 - leads- Teste de Criativo (Hooks nos validados) - 1 conjunto por gancho",
+        "adset_id": "52600747158493",
+        "adset_name": "Case Ricardo #1",
+        "ad_id": "52600747182293",
+        "ad_name": "Case Ricardo #1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598800743493",
+        "adset_name": "SH0",
+        "ad_id": "52601101042693",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "0.02",
+        "impressions": "1",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698293",
+        "adset_name": "SH 2",
+        "ad_id": "52601101045493",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "0.02",
+        "impressions": "3",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698693",
+        "adset_name": "SH 4",
+        "ad_id": "52601101052093",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "0",
+        "impressions": "1",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698893",
+        "adset_name": "SH 5",
+        "ad_id": "52601101054693",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "0.01",
+        "impressions": "2",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801818293",
+        "adset_name": "SH 6",
+        "ad_id": "52601101057093",
+        "ad_name": "Case Ighor #2 (30-08)",
+        "spend": "0",
+        "impressions": "1",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598800743493",
+        "adset_name": "SH0",
+        "ad_id": "52601101083293",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "0",
+        "impressions": "2",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698293",
+        "adset_name": "SH 2",
+        "ad_id": "52601101088893",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "0.01",
+        "impressions": "1",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698693",
+        "adset_name": "SH 4",
+        "ad_id": "52601101103293",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "0",
+        "impressions": "2",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "2"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "2"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801698893",
+        "adset_name": "SH 5",
+        "ad_id": "52601101108293",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "0",
+        "impressions": "1",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "52598800739293",
+        "campaign_name": "CA 03 - Leads - Ads validados + TESTE AB (Subheadlines)",
+        "adset_id": "52598801818293",
+        "adset_name": "SH 6",
+        "ad_id": "52601101109693",
+        "ad_name": "Case Ighor #8 (30-08)",
+        "spend": "0.02",
+        "impressions": "4",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "actions": [
+          {
+            "action_type": "post_engagement",
+            "value": "2"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "2"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-09-04",
+        "date_stop": "2026-09-10"
+      }
+    ]
+  }
+}

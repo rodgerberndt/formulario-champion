@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { ChevronRight, ChevronLeft, Check, Loader2 } from "lucide-react";
 import { PhoneField, isPhoneE164Valid } from "@/components/PhoneField";
+import { codigoDeTesteMeta } from "@/lib/ambienteMeta";
 
 const MERCADOS = [
   "Infoproduto",
@@ -85,8 +86,14 @@ export function LeadForm() {
 
       // Fire CAPI events in background
       if (insertedLead?.id) {
+        // Fora de produção o evento vai marcado como teste (ver
+        // src/lib/ambienteMeta.ts) e não conta em métrica nenhuma do Meta.
+        const codigoTesteCapi = codigoDeTesteMeta();
         supabase.functions.invoke('fire-capi-events', {
-          body: { lead_db_id: insertedLead.id },
+          body: {
+            lead_db_id: insertedLead.id,
+            ...(codigoTesteCapi ? { test_event_code: codigoTesteCapi } : {}),
+          },
         }).catch(err => console.warn('[CAPI] fire-capi-events failed:', err));
       }
 

@@ -4,6 +4,7 @@ import { useDateRange } from "@/context/DateRangeContext";
 import { Loader2, TrendingDown, TrendingUp, MousePointerClick, ArrowDown, Activity, Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ScrollAttentionHeatmap from "./ScrollAttentionHeatmap";
+import { SECTION_LABELS } from "@/config/landingSections";
 
 /**
  * BumpNumber: mostra o valor numérico e, quando ele muda, exibe um overlay
@@ -112,21 +113,6 @@ interface BehaviorResponse {
 interface Props {
   fetchAdminData: (path: string, params?: Record<string, string>) => Promise<any>;
 }
-
-const SECTION_LABELS: Record<string, string> = {
-  hero: "Headline inicial",
-  social_proof: "Prova social",
-  dor: "Dor / problema",
-  portfolio: "Portfólio",
-  cta_intermediario: "CTA intermediário",
-  metodo: "Método Champion",
-  success_cases: "Casos de sucesso",
-  criativos: "Criativos (vídeos)",
-  gancho_corpo: "Gancho & Corpo",
-  como_funciona: "Como funciona",
-  faq: "FAQ",
-  cta_final: "CTA final",
-};
 
 // Labels amigáveis das perguntas do FAQ (ordem deve bater com FAQSection.tsx)
 const FAQ_QUESTION_LABELS: Record<string, string> = {

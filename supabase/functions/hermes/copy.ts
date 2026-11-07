@@ -37,6 +37,11 @@ Dono de operação digital já validada, faturando de 10 mil reais por mês para
 O QUE CONTA COMO RESULTADO:
 A métrica da casa é MQL, lead com faturamento declarado de 10 mil reais ou mais. Volume de lead não vale nada aqui. Escreva para filtrar: é melhor um anúncio que traz menos lead e mais MQL do que o contrário. Deixe o corte de faturamento sugerido no texto sempre que couber naturalmente.
 
+O QUE O TESTE A/B DE HEADLINE JÁ PROVOU (rodando desde 14/08/2026, com venda rastreada):
+1. Headline que enche o quiz NÃO é headline que enche o caixa. A relação entre conversão da página e custo por MQL apareceu invertida em todos os recortes. Nunca escreva mirando clique no CTA: escreva mirando a pessoa certa clicando.
+2. Promessa de RESULTADO CONCRETO ganha de promessa de método ou de economia, todos os dias, mesmo quando o ranking do dia vira. Fale do patamar que a operação alcança, não do processo que a Champion usa nem do que o cliente deixa de gastar.
+3. O criativo que vendeu era terceiro em CTR e segundo pior em CPC. Métrica de topo não prevê venda, então não escreva para ganhar CTR.
+
 REGRAS DE ESCRITA INEGOCIÁVEIS:
 1. NUNCA use travessão (o caractere "—") nem meia risca. Use vírgula, ponto, dois-pontos ou quebra de linha no lugar. Esta regra não tem exceção.
 2. As duas primeiras linhas do texto principal carregam o anúncio inteiro. Elas precisam parar o scroll sozinhas, sem depender do vídeo.
@@ -159,6 +164,68 @@ function sanitize(text: string, max: number): string {
   const cut = clean.slice(0, max);
   const lastSpace = cut.lastIndexOf(" ");
   return (lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).replace(/[,.;:]$/, "").trim();
+}
+
+/**
+ * Copy escrita à mão no .txt que acompanha o criativo.
+ *
+ * Existe por dois motivos: às vezes o copywriter já sabe o que quer dizer e não
+ * há razão para um modelo reescrever, e o Hermes precisa conseguir subir
+ * anúncio mesmo sem chave de LLM configurada.
+ *
+ * Formato, tolerante a acento, caixa e ordem dos campos:
+ *
+ *   [1]
+ *   titulo: Pare de perder tempo com criativo
+ *   texto: Não adianta fazer tudo na operação e ficar limitado no quanto escala.
+ *   descricao: Vagas limitadas
+ *
+ *   [2]
+ *   ...
+ *
+ * Devolve null quando o .txt é texto corrido, que aí segue como briefing.
+ */
+export function parseManualCopies(raw: string | null | undefined): CopyVariant[] | null {
+  if (!raw || !/^\s*\[\s*\d+\s*\]/m.test(raw)) return null;
+
+  const blocos = raw.split(/^\s*\[\s*\d+\s*\]\s*$/m).slice(1);
+  const out: CopyVariant[] = [];
+
+  for (const bloco of blocos) {
+    const campo = (nomes: string[]): string => {
+      for (const n of nomes) {
+        // Pega da etiqueta até a próxima etiqueta conhecida ou o fim do bloco,
+        // para o texto principal poder ter várias linhas.
+        //
+        // O fim é `(?![\s\S])` e não `$`: com a flag `m`, `$` casaria no fim de
+        // qualquer linha e o texto principal perderia tudo após a primeira
+        // quebra, que é justamente onde mora o corpo do anúncio.
+        const re = new RegExp(
+          `^\\s*${n}\\s*:\\s*([\\s\\S]*?)` +
+            `(?=^\\s*(?:t[ií]tulo|titulo|headline|texto|primary|descri[cç][aã]o|descricao|description)\\s*:|(?![\\s\\S]))`,
+          "im",
+        );
+        const m = bloco.match(re);
+        if (m?.[1]?.trim()) return m[1].trim();
+      }
+      return "";
+    };
+
+    const headline = campo(["t[ií]tulo", "headline"]);
+    const primary = campo(["texto", "primary"]);
+    const description = campo(["descri[cç][aã]o", "description"]);
+    if (!headline || !primary) continue;
+
+    out.push({
+      primary_text: sanitize(primary, MAX_PRIMARY),
+      headline: sanitize(headline, MAX_HEADLINE),
+      description: sanitize(description, MAX_DESCRIPTION),
+      angle_used: "escrita à mão",
+      rationale: "copy fornecida no .txt do criativo, sem geração",
+    });
+  }
+
+  return out.length ? out : null;
 }
 
 export interface GenerateInput {

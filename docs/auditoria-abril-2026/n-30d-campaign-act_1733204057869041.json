@@ -1,0 +1,194 @@
+{
+  "consultado_em": "2026-09-10T22:10:59.894Z",
+  "path": "act_1733204057869041/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-08-12\",\"until\":\"2026-09-10\"}",
+    "level": "campaign",
+    "fields": "campaign_id,campaign_name,adset_id,adset_name,ad_id,ad_name,spend,impressions,clicks,inline_link_clicks,actions,action_values,objective,optimization_goal,attribution_setting,account_currency,date_start,date_stop",
+    "limit": "500"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 5,
+    "data": [
+      {
+        "campaign_id": "120252321639770054",
+        "campaign_name": "ABO - OBJ MQL - Champion Front",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253392582600054",
+        "campaign_name": "LP3 - ABO - (29/06)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253582381090054",
+        "campaign_name": "LP4 - ABO - (04/07)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253695740100054",
+        "campaign_name": "ABO - OBJ MQL",
+        "spend": "55.14",
+        "impressions": "3483",
+        "clicks": "273",
+        "inline_link_clicks": "225",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "225"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_initiate_checkout_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "11"
+          },
+          {
+            "action_type": "offsite_content_view_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "click_to_call_native_call_placed",
+            "value": "22"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "174"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "174"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "537"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "20"
+          },
+          {
+            "action_type": "comment",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "537"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "20"
+          },
+          {
+            "action_type": "post",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "11"
+          },
+          {
+            "action_type": "click_to_call_native_20s_call_connect",
+            "value": "3"
+          },
+          {
+            "action_type": "offsite_add_to_cart_add_20_s_calls",
+            "value": "3"
+          },
+          {
+            "action_type": "click_to_call_native_60s_call_connect",
+            "value": "2"
+          },
+          {
+            "action_type": "video_view",
+            "value": "292"
+          },
+          {
+            "action_type": "click_to_call_call_confirm",
+            "value": "34"
+          },
+          {
+            "action_type": "call_confirm_grouped",
+            "value": "34"
+          },
+          {
+            "action_type": "offsite_lead_add_20_s_calls",
+            "value": "3"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      },
+      {
+        "campaign_id": "120253841407370054",
+        "campaign_name": "Teste — ABO - OBJ MQL",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "attribution_setting": "1d_view_7d_click",
+        "account_currency": "USD",
+        "date_start": "2026-08-12",
+        "date_stop": "2026-09-10"
+      }
+    ]
+  }
+}

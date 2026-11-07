@@ -1,0 +1,2920 @@
+{
+  "consultado_em": "2026-09-10T21:43:25.958Z",
+  "path": "act_1107952820265255/insights",
+  "params": {
+    "time_range": "{\"since\":\"2026-04-01\",\"until\":\"2026-04-30\"}",
+    "level": "campaign",
+    "fields": "campaign_id,campaign_name,adset_id,adset_name,ad_id,ad_name,spend,impressions,clicks,inline_link_clicks,reach,frequency,cpm,ctr,cpc,actions,action_values,objective,optimization_goal,buying_type,attribution_setting",
+    "limit": "500"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 109,
+    "data": [
+      {
+        "campaign_id": "120212182169020044",
+        "campaign_name": "ONGOING - CBO/Teste de criativo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120213029259290044",
+        "campaign_name": "3 ONGOING - CBO/Teste de criativo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120213029259430044",
+        "campaign_name": "2 ONGOING - CBO/Teste de criativo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120213195599700044",
+        "campaign_name": "ONGOING - CBO/Teste de criativo — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120214298162090044",
+        "campaign_name": "Teste de criativo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120214436848490044",
+        "campaign_name": "ONGOING - CBO/Teste de criativo — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120214437316570044",
+        "campaign_name": "VAi irmão, é o AD1 brabo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120214954086950044",
+        "campaign_name": "Teste de Criativos demanda nova",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120214954776390044",
+        "campaign_name": "Tráfego para VSL",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120215433683080044",
+        "campaign_name": "Campanha Oferta Taroo",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120215594023030044",
+        "campaign_name": "Teste ADs F-portfólio",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120215932552080044",
+        "campaign_name": "Teste Ads Daniel",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120215933142150044",
+        "campaign_name": "Teste Ads Daniel — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120215933142160044",
+        "campaign_name": "Teste Ads Daniel — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120215939769930044",
+        "campaign_name": "Campanha Europe",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120215952930020044",
+        "campaign_name": "Campanha Europe — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120215952930030044",
+        "campaign_name": "Campanha Europe — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120216162254960044",
+        "campaign_name": "Funil 01 - Forms",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120216172024440044",
+        "campaign_name": "Campanha AD VALIDADO",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120216443560920044",
+        "campaign_name": "Dark Post AD Validado",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_AWARENESS",
+        "optimization_goal": "REACH",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120216462823860044",
+        "campaign_name": "Campanha AD Lula",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120216983800120044",
+        "campaign_name": "Ad validado Variações breves",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120216988690510044",
+        "campaign_name": "Validado teste de estrutura 1-3-3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120216989315410044",
+        "campaign_name": "Validado teste estrutura 1-4-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217268609950044",
+        "campaign_name": "Validado teste estrutura 1-4-3",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217270043430044",
+        "campaign_name": "Validado teste estrutura 1-4-4",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217607833240044",
+        "campaign_name": "Validado teste estrutura 1-4-1 — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217607833250044",
+        "campaign_name": "Validado teste estrutura 1-4-1 — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217708138300044",
+        "campaign_name": "ESCALA 1-4-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217708138400044",
+        "campaign_name": "ESCALA 1-4-1 / Teste orçamento alto",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217708138410044",
+        "campaign_name": "ESCALA 1-4-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217837011620044",
+        "campaign_name": "LARA - AD1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217837277980044",
+        "campaign_name": "LARA - AD2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217892340260044",
+        "campaign_name": "LARA - AD1 — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217892495680044",
+        "campaign_name": "LARA - AD2 — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217919008590044",
+        "campaign_name": "[CHAMPION 1] 1-4-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217922472530044",
+        "campaign_name": "[CHAMPION 5] 1-4-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217922472610044",
+        "campaign_name": "[CHAMPION 4] 1-4-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217922472660044",
+        "campaign_name": "[CHAMPION 2] 1-4-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217922472670044",
+        "campaign_name": "[CHAMPION 3] 1-4-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217922572670044",
+        "campaign_name": "[CHAMPION 6] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217922653090044",
+        "campaign_name": "[CHAMPION 7] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217922653120044",
+        "campaign_name": "[CHAMPION 10] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217922653190044",
+        "campaign_name": "[CHAMPION 8] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120217922653200044",
+        "campaign_name": "[CHAMPION 9] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120218013065060044",
+        "campaign_name": "[CHAMPION 11] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120218013065110044",
+        "campaign_name": "[CHAMPION 15] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120218013065160044",
+        "campaign_name": "[CHAMPION 18] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120218013065170044",
+        "campaign_name": "[CHAMPION 12] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120218013065180044",
+        "campaign_name": "[CHAMPION 13] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120218013065260044",
+        "campaign_name": "[CHAMPION 17] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120218013065270044",
+        "campaign_name": "[CHAMPION 16] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120218013065280044",
+        "campaign_name": "[CHAMPION 14] 1-1-1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120218223736730044",
+        "campaign_name": "ONGOING - CBO/Estrutura",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120219053247460044",
+        "campaign_name": "ADV #2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120219556881120044",
+        "campaign_name": "ONGOING - CBO/Melhores Ads",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120220293430450044",
+        "campaign_name": "Lara social media",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120221170395150044",
+        "campaign_name": "ONGOING - CBO/Melhores Ads — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120222186111940044",
+        "campaign_name": "ONGOING - CBO/ADV#2 Variações",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120222471021010044",
+        "campaign_name": "ONGOING - CBO/ADV#2 Variações (1-4-4)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120222976740570044",
+        "campaign_name": "ONGOING - CBO/ADV#2 Variações #2 (1-4-3)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120222983790820044",
+        "campaign_name": "ONGOING - CBO/Melhores Ads - Atualizado",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120223120076700044",
+        "campaign_name": "ONGOING - CBO/Melhores Ads — 2",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120224317816040044",
+        "campaign_name": "ONGOING - CBO/ADV#2 Variações novas (1-4-4)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120224318406330044",
+        "campaign_name": "ONGOING - CBO/ADV#4 Igor caixinha",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120224375137600044",
+        "campaign_name": "ONGOING - CBO/Best Ads New (X1)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120224718423320044",
+        "campaign_name": "Variações do V1",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120224719019930044",
+        "campaign_name": "Publicação do Instagram: Converse com o nosso...",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "MESSAGES",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120224754085710044",
+        "campaign_name": "Publicação do Instagram: Converse com o nosso...",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "LINK_CLICKS",
+        "optimization_goal": "NONE",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120225160324910044",
+        "campaign_name": "ADV#7 SIM",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120225528407600044",
+        "campaign_name": "ADV#7 - Variações",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120225869029800044",
+        "campaign_name": "ONGOING - CBO/Teste criativo ADV#8",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120225998836280044",
+        "campaign_name": "ONGOING - CBO/Teste criativo ADV#8 — Estrutura nova",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120226229418990044",
+        "campaign_name": "ONGOING - CBO/Best Ads New (X1)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120226284224240044",
+        "campaign_name": "ONGOING - CBO/Best Ads New (x1)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120226298630850044",
+        "campaign_name": "Tráfego pro Perfil ADV",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "LINK_CLICKS",
+        "optimization_goal": "NONE",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120226730345080044",
+        "campaign_name": "CBO/Teste de criativo ADV#2 V9 Lula",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120226813269960044",
+        "campaign_name": "Tráfego pro Perfil ADV — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "LINK_CLICKS",
+        "optimization_goal": "NONE",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120227043659320044",
+        "campaign_name": "Lotar Grupo 1-4-4",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120227443887780044",
+        "campaign_name": "Variações ADV#2 (V10, V11, V12)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120227898401020044",
+        "campaign_name": "Variações ADV#2 (V13, V14, V17)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120228148079160044",
+        "campaign_name": "ONGOING - CBO/Best Ads New (x1)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120228473249910044",
+        "campaign_name": "ONGOING - CBO/Best Ads New — (Lead)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120228473278180044",
+        "campaign_name": "ONGOING - CBO/Best Ads New — (Conversão)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120228501580600044",
+        "campaign_name": "Lotar Grupo 1-4-2 — Novo teste presell",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120228857901580044",
+        "campaign_name": "Lotar Grupo 1-4-2 — Novo teste presell — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120229179303470044",
+        "campaign_name": "Teste de Criativo ADV#12 - V1 a V4",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120229180174200044",
+        "campaign_name": "Lotar Grupo 1-4-2 — Novo teste presell",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120229424071220044",
+        "campaign_name": "Teste de Criativo ADV#12 - V1 a V4 — Cópia",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "LINK_CLICKS",
+        "optimization_goal": "NONE",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120230592029030044",
+        "campaign_name": "Lotar Grupo 1-4-5 (ADS NOVOS JET)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120230658543930044",
+        "campaign_name": "ONGOING - CBO/ADV#13 - V1 a V4",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120231340467650044",
+        "campaign_name": "CBO/1-3-8  [T02 - ADV#15 e #16]",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120231597658210044",
+        "campaign_name": "ABO/ [Teste Criativos]",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120232327150080044",
+        "campaign_name": "Escala ADV#18",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120233591977880044",
+        "campaign_name": "CBO/Best ads 2025",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120235668139230044",
+        "campaign_name": "Teste ads em Imagem (X1)",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120236075004090044",
+        "campaign_name": "C.T.S - Primeiro Teste Ads",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "REPLIES",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120236481149370044",
+        "campaign_name": "Teste de Criativos - Champions League",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120236483295540044",
+        "campaign_name": "Teste de Criativos - Champions League — OBJ: \"Lead\"",
+        "spend": "1930.56",
+        "impressions": "52187",
+        "clicks": "1366",
+        "inline_link_clicks": "924",
+        "reach": "39699",
+        "frequency": "1.314567",
+        "cpm": "36.993121",
+        "ctr": "2.61751",
+        "cpc": "1.413294",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "82"
+          },
+          {
+            "action_type": "link_click",
+            "value": "924"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "82"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "11"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "82"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "506"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "2"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "572"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "572"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "52"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "28526"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "699"
+          },
+          {
+            "action_type": "comment",
+            "value": "14"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "28526"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "82"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "751"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "2"
+          },
+          {
+            "action_type": "post",
+            "value": "133"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "82"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "46"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "14"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "46"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "454"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "3"
+          },
+          {
+            "action_type": "video_view",
+            "value": "26903"
+          },
+          {
+            "action_type": "offsite_conversion.custom.1233019062334320",
+            "value": "11"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "multiple",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120236764576600044",
+        "campaign_name": "Escala T01 - C3 - CL — OBJ: \"Lead\"",
+        "spend": "0",
+        "impressions": "0",
+        "clicks": "0",
+        "inline_link_clicks": "0",
+        "reach": "0",
+        "frequency": "0",
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120237206369410044",
+        "campaign_name": "Escala T04 - C1 e C4 - CL",
+        "spend": "2729.86",
+        "impressions": "75575",
+        "clicks": "1890",
+        "inline_link_clicks": "1335",
+        "reach": "52737",
+        "frequency": "1.433055",
+        "cpm": "36.121204",
+        "ctr": "2.500827",
+        "cpc": "1.44437",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "98"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "1335"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "98"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "20"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "98"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "822"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "4"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "802"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "802"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "90"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "44171"
+          },
+          {
+            "action_type": "like",
+            "value": "1"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "1192"
+          },
+          {
+            "action_type": "comment",
+            "value": "23"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "44172"
+          },
+          {
+            "action_type": "purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "98"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "1283"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "5"
+          },
+          {
+            "action_type": "post",
+            "value": "279"
+          },
+          {
+            "action_type": "onsite_conversion.post_unsave",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "98"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "68"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "23"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "1"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "67"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "732"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "5"
+          },
+          {
+            "action_type": "video_view",
+            "value": "41644"
+          },
+          {
+            "action_type": "offsite_conversion.custom.1233019062334320",
+            "value": "18"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "700"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "700"
+          },
+          {
+            "action_type": "purchase",
+            "value": "700"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "0.07"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "700"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "700"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "700"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "multiple",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120239380042000044",
+        "campaign_name": "OBJ: \"MQL\" - Ads validados",
+        "spend": "14830.26",
+        "impressions": "445940",
+        "clicks": "5482",
+        "inline_link_clicks": "3443",
+        "reach": "207819",
+        "frequency": "2.14581",
+        "cpm": "33.256178",
+        "ctr": "1.229313",
+        "cpc": "2.705265",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "362"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "7"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "7"
+          },
+          {
+            "action_type": "link_click",
+            "value": "3443"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "362"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "7"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "7"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "121"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "362"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "6462"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "14"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "2332"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "2332"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "21"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "645"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "190268"
+          },
+          {
+            "action_type": "like",
+            "value": "3"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "6990"
+          },
+          {
+            "action_type": "comment",
+            "value": "40"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "7"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "190271"
+          },
+          {
+            "action_type": "purchase",
+            "value": "7"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "362"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "7635"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "12"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "5"
+          },
+          {
+            "action_type": "post",
+            "value": "398"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "362"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "90"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "40"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "8"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "90"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "5817"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_5_message_send",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "8"
+          },
+          {
+            "action_type": "video_view",
+            "value": "179835"
+          },
+          {
+            "action_type": "offsite_conversion.custom.1233019062334320",
+            "value": "100"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "16893"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "16893"
+          },
+          {
+            "action_type": "purchase",
+            "value": "16893"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "1.69"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "16893"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "16893"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "16893"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "multiple",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120239399765540044",
+        "campaign_name": "BIDCAP MONSTRA",
+        "spend": "18097.76",
+        "impressions": "336160",
+        "clicks": "6989",
+        "inline_link_clicks": "4540",
+        "reach": "110109",
+        "frequency": "3.052975",
+        "cpm": "53.836744",
+        "ctr": "2.079069",
+        "cpc": "2.589463",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "329"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "11"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "11"
+          },
+          {
+            "action_type": "link_click",
+            "value": "4540"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "329"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "11"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "11"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "193"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "329"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2061"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+            "value": "12"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "3240"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "3240"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "19"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "171"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "126083"
+          },
+          {
+            "action_type": "like",
+            "value": "2"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3110"
+          },
+          {
+            "action_type": "comment",
+            "value": "55"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "11"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "126085"
+          },
+          {
+            "action_type": "purchase",
+            "value": "11"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "329"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "3283"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_first_reply",
+            "value": "11"
+          },
+          {
+            "action_type": "post",
+            "value": "693"
+          },
+          {
+            "action_type": "onsite_conversion.post_unsave",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "329"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "301"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "55"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_user_depth_3_message_send",
+            "value": "8"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "299"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1890"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_conversion.messaging_conversation_started_7d",
+            "value": "21"
+          },
+          {
+            "action_type": "video_view",
+            "value": "118433"
+          },
+          {
+            "action_type": "offsite_conversion.custom.1233019062334320",
+            "value": "124"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "21623"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "21623"
+          },
+          {
+            "action_type": "purchase",
+            "value": "21623"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "2.16"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "21623"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "21623"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "21623"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120239923516540044",
+        "campaign_name": "Ads validados - OBJ - Reuniões",
+        "spend": "160.91",
+        "impressions": "3405",
+        "clicks": "86",
+        "inline_link_clicks": "56",
+        "reach": "3028",
+        "frequency": "1.124505",
+        "cpm": "47.256975",
+        "ctr": "2.525698",
+        "cpc": "1.871047",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "7"
+          },
+          {
+            "action_type": "link_click",
+            "value": "56"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "7"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "2"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "7"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "32"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "41"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "41"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "6"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1589"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "48"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1589"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "7"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "55"
+          },
+          {
+            "action_type": "post",
+            "value": "11"
+          },
+          {
+            "action_type": "onsite_conversion.post_unsave",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "7"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "26"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1485"
+          },
+          {
+            "action_type": "offsite_conversion.custom.1233019062334320",
+            "value": "2"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120239923570380044",
+        "campaign_name": "BIDCAP MONSTRA — Cópia",
+        "spend": "0.52",
+        "impressions": "24",
+        "clicks": "1",
+        "inline_link_clicks": "1",
+        "reach": "18",
+        "frequency": "1.333333",
+        "cpm": "21.666667",
+        "ctr": "4.166667",
+        "cpc": "0.52",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "9"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "9"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "8"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120239992362590044",
+        "campaign_name": "Teste de Criativos MQL CBO",
+        "spend": "239.61",
+        "impressions": "3851",
+        "clicks": "84",
+        "inline_link_clicks": "44",
+        "reach": "3323",
+        "frequency": "1.158893",
+        "cpm": "62.220203",
+        "ctr": "2.181252",
+        "cpc": "2.8525",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "5"
+          },
+          {
+            "action_type": "link_click",
+            "value": "44"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "5"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "5"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "29"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "32"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "32"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "1"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "1681"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "40"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "1681"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "5"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "41"
+          },
+          {
+            "action_type": "post",
+            "value": "9"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "28"
+          },
+          {
+            "action_type": "video_view",
+            "value": "1597"
+          },
+          {
+            "action_type": "offsite_conversion.custom.1233019062334320",
+            "value": "1"
+          }
+        ],
+        "objective": "OUTCOME_LEADS",
+        "optimization_goal": "Unknown Optimization Goal",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click_1d_ev",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120241158702880044",
+        "campaign_name": "OBJ \"Vendas\" - Ads validados",
+        "spend": "1744.81",
+        "impressions": "27624",
+        "clicks": "622",
+        "inline_link_clicks": "423",
+        "reach": "17377",
+        "frequency": "1.589688",
+        "cpm": "63.162829",
+        "ctr": "2.251665",
+        "cpc": "2.805161",
+        "actions": [
+          {
+            "action_type": "offsite_complete_registration_add_meta_leads",
+            "value": "10"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "link_click",
+            "value": "423"
+          },
+          {
+            "action_type": "omni_complete_registration",
+            "value": "10"
+          },
+          {
+            "action_type": "offsite_purchase_add_20_s_calls",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_custom",
+            "value": "9"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_complete_registration",
+            "value": "10"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "131"
+          },
+          {
+            "action_type": "landing_page_view",
+            "value": "256"
+          },
+          {
+            "action_type": "omni_landing_page_view",
+            "value": "256"
+          },
+          {
+            "action_type": "onsite_conversion.total_messaging_connection",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "11"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "10068"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "193"
+          },
+          {
+            "action_type": "comment",
+            "value": "4"
+          },
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "10068"
+          },
+          {
+            "action_type": "purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "complete_registration",
+            "value": "10"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "204"
+          },
+          {
+            "action_type": "post",
+            "value": "43"
+          },
+          {
+            "action_type": "offsite_complete_registration_add_20_s_calls",
+            "value": "10"
+          },
+          {
+            "action_type": "onsite_conversion.post_save",
+            "value": "15"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_comment",
+            "value": "4"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_save",
+            "value": "15"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "120"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "1"
+          },
+          {
+            "action_type": "video_view",
+            "value": "9452"
+          },
+          {
+            "action_type": "offsite_conversion.custom.1233019062334320",
+            "value": "4"
+          }
+        ],
+        "action_values": [
+          {
+            "action_type": "onsite_web_app_purchase",
+            "value": "797"
+          },
+          {
+            "action_type": "onsite_web_purchase",
+            "value": "797"
+          },
+          {
+            "action_type": "purchase",
+            "value": "797"
+          },
+          {
+            "action_type": "web_app_in_store_purchase",
+            "value": "0.08"
+          },
+          {
+            "action_type": "offsite_conversion.fb_pixel_purchase",
+            "value": "797"
+          },
+          {
+            "action_type": "omni_purchase",
+            "value": "797"
+          },
+          {
+            "action_type": "web_in_store_purchase",
+            "value": "797"
+          }
+        ],
+        "objective": "OUTCOME_SALES",
+        "optimization_goal": "OFFSITE_CONVERSIONS",
+        "buying_type": "AUCTION",
+        "attribution_setting": "multiple",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120241173103170044",
+        "campaign_name": "Publicação do Instagram: Converse com o nosso...",
+        "spend": "71.29",
+        "impressions": "13878",
+        "clicks": "252",
+        "inline_link_clicks": "252",
+        "reach": "10799",
+        "frequency": "1.285119",
+        "cpm": "5.136907",
+        "ctr": "1.815824",
+        "cpc": "0.282897",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "252"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "3"
+          },
+          {
+            "action_type": "onsite_conversion.post_unlike",
+            "value": "2"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "255"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "3"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "255"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "5"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "1"
+          }
+        ],
+        "objective": "LINK_CLICKS",
+        "optimization_goal": "NONE",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      },
+      {
+        "campaign_id": "120241173106100044",
+        "campaign_name": "Publicação do Instagram: Nesse post você entende...",
+        "spend": "86.75",
+        "impressions": "13194",
+        "clicks": "248",
+        "inline_link_clicks": "248",
+        "reach": "12631",
+        "frequency": "1.044573",
+        "cpm": "6.574958",
+        "ctr": "1.879642",
+        "cpc": "0.349798",
+        "actions": [
+          {
+            "action_type": "link_click",
+            "value": "248"
+          },
+          {
+            "action_type": "post_reaction",
+            "value": "2"
+          },
+          {
+            "action_type": "post_engagement",
+            "value": "250"
+          },
+          {
+            "action_type": "post_interaction_gross",
+            "value": "2"
+          },
+          {
+            "action_type": "page_engagement",
+            "value": "250"
+          },
+          {
+            "action_type": "post_interaction_net",
+            "value": "2"
+          },
+          {
+            "action_type": "onsite_conversion.post_net_like",
+            "value": "2"
+          }
+        ],
+        "objective": "LINK_CLICKS",
+        "optimization_goal": "NONE",
+        "buying_type": "AUCTION",
+        "attribution_setting": "1d_view_7d_click",
+        "date_start": "2026-04-01",
+        "date_stop": "2026-04-30"
+      }
+    ]
+  }
+}

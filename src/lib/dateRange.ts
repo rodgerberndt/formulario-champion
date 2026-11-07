@@ -25,8 +25,11 @@ export const PRESET_LABELS: Record<DatePreset, string> = {
   [DatePreset.LAST_14_DAYS]: "Últimos 14 dias",
   [DatePreset.LAST_28_DAYS]: "Últimos 28 dias",
   [DatePreset.LAST_30_DAYS]: "Últimos 30 dias",
-  [DatePreset.THIS_WEEK]: "Esta semana",
-  [DatePreset.LAST_WEEK]: "Semana passada",
+  // A semana aqui já começa na segunda (startOfWeek(now, 1)), que é a mesma
+  // semana de venda que a meta usa para se dividir. O rótulo diz isso porque a
+  // pergunta "essa semana bate com a semana da meta?" aparecia toda vez.
+  [DatePreset.THIS_WEEK]: "Esta semana (sáb a sex)",
+  [DatePreset.LAST_WEEK]: "Semana passada (sáb a sex)",
   [DatePreset.THIS_MONTH]: "Este mês",
   [DatePreset.LAST_MONTH]: "Mês passado",
   [DatePreset.MAXIMUM]: "Máximo",
@@ -52,7 +55,14 @@ export function endOfDay(date: Date): Date {
   return result;
 }
 
-export function startOfWeek(date: Date, weekStartsOn: 0 | 1 = 1): Date {
+/**
+ * `weekStartsOn`: 0 domingo, 1 segunda, 6 sábado.
+ *
+ * A semana de venda da Champion começa no SÁBADO desde 03/09/2026, para o fim
+ * de semana adiantar a semana que começa em vez de fechar a que passou. Ver o
+ * cabeçalho de supabase/functions/admin-data/metas.ts.
+ */
+export function startOfWeek(date: Date, weekStartsOn: 0 | 1 | 6 = 6): Date {
   const result = new Date(date);
   const day = result.getDay();
   const diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn;
@@ -60,7 +70,7 @@ export function startOfWeek(date: Date, weekStartsOn: 0 | 1 = 1): Date {
   return startOfDay(result);
 }
 
-export function endOfWeek(date: Date, weekStartsOn: 0 | 1 = 1): Date {
+export function endOfWeek(date: Date, weekStartsOn: 0 | 1 | 6 = 6): Date {
   const result = startOfWeek(date, weekStartsOn);
   result.setDate(result.getDate() + 6);
   return endOfDay(result);
@@ -148,11 +158,11 @@ export function getRangeFromPreset(preset: DatePreset, now: Date = new Date()): 
       return { start: startOfDay(subDays(now, 29)), end: todayEnd };
 
     case DatePreset.THIS_WEEK:
-      return { start: startOfWeek(now, 1), end: todayEnd };
+      return { start: startOfWeek(now, 6), end: todayEnd };
 
     case DatePreset.LAST_WEEK: {
       const lastWeek = subWeeks(now, 1);
-      return { start: startOfWeek(lastWeek, 1), end: endOfWeek(lastWeek, 1) };
+      return { start: startOfWeek(lastWeek, 6), end: endOfWeek(lastWeek, 6) };
     }
 
     case DatePreset.THIS_MONTH:

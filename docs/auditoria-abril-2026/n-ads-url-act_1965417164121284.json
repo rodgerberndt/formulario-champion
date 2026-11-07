@@ -1,0 +1,1852 @@
+{
+  "consultado_em": "2026-09-10T23:42:32.067Z",
+  "path": "act_1965417164121284/ads",
+  "params": {
+    "fields": "id,name,adset_id,campaign_id,effective_status,creative{id,name,url_tags,object_story_spec{link_data{link,child_attachments}},asset_feed_spec{link_urls}}",
+    "limit": "300"
+  },
+  "resposta": {
+    "ok": true,
+    "paginas": 1,
+    "truncado": false,
+    "total": 153,
+    "data": [
+      {
+        "id": "52601101109693",
+        "name": "Case Ighor #8 (30-08)",
+        "adset_id": "52598801818293",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1447529630531115",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-02-cc5f5e46f31a745b1df6fe44f0651aa9",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52601101054693",
+        "name": "Case Ighor #2 (30-08)",
+        "adset_id": "52598801698893",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1647762490260137",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-02-c4d6e815c14e37c4e06291d9f3c3dc33",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52601101052093",
+        "name": "Case Ighor #2 (30-08)",
+        "adset_id": "52598801698693",
+        "campaign_id": "52598800739293",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1601872848053557",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-02-e3fedaa0fd427e1d191b766a641a367c",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52601101045493",
+        "name": "Case Ighor #2 (30-08)",
+        "adset_id": "52598801698293",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1800549534631348",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-02-3b608baa220a80e57e878feceaba6d1c",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52601101108293",
+        "name": "Case Ighor #8 (30-08)",
+        "adset_id": "52598801698893",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "27780368511658259",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-02-af9ef609614110ff851e8e3a31f2e44c",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52601101103293",
+        "name": "Case Ighor #8 (30-08)",
+        "adset_id": "52598801698693",
+        "campaign_id": "52598800739293",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "2869508373432547",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-02-19e7e420371b07c7dddcf523c716be3d",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52601101088893",
+        "name": "Case Ighor #8 (30-08)",
+        "adset_id": "52598801698293",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "2325641451523079",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-02-fb3be51ffff0e57e9455fa2b2a5660c0",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52601101083293",
+        "name": "Case Ighor #8 (30-08)",
+        "adset_id": "52598800743493",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "2389971058075203",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-02-09d0d4f3970c5f90a3b8307cf4b3cda7",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52601101057093",
+        "name": "Case Ighor #2 (30-08)",
+        "adset_id": "52598801818293",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1093445400036205",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-02-f9d160e1060c07e8136eeb96f48e879a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52601101042693",
+        "name": "Case Ighor #2 (30-08)",
+        "adset_id": "52598800743493",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1437611484954820",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-09-02-103aa311a58dc6b4bfd9404fc4a1184c",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600747095493",
+        "name": "H5  Luis-Nathan Case #2",
+        "adset_id": "52600747070493",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1605650277933469",
+          "name": "H5  Luis-Nathan Case #2 2026-08-31-04be78097bf7c4fa87145d4ca5d9a66b",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600747147493",
+        "name": "H3 - Arthur Case #1",
+        "adset_id": "52600747110893",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1097988612566885",
+          "name": "H3 - Arthur Case #1 2026-08-31-6bad2676d4f58cc9991f7511f90d4072",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600747059893",
+        "name": "H1 - Luis-Nathan Case #2",
+        "adset_id": "52600747036093",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1765150801469724",
+          "name": "H1 - Luis-Nathan Case #2 2026-08-31-5eaedccd2f8faafedeb781faada4ca94",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746373693",
+        "name": "Case Ricardo #2",
+        "adset_id": "52600746364693",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1745253286697257",
+          "name": "Case Ricardo #2 2026-08-31-029ee8436da4518496aa7ccb00057e57",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746392493",
+        "name": "H10 - Arthur Case #1",
+        "adset_id": "52600746376693",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1594935218751960",
+          "name": "H10 - Arthur Case #1 2026-08-31-f30cae7fb4d6d78255c78eb0bc9d4a39",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746403293",
+        "name": "H11- Arthur Case #1",
+        "adset_id": "52600746394493",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1589132766189110",
+          "name": "H11- Arthur Case #1 2026-08-31-0585a9ab46f0cfa99364bd125e6bafeb",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600747023093",
+        "name": "H5 Arthur Case #1",
+        "adset_id": "52600747011093",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2295914807479787",
+          "name": "H5 Arthur Case #1 2026-08-31-7196b1fb9b01e78abf5a2bc20f822a96",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746415493",
+        "name": "H7 - Arthur Case #1",
+        "adset_id": "52600746404693",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1114016731198349",
+          "name": "H7 - Arthur Case #1 2026-08-31-630c42d73ed60f4c8ee0ca6f7492980d",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746429493",
+        "name": "H9 - Arthur Case #1",
+        "adset_id": "52600746422893",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2031660978223792",
+          "name": "H9 - Arthur Case #1 2026-08-31-807dc583353edc063b2b123aa9e01975",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746446293",
+        "name": "H1 - Arthur Case #1",
+        "adset_id": "52600746431693",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2758639164519010",
+          "name": "H1 - Arthur Case #1 2026-08-31-dee5798338b95b9026c26fa600756236",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746491293",
+        "name": "H2-  Luis-Nathan Case #2",
+        "adset_id": "52600746479493",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1784693336314361",
+          "name": "H2-  Luis-Nathan Case #2 2026-08-31-c637984c0593563c629664ee3bc986bf",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746477893",
+        "name": "H7 -  Luis-Nathan Case #2",
+        "adset_id": "52600746453893",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1094045333371827",
+          "name": "H7 -  Luis-Nathan Case #2 2026-08-31-707080cebaee952e32c78e5a06545e60",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746556493",
+        "name": "H8 - Arthur Case #1",
+        "adset_id": "52600746525693",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2139141770333551",
+          "name": "H8 - Arthur Case #1 2026-08-31-d71a3acee344a2b5f06a59990b73a25b",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746602693",
+        "name": "H12 - Arthur Case #1",
+        "adset_id": "52600746559693",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1829399158472675",
+          "name": "H12 - Arthur Case #1 2026-08-31-b68b64580106b6cd2100f0186ca3e976",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746678293",
+        "name": "H10 -  Luis-Nathan Case #2",
+        "adset_id": "52600746654493",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1043218821872918",
+          "name": "H10 -  Luis-Nathan Case #2 2026-08-31-f9fb5b492e4ebca55c5b41be5e8bbd01",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746726093",
+        "name": "H9 -  Luis-Nathan Case #2",
+        "adset_id": "52600746687293",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1119392057180494",
+          "name": "H9 -  Luis-Nathan Case #2 2026-08-31-90e210b342905e5b563c5643c85a2d7e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746767293",
+        "name": "H13 - Arthur Case #1",
+        "adset_id": "52600746748093",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "4591345604486968",
+          "name": "H13 - Arthur Case #1 2026-08-31-9f9f9b07d743c87876b440c3a8bb2210",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746815893",
+        "name": "H11 - Arthur Case #1",
+        "adset_id": "52600746779293",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1024850810373053",
+          "name": "H11 - Arthur Case #1 2026-08-31-10fadfd93880c7e0ca9f8fb5176e92ee",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746843493",
+        "name": "H3 -  Luis-Nathan Case #2",
+        "adset_id": "52600746825893",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1570915371080431",
+          "name": "H3 -  Luis-Nathan Case #2 2026-08-31-6f0f6b4cb429fc5ddfbd3b67682e1148",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746872693",
+        "name": "H2- Arthur Case #1",
+        "adset_id": "52600746850093",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2167192230524500",
+          "name": "H2- Arthur Case #1 2026-08-31-f163dc858e0b9ac4d52a4c4c8548c4c1",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746907093",
+        "name": "H8 - Luis-Nathan Case #2",
+        "adset_id": "52600746883493",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "5122890344604398",
+          "name": "H8 - Luis-Nathan Case #2 2026-08-31-362d3e269a37c85f5e28ea8d696a2535",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746929093",
+        "name": "H12 -  Luis-Nathan Case #2",
+        "adset_id": "52600746909693",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1533999555166214",
+          "name": "H12 -  Luis-Nathan Case #2 2026-08-31-5d521ca5d69cb9ef5c269094cff12c6b",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746950293",
+        "name": "H13 -  Luis-Nathan Case #2",
+        "adset_id": "52600746933893",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1401388358601067",
+          "name": "H13 -  Luis-Nathan Case #2 2026-08-31-7c0159b76275a172dbae036ad13f48cc",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600746982693",
+        "name": "H11 -  Luis-Nathan Case #2",
+        "adset_id": "52600746952893",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1775055933619516",
+          "name": "H11 -  Luis-Nathan Case #2 2026-08-31-01e62475df9cf2549738f4ce1a0d1b0c",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600747182293",
+        "name": "Case Ricardo #1",
+        "adset_id": "52600747158493",
+        "campaign_id": "52600745887093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "28060721940251847",
+          "name": "Case Ricardo #1 2026-08-31-845f08858f9e22cd540af350124a26ac",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732086493",
+        "name": "Case Ricardo #2",
+        "adset_id": "52599732087293",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "906002272582545",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-31-8e362d38a555d99471e103b0106c14d4",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600695312493",
+        "name": "Luis-Nathan Case #2 - V3 (Quiz)",
+        "adset_id": "52600695293893",
+        "campaign_id": "52600695284893",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1637201567974861",
+          "name": "Pare de perder tempo com criativo. 2026-08-31-3098926b170e356fbc4a67685894bb36",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598802362893",
+        "name": "Arthur Case #1",
+        "adset_id": "52598802364493",
+        "campaign_id": "52598802362693",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "1058917156503556",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-75f00d4befab5cc64b6a4280118f13e9",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600508957093",
+        "name": "Case Ighor #5 (30-08)",
+        "adset_id": "52600508895893",
+        "campaign_id": "52600508857293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1616281150114073",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-30-1d211eaac608e3400288712768797190",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600508951293",
+        "name": "Case Ighor #4 (30-08)",
+        "adset_id": "52600508884293",
+        "campaign_id": "52600508857293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1835707500943417",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-30-84925f67d4b1805c2c00537cd6eb808d",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600508958893",
+        "name": "Case Ighor #6 (30-08)",
+        "adset_id": "52600508907293",
+        "campaign_id": "52600508857293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1063730869440938",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-30-dced5093fe124ef571fb1a1aa072a90e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600508946293",
+        "name": "Case Ighor #2 (30-08)",
+        "adset_id": "52600508864893",
+        "campaign_id": "52600508857293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "2925049194526732",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-30-472897f7f525d90e9e14c61c100fb1bb",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600508944693",
+        "name": "Case Ighor #1 (30-08)",
+        "adset_id": "52600508858893",
+        "campaign_id": "52600508857293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1746062383311305",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-30-aeb456d2cfaf91bd28f7684f7b12828a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600508947293",
+        "name": "Case Ighor #3 (30-08)",
+        "adset_id": "52600508872893",
+        "campaign_id": "52600508857293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1723351968955229",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-30-a0d01625f307587e35f035d01654e841",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600508963893",
+        "name": "Case Ighor #8 (30-08)",
+        "adset_id": "52600508925893",
+        "campaign_id": "52600508857293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1046020284970564",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-30-31a8aba0f3ebce33eb31c5f995e8844f",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52600508961493",
+        "name": "Case Ighor #7 (30-08)",
+        "adset_id": "52600508919093",
+        "campaign_id": "52600508857293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1734742557804208",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-30-88b46db07d0201af704bdb1d340d8e82",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801697893",
+        "name": "Arthur Case #1",
+        "adset_id": "52598801698893",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "4478829122374350",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-16f77ba3596ce6be58218725f0ffda58",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598800739693",
+        "name": "Arthur Case #1",
+        "adset_id": "52598800743493",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "28240135988916501",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-dff1fbb311ae6a08055894f8eb1351ea",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801701493",
+        "name": "Arthur Case #1",
+        "adset_id": "52598801698693",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "1703182335147378",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-9682bec4cefbdde6f76ff45de63f518a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801701093",
+        "name": "Arthur Case #1",
+        "adset_id": "52598801698093",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "1787150949801876",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-82036bec5a418e4feec4f242dbca2c42",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801701693",
+        "name": "Arthur Case #1",
+        "adset_id": "52598801698493",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "1404112274949809",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-1fef5983a84770d2eb5a196645ffb9b5",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801818693",
+        "name": "Arthur Case #1",
+        "adset_id": "52598801818293",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "1120975700601820",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-da0989f5b1dc6f29b3f3be1f0279058e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801701293",
+        "name": "Arthur Case #1",
+        "adset_id": "52598801698293",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "948604624927105",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-099d0279ad7f6a272fd6a62eab580909",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801818493",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52598801818293",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "2688498081567400",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-c549738c3a7be217bffdbd1aedb6cfa1",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598800739493",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52598800743493",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "934933302986459",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-494e731bc67fc3485001884f283fb31e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801699693",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52598801698693",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "1043574451795423",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-f73e7f2894b06b633b17fcdf7234eca0",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801699493",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52598801698493",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "1054127853868133",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-c5a6c78ab8c73b4a729c3f18961a5295",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801699093",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52598801698293",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "4153852308088335",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-ba6c64919ebeccebd85bba4fa6cd0736",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598802365893",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52598802364493",
+        "campaign_id": "52598802362693",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "1788276495920852",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-75c639263345ca443aea1299160b57f4",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801699893",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52598801698893",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "1039450422054131",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-79b9c5918f6680e478a19e8b44348536",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801699293",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52598801698093",
+        "campaign_id": "52598800739293",
+        "effective_status": "PAUSED",
+        "creative": {
+          "id": "1605439594518900",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-4e15efb8912e15886b76dde21dfec6e2",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732083493",
+        "name": "H10 - Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "27980663888250896",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-2161486eb7a2b771fb50692658c12702",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732082693",
+        "name": "H11- Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1713502866380569",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-4349a7a5c8e9f8497491028b2a967dce",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732083293",
+        "name": "H7 - Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1079357384548165",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-a4bf7a97eb29d69e902b17ccf1f35d7a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732083093",
+        "name": "H9 - Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1562656054706878",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-13083f360734de04b6b72d9eb9df24d7",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732084093",
+        "name": "H1 - Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1043370181789668",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-1852153a346243579218d676ef2aa9ae",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732085493",
+        "name": "H7 -  Luis-Nathan Case #2",
+        "adset_id": "52599732087093",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2565585877237218",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-ed4c16d139ce770e35bf941c137663d1",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732084493",
+        "name": "H2-  Luis-Nathan Case #2",
+        "adset_id": "52599732087093",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1040605661903606",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-0c6df5763bdd170d7a2f2bddf5290c1c",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732083693",
+        "name": "H8 - Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2069647400343098",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-cdb84ea852ec777ada1e7a8a2937198e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732081893",
+        "name": "H12 - Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1299121952145871",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-0287f1d2468b28d0ce654e819fcf0e9a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732084693",
+        "name": "H10 -  Luis-Nathan Case #2",
+        "adset_id": "52599732087093",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "4404925389779334",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-6a3602a7e4ef76967a56f15bc33262c4",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732085893",
+        "name": "H9 -  Luis-Nathan Case #2",
+        "adset_id": "52599732087093",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "4210832555804098",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-2a0fa5a068665ba7cf2f1b993111b6f5",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732082093",
+        "name": "H13 - Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2301292814007001",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-e82cd5fa22c782ea23679879a822ef88",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732082293",
+        "name": "H11 - Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "28166047576381436",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-4a501c12d79dd7bebc44151c0bb43fc6",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732084893",
+        "name": "H3 -  Luis-Nathan Case #2",
+        "adset_id": "52599732087093",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1091938383290714",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-de690d5b5c7d18d3c0e28d5399ba23a0",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732083893",
+        "name": "H2- Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "3227895414266807",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-4a817877acb454a2f1ee3e6c6fb14228",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732085693",
+        "name": "H8 - Luis-Nathan Case #2",
+        "adset_id": "52599732087093",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "917630614274946",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-447b7fb86a894fc4beac4c0dfd2941cf",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732084293",
+        "name": "H12 -  Luis-Nathan Case #2",
+        "adset_id": "52599732087093",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1087573850508730",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-f3c592b89672bb17acae5efa7f382941",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732086093",
+        "name": "H13 -  Luis-Nathan Case #2",
+        "adset_id": "52599732087093",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1826132995219810",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-3e378a2a65c86bc9fc3d5cee9acdc94b",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732085093",
+        "name": "H11 -  Luis-Nathan Case #2",
+        "adset_id": "52599732087093",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2023494991626502",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-c4fec8f9452d68f39d46cc362fc37f7f",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732082493",
+        "name": "H5 Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2136692840535082",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-4512e1b05e99e8ff3dfe602be50bd3e2",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732086293",
+        "name": "H1 - Luis-Nathan Case #2",
+        "adset_id": "52599732087093",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1102209168987921",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-da336ba2467f1bf4759697371309a8f1",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732085293",
+        "name": "H5  Luis-Nathan Case #2",
+        "adset_id": "52599732087093",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1754082029265174",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-60d57e4bfef95c8ac7460d37bc103c3a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732082893",
+        "name": "H3 - Arthur Case #1",
+        "adset_id": "52599732086893",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "928159933084832",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-fb33ff68161871d5e13c92bdfb1de06f",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599732086693",
+        "name": "Case Ricardo #1",
+        "adset_id": "52599732087293",
+        "campaign_id": "52599732081693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1076339268319193",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.\n\nA Champion v 2026-08-25-3e5d0daa9a858a16bb6c0a96edb95ccc",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065459693",
+        "name": "H7 -  Luis-Nathan Case #2",
+        "adset_id": "52599065458893",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1737308000859871",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-25-f11fe58cae5e212175de2c2c2041b2c5",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599057321693",
+        "name": "H7 - Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1584294436520073",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-25-d7b96988641c11bd254394a5255189f7",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065459893",
+        "name": "H5  Luis-Nathan Case #2",
+        "adset_id": "52599065458893",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1630894528599705",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-25-a6549312ecfcf2ce61bec9ad7d2a8374",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599057322093",
+        "name": "H11- Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1800183808076495",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-25-2312b6f48a2a68e0fdd6052e1fca5fbf",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599057322493",
+        "name": "H5 Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1615763256806611",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-25-b436b02045d8e6877e351ca5532c2cf7",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599068386893",
+        "name": "Case Ricardo #1",
+        "adset_id": "52599068386693",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1363689575944481",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-ac32106ea63c0ef2e43a6a3a6533c3b9",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599068387893",
+        "name": "Case Ricardo #2",
+        "adset_id": "52599068386693",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1586815359737866",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-034123b80193acda03f47b113b03c9b4",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065460493",
+        "name": "H10 -  Luis-Nathan Case #2",
+        "adset_id": "52599065458893",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1060441769914886",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-5aecb186178b7edcdf38cf33d26ab22a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065460093",
+        "name": "H11 -  Luis-Nathan Case #2",
+        "adset_id": "52599065458893",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1890704375436172",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-52a2be982700463ce8a8a40a16ff6c82",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599056564693",
+        "name": "H1 - Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1570939754581562",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-1ba94c0c2a30372899412ddb6b34adbf",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065459293",
+        "name": "H8 - Luis-Nathan Case #2",
+        "adset_id": "52599065458893",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1381596927485010",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-ec6ed1028736c5748e3669371d67eff5",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599057321893",
+        "name": "H9 - Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2349059892294860",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-5829f1d9f54d62fd7d5f460ebae6f7ba",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065459093",
+        "name": "H1 - Luis-Nathan Case #2",
+        "adset_id": "52599065458893",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1107646468589756",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-413122e42d3f7e20288f0df9952efefa",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599057320693",
+        "name": "H8 - Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1334368578684534",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-f77b0ae4b7afe957d2425fca369350ce",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599057322293",
+        "name": "H3 - Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2180029159227546",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-d3f4836cc4a18937f753478b2f9ddf0e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065461093",
+        "name": "H12 -  Luis-Nathan Case #2",
+        "adset_id": "52599065458893",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1378979783653534",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-cb12e6f30672f4c1443bf812362db786",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065458693",
+        "name": "H13 -  Luis-Nathan Case #2",
+        "adset_id": "52599065458893",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "810123975492661",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-71b3d11856114a984e2548368ff88ad4",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065459493",
+        "name": "H9 -  Luis-Nathan Case #2",
+        "adset_id": "52599065458893",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1354771153384208",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-190116fc1324dc39483ec7f0209d55b9",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065460693",
+        "name": "H2-  Luis-Nathan Case #2",
+        "adset_id": "52599065458893",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1424345576419687",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-b0a4a1f65c4390b47b09f1458e0226ce",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599057865693",
+        "name": "H11 - Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1233267005610477",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-fb39d2522ffef7ff9ecdeb57cdd826a1",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599057321093",
+        "name": "H2- Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "28411564808530847",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-df44e94e68077f83c181b157195c22a3",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065328293",
+        "name": "H13 - Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "940835002371746",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-85442c81a126d76ae7e45e163f9c6473",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065460293",
+        "name": "H3 -  Luis-Nathan Case #2",
+        "adset_id": "52599065458893",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2406382946557838",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-d4b2bbfd6d80c6be655b6679f9e248c5",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599065328493",
+        "name": "H12 - Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2302546590548355",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-7ab71cb4c2af4cc8ed7231b1bc359ee3",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52599057320893",
+        "name": "H10 - Arthur Case #1",
+        "adset_id": "52599056565293",
+        "campaign_id": "52599056564293",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1411789720904338",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-b2d5bb26dc055e4f940602ae89849cae",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598803373093",
+        "name": "Caio Case #4",
+        "adset_id": "52598802364493",
+        "campaign_id": "52598802362693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1713524203248112",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-77dcb0b604c4c016a58f922401fe390f",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227186293",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52596227184093",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1125389443150662",
+          "name": "Pare de perder tempo com criativo. 2026-08-22-05cb5f3e7a13e2faeb5a5322ef795ab4",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598802363093",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52598802364493",
+        "campaign_id": "52598802362693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1607667934038635",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode escalar.  \n\nA Champion 2026-08-22-eee8e42ff8c3cd2ed33a677892441034",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801818093",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52598801818293",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1003363982717698",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-1ffa47babc6eaa65daeb9e049ad9a9f1",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801700493",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52598801698293",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "1366434912356920",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-42c6c8cce81b47cd6908a765511df48c",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801700293",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52598801698493",
+        "campaign_id": "52598800739293",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1064057899931684",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-aa79b759a79d0b255a500d82c5c2f6c8",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801700893",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52598801698893",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "2064788414398150",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-d808fbfb5fcb13e06fcffe6d3815a935",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801700093",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52598801698093",
+        "campaign_id": "52598800739293",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1500208165205063",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-7fee295aaee7cebdce8295fcbd5c5ca0",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598801700693",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52598801698693",
+        "campaign_id": "52598800739293",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "933393339152520",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-36a2ac22bdccd3d071d87af3ebc6cb2b",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52598800739893",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52598800743493",
+        "campaign_id": "52598800739293",
+        "effective_status": "ACTIVE",
+        "creative": {
+          "id": "28388752620750617",
+          "name": "Pare de perder tempo com criativo. 2026-08-21-109e799fa7376d80876ea141b99cd051",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595879589693",
+        "name": "Caio Case #4",
+        "adset_id": "52595874691093",
+        "campaign_id": "52595874690893",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1054496917375267",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.  A Champion v 2026-08-17-3c99c150507e38e83d1d9d1fe4fd0ffd",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595879589293",
+        "name": "Caio Case #2",
+        "adset_id": "52595874691093",
+        "campaign_id": "52595874690893",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1053398454245172",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.  A Champion v 2026-08-17-a1009c4e71fd4d30c68527f6b775003b",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595874691293",
+        "name": "Caio Case #1",
+        "adset_id": "52595874691093",
+        "campaign_id": "52595874690893",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1038224792305257",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.  A Champion v 2026-08-17-3d53caf4c2c95aa0ac5f91449ed7024e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595879589493",
+        "name": "Caio Case #3",
+        "adset_id": "52595874691093",
+        "campaign_id": "52595874690893",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "988758750855324",
+          "name": "Não adianta nada fazer tudo na sua operação, e ficar limitado no quanto pode faturar.  A Champion v 2026-08-17-0bfe61d16d04e5fce7369315ef05c15e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227186893",
+        "name": "T04 - C1- CL",
+        "adset_id": "52596227183693",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "4435794226687362",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-388773260c52922e6eb91b457e84a5a0",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227185093",
+        "name": "Arthur Case #1",
+        "adset_id": "52596227183493",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1378693947685916",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-44c8b847ffdd7fd103eade990a22480a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227185293",
+        "name": "Arthur Case #1",
+        "adset_id": "52596227183693",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1654621236670477",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-82acbe984cf3550005139c760c3233b9",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227186093",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52596227183493",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1615734656649269",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-472f1e660f7f276951ab2be81a7b7d80",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227186693",
+        "name": "T04 - C1- CL",
+        "adset_id": "52596227183493",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1629433582084385",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-83444c889a260dfc08a431e9b8cca486",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596175179093",
+        "name": "Arthur Case #1",
+        "adset_id": "52596173252293",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1056203594039137",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-f6d5bc3860a561ea2450786a9065a3dd",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227185493",
+        "name": "Arthur Case #1",
+        "adset_id": "52596227184093",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "2865396560513785",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-f8f2634ef427e0d0e7215cfabe84a143",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227183293",
+        "name": "T04 - C1- CL",
+        "adset_id": "52596227183893",
+        "campaign_id": "52596173251893",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1606167074470295",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-f896de7993e84fa11613d8a5fe8c9a93",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227186493",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52596227183893",
+        "campaign_id": "52596173251893",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2338453336694461",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-511f0df9861ccaceb4d5a379004e6495",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596175178693",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52596173252293",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1019830190871751",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-6a753b61d25a271a3702eaf1abd35631",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227185693",
+        "name": "Arthur Case #1",
+        "adset_id": "52596227183893",
+        "campaign_id": "52596173251893",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1927749437906729",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-1022be0412f6df9edaa11897b9f061d2",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227185893",
+        "name": "Luis-Nathan Case #2 - Certo",
+        "adset_id": "52596227183693",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1621036652704526",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-f2dfda8cc1750f4eaa579f1321577874",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227187093",
+        "name": "T04 - C1- CL",
+        "adset_id": "52596227184093",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1375602690743697",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-d31738f7c83fda703f6d21e81ac98705",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596175178893",
+        "name": "T04 - C1- CL",
+        "adset_id": "52596173252293",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "890390443848794",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-8e11725f498e53d30123b3b78bbefcee",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596173252093",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52596173252293",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "4463169223829891",
+          "name": "Pare de perder tempo com criativo. 2026-08-13-628809d421c729f8473fe14c101fec07",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227184693",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52596227184093",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1358190612619214",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-f12a35a03b5fc612a8b93b0eecb35f1e",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227184493",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52596227183693",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "980836155002620",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-2dbc0ae50a73cc40c1b38c26b6dd4ac0",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227184893",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52596227183893",
+        "campaign_id": "52596173251893",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1064149006016250",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-5b409dfb5913c732d571f1bb408a7b43",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52596227184293",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52596227183493",
+        "campaign_id": "52596173251893",
+        "effective_status": "ADSET_PAUSED",
+        "creative": {
+          "id": "1725419192073675",
+          "name": "Pare de perder tempo com criativo. 2026-08-14-545d9ee14cd43835bca0b889f3a28f37",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595911447493",
+        "name": "Luis-Nathan Case #2 - C1",
+        "adset_id": "52595911448093",
+        "campaign_id": "52595911445693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2399239630604972",
+          "name": "Pare de perder tempo com criativo. 2026-08-13-6eb6fe8948c5784956ef1cd2e4f93a97",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595911447093",
+        "name": "Luis-Nathan Case #2 - C1",
+        "adset_id": "52595911447893",
+        "campaign_id": "52595911445493",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1494558006028610",
+          "name": "Pare de perder tempo com criativo. 2026-08-13-6c81b073e069ff57e88026e1231203d6",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595911447293",
+        "name": "Luis-Nathan Case #2 - C1",
+        "adset_id": "52595911448293",
+        "campaign_id": "52595911445893",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2226878587853379",
+          "name": "Pare de perder tempo com criativo. 2026-08-13-8f12e586dc825f90a8ca702c601167b1",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595911446693",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52595911448293",
+        "campaign_id": "52595911445893",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1030420103154052",
+          "name": "Pare de perder tempo com criativo. 2026-08-13-623cff8918e8ea0c56c5a0ae0b5189c7",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595911446493",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52595911448093",
+        "campaign_id": "52595911445693",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "2196518074258078",
+          "name": "Pare de perder tempo com criativo. 2026-08-13-fb38984484bdabab87fe3885831a188f",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595911447693",
+        "name": "Luis-Nathan Case #2 - C1",
+        "adset_id": "52595911448493",
+        "campaign_id": "52595911446093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1706043034009480",
+          "name": "Pare de perder tempo com criativo. 2026-08-13-fa65425655a46e66b2591f334b6456b7",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595911446293",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52595911447893",
+        "campaign_id": "52595911445493",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1062798322888910",
+          "name": "Pare de perder tempo com criativo. 2026-08-13-1388fc6720b14601c7e213e844775556",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595911446893",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52595911448493",
+        "campaign_id": "52595911446093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "4463169223829891",
+          "name": "Pare de perder tempo com criativo. 2026-08-13-628809d421c729f8473fe14c101fec07",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595880369893",
+        "name": "Luis-Nathan Case #2 - V3",
+        "adset_id": "52595880370093",
+        "campaign_id": "52595880369093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "1058589280253418",
+          "name": "Pare de perder tempo com criativo. 2026-08-13-2438d7716cdd9cfb76569952f320b85a",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      },
+      {
+        "id": "52595911053893",
+        "name": "Luis-Nathan Case #2 - C1",
+        "adset_id": "52595880370093",
+        "campaign_id": "52595880369093",
+        "effective_status": "CAMPAIGN_PAUSED",
+        "creative": {
+          "id": "993421613700908",
+          "name": "Pare de perder tempo com criativo. 2026-08-13-48cbdf734694184c940d82211de3c7b2",
+          "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&utm_placement={{placement}}"
+        }
+      }
+    ]
+  }
+}
